@@ -49,8 +49,8 @@ class Manager {
      */
     public static function init() {
         $upload_dir = wp_upload_dir();
-        self::$dir = $upload_dir['basedir'] . '/' . LWS_PLUGIN_SLUG . '/';
-        self::$url = $upload_dir['baseurl'] . '/' . LWS_PLUGIN_SLUG . '/';
+        self::$dir = $upload_dir['basedir'] . '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
+        self::$url = $upload_dir['baseurl'] . '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
         if (!has_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'))) {
             add_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'));
         }
@@ -188,7 +188,7 @@ class Manager {
             $file = '';
         }
         $nonce = isset($_GET['_wpnonce']) ? (string)$_GET['_wpnonce'] : '';
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
+        if (!current_user_can(live_weather_station_manage_capability()) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
             Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
             wp_die(esc_html__('You do not have sufficient permissions to download this file.', 'live-weather-station'), '', array('response' => 403));
         }
@@ -601,7 +601,7 @@ class Manager {
      * @since 3.8.0
      */
     public static function change_upload_dir($dirs) {
-        $dirs['subdir'] = '/' . LWS_PLUGIN_SLUG . '/';
+        $dirs['subdir'] = '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
         $dirs['path'] = self::$dir;
         $dirs['url'] = self::$url;
         return $dirs;
@@ -667,7 +667,7 @@ class Manager {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
         }
         $result = array('done' => false, 'error' => __('Unknown error', 'live-weather-station'));
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             $result['error'] = __('You do not have sufficient permissions to add files.', 'live-weather-station');
             return $result;
         }
@@ -697,7 +697,7 @@ class Manager {
                 }
             } else {
                 $error = (is_array($file) && isset($file['error'])) ? (string)$file['error'] : 'unknown error';
-                $result['error'] = lws_lcfirst($error);
+                $result['error'] = live_weather_station_lcfirst($error);
                 Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $error);
             }
             remove_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));

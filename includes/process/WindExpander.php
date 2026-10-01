@@ -64,7 +64,7 @@ class WindExpander extends Process {
      * @since 3.6.0
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to handle daily and historical wind angle / wind source measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix allows %s to handle daily and historical wind angle / wind source measurements for all types of stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -205,7 +205,7 @@ class WindExpander extends Process {
      */
     private function expand($station_id, $station_type) {
         $switch = false;
-        if ($station_type === LWS_PIOU_SID) {
+        if ($station_type === LIVE_WEATHER_STATION_PIOU_SID) {
             $switch = true;
         }
         // DAILY DATA

@@ -26,7 +26,7 @@ class ColorSchemes extends Base {
     protected function column_colors($item){
         $s = '';
         foreach ($item['colors'] as $color) {
-            $s .= '<i class="' . LWS_FAS . ' fa-lg fa-fw fa-circle" style="color:#' . preg_replace('/[^0-9A-Fa-f]/', '', $color) . '"></i>';
+            $s .= '<i class="' . LIVE_WEATHER_STATION_FAS . ' fa-lg fa-fw fa-circle" style="color:#' . preg_replace('/[^0-9A-Fa-f]/', '', $color) . '"></i>';
         }
         return $s;
     }
@@ -34,7 +34,7 @@ class ColorSchemes extends Base {
     protected function column_name($item){
         $actions['edit'] = sprintf('<a href="?page=lws-settings&action=form&tab=edit&service=palette&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['id']));
         $actions['reset'] = sprintf('<a href="%s">'.esc_html__('Reset', 'live-weather-station').'</a>', esc_url(wp_nonce_url('?page=lws-settings&action=reset-cschemes&tab=styles&id=' . rawurlencode($item['id']), 'reset-cschemes')));
-        return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . esc_html($item['name']) . $this->row_actions($actions);
+        return '<i style="color:#999" class="' . LIVE_WEATHER_STATION_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . esc_html($item['name']) . $this->row_actions($actions);
     }
 
     public function get_columns(){

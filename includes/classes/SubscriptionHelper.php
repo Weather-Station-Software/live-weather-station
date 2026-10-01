@@ -87,7 +87,7 @@ class Handling {
         try {
             $args = array();
             $args['body'] = array( 'EMAIL' => $email);
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
             $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
             $args['redirection'] = 2;
             if (Quota::verify($this->service, 'POST')) {

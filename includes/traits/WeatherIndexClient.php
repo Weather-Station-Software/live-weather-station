@@ -78,7 +78,7 @@ trait Client {
             $nm['_id'] = self::get_computed_virtual_id($id);
             $nm['module_name'] = __('[Computed Values]', 'live-weather-station');
             $nm['type'] = 'NAComputed';
-            $nm['firmware'] = LWS_VERSION;
+            $nm['firmware'] = LIVE_WEATHER_STATION_VERSION;
             $nm['rf_status'] = 0 ;
             $nm['battery_vp'] = 6000 ;
             $nm['data_type'] = array();

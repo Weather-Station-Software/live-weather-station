@@ -46,7 +46,7 @@ class Log extends Base {
             $color = 'style="color:' . esc_attr($color) . '"';
         }
         $s = esc_url(add_query_arg(array('page' => 'lws-events', 'view' => 'log-detail', 'log-entry' => absint($item['id'])), admin_url('admin.php')));
-        $result = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
+        $result = '<i ' . $color . ' class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
         $result .= '&nbsp;<a class="row-title" href="' . $s . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . 'title="'. esc_attr(ucfirst(__('see details', 'live-weather-station'))) . '">' . esc_html($item['system'] . ' ' . $item['version']) . '</a>';
         $result .= '<br /><span style="color:silver">Event ' . absint($item['id']) . ', ' . esc_html(Logger::get_name($item['level'])) . ' ' . esc_html__('code', 'live-weather-station') . ' ' . esc_html($item['code']) . '</span>';
         return $result;
@@ -213,10 +213,10 @@ class Log extends Base {
             $$key = $val;
         }
         if ($which == 'top'){
-            include(LWS_ADMIN_DIR.'partials/ListTableLogsTop.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ListTableLogsTop.php');
         }
         if ($which == 'bottom'){
-            include(LWS_ADMIN_DIR.'partials/ListTableLogsBottom.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ListTableLogsBottom.php');
         }
     }
 

@@ -73,7 +73,7 @@ trait Client {
             $nm['module_name'] = __('[Ephemeris]', 'live-weather-station');
             $nm['battery_vp'] = 6000;
             $nm['rf_status'] = 0;
-            $nm['firmware'] = LWS_VERSION;
+            $nm['firmware'] = LIVE_WEATHER_STATION_VERSION;
             $dashboard = array() ;
             $dashboard['time_utc'] = time();
             // sunrise & sunset
@@ -85,7 +85,7 @@ trait Client {
             $month = $datetime->format('m');
             $day = $datetime->format('d');
             for ($fact = -1; $fact <= 2; $fact++) {
-                $sunrise = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
+                $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
                 $verif = new \DateTime();
                 $verif->setTimestamp($sunrise);
                 $verif->setTimezone(new \DateTimeZone($tz));
@@ -95,7 +95,7 @@ trait Client {
                 }
             }
             for ($fact = -1; $fact <= 2; $fact++) {
-                $sunset = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
+                $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
                 $verif = new \DateTime();
                 $verif->setTimestamp($sunset);
                 $verif->setTimezone(new \DateTimeZone($tz));
@@ -104,14 +104,14 @@ trait Client {
                     break;
                 }
             }
-            $dashboard['sunrise'] = lws_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
-            $dashboard['sunrise_c'] = lws_sun_timestamp($time_rise, $lat, $lon, 96);
-            $dashboard['sunrise_n'] = lws_sun_timestamp($time_rise, $lat, $lon, 102);
-            $dashboard['sunrise_a'] = lws_sun_timestamp($time_rise, $lat, $lon, 108);
-            $dashboard['sunset'] = lws_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
-            $dashboard['sunset_c'] = lws_sun_timestamp($time_set, $lat, $lon, 96, true);
-            $dashboard['sunset_n'] = lws_sun_timestamp($time_set, $lat, $lon, 102, true);
-            $dashboard['sunset_a'] = lws_sun_timestamp($time_set, $lat, $lon, 108, true);
+            $dashboard['sunrise'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+            $dashboard['sunrise_c'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 96);
+            $dashboard['sunrise_n'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 102);
+            $dashboard['sunrise_a'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 108);
+            $dashboard['sunset'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
+            $dashboard['sunset_c'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 96, true);
+            $dashboard['sunset_n'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 102, true);
+            $dashboard['sunset_a'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 108, true);
             // lengths of day
             if ($dashboard['sunset'] && $dashboard['sunrise']) {
                 $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];

@@ -29,7 +29,7 @@ trait HCClient {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected $netatmo_scope = 'read_homecoach';
-    protected $netatmo_type = LWS_NETATMOHC_SID;
+    protected $netatmo_type = LIVE_WEATHER_STATION_NETATMOHC_SID;
 
 
     /**
@@ -92,7 +92,7 @@ trait HCClient {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_measurements = $this->netatmo_client->getHCData();
-                    $this->normalize_netatmo_measurements(LWS_NETATMOHC_SID);
+                    $this->normalize_netatmo_measurements(LIVE_WEATHER_STATION_NETATMOHC_SID);
                     if ($store) {
                         $this->store_netatmo_measurements($this->get_all_netatmo_hc_stations(), true);
                     }
@@ -160,11 +160,11 @@ trait HCClient {
             $this->get_measurements(false);
             $measurements = $this->netatmo_measurements ;
             foreach($measurements['devices'] as $device){
-                $result[] = array('device_id' => $device['_id'], 'station_name' => lws_clean_text($device['station_name'], 60), 'installed' => false);
+                $result[] = array('device_id' => $device['_id'], 'station_name' => live_weather_station_clean_text($device['station_name'], 60), 'installed' => false);
             }
             if ($store) {
                 foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_NETATMOHC_SID)) {
+                    if ($this->insert_ignore_stations_table($station['device_id'], LIVE_WEATHER_STATION_NETATMOHC_SID)) {
                         $station['installed'] = true;
                         Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
                     }
@@ -205,10 +205,10 @@ trait HCClient {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_NETATMOHC_SID);
+            $weather->compute(LIVE_WEATHER_STATION_NETATMOHC_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_NETATMOHC_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_NETATMOHC_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {

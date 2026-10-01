@@ -12,36 +12,36 @@ use WeatherStation\System\Help\InlineHelp;
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="referrers" class="postbox ">
         <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-        <h3 class="hndle"><span><?php echo sprintf(__('%s can\'t run on your WordPress site', 'live-weather-station' ), LWS_PLUGIN_NAME);?></span></h3>
+        <h3 class="hndle"><span><?php echo sprintf(__('%s can\'t run on your WordPress site', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME);?></span></h3>
         <div class="inside">
-            <strong><?php echo sprintf(__('The PHP configuration of your server doesn\'t meet the minimal requirements needed to run %s. Please, see below to identify which PHP extension must be installed:', 'live-weather-station'), LWS_PLUGIN_NAME);?></strong>
+            <strong><?php echo sprintf(__('The PHP configuration of your server doesn\'t meet the minimal requirements needed to run %s. Please, see below to identify which PHP extension must be installed:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></strong>
             <br/>
             <table cellspacing="10" width="99%">
                 <tbody>
                     <tr>
-                        <?php if (LWS_PHPVERSION_OK) { ?>
-                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LWS_FAS;?> fa-lg fa-check-circle"></i></td>
+                        <?php if (LIVE_WEATHER_STATION_PHPVERSION_OK) { ?>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('PHP version is greater than or equal to 5.6.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LWS_FAS;?> fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('PHP version is lower than 5.6.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
                     <tr>
-                        <?php if (LWS_I18N_LOADED) { ?>
-                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LWS_FAS;?> fa-lg fa-check-circle"></i></td>
+                        <?php if (LIVE_WEATHER_STATION_I18N_LOADED) { ?>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('Internationalization support is installed.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LWS_FAS;?> fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('Internationalization support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
                     <tr>
-                        <?php if (LWS_JSON_LOADED) { ?>
-                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LWS_FAS;?> fa-lg fa-check-circle"></i></td>
+                        <?php if (LIVE_WEATHER_STATION_JSON_LOADED) { ?>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('JSON support is installed.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LWS_FAS;?> fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('JSON support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>

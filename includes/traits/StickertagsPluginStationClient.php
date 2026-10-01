@@ -180,7 +180,7 @@ trait StationClient {
         }
         if (isset($weather[5]) && is_numeric($weather[5])) {
             $updates['measure_type'] = 'humidity';
-            $humidity_ref = lws_clean_number($weather[5]);
+            $humidity_ref = live_weather_station_clean_number($weather[5]);
             $updates['measure_value'] = $humidity_ref;
             $this->update_data_table($updates, $timezone);
         }
@@ -294,7 +294,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = lws_clean_text($raw_data, 200);
+            $result = live_weather_station_clean_text($raw_data, 200);
         }
         else {
             $weather = $this->explode_data($raw_data);
@@ -387,10 +387,10 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_TXT_SID);
+            $weather->compute(LIVE_WEATHER_STATION_TXT_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_TXT_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_TXT_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

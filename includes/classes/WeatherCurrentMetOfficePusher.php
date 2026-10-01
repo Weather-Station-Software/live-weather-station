@@ -84,7 +84,7 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['siteid'] = $station['wow_user'];
         $result['siteAuthenticationKey'] = $station['wow_password'];
-        $result['softwaretype'] = LWS_PLUGIN_SIGNATURE;
+        $result['softwaretype'] = LIVE_WEATHER_STATION_PLUGIN_SIGNATURE;
         return $result;
     }
 
@@ -109,7 +109,7 @@ class Pusher extends Abstract_Pusher {
         // WOW Met Office is discontinued at the end of 2026: WOW is now run by RMI Belgium (WOW-BE).
         // Same parameter names as the former protocol (siteid accepts the station ID, siteAuthenticationKey the authentication key).
         $default = 'https://wow.meteo.be/api/v2/send';
-        $url = apply_filters('lws_wow_endpoint', $default);
+        $url = apply_filters('live_weather_station_wow_endpoint', $default);
         if (!is_string($url) || strpos($url, 'https://') !== 0 || !wp_http_validate_url($url)) {
             return $default;
         }

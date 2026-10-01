@@ -39,7 +39,7 @@ class Thunderstorm extends Base {
         parent::__construct(
             'Live_Weather_Station_Widget_Thunderstorm',
             '<>⚡ ' . __( 'Thunderstorm' , 'live-weather-station'),
-            array( 'description' => sprintf(__('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
+            array( 'description' => sprintf(__('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -124,7 +124,7 @@ class Thunderstorm extends Base {
         $dawn_url = $instance['dawn_url'];
         $dusk_url = $instance['dusk_url'];
         $stations = $this->get_operational_thunderstorm_stations_list();
-        include(LWS_ADMIN_DIR.'partials/WidgetThunderstormSettings.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/WidgetThunderstormSettings.php');
     }
 
     /**
@@ -139,7 +139,7 @@ class Thunderstorm extends Base {
      * @since 3.3.0
      */
     public function css($instance, $uid, $flat_design, $dawndusk, $background, $attachment) {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         try
         {
             $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
@@ -229,14 +229,14 @@ class Thunderstorm extends Base {
         $text_shadows = WidgetHelper::text_shadow();
         $box_shadows = WidgetHelper::box_shadow();
         $box_radius = WidgetHelper::box_radius();
-        if (LWS_FA_SVG) {
+        if (LIVE_WEATHER_STATION_FA_SVG) {
             $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
         }
         else {
             $svg = '';
         }
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
         return ob_get_clean();
     }
 
@@ -433,7 +433,7 @@ class Thunderstorm extends Base {
         $result = $args['before_widget'];
         $result .= $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetThunderstormDisplay.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetThunderstormDisplay.php';
         $result .= ob_get_clean();
         $result .= $args['after_widget'];
         return $result;

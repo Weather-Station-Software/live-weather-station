@@ -33,27 +33,27 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
         <?php } ?>
     </h2>
 
-    <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
+    <form action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
         <?php if ($active_tab !== 'general' && $active_tab !== 'services' && $active_tab !== 'maintenance' && $active_tab !== 'tasks') { ?>
             <?php do_settings_sections('lws_'.$active_tab); ?>
             <?php settings_fields($active_tab);?>
             <?php if ($active_tab === 'styles') { ?>
-                <?php include(LWS_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
             <?php } ?>
             <?php echo $buttons;?>
         <?php } ?>
     </form>
     <?php if ($active_tab === 'general') { ?>
-        <?php include(LWS_ADMIN_DIR.'partials/SettingsGeneral.php'); ?>
+        <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/SettingsGeneral.php'); ?>
     <?php } ?>
     <?php if ($active_tab === 'services') { ?>
         <?php $this->_services->get(); ?>
     <?php } ?>
     <?php if ($active_tab === 'maintenance') { ?>
-        <?php include(LWS_ADMIN_DIR.'partials/SettingsMaintenance.php'); ?>
+        <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/SettingsMaintenance.php'); ?>
     <?php } ?>
     <?php if ($active_tab === 'history') { ?>
-        <?php include(LWS_ADMIN_DIR.'partials/SettingsHistory.php'); ?>
+        <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/SettingsHistory.php'); ?>
     <?php } ?>
 
 </div>

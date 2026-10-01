@@ -104,7 +104,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
 
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
         $jsInitId = md5(random_bytes(18));
-        $content .= lws_print_begin_script($jsInitId);
+        $content .= live_weather_station_print_begin_script($jsInitId);
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -128,7 +128,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= lws_print_end_script($jsInitId);
+        $content .= live_weather_station_print_end_script($jsInitId);
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

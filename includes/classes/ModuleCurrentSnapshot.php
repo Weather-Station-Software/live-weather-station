@@ -39,7 +39,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'snapshot';
         $this->module_name = ucfirst(__('snapshot', 'live-weather-station'));
         $this->module_hint = __('Display current snapshot from the station.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-image':' fa-image') . ' fa-fw';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-image':' fa-image') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }
@@ -143,7 +143,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var shortcode_init = "[live-weather-station-snapshot device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' size=\'"+sc_size+"\' fx=\'"+sc_animation+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
         $content .= '$("#current-snapshot-measurements-module-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);

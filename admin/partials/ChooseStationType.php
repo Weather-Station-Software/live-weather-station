@@ -13,55 +13,55 @@ $dashboard = (isset($welcome) && $welcome);
 
 if (get_option('live_weather_station_netatmo_connected')) {
     $netatmo_s = ucfirst(__('a Netatmo station to which you have access to.', 'live-weather-station'));
-    $netatmo_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Netatmo', $dashboard);
+    $netatmo_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add', 'Netatmo', $dashboard);
     $netatmo_t = '_self';
 }
 else {
-    $netatmo_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME);
-    $netatmo_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $netatmo_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $netatmo_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $netatmo_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
 if (get_option('live_weather_station_netatmohc_connected')) {
     $netatmo_hc_s = ucfirst(__('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station'));
-    $netatmo_hc_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'NetatmoHC', $dashboard);
+    $netatmo_hc_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add', 'NetatmoHC', $dashboard);
     $netatmo_hc_t = '_self';
 }
 else {
-    $netatmo_hc_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME);
-    $netatmo_hc_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $netatmo_hc_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $netatmo_hc_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $netatmo_hc_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
 if (get_option('live_weather_station_owm_apikey') != '') {
     $loc_s = ucfirst(__('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station'));
-    $loc_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Location', $dashboard);
+    $loc_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Location', $dashboard);
     $loc_t = '_self';
 }
 else {
     $loc_s = __('To add a station of this type, you need to set an OpenWeatherMap API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station');
-    $loc_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $loc_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $loc_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
 $real_s = ucfirst(__('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station'));
-$real_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'realtime', $dashboard);
+$real_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'realtime', $dashboard);
 $real_t = '_self';
 
 $raw_s = ucfirst(__('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station'));
-$raw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'clientraw', $dashboard);
+$raw_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'clientraw', $dashboard);
 $raw_t = '_self';
 
 $txt_s = ucfirst(__('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station'));
-$txt_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'stickertags', $dashboard);
+$txt_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'stickertags', $dashboard);
 $txt_t = '_self';
 
 $wflw_s = ucfirst(__('your own WeatherFlow station (personal access token).', 'live-weather-station'));
-$wflw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherflow', $dashboard);
+$wflw_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherflow', $dashboard);
 $wflw_t = '_self';
 
 $piou_s = ucfirst(__('a Pioupiou sensor as a station.', 'live-weather-station'));
-$piou_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'pioupiou', $dashboard);
+$piou_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'pioupiou', $dashboard);
 $piou_t = '_self';
 
 
@@ -69,18 +69,18 @@ $piou_t = '_self';
 
 if (get_option('live_weather_station_ambient_connected')) {
     $ambient_s = ucfirst(__('a personal weather station published on Ambient Weather Network.', 'live-weather-station'));
-    $ambient_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Ambient', $dashboard);
+    $ambient_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Ambient', $dashboard);
     $ambient_t = '_self';
 }
 else {
-    $ambient_s = sprintf(__('To add a station of this type, you need to connect %s to your Ambient account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME);
-    $ambient_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $ambient_s = sprintf(__('To add a station of this type, you need to connect %s to your Ambient account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $ambient_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $ambient_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
 $wlink_s = ucfirst(__('a personal weather station connected to WeatherLink 2.', 'live-weather-station'));
-$wlink_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
-$wlink_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
+$wlink_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
+$wlink_l = live_weather_station_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
 $wlink_t = '_self';
 
 

@@ -308,7 +308,7 @@ abstract class Process {
         $to = get_bloginfo('admin_email');
         $subject = __('End of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }
@@ -343,7 +343,7 @@ abstract class Process {
         $to = get_bloginfo('admin_email');
         $subject = __('Error of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        $message .= sprintf(__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }

@@ -13,11 +13,11 @@
 <div class="wrap">
 <?php if ($configuration['uuid'] == 'error') { ?>
     <h1><?php echo __('Unable to import this file', 'live-weather-station');?></h1>
-    <p><?php echo sprintf(__('There\'s something wrong with this file, %s can\'t read it.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
-    <p><a href="<?php echo esc_url(lws_get_admin_page_url('lws-files'), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a></p>
+    <p><?php echo sprintf(__('There\'s something wrong with this file, %s can\'t read it.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+    <p><a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-files'), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a></p>
 <?php } else { ?>
     <h1><?php echo __('Import configuration', 'live-weather-station');?></h1>
-    <form name="import-configuration" id="import-configuration" action="<?php echo esc_url(lws_get_admin_page_url('lws-files', 'do', 'import', 'configuration', false, null, $configuration['uuid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
+    <form name="import-configuration" id="import-configuration" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-files', 'do', 'import', 'configuration', false, null, $configuration['uuid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="xid" value="<?php echo esc_attr($configuration['uuid']); ?>" />
         <?php wp_nonce_field('import-configuration'); ?>
         <p><?php echo __('Please, select the elements you want to import:', 'live-weather-station');?></p>
@@ -29,7 +29,7 @@
                     <td disabled>
                         <fieldset><label><input name="configuration-settings" id="configuration-settings" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['settings']), 'live-weather-station'), absint($configuration['settings']));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these settings in %s. Note: it will replace current settings.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo sprintf(__('Check this to import these settings in %s. Note: it will replace current settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
                     </td>
                 </tr>
             <?php }  ?>
@@ -40,7 +40,7 @@
                     <td disabled>
                         <fieldset><label><input name="configuration-stations" id="configuration-stations" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['stations']), 'live-weather-station'), absint($configuration['stations']));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these stations in %s. Note: it will replace all current stations and modules.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo sprintf(__('Check this to import these stations in %s. Note: it will replace all current stations and modules.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
                     </td>
                 </tr>
             <?php }  ?>
@@ -51,7 +51,7 @@
                     <td disabled>
                         <fieldset><label><input name="configuration-maps" id="configuration-maps" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['maps']), 'live-weather-station'), absint($configuration['maps']));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these maps in %s. Note: it will replace all current maps.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo sprintf(__('Check this to import these maps in %s. Note: it will replace all current maps.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
                     </td>
                 </tr>
             <?php }  ?>
@@ -59,7 +59,7 @@
         </table>
         <div style="width: 100%;clear: both;">
             <p class="submit"><input disabled type="submit" name="do-import-configuration" id="do-import-configuration" class="button button-primary" value="<?php esc_html_e('Import Elements', 'live-weather-station');?>" /> &nbsp;&nbsp;&nbsp;
-                <a href="<?php echo esc_url(lws_get_admin_page_url('lws-files'), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a>
+                <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-files'), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a>
         </div>
     </form>
     <script language="javascript" type="text/javascript">

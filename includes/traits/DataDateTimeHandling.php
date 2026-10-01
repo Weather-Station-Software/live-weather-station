@@ -134,7 +134,7 @@ trait Handling {
         $month = $datetime->format('m');
         $day = $datetime->format('d');
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunrise = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
+            $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
             $verif = new \DateTime();
             $verif->setTimestamp($sunrise);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -144,7 +144,7 @@ trait Handling {
             }
         }
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunset = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
+            $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
             $verif = new \DateTime();
             $verif->setTimestamp($sunset);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -153,8 +153,8 @@ trait Handling {
                 break;
             }
         }
-        $sunrise = lws_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
-        $sunset = lws_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
+        $sunrise = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+        $sunset = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
         return (time() > $sunrise && time() < $sunset);
     }
 
@@ -179,7 +179,7 @@ trait Handling {
         $month = $datetime->format('m');
         $day = $datetime->format('d');
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunrise = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
+            $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
             $verif = new \DateTime();
             $verif->setTimestamp($sunrise);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -189,7 +189,7 @@ trait Handling {
             }
         }
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunset = lws_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
+            $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
             $verif = new \DateTime();
             $verif->setTimestamp($sunset);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -198,8 +198,8 @@ trait Handling {
                 break;
             }
         }
-        $sunrise = lws_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
-        $sunset = lws_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
+        $sunrise = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+        $sunset = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
         if (time() > $sunrise && time() < $sunset) { // Currently day
             return ($sunset - time() < 60 * 60 * 4);
         }

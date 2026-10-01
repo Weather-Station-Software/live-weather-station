@@ -48,41 +48,41 @@ class Stations extends Base {
     private function get_icon($type) {
         $result = '';
         switch ($type) {
-            case LWS_NETATMO_SID :
-            case LWS_NETATMOHC_SID :
+            case LIVE_WEATHER_STATION_NETATMO_SID :
+            case LIVE_WEATHER_STATION_NETATMOHC_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_icon()) . '" />';
                 break;
-            case LWS_LOC_SID :
+            case LIVE_WEATHER_STATION_LOC_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_loc_icon('#666666')) . '" />';
                 break;
-            case LWS_OWM_SID :
+            case LIVE_WEATHER_STATION_OWM_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_icon('#666666')) . '" />';
                 break;
-            case LWS_WUG_SID :
+            case LIVE_WEATHER_STATION_WUG_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_wug_icon('#666666')) . '" />';
                 break;
-            case LWS_RAW_SID :
+            case LIVE_WEATHER_STATION_RAW_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_raw_icon('#666666')) . '" />';
                 break;
-            case LWS_REAL_SID :
+            case LIVE_WEATHER_STATION_REAL_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_real_icon('#666666')) . '" />';
                 break;
-            case LWS_TXT_SID :
+            case LIVE_WEATHER_STATION_TXT_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_txt_icon('#666666')) . '" />';
                 break;
-            case LWS_WFLW_SID :
+            case LIVE_WEATHER_STATION_WFLW_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_icon('#666666')) . '" />';
                 break;
-            case LWS_PIOU_SID :
+            case LIVE_WEATHER_STATION_PIOU_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_piou_icon('#666666')) . '" />';
                 break;
-            case LWS_BSKY_SID :
+            case LIVE_WEATHER_STATION_BSKY_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_icon('#666666')) . '" />';
                 break;
-            case LWS_AMBT_SID :
+            case LIVE_WEATHER_STATION_AMBT_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_ambient_icon('#666666')) . '" />';
                 break;
-            case LWS_WLINK_SID :
+            case LIVE_WEATHER_STATION_WLINK_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_weatherlink_icon('#666666')) . '" />';
                 break;
         }
@@ -93,56 +93,56 @@ class Stations extends Base {
         $notice = '';
         $actions['see'] = sprintf('<a href="?page=lws-stations&action=manage&tab=view&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('View', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
         switch ($item['station_type']) {
-            case LWS_NETATMO_SID :
-            case LWS_NETATMOHC_SID :
+            case LIVE_WEATHER_STATION_NETATMO_SID :
+            case LIVE_WEATHER_STATION_NETATMOHC_SID :
                 if (!(bool)get_option('live_weather_station_auto_manage_netatmo')) {
                     $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 }
                 break;
-            case LWS_BSKY_SID :
+            case LIVE_WEATHER_STATION_BSKY_SID :
                 // BloomSky stopped its service in 2022: the stored data are kept, the station can only be viewed or removed.
                 $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Service no longer available', 'live-weather-station') . '</span>';
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_LOC_SID :
+            case LIVE_WEATHER_STATION_LOC_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=Location&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_OWM_SID :
-            case LWS_WUG_SID :
+            case LIVE_WEATHER_STATION_OWM_SID :
+            case LIVE_WEATHER_STATION_WUG_SID :
                 // Collection services removed: the station can only be viewed or removed.
                 $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Service no longer available', 'live-weather-station') . '</span>';
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_RAW_SID :
+            case LIVE_WEATHER_STATION_RAW_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=clientraw&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_REAL_SID :
+            case LIVE_WEATHER_STATION_REAL_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=realtime&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_TXT_SID :
+            case LIVE_WEATHER_STATION_TXT_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=stickertags&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_WFLW_SID :
-                $wflw_parts = explode(LWS_SERVICE_SEPARATOR, (string)$item['service_id'], 2);
+            case LIVE_WEATHER_STATION_WFLW_SID :
+                $wflw_parts = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, (string)$item['service_id'], 2);
                 if (count($wflw_parts) < 2 || $wflw_parts[1] === '') {
                     $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Personal access token required', 'live-weather-station') . '</span>';
                 }
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherflow&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_PIOU_SID :
+            case LIVE_WEATHER_STATION_PIOU_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=pioupiou&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_AMBT_SID :
+            case LIVE_WEATHER_STATION_AMBT_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=ambient&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
-            case LWS_WLINK_SID :
+            case LIVE_WEATHER_STATION_WLINK_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherlink&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
@@ -235,9 +235,9 @@ class Stations extends Base {
 
     protected function column_shortcode($item){
         $c = sprintf('<a href="?page=lws-stations&action=shortcode&tab=current&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Current records', 'live-weather-station').'</a>', rawurlencode($item['guid']));
-        $d = sprintf('<a href="?page=lws-stations&action=shortcode&tab=daily&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.lws_lcfirst(esc_html__('Daily data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
-        $y = sprintf('<a href="?page=lws-stations&action=shortcode&tab=yearly&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.lws_lcfirst(esc_html__('Historical data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
-        $cc = sprintf('<a href="?page=lws-stations&action=shortcode&tab=climat&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.lws_lcfirst(esc_html__('Climatological data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
+        $d = sprintf('<a href="?page=lws-stations&action=shortcode&tab=daily&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.live_weather_station_lcfirst(esc_html__('Daily data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
+        $y = sprintf('<a href="?page=lws-stations&action=shortcode&tab=yearly&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.live_weather_station_lcfirst(esc_html__('Historical data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
+        $cc = sprintf('<a href="?page=lws-stations&action=shortcode&tab=climat&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.live_weather_station_lcfirst(esc_html__('Climatological data', 'live-weather-station')).'</a>', rawurlencode($item['guid']));
         return $c . ', ' . $d . ', ' . $y . ', ' . $cc . '.';
     }
 
@@ -381,7 +381,7 @@ class Stations extends Base {
             $$key = $val;
         }
         if ($which == 'bottom'){
-            include(LWS_ADMIN_DIR.'partials/ListTableStationsBottom.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ListTableStationsBottom.php');
         }
     }
 

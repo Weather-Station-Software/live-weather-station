@@ -21,7 +21,7 @@ $show_files = true;
 
 <div class="wrap">
     <h1><?php echo __('Import historical data', 'live-weather-station');?></h1>
-    <form name="import-data" id="import-data" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
+    <form name="import-data" id="import-data" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php wp_nonce_field('edit-station'); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
@@ -31,21 +31,21 @@ $show_files = true;
                         <button type="button" class="handlediv" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
                         <h2 class="hndle ui-sortable-handle"><span>Station</span></h2>
                         <div class="inside">
-                            <?php include(LWS_ADMIN_DIR.'partials/StationStation.php'); ?>
+                            <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationStation.php'); ?>
                         </div>
                     </div>
                     <div id="lws-date-range" class="postbox" >
                         <button type="button" class="handlediv" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
                         <h2 class="hndle ui-sortable-handle"><span><?php esc_html_e('Date range', 'live-weather-station');?></span></h2>
                         <div class="inside">
-                            <?php include(LWS_ADMIN_DIR.'partials/ChooseDateRange.php'); ?>
+                            <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ChooseDateRange.php'); ?>
                         </div>
                     </div>
                     <div id="lws-format-select" class="postbox" >
                         <button type="button" class="handlediv" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
                         <h2 class="hndle ui-sortable-handle"><span><?php esc_html_e('Source', 'live-weather-station');?></span></h2>
                         <div class="inside">
-                            <?php include(LWS_ADMIN_DIR.'partials/ChooseFormat.php'); ?>
+                            <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ChooseFormat.php'); ?>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@ $show_files = true;
         </div>
         <div style="width: 100%;clear: both;">
             <p class="submit"><input disabled type="submit" name="do-import-data" id="do-import-data" class="button button-primary" value="<?php esc_html_e('Import Data', 'live-weather-station');?>"  /> &nbsp;&nbsp;&nbsp;
-                <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a>
+                <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a>
         </div>
     </form>
 </div>

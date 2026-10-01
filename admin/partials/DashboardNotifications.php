@@ -11,9 +11,9 @@ use WeatherStation\System\Output\Guard;
 use WeatherStation\System\I18N\Handling as Intl;
 
 $boxes = '';
-$d = '<i style="font-size:80%" class="' . LWS_FAS . ' fa-chevron-circle-down fa-fw"></i>&nbsp;';
-$c = '<i style="font-size:80%" class="' . LWS_FAS . ' fa-chevron-circle-up fa-fw"></i>&nbsp;';
-$t = '<i style="font-size:80%" class="' . LWS_FAS . ' fa-trash fa-fw"></i>&nbsp;';
+$d = '<i style="font-size:80%" class="' . LIVE_WEATHER_STATION_FAS . ' fa-chevron-circle-down fa-fw"></i>&nbsp;';
+$c = '<i style="font-size:80%" class="' . LIVE_WEATHER_STATION_FAS . ' fa-chevron-circle-up fa-fw"></i>&nbsp;';
+$t = '<i style="font-size:80%" class="' . LIVE_WEATHER_STATION_FAS . ' fa-trash fa-fw"></i>&nbsp;';
 foreach (Notifier::get() as $notification) {
     $id = (int)$notification['id'];
     $level = Guard::token($notification['level'], 'info');

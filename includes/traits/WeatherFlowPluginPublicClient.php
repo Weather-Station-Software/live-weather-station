@@ -30,7 +30,7 @@ trait PublicClient {
     public $detected_station_name = '';
 
     /**
-     * Split the service_id of a station: since 3.9.0 it is "station id{LWS_SERVICE_SEPARATOR}personal access token".
+     * Split the service_id of a station: since 3.9.0 it is "station id{LIVE_WEATHER_STATION_SERVICE_SEPARATOR}personal access token".
      * A station saved before has only the station id, so no token.
      *
      * @param string $service_id The service_id of the station.
@@ -38,7 +38,7 @@ trait PublicClient {
      * @since 3.9.0
      */
     public static function split_wflw_service_id($service_id) {
-        $parts = explode(LWS_SERVICE_SEPARATOR, (string)$service_id, 2);
+        $parts = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, (string)$service_id, 2);
         return array($parts[0], (count($parts) > 1 ? $parts[1] : ''));
     }
 
@@ -66,15 +66,15 @@ trait PublicClient {
                         if ($weather['status']['status_code'] == 0) {
                             $result = '';
                             if (array_key_exists('public_name', $weather)) {
-                                $this->detected_station_name = lws_clean_text($weather['public_name']);
+                                $this->detected_station_name = live_weather_station_clean_text($weather['public_name']);
                             }
                             elseif (array_key_exists('station_name', $weather)) {
-                                $this->detected_station_name = lws_clean_text($weather['station_name']);
+                                $this->detected_station_name = live_weather_station_clean_text($weather['station_name']);
                             }
                         }
                         else {
                             if (array_key_exists('status_message', $weather['status'])) {
-                                $result = lws_clean_text($weather['status']['status_message'], 200);
+                                $result = live_weather_station_clean_text($weather['status']['status_message'], 200);
                             }
                         }
                     }
@@ -168,7 +168,7 @@ trait PublicClient {
                 if (array_key_exists('status_code', $weather['status'])) {
                     if ($weather['status']['status_code'] != 0) {
                         if (array_key_exists('status_message', $weather['status'])) {
-                            throw new \Exception(lws_clean_text($weather['status']['status_message'], 200), (int)$weather['status']['status_code']);
+                            throw new \Exception(live_weather_station_clean_text($weather['status']['status_message'], 200), (int)$weather['status']['status_code']);
                         }
                         else {
                             throw new \Exception('WeatherFlow unknown exception', 0);
@@ -181,12 +181,12 @@ trait PublicClient {
             }
         }
         else {
-            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
+            throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             if (array_key_exists('timezone', $weather)) {
-                $timezone = lws_clean_text($weather['timezone'], 64);
+                $timezone = live_weather_station_clean_text($weather['timezone'], 64);
             }
             else {
                 $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
@@ -197,9 +197,9 @@ trait PublicClient {
                     $observation = array();
                 }
                 if (array_key_exists('public_name', $weather)) {
-                    $station['station_name'] = lws_clean_text($weather['public_name']);
+                    $station['station_name'] = live_weather_station_clean_text($weather['public_name']);
                 } elseif (array_key_exists('station_name', $weather)) {
-                    $station['station_name'] = lws_clean_text($weather['station_name']);
+                    $station['station_name'] = live_weather_station_clean_text($weather['station_name']);
                 }
                 if ($station['station_name'] == '') {
                     $station['station_name'] = '< NO NAME >';
@@ -249,25 +249,25 @@ trait PublicClient {
                 $updates['measure_value'] = $station['loc_country_code'];
                 $this->update_data_table($updates, $timezone);
                 if (array_key_exists('timezone', $weather)) {
-                    $station['loc_timezone'] = lws_clean_text($weather['timezone'], 64);
+                    $station['loc_timezone'] = live_weather_station_clean_text($weather['timezone'], 64);
                     $updates['measure_type'] = 'loc_timezone';
                     $updates['measure_value'] = $station['loc_timezone'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('latitude', $weather)) {
-                    $station['loc_latitude'] = lws_clean_number($weather['latitude']);
+                    $station['loc_latitude'] = live_weather_station_clean_number($weather['latitude']);
                     $updates['measure_type'] = 'loc_latitude';
                     $updates['measure_value'] = $station['loc_latitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('longitude', $weather)) {
-                    $station['loc_longitude'] = lws_clean_number($weather['longitude']);
+                    $station['loc_longitude'] = live_weather_station_clean_number($weather['longitude']);
                     $updates['measure_type'] = 'loc_longitude';
                     $updates['measure_value'] = $station['loc_longitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('elevation', $weather)) {
-                    $station['loc_altitude'] = lws_clean_number($weather['elevation']);
+                    $station['loc_altitude'] = live_weather_station_clean_number($weather['elevation']);
                     $updates['measure_type'] = 'loc_altitude';
                     $updates['measure_value'] = $station['loc_altitude'];
                     $this->update_data_table($updates, $timezone);
@@ -589,10 +589,10 @@ trait PublicClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_WFLW_SID);
+            $weather->compute(LIVE_WEATHER_STATION_WFLW_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_WFLW_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_WFLW_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

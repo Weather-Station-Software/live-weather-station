@@ -16,7 +16,7 @@ $warning = __('All the maps associated to this service will no longer be display
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
 ?>
 
-<form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
+<form action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
     <input type="hidden" name="action" value="manage-connection" />
     <input type="hidden" name="service" value="Stadia" />
     <input type="hidden" name="option_page" value="services" />
@@ -37,7 +37,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Stadia')); ?>"<?php echo $target; ?>><?php echo esc_html(lws_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Stadia')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -49,7 +49,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="stadia-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -60,7 +60,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="stadia-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="disconnect" id="stadia-disconnect" class="button button-primary" onclick="lws_stadia_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_stadia_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>

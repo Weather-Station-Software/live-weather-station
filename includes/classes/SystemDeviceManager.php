@@ -251,7 +251,7 @@ class Manager
 
         if (count($this->stations) > 0) {
             $cron_id = Watchdog::init_chrono(Watchdog::$history_build_name);
-            $hb = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $hb = new HistoryBuilder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($this->stations as $device_id) {
                 $hb->build_for($this->get_station_information_by_station_id($device_id));
             }
@@ -297,7 +297,7 @@ class Manager
                     if (!in_array($station['station_id'], $this->stations)) {
                         $this->stations[] = $station['station_id'];
                     }
-                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', lws_lcfirst($this->get_module_type($module))));
+                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', live_weather_station_lcfirst($this->get_module_type($module))));
                 }
             }
         }

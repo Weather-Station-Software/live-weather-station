@@ -29,7 +29,7 @@ trait Client {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected $netatmo_scope = 'read_station';
-    protected $netatmo_type = LWS_NETATMO_SID;
+    protected $netatmo_type = LIVE_WEATHER_STATION_NETATMO_SID;
     public $available_types = array('NAMain' => array('Temperature', 'CO2', 'Humidity', 'Pressure', 'Noise'),
                                     'NAModule1' => array('Temperature', 'Humidity'),
                                     'NAModule2' => array('WindStrength', 'WindAngle', 'Guststrength', 'GustAngle'),
@@ -199,7 +199,7 @@ trait Client {
                     $this->netatmo_measurements = $this->netatmo_client->getData();
                     if (true) {
                     //if (isset($this->netatmo_measurements)) {
-                        $this->normalize_netatmo_measurements(LWS_NETATMO_SID);
+                        $this->normalize_netatmo_measurements(LIVE_WEATHER_STATION_NETATMO_SID);
                         if ($store) {
                             $this->store_netatmo_measurements($this->get_all_netatmo_stations());
                         }
@@ -274,11 +274,11 @@ trait Client {
                 //if (isset($this->netatmo_measurements)) {
                 $measurements = $this->netatmo_measurements ;
                 foreach((is_array($measurements) && isset($measurements['devices']) && is_array($measurements['devices']) ? $measurements['devices'] : array()) as $device){
-                    $result[] = array('device_id' => $device['_id'], 'station_name' => lws_clean_text($device['station_name'], 60), 'installed' => false);
+                    $result[] = array('device_id' => $device['_id'], 'station_name' => live_weather_station_clean_text($device['station_name'], 60), 'installed' => false);
                 }
                 if ($store) {
                     foreach ($result as &$station) {
-                        if ($this->insert_ignore_stations_table($station['device_id'], LWS_NETATMO_SID)) {
+                        if ($this->insert_ignore_stations_table($station['device_id'], LIVE_WEATHER_STATION_NETATMO_SID)) {
                             $station['installed'] = true;
                             Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
                         }
@@ -323,10 +323,10 @@ trait Client {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_NETATMO_SID);
+            $weather->compute(LIVE_WEATHER_STATION_NETATMO_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_NETATMO_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_NETATMO_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

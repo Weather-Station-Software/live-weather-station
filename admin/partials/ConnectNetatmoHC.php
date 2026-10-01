@@ -9,11 +9,11 @@
 use WeatherStation\System\Output\Guard;
 
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
-$warning = sprintf(__('All Healthy Home Coaches associated to this service will be removed from %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+$warning = sprintf(__('All Healthy Home Coaches associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 
 ?>
 
-<form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST" style="margin:0px;padding:0px;">
+<form action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="action" value="manage-connection" />
     <input type="hidden" name="service" value="NetatmoHC" />
     <input type="hidden" name="option_page" value="services" />
@@ -41,7 +41,7 @@ $warning = sprintf(__('All Healthy Home Coaches associated to this service will 
                     <th class="lws-login" width="35%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Netatmo')); ?>"<?php echo $target; ?>><?php echo esc_html(lws_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Netatmo')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -52,7 +52,7 @@ $warning = sprintf(__('All Healthy Home Coaches associated to this service will 
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="netatmohc-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="netatmohc-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="netatmohc-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -63,7 +63,7 @@ $warning = sprintf(__('All Healthy Home Coaches associated to this service will 
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="netatmohc-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="netatmohc-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="netatmohc-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="disconnect" id="netatmohc-disconnect" class="button button-primary" onclick="lws_netatmohc_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_netatmohc_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>

@@ -74,7 +74,7 @@ class Stats
                             'downloaded' => true,
                             'rating' => true,
                             'num_ratings' => true);
-            $api = plugins_api( 'plugin_information', array('slug' => LWS_PLUGIN_SLUG, 'fields' => $query));
+            $api = plugins_api( 'plugin_information', array('slug' => LIVE_WEATHER_STATION_PLUGIN_SLUG, 'fields' => $query));
             if (!is_wp_error($api)) {
                 $result = get_object_vars($api);
                 $result['timestamp'] = time();
@@ -95,11 +95,11 @@ class Stats
      * @since 3.4.0
      */
     private function get_translation_stat() {
-        $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . '/stable';
+        $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/stable';
         try {
             Quota::verify($this->service, 'GET');
             $args = array();
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
             $args['timeout'] = get_option('live_weather_station_system_http_timeout');
             $resp = wp_remote_get($api_url, $args);
             $body = '';
@@ -110,7 +110,7 @@ class Stats
             if ($body) {
                 $body = json_decode($body);
                 if (isset($body) && (is_object($body) || is_array($body))) {
-                    $result = lws_object_to_array($body);
+                    $result = live_weather_station_object_to_array($body);
                     // Only the fields used to display the statistics are kept, with their expected types.
                     $clean = array();
                     $clean['name'] = isset($result['name']) && is_scalar($result['name']) ? sanitize_text_field((string)$result['name']) : '';

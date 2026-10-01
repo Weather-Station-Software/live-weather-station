@@ -14,7 +14,7 @@ $name = '';
 $type = __('graph', 'live-weather-station');
 foreach ($modules as $module) {
     if ($module->is_selected()) {
-        $name = lws_lcfirst($module->get_name());
+        $name = live_weather_station_lcfirst($module->get_name());
         $name = str_replace('lCD', 'LCD', $name);
         if ($module->module_type() == 'current') {
             $type = __('control', 'live-weather-station');
@@ -38,7 +38,7 @@ foreach ($modules as $module) {
                     .actionable-selected {border-radius:6px !important;background: <?php echo esc_attr($colors['background']); ?> !important;border:1px solid <?php echo esc_attr($colors['border']); ?> !important;}
                     .actionable-selected:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; opacity: 0.6 !important;}
                     .actionable:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; background: #f5f5f5;border:1px solid #e0e0e0;}
-                    <?php if (!LWS_FA5) { ?>
+                    <?php if (!LIVE_WEATHER_STATION_FA5) { ?>
                         #yearly-astream, #daily-astream, #current-snapshot {margin-top: 12px !important;}
                     <?php } else {?>
                         #current-snapshot {margin-top: 16px !important;}

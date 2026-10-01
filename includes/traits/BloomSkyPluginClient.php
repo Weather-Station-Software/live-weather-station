@@ -33,7 +33,7 @@ trait Client {
      * @since 3.9.0
      */
     protected static function bloomsky_enabled() {
-        return (bool)apply_filters('lws_bloomsky_enabled', false);
+        return (bool)apply_filters('live_weather_station_bloomsky_enabled', false);
     }
 
     /**
@@ -130,7 +130,7 @@ trait Client {
             }
             if ($store) {
                 foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_BSKY_SID)) {
+                    if ($this->insert_ignore_stations_table($station['device_id'], LIVE_WEATHER_STATION_BSKY_SID)) {
                         $station['installed'] = true;
                         Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
                     }
@@ -175,10 +175,10 @@ trait Client {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_BSKY_SID);
+            $weather->compute(LIVE_WEATHER_STATION_BSKY_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_BSKY_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_BSKY_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

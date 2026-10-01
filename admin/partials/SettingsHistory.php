@@ -13,12 +13,12 @@
 <hr/>
 <div class="wrap">
     <h2><?php echo __('Current settings', 'live-weather-station');?></h2>
-    <p><?php echo sprintf(__('The current settings allow %s to store, manipulate and display the following data:', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+    <p><?php echo sprintf(__('The current settings allow %s to store, manipulate and display the following data:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
     <div>
         <div id="wpcom-stats-meta-box-container" class="metabox-holder">
             <div class="postbox-container" style="width: 100%;margin-right: 10px;">
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedHistoryStandard.php'); ?>
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedHistoryExtended.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedHistoryStandard.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedHistoryExtended.php'); ?>
             </div>
         </div>
     </div>

@@ -191,7 +191,7 @@ abstract class Framework {
      */
     public function run() {
         if($this->init()) {
-            run_Live_Weather_Station();
+            live_weather_station_run();
             $this->load($this->available_args());
             $this->generate();
 
@@ -248,7 +248,7 @@ abstract class Framework {
         if ($message == '') {
             $message = 'Error Code ' . $code;
         }
-        echo LWS_PLUGIN_NAME . ' / ' . $message;
+        echo LIVE_WEATHER_STATION_PLUGIN_NAME . ' / ' . $message;
         if (self::may_log(true)) {
             Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
         }

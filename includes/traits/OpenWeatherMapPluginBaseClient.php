@@ -41,11 +41,11 @@ trait BaseClient {
             $raw_data = $owm->getRawWeatherData(6455259, 'metric', 'en', $key, 'json');
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {
-                throw new \Exception('JSON / '.lws_clean_text($raw_data, 200));
+                throw new \Exception('JSON / '.live_weather_station_clean_text($raw_data, 200));
             }
             if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
                 if (array_key_exists('message', $weather)) {
-                    throw new \Exception(lws_clean_text($weather['message'], 200));
+                    throw new \Exception(live_weather_station_clean_text($weather['message'], 200));
                 }
                 else {
                     throw new \Exception('OpenWeatherMap unknown exception');

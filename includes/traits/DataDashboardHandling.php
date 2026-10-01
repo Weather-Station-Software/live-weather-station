@@ -36,12 +36,12 @@ trait Handling {
      * @since 2.0.0
      */
     private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $measurements, $place=null, $last_seen=false) {
-        $device_name = isset($device_name) ? lws_clean_text($device_name, 60) : $device_name;
-        $module_name = isset($module_name) ? lws_clean_text($module_name, 60) : $module_name;
+        $device_name = isset($device_name) ? live_weather_station_clean_text($device_name, 60) : $device_name;
+        $module_name = isset($module_name) ? live_weather_station_clean_text($module_name, 60) : $module_name;
         if (isset($place) && is_array($place)) {
             foreach (array('country', 'city', 'timezone') as $place_key) {
                 if (isset($place[$place_key])) {
-                    $place[$place_key] = lws_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
+                    $place[$place_key] = live_weather_station_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
                 }
             }
         }
@@ -174,7 +174,7 @@ trait Handling {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'firmware';
-        $updates['measure_value'] = LWS_VERSION ;
+        $updates['measure_value'] = LIVE_WEATHER_STATION_VERSION ;
         $this->update_data_table($updates, $timezone);
         // place measurements from device
         if(isset($place) && is_array($place)) {
@@ -297,7 +297,7 @@ trait Handling {
                 $updates['module_name'] = $module_name;
                 $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_pct']);
                 $updates['measure_type'] = 'picture';
-                if ($station_type === LWS_BSKY_SID) {
+                if ($station_type === LIVE_WEATHER_STATION_BSKY_SID) {
                     $updates['measure_value'] = substr(__('View from station', 'live-weather-station'), 0, 50);
                     $this->update_data_table($updates, $timezone);
                     $media = array();
@@ -306,7 +306,7 @@ trait Handling {
                     $media['module_id'] = $module_id;
                     $media['module_type'] = $module_type;
                     $media['item_type'] = 'none';
-                    $media['item_url'] = lws_clean_url(str_replace('http://', 'https://', $measurements['url_pct']));
+                    $media['item_url'] = live_weather_station_clean_url(str_replace('http://', 'https://', $measurements['url_pct']));
                     self::insert_update_table(self::live_weather_station_media_table(), $media);
                 }
             }
@@ -321,7 +321,7 @@ trait Handling {
                     $updates['module_type'] = $module_type;
                     $updates['module_name'] = $module_name;
                     $updates['measure_type'] = 'video_' . $item_type;
-                    if ($station_type === LWS_BSKY_SID) {
+                    if ($station_type === LIVE_WEATHER_STATION_BSKY_SID) {
                         if (count($measurements['video_' . $item_type]) > 0) {
                             $video = end($measurements['video_' . $item_type]);
                             // The timestamp is derived from the file name (vendor data): it must be a date, or the video is ignored.
@@ -339,7 +339,7 @@ trait Handling {
                             $media['module_id'] = $module_id;
                             $media['module_type'] = $module_type;
                             $media['item_type'] = $item_type;
-                            $media['item_url'] = lws_clean_url(str_replace('http://', 'https://', $video));
+                            $media['item_url'] = live_weather_station_clean_url(str_replace('http://', 'https://', $video));
                             self::insert_update_table(self::live_weather_station_media_table(), $media);
                         }
                     }
@@ -370,12 +370,12 @@ trait Handling {
      * @since   1.0.0
      */
     private function get_netatmo_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $measurements, $place, $signal, $firmware, $lastseen, $battery=0, $firstsetup=null, $lastsetup=null, $lastupgrade=null, $is_hc=false) {
-        $device_name = isset($device_name) ? lws_clean_text($device_name, 60) : $device_name;
-        $module_name = isset($module_name) ? lws_clean_text($module_name, 60) : $module_name;
+        $device_name = isset($device_name) ? live_weather_station_clean_text($device_name, 60) : $device_name;
+        $module_name = isset($module_name) ? live_weather_station_clean_text($module_name, 60) : $module_name;
         if (isset($place) && is_array($place)) {
             foreach (array('country', 'city', 'timezone') as $place_key) {
                 if (isset($place[$place_key])) {
-                    $place[$place_key] = lws_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
+                    $place[$place_key] = live_weather_station_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
                 }
             }
         }
@@ -397,11 +397,11 @@ trait Handling {
             }
             if ($is_hc) {
                 $station['station_model'] = 'Netatmo - Healthy Home Coach';
-                $station['station_type'] = LWS_NETATMOHC_SID;
+                $station['station_type'] = LIVE_WEATHER_STATION_NETATMOHC_SID;
             }
             else {
                 $station['station_model'] = 'Netatmo - Personal Weather Station';
-                $station['station_type'] = LWS_NETATMO_SID;
+                $station['station_type'] = LIVE_WEATHER_STATION_NETATMO_SID;
             }
             $is_station = true;
         }
@@ -654,7 +654,7 @@ trait Handling {
         $updates['module_name'] = $module_name;
         $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
         $updates['measure_type'] = 'firmware';
-        $updates['measure_value'] = (is_numeric($firmware) ? $firmware : lws_clean_text($firmware, 60));
+        $updates['measure_value'] = (is_numeric($firmware) ? $firmware : live_weather_station_clean_text($firmware, 60));
         $this->update_data_table($updates, $timezone);
 
         // Additional measurements about temperature

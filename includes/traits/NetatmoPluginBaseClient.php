@@ -190,7 +190,7 @@ trait BaseClient {
                         }
                     }
                 } else {
-                    if ($this->netatmo_type == LWS_NETATMO_SID) {
+                    if ($this->netatmo_type == LIVE_WEATHER_STATION_NETATMO_SID) {
                         Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 900, 'No module found for this station.');
                     }
                 }

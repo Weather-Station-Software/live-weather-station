@@ -18,7 +18,7 @@
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
-function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
+function live_weather_station_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
         $args['tab'] = $tab;
@@ -47,7 +47,7 @@ function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, 
  * @return string The full url of the admin page.
  * @since 3.4.0
  */
-function lws_re_get_admin_page_url($params) {
+function live_weather_station_re_get_admin_page_url($params) {
     $set = array('page', 'tab', 'action', 'service', 'id');
     $args = array();
     foreach ($set as $arg) {
@@ -72,7 +72,7 @@ function lws_re_get_admin_page_url($params) {
  * @return string The locale of the user.
  * @since 3.0.8
  */
-function lws_get_display_locale($user_id = 0) {
+function live_weather_station_get_display_locale($user_id = 0) {
     global $current_user;
     if (!empty($current_user) && $user_id === 0) {
         if ($current_user instanceof WP_User) {
@@ -99,8 +99,8 @@ function lws_get_display_locale($user_id = 0) {
  * @return string the resulting string.
  * @since 3.7.5
  */
-function lws_lcfirst($str) {
-    if (strpos(strtolower(lws_get_display_locale()), 'de') === 0) {
+function live_weather_station_lcfirst($str) {
+    if (strpos(strtolower(live_weather_station_get_display_locale()), 'de') === 0) {
         return ucfirst($str);
     }
     else {
@@ -115,11 +115,11 @@ function lws_lcfirst($str) {
  * @return array The converted array.
  * @since 3.4.0
  */
-function lws_object_to_array($obj) {
+function live_weather_station_object_to_array($obj) {
     $arr = array();
     $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
     foreach ($_arr as $key => $val) {
-        $val = (is_array($val) || is_object($val)) ? lws_object_to_array($val) : $val;
+        $val = (is_array($val) || is_object($val)) ? live_weather_station_object_to_array($val) : $val;
         $arr[$key] = $val;
     }
     return $arr;
@@ -131,7 +131,7 @@ function lws_object_to_array($obj) {
  * @return array The sorted array.
  * @since 3.4.0
  */
-function lws_array_orderby(){
+function live_weather_station_array_orderby(){
     $args = func_get_args();
     $data = array_shift($args);
     foreach ($args as $n => $field) {
@@ -153,7 +153,7 @@ function lws_array_orderby(){
  * @return boolean Result of the comparison.
  * @since 3.4.0
  */
-function lws_array_compare_1($a, $b){
+function live_weather_station_array_compare_1($a, $b){
     $a = (array)$a;
     $b = (array)$b;
     return strcasecmp($a[1], $b[1]);
@@ -167,7 +167,7 @@ function lws_array_compare_1($a, $b){
  * @return array The uniquified array.
  * @since 3.4.0
  */
-function lws_array_super_unique($array, $key){
+function live_weather_station_array_super_unique($array, $key){
     $temp_array = array();
     foreach ($array as &$v) {
         if (!isset($temp_array[$v[$key]]))
@@ -178,24 +178,36 @@ function lws_array_super_unique($array, $key){
 }
 
 /**
+ * Capability required to manage the plugin, filterable by the site.
+ * The former filter name (lws_manage_options_capability) is still honoured so existing customizations keep working.
+ *
+ * @since 3.9.0
+ * @return string The capability.
+ */
+function live_weather_station_manage_capability() {
+    $capability = apply_filters('lws_manage_options_capability', 'manage_options');
+    return apply_filters('live_weather_station_manage_options_capability', $capability);
+}
+
+/**
  * Registers (but don't enqueues) a style asset of the plugin.
  *
  * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
  *
  * @since 3.5.0
  */
-function lws_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
+function live_weather_station_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
     if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LWS_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+        if ($source == LIVE_WEATHER_STATION_ADMIN_URL) {
+            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/admin/' . $file;
         }
         else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/public/' . $file;
         }
         wp_register_style($handle, $file, $deps, null);
     }
     else {
-        wp_register_style($handle, $source . $file, $deps, LWS_VERSION);
+        wp_register_style($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION);
     }
 }
 
@@ -206,18 +218,18 @@ function lws_register_style($handle, $source, $file, $deps = array(), $cdn_avail
  *
  * @since 3.5.0
  */
-function lws_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
+function live_weather_station_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
     if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LWS_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+        if ($source == LIVE_WEATHER_STATION_ADMIN_URL) {
+            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/admin/' . $file;
         }
         else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/public/' . $file;
         }
         wp_register_script($handle, $file, $deps, null, (bool)get_option('live_weather_station_footer_scripts', false));
     }
     else {
-        wp_register_script($handle, $source . $file, $deps, LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
+        wp_register_script($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
     }
 }
 
@@ -227,7 +239,7 @@ function lws_register_script($handle, $source, $file, $deps = array(), $cdn_avai
  *
  * @since 3.5.3
  */
-function lws_font_awesome($all=false) {
+function live_weather_station_font_awesome($all=false) {
     $mode = get_option('live_weather_station_fa_mode');
     if (is_admin()) {
         $mode = 1;
@@ -235,38 +247,38 @@ function lws_font_awesome($all=false) {
     switch ($mode) {
         case 0:                                             // Font Awesome 4 outputted by Weather Station
             wp_enqueue_style('lws-font-awesome-4');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'fa');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fa');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fa');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', false);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', false);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 1:                                             // Font Awesome 5 outputted by Weather Station as CSS
             wp_enqueue_style('lws-font-awesome-5');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 2:                                             // Font Awesome 5 outputted by Weather Station as JS+SVG
@@ -277,20 +289,20 @@ function lws_font_awesome($all=false) {
                 wp_enqueue_script('lws-fa-regular');
                 wp_enqueue_script('lws-fa-solid');
             }
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
         case 3:                                             // Font Awesome 4 outputted by theme or other plugin
@@ -300,20 +312,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'fa');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fa');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fa');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', false);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', false);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 4:                                             // Font Awesome 5 outputted by theme or other plugin as CSS
@@ -323,20 +335,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 5:                                             // Font Awesome 5 outputted by theme or other plugin as JS+SVG
@@ -346,20 +358,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
         case 6:                                             // Font Awesome official plugin
@@ -369,20 +381,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
     }
@@ -401,8 +413,8 @@ function lws_font_awesome($all=false) {
  * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
  */
 
-function is_lws_active() {
-    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ) ) || is_lws_active_for_network();
+function live_weather_station_is_active() {
+    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ) ) || live_weather_station_is_active_for_network();
 }
 
 /**
@@ -417,7 +429,7 @@ function is_lws_active() {
  *
  * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
  */
-function is_lws_active_for_network() {
+function live_weather_station_is_active_for_network() {
     if ( !is_multisite() )
         return false;
 
@@ -437,9 +449,9 @@ function is_lws_active_for_network() {
  * @param string $in_locale Optional. Format locale.
  * @return string Display name of the locale in the format appropriate for $in_locale.
  */
-function lws_get_locale_name($locale, $in_locale = null) {
+function live_weather_station_get_locale_name($locale, $in_locale = null) {
     $result = $locale;
-    if (LWS_I18N_LOADED) {
+    if (LIVE_WEATHER_STATION_I18N_LOADED) {
         $result = \Locale::getDisplayName($locale, $in_locale);
     }
     return $result;
@@ -454,9 +466,9 @@ function lws_get_locale_name($locale, $in_locale = null) {
  * @param string $in_locale Optional. Format locale.
  * @return string Display name of the region for the $locale in the format appropriate for $in_locale.
  */
-function lws_get_region_name($locale, $in_locale = null) {
+function live_weather_station_get_region_name($locale, $in_locale = null) {
     $result = $locale;
-    if (LWS_I18N_LOADED) {
+    if (LIVE_WEATHER_STATION_I18N_LOADED) {
         $result = \Locale::getDisplayRegion($locale, $in_locale);
     }
     return $result;
@@ -467,10 +479,10 @@ function lws_get_region_name($locale, $in_locale = null) {
  *
  * @since 3.7.0
  */
-function lws_send_alert_message() {
-    if (defined('LWS_WUG_ALERT_TO') && defined('LWS_WUG_ALERT_SUBJECT') && defined('LWS_WUG_ALERT_MESSAGE')) {
+function live_weather_station_send_alert_message() {
+    if (defined('LIVE_WEATHER_STATION_WUG_ALERT_TO') && defined('LIVE_WEATHER_STATION_WUG_ALERT_SUBJECT') && defined('LIVE_WEATHER_STATION_WUG_ALERT_MESSAGE')) {
         if (function_exists('wp_mail')) {
-            wp_mail(LWS_WUG_ALERT_TO, LWS_WUG_ALERT_SUBJECT, LWS_WUG_ALERT_MESSAGE);
+            wp_mail(LIVE_WEATHER_STATION_WUG_ALERT_TO, LIVE_WEATHER_STATION_WUG_ALERT_SUBJECT, LIVE_WEATHER_STATION_WUG_ALERT_MESSAGE);
         }
     }
 }
@@ -483,7 +495,7 @@ function lws_send_alert_message() {
  * @return string The sanitized value.
  * @since 3.8.15
  */
-function lws_clean_text($value, $max_length=100) {
+function live_weather_station_clean_text($value, $max_length=100) {
     if (!is_scalar($value)) {
         return '';
     }
@@ -498,7 +510,7 @@ function lws_clean_text($value, $max_length=100) {
  * @return int|float|string|null The numeric value.
  * @since 3.8.15
  */
-function lws_clean_number($value, $default=null) {
+function live_weather_station_clean_number($value, $default=null) {
     if ($value === null || $value === '') {
         return $value;
     }
@@ -512,7 +524,7 @@ function lws_clean_number($value, $default=null) {
  * @return string The sanitized URL, empty string if not acceptable.
  * @since 3.8.15
  */
-function lws_clean_url($value) {
+function live_weather_station_clean_url($value) {
     if (!is_scalar($value)) {
         return '';
     }
@@ -526,7 +538,7 @@ function lws_clean_url($value) {
  * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_begin_script($jsInitId='') {
+function live_weather_station_print_begin_script($jsInitId='') {
     $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '<script language="javascript" type="text/javascript">';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
@@ -548,7 +560,7 @@ function lws_print_begin_script($jsInitId='') {
  * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_end_script($jsInitId='') {
+function live_weather_station_print_end_script($jsInitId='') {
     $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
@@ -571,7 +583,7 @@ function lws_print_end_script($jsInitId='') {
  * @return string The sanitized size.
  * @since 3.7.0
  */
-function lws_sanitize_width_height_field($s, $u=array('px')) {
+function live_weather_station_sanitize_width_height_field($s, $u=array('px')) {
     $s = trim(strtolower(sanitize_text_field($s)));
     switch ($s) {
         case 'auto':
@@ -603,8 +615,8 @@ function lws_sanitize_width_height_field($s, $u=array('px')) {
  * @return string The sanitized width.
  * @since 3.7.0
  */
-function lws_sanitize_width_field($w) {
-    return lws_sanitize_width_height_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
+function live_weather_station_sanitize_width_field($w) {
+    return live_weather_station_sanitize_width_height_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
 }
 
 /**
@@ -614,8 +626,8 @@ function lws_sanitize_width_field($w) {
  * @return string The sanitized width.
  * @since 3.7.0
  */
-function lws_sanitize_height_field($h) {
-    return lws_sanitize_width_height_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
+function live_weather_station_sanitize_height_field($h) {
+    return live_weather_station_sanitize_width_height_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
 }
 
 
@@ -626,7 +638,7 @@ function lws_sanitize_height_field($h) {
  * @return string The adapted line.
  * @since 3.7.5
  */
-function lws_phpinfo_line($i) {
+function live_weather_station_phpinfo_line($i) {
     return ".phpinfodisplay " . preg_replace( '/,/', ',.phpinfodisplay ', $i);
 }
 
@@ -637,7 +649,7 @@ function lws_phpinfo_line($i) {
  * @return string The converted string.
  * @since 3.7.5
  */
-function lws_iconv($string) {
+function live_weather_station_iconv($string) {
     $string = remove_accents($string);
     $string = str_replace('₂', '2', $string);
     $string = str_replace('₃', '3', $string);
@@ -660,7 +672,7 @@ function lws_iconv($string) {
  * @return int|boolean The timestamp, or false.
  * @since 3.9.0
  */
-function lws_sun_timestamp($time, $lat, $lon, $zenith, $sunset = false) {
+function live_weather_station_sun_timestamp($time, $lat, $lon, $zenith, $sunset = false) {
     $lat = (float)$lat;
     $lon = (float)$lon;
     $altit = 90 - (float)$zenith;
@@ -726,7 +738,7 @@ function lws_sun_timestamp($time, $lat, $lon, $zenith, $sunset = false) {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function lws__($text, $domain='default') {
+function live_weather_station__($text, $domain='default') {
     return $text;
 }
 
@@ -741,7 +753,7 @@ function lws__($text, $domain='default') {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function lws_n($single, $plural, $number, $domain = 'default' ) {
+function live_weather_station_n($single, $plural, $number, $domain = 'default' ) {
     return _n($single, $plural, $number, $domain);
 }
 
@@ -754,7 +766,7 @@ function lws_n($single, $plural, $number, $domain = 'default' ) {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function esc_html_lws__($text, $domain='default') {
+function live_weather_station_esc_html__($text, $domain='default') {
     return esc_html($text);
 }
 
@@ -767,7 +779,7 @@ function esc_html_lws__($text, $domain='default') {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function esc_html_e_lws__($text, $domain='default') {
+function live_weather_station_esc_html_e__($text, $domain='default') {
     echo esc_html($text);
 }
 
@@ -780,9 +792,9 @@ function esc_html_e_lws__($text, $domain='default') {
  * @return bool False if value was not set and true if value was set.
  * @since 3.8.0
  */
-function lws_meta_cache($name, $value, $expiration=0) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
+function live_weather_station_meta_cache($name, $value, $expiration=0) {
+    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
+        if (LIVE_WEATHER_STATION_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
             $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
             if (!file_exists($cache_dir)) {
                 try {
@@ -827,13 +839,13 @@ function lws_meta_cache($name, $value, $expiration=0) {
  *
  * @since 3.8.0
  */
-function lws_value_has_object($value) {
+function live_weather_station_value_has_object($value) {
     if (is_object($value)) {
         return true;
     }
     if (is_array($value)) {
         foreach ($value as $item) {
-            if (lws_value_has_object($item)) {
+            if (live_weather_station_value_has_object($item)) {
                 return true;
             }
         }
@@ -849,9 +861,9 @@ function lws_value_has_object($value) {
  * @return bool|mixed False if value was not set and value if it was set.
  * @since 3.8.0
  */
-function lws_meta_uncache($name, $expiration=0) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
+function live_weather_station_meta_uncache($name, $expiration=0) {
+    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
+        if (LIVE_WEATHER_STATION_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
             $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
             $blog_id = get_current_blog_id();
             $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
@@ -863,10 +875,10 @@ function lws_meta_uncache($name, $expiration=0) {
                         return false;
                     }
                     else {
-                        // Decision: the experimental file cache (LWS_FILE_CACHE, off by default) is expected to hold arrays/scalars only.
+                        // Decision: the experimental file cache (LIVE_WEATHER_STATION_FILE_CACHE, off by default) is expected to hold arrays/scalars only.
                         // Objects are never instantiated when reading (security): a cached object is treated as a cache miss.
                         $value = unserialize((string)file_get_contents($cache_file), array('allowed_classes' => false));
-                        if (lws_value_has_object($value)) {
+                        if (live_weather_station_value_has_object($value)) {
                             @unlink($cache_file);
                             return false;
                         }
@@ -897,9 +909,9 @@ function lws_meta_uncache($name, $expiration=0) {
  * @return bool True if it was removed, false otherwise.
  * @since 3.8.0
  */
-function lws_meta_rmcache($name) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE) {
+function live_weather_station_meta_rmcache($name) {
+    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
+        if (LIVE_WEATHER_STATION_FILE_CACHE) {
             $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
             $blog_id = get_current_blog_id();
             $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
@@ -932,10 +944,10 @@ function lws_meta_rmcache($name) {
  * @return int Count of removed items.
  * @since 3.8.0
  */
-function lws_meta_flcache($pref, $expiration=0) {
+function live_weather_station_meta_flcache($pref, $expiration=0) {
     $result = 0;
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE) {
+    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
+        if (LIVE_WEATHER_STATION_FILE_CACHE) {
             $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
             $blog_id = get_current_blog_id();
             $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $pref . '*');
@@ -954,13 +966,13 @@ function lws_meta_flcache($pref, $expiration=0) {
  * Exempt: logged-in users able to manage options or edit posts (administrators, editors, authors, contributors).
  *
  * IMPORTANT for sites behind a reverse proxy / CDN / load balancer: REMOTE_ADDR is then the proxy address, so all
- * visitors share the same counter. Supply the real client IP with the 'lws_public_rate_limit_ip' filter
+ * visitors share the same counter. Supply the real client IP with the 'live_weather_station_public_rate_limit_ip' filter
  * (e.g. return $_SERVER['HTTP_CF_CONNECTING_IP'] when you trust that header), or raise/disable the limit.
  *
  * Filters:
- * - 'lws_public_rate_limit' (int $limit, string $action): max requests per window; 0 disables the limit.
- * - 'lws_public_rate_window' (int $seconds, string $action): window length, default 60.
- * - 'lws_public_rate_limit_ip' (string $ip, string $action): client IP used as the key; default REMOTE_ADDR
+ * - 'live_weather_station_public_rate_limit' (int $limit, string $action): max requests per window; 0 disables the limit.
+ * - 'live_weather_station_public_rate_window' (int $seconds, string $action): window length, default 60.
+ * - 'live_weather_station_public_rate_limit_ip' (string $ip, string $action): client IP used as the key; default REMOTE_ADDR
  *   (forwarded headers are never trusted by default since they can be forged).
  *
  * Storage: object cache (atomic increment) when a persistent one is in use; otherwise a transient which is only
@@ -969,17 +981,17 @@ function lws_meta_flcache($pref, $expiration=0) {
  * @param string $action The endpoint identifier.
  * @since 3.8.15
  */
-function lws_public_rate_limit($action) {
-    if (current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) || current_user_can('edit_posts')) {
+function live_weather_station_public_rate_limit($action) {
+    if (current_user_can(live_weather_station_manage_capability()) || current_user_can('edit_posts')) {
         return;
     }
-    $limit = (int)apply_filters('lws_public_rate_limit', 120, $action);
+    $limit = (int)apply_filters('live_weather_station_public_rate_limit', 120, $action);
     if ($limit <= 0) {
         return;
     }
-    $window = max(1, (int)apply_filters('lws_public_rate_window', 60, $action));
+    $window = max(1, (int)apply_filters('live_weather_station_public_rate_window', 60, $action));
     $ip = isset($_SERVER['REMOTE_ADDR']) ? (string)$_SERVER['REMOTE_ADDR'] : '';
-    $ip = (string)apply_filters('lws_public_rate_limit_ip', $ip, $action);
+    $ip = (string)apply_filters('live_weather_station_public_rate_limit_ip', $ip, $action);
     $key = 'lws_rl_' . md5($ip . '|' . $action . '|' . (int)floor(time() / $window));
     if (function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache()) {
         wp_cache_add($key, 0, 'lws_rl', $window * 2);

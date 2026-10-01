@@ -38,11 +38,12 @@ invocations to instructions until such tooling actually exists here.
 - One-liner pointer to `.claude/ARCHITECTURE.md` for the full repo layout.
 - Namespace root: `WeatherStation\` — every class lives under it
   (`WeatherStation\System\...`, `WeatherStation\UI\...`,
-  `WeatherStation\Data\...`, etc.). There is no `{{FUNCTION_PREFIX}}_`-style
-  global function prefix; the handful of procedural bootstrap functions in
-  `live-weather-station.php` and `init.php` use the historical
-  `..._Live_Weather_Station` suffix instead — keep that convention for any
-  new top-level bootstrap function, don't switch to a prefix.
+  `WeatherStation\Data\...`, etc.).
+- Global names (functions, constants, public hooks) use the prefix
+  `live_weather_station_` (constants: `LIVE_WEATHER_STATION_`), bootstrap
+  functions included (`live_weather_station_run()`,
+  `live_weather_station_activate()`...). Never a three-letter prefix: the
+  wordpress.org guidance rejects it. Keep this for any new global name.
 - Text-domain: `live-weather-station`.
 
 ## Files never to modify

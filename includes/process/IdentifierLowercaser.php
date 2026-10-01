@@ -58,7 +58,7 @@ class IdentifierLowercaser extends Process {
      * @since 3.6.3
      */
     protected function description() {
-        return sprintf(__('No description.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('No description.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**

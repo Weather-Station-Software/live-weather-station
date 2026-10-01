@@ -57,7 +57,7 @@ class ProcessManager {
         if (!is_string($name) || !preg_match('/^[A-Za-z0-9_]{1,80}$/', $name) || $name === 'Process') {
             return false;
         }
-        if (!file_exists(LWS_INCLUDES_DIR . 'process/' . $name . '.php')) {
+        if (!file_exists(LIVE_WEATHER_STATION_INCLUDES_DIR . 'process/' . $name . '.php')) {
             return false;
         }
         return is_subclass_of(self::$namespace . $name, self::$namespace . 'Process');

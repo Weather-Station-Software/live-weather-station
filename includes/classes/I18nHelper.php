@@ -40,7 +40,7 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct() {
-        $this->locale = lws_get_display_locale();
+        $this->locale = live_weather_station_get_display_locale();
         if ('en_US' === $this->locale) {
             $this->reset_partial_translation();
         }
@@ -87,7 +87,7 @@ class Handling {
            return false;
        }
        else {
-           return (((EnvManager::is_plugin_in_production_mode() && $this->percent_translated < $this->percent_min) || !EnvManager::is_plugin_in_production_mode()) && (lws_get_display_locale() == get_locale()));
+           return (((EnvManager::is_plugin_in_production_mode() && $this->percent_translated < $this->percent_min) || !EnvManager::is_plugin_in_production_mode()) && (live_weather_station_get_display_locale() == get_locale()));
        }
     }
 
@@ -122,7 +122,7 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . lws_get_display_locale() . '.mo';
+        return LIVE_WEATHER_STATION_LANGUAGES_DIR . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . live_weather_station_get_display_locale() . '.mo';
     }
 
     /**
@@ -136,7 +136,7 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        $target = LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
+        $target = LIVE_WEATHER_STATION_LANGUAGES_DIR . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
         $files = glob($target);
         $result = array_map('unlink', (is_array($files) ? $files : array()));
         $ok = true;
@@ -177,7 +177,7 @@ class Handling {
                 return false;
             }
             $file = download_url($url, 30);
-            $target .= LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
+            $target .= LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
             if (is_wp_error($file)) {
                 Logger::error($this->service_name, null, null, null, null, null, 300, 'Unable to download ' . $this->locale_name . ' translation file from WordPress.org. Error was: ' . substr(sanitize_text_field(implode(' / ', $file->get_error_messages())), 0, 300));
                 return false;
@@ -217,7 +217,7 @@ class Handling {
                 if (!EnvManager::is_plugin_in_production_mode()) {
                     $branch = 'dev';
                 }
-                if ($this->download_mo_file(LWS_LANGUAGES_DIR, $branch)) {
+                if ($this->download_mo_file(LIVE_WEATHER_STATION_LANGUAGES_DIR, $branch)) {
                     Cache::set_i18n('last_modified_' . $this->locale, $this->last_modified);
                 }
             }
@@ -254,7 +254,7 @@ class Handling {
             $message = $s . ' ' . __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
             $help = InlineHelp::get(-10, '%s', __('see here', 'live-weather-station'));
         }
-        return sprintf($message, $locale, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
+        return sprintf($message, $locale, LIVE_WEATHER_STATION_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
     }
 
     /**
@@ -296,11 +296,11 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = '/dev';
         }
-        $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . $branch;
+        $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . $branch;
         try {
             Quota::verify('WordPress.org', 'GET');
             $args = array();
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
             $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
             $args['limit_response_size'] = 2097152;
             $resp = wp_remote_get($api_url, $args);

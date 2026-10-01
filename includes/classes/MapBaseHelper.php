@@ -132,10 +132,10 @@ abstract class BaseHandling {
             $this->map_name = sanitize_text_field($_POST['common-name']);
         }
         if (array_key_exists('common-width', $_POST)) {
-            $params['common']['width'] = lws_sanitize_width_field($_POST['common-width']);
+            $params['common']['width'] = live_weather_station_sanitize_width_field($_POST['common-width']);
         }
         if (array_key_exists('common-height', $_POST)) {
-            $params['common']['height'] = lws_sanitize_height_field($_POST['common-height']);
+            $params['common']['height'] = live_weather_station_sanitize_height_field($_POST['common-height']);
         }
         if (array_key_exists('common-loc_zoom', $_POST)) {
             $i = (int)sanitize_text_field($_POST['common-loc_zoom']);
@@ -222,7 +222,7 @@ abstract class BaseHandling {
         if ($this->map_params['marker']['type'] != 'none') {
             wp_enqueue_style('lws-weather-icons');
             wp_enqueue_style('lws-weather-icons-wind');
-            lws_font_awesome();
+            live_weather_station_font_awesome();
         }
         $result .= $this->specific_resources();
         return $result;
@@ -411,8 +411,8 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_container() {
-        $height = ($this->size === 'auto' ? lws_sanitize_height_field($this->map_params['common']['height']) : Guard::css_size($this->size, '100px'));
-        $width = ($this->size === 'auto' ? lws_sanitize_width_field($this->map_params['common']['width']) : '100%');
+        $height = ($this->size === 'auto' ? live_weather_station_sanitize_height_field($this->map_params['common']['height']) : Guard::css_size($this->size, '100px'));
+        $width = ($this->size === 'auto' ? live_weather_station_sanitize_width_field($this->map_params['common']['width']) : '100%');
         $result = '<div id="' . esc_attr($this->uniq) . '" class="lws-map" style="width:' . esc_attr($width) . ';height:' . esc_attr($height) . ';">' . PHP_EOL;
         $result .= $this->specific_container() . PHP_EOL;
         $result .= '</div>';
@@ -435,11 +435,11 @@ abstract class BaseHandling {
      */
     protected function output_script() {
         $jsInitId = md5(random_bytes(18));
-        $result = lws_print_begin_script($jsInitId);
+        $result = live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         $result .= $this->specific_script();
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -709,9 +709,9 @@ abstract class BaseHandling {
                             break;
                         case 'station':
                             $content .= '<div class="subsubtitle">' . esc_html($station['station_model']) . '</div>';
-                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAR . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
                             break;
                     }
 
@@ -730,9 +730,9 @@ abstract class BaseHandling {
                             $content .= '<div class="values">' . $moonrise . '&nbsp;<i class="wi fa-fw wi-night-clear" style="font-size: 16px;"></i>&nbsp;' . $moonset . '</div>';
                             break;
                         case 'station':
-                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAR . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
                             break;
                     }
                     break;

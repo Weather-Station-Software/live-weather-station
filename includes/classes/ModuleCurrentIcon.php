@@ -39,7 +39,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'icon';
         $this->module_name = ucfirst(__('icon data', 'live-weather-station'));
         $this->module_hint = __('Display current data as icon.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }
@@ -102,7 +102,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_color_picker('current-icon-measurements-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
         $jsInitId = md5(random_bytes(18));
-        $content .= lws_print_begin_script($jsInitId);
+        $content .= live_weather_station_print_begin_script($jsInitId);
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -126,7 +126,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= lws_print_end_script($jsInitId);
+        $content .= live_weather_station_print_end_script($jsInitId);
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

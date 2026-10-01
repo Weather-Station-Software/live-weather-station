@@ -281,8 +281,8 @@ class Manager {
     public static function server_full_information() {
         // ip-api.com free tier is plain http only: the public IP of the site would travel in clear and the answer
         // could be forged. So the lookup is opt-in (option 'live_weather_station_hoster_lookup' or the
-        // 'lws_hoster_lookup_enabled' filter), off by default.
-        if (!apply_filters('lws_hoster_lookup_enabled', (bool)get_option('live_weather_station_hoster_lookup', 0))) {
+        // 'live_weather_station_hoster_lookup_enabled' filter), off by default.
+        if (!apply_filters('live_weather_station_hoster_lookup_enabled', (bool)get_option('live_weather_station_hoster_lookup', 0))) {
             return false;
         }
         if ($result = get_transient('lws_server_location')) {
@@ -296,7 +296,7 @@ class Manager {
             }
             $query = 'http://ip-api.com/json/' . rawurlencode($ip);
             $args = array();
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
             $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
             $args['redirection'] = 0;
             $args['limit_response_size'] = 65536;
@@ -435,7 +435,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function is_plugin_in_dev_mode() {
-        return (strpos(LWS_VERSION, 'dev') > 0);
+        return (strpos(LIVE_WEATHER_STATION_VERSION, 'dev') > 0);
     }
 
     /**
@@ -444,7 +444,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function is_plugin_in_rc_mode() {
-        return (strpos(LWS_VERSION, 'rc') > 0);
+        return (strpos(LIVE_WEATHER_STATION_VERSION, 'rc') > 0);
     }
 
     /**
@@ -463,7 +463,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function major_version($version = LWS_VERSION) {
+    public static function major_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, 0, strpos($version, '.'));
         } catch (\Exception $ex) {
@@ -479,7 +479,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function minor_version($version = LWS_VERSION) {
+    public static function minor_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, 0, strpos($result, '.'));
@@ -496,7 +496,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function patch_version($version = LWS_VERSION) {
+    public static function patch_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, strpos($result, '.') + 1, 1000);
@@ -647,7 +647,7 @@ class Manager {
             case 'rhg': $result = 'Rohingya' ; break;
             case 'szl': $result = 'Silesian' ; break;
             case 'twd': $result = 'Twents' ; break;
-            default: $result = lws_get_locale_name($id, lws_get_display_locale());
+            default: $result = live_weather_station_get_locale_name($id, live_weather_station_get_display_locale());
 
         }
         return $result;
@@ -727,7 +727,7 @@ class Manager {
             $result = '-';
         }
         else {
-            $result = lws_get_region_name('-'.$id, lws_get_display_locale());
+            $result = live_weather_station_get_region_name('-'.$id, live_weather_station_get_display_locale());
         }
         return $result;
     }
@@ -738,7 +738,7 @@ class Manager {
      * @since 3.5.3
      */
     public static function is_locale_operational() {
-        $t = lws_get_region_name('-FR', lws_get_display_locale());
+        $t = live_weather_station_get_region_name('-FR', live_weather_station_get_display_locale());
         return $t != 'FR';
     }
 
@@ -766,7 +766,7 @@ class Manager {
             $set[$id] = $name;
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(lws_get_display_locale());
+            $collator = new \Collator(live_weather_station_get_display_locale());
             $collator->asort($set);
         }
         else {
@@ -802,7 +802,7 @@ class Manager {
             $result = ((self::major_version() != self::major_version($old)) || (self::minor_version() != self::minor_version($old)));
         }
         else {
-            $result = ($old != LWS_VERSION);
+            $result = ($old != LIVE_WEATHER_STATION_VERSION);
         }
         return $result;
     }
@@ -865,7 +865,7 @@ class Manager {
      * @since 3.1.3
      */
     public static function lws_auto_update($update, $item) {
-        if ((is_object($item) && isset($item->slug) && $item->slug == LWS_PLUGIN_SLUG) && self::is_autoupdatable()){
+        if ((is_object($item) && isset($item->slug) && $item->slug == LIVE_WEATHER_STATION_PLUGIN_SLUG) && self::is_autoupdatable()){
             return true;
         }
         else {
@@ -901,7 +901,7 @@ class Manager {
      * @since 3.5.4
      */
     public static function is_php_version_uptodate() {
-        return (version_compare(PHP_VERSION, LWS_MINIMUM_PHP_VERSION, '>='));
+        return (version_compare(PHP_VERSION, LIVE_WEATHER_STATION_MINIMUM_PHP_VERSION, '>='));
     }
 
     /**
@@ -1063,7 +1063,7 @@ class Manager {
      */
     public static function is_wp_version_uptodate() {
         global $wp_version;
-        return (version_compare($wp_version, LWS_MINIMUM_WP_VERSION) >= 0);
+        return (version_compare($wp_version, LIVE_WEATHER_STATION_MINIMUM_WP_VERSION) >= 0);
     }
 
     /**
@@ -1075,7 +1075,7 @@ class Manager {
         global $_wp_admin_css_colors;
         $key = get_user_meta(get_current_user_id(), 'admin_color', true);
         if (array_key_exists($key, $_wp_admin_css_colors)) {
-            $c = lws_object_to_array($_wp_admin_css_colors[$key]);
+            $c = live_weather_station_object_to_array($_wp_admin_css_colors[$key]);
             $c['key'] = $key;
             return $c;
         }
@@ -1121,9 +1121,9 @@ class Manager {
      * @since 3.0.0
      */
     public static function weatherstation_version_text() {
-        $s = LWS_PLUGIN_NAME . ' ' . LWS_VERSION;
-        if (defined('LWS_CODENAME')) {
-            $s .= ' ' . LWS_CODENAME;
+        $s = LIVE_WEATHER_STATION_PLUGIN_NAME . ' ' . LIVE_WEATHER_STATION_VERSION;
+        if (defined('LIVE_WEATHER_STATION_CODENAME')) {
+            $s .= ' ' . LIVE_WEATHER_STATION_CODENAME;
         }
         return $s;
     }
@@ -1134,7 +1134,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function weatherstation_version_id() {
-        return 'WeatherStation/' . LWS_VERSION;
+        return 'WeatherStation/' . LIVE_WEATHER_STATION_VERSION;
     }
 
     /**
@@ -1342,7 +1342,7 @@ class Manager {
      * @since 3.4.1
      */
     public static function get_multilang_language_id() {
-        $result = lws_get_display_locale();
+        $result = live_weather_station_get_display_locale();
         if (self::is_polylang_installed()) {
             $result = pll_current_language();
         }

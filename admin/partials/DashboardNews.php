@@ -16,7 +16,7 @@ try {
 }
 $maxitems = 0;
 if (isset($rss) && !is_wp_error($rss)) {
-    setlocale(LC_ALL, lws_get_display_locale());
+    setlocale(LC_ALL, live_weather_station_get_display_locale());
     $maxitems = $rss->get_item_quantity(4);
     if (isset($maxitems)) {
         if ($maxitems > 0) {

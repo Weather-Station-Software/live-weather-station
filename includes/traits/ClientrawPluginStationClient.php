@@ -106,7 +106,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'firmware';
             if (strpos($weather[count($weather)-1], '!!') !== false) {
-                $updates['measure_value'] = lws_clean_text(str_replace('!!', '', $weather[count($weather)-1]), 60);
+                $updates['measure_value'] = live_weather_station_clean_text(str_replace('!!', '', $weather[count($weather)-1]), 60);
             }
             else {
                 $updates['measure_value'] = 0;
@@ -536,7 +536,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = lws_clean_text($raw_data, 200);
+            $result = live_weather_station_clean_text($raw_data, 200);
         }
         elseif (strpos($raw_data, '2345 ') != 1) {
             $result = __('The source you specified is not in the correct format or is corrupted.', 'live-weather-station');
@@ -632,10 +632,10 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_RAW_SID);
+            $weather->compute(LIVE_WEATHER_STATION_RAW_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_RAW_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_RAW_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

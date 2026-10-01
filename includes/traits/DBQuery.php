@@ -213,7 +213,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -247,7 +247,7 @@ trait Query {
             }
             return $result;
         } catch (\Exception $ex) {
-            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station') . ' ' . __('is not running...', 'live-weather-station'), 'device_id' => 'N/A');
+            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station') . ' ' . __('is not running...', 'live-weather-station'), 'device_id' => 'N/A');
         }
     }
 
@@ -271,7 +271,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -295,7 +295,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -1648,7 +1648,7 @@ trait Query {
     protected function get_owm_stations_list() {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=".LWS_LOC_SID;
+        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=".LIVE_WEATHER_STATION_LOC_SID;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1735,14 +1735,14 @@ trait Query {
     protected function get_loc_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_LOC_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_LOC_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1780,14 +1780,14 @@ trait Query {
     protected function get_raw_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_RAW_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_RAW_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1827,14 +1827,14 @@ trait Query {
     protected function get_piou_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_PIOU_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_PIOU_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1873,14 +1873,14 @@ trait Query {
     protected function get_real_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_REAL_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_REAL_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1920,14 +1920,14 @@ trait Query {
     protected function get_wflw_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_WFLW_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_WFLW_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1966,14 +1966,14 @@ trait Query {
     protected function get_wlink_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_WLINK_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_WLINK_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -2012,14 +2012,14 @@ trait Query {
     protected function get_ambt_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_AMBT_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_AMBT_SID;
             $nothing['station_name'] = '';
             $nothing['station_model'] = 'N/A';
             $nothing['loc_city'] = '';
@@ -2059,14 +2059,14 @@ trait Query {
     protected function get_txt_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', lws_get_display_locale());
+            $cc = explode ('_', live_weather_station_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = LWS_TXT_SID;
+            $nothing['station_type'] = LIVE_WEATHER_STATION_TXT_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -2206,7 +2206,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_netatmo_stations() {
-        return $this->get_all_stations_by_type(LWS_NETATMO_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_NETATMO_SID);
     }
 
     /**
@@ -2215,7 +2215,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_netatmo_stations() {
-        $this->clear_all_stations_by_type(LWS_NETATMO_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_NETATMO_SID);
     }
 
     /**
@@ -2225,7 +2225,7 @@ trait Query {
      * @since 3.1.0
      */
     protected function get_all_netatmo_hc_stations() {
-        return $this->get_all_stations_by_type(LWS_NETATMOHC_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_NETATMOHC_SID);
     }
 
     /**
@@ -2234,7 +2234,7 @@ trait Query {
      * @since 3.1.0
      */
     protected function clear_all_netatmo_hc_stations() {
-        $this->clear_all_stations_by_type(LWS_NETATMOHC_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_NETATMOHC_SID);
     }
 
     /**
@@ -2244,7 +2244,7 @@ trait Query {
      * @since 3.6.0
      */
     protected function get_all_bsky_stations() {
-        return $this->get_all_stations_by_type(LWS_BSKY_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_BSKY_SID);
     }
 
     /**
@@ -2253,7 +2253,7 @@ trait Query {
      * @since 3.6.0
      */
     protected function clear_all_bsky_stations() {
-        $this->clear_all_stations_by_type(LWS_BSKY_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_BSKY_SID);
     }
 
     /**
@@ -2263,7 +2263,7 @@ trait Query {
      * @since 3.6.0
      */
     protected function get_all_ambt_stations() {
-        return $this->get_all_stations_by_type(LWS_AMBT_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_AMBT_SID);
     }
 
     /**
@@ -2272,7 +2272,7 @@ trait Query {
      * @since 3.6.0
      */
     protected function clear_all_ambt_stations() {
-        $this->clear_all_stations_by_type(LWS_AMBT_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_AMBT_SID);
     }
 
     /**
@@ -2282,7 +2282,7 @@ trait Query {
      * @since 2.0.0
      */
     protected function get_all_owm_stations() {
-        return $this->get_all_stations_by_type(LWS_LOC_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_LOC_SID);
     }
 
     /**
@@ -2291,7 +2291,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_owm_stations() {
-        $this->clear_all_stations_by_type(LWS_LOC_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_LOC_SID);
     }
 
     /**
@@ -2300,7 +2300,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_owm_id_stations() {
-        $this->clear_all_stations_by_type(LWS_OWM_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_OWM_SID);
     }
 
     /**
@@ -2309,7 +2309,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_wug_id_stations() {
-        $this->clear_all_stations_by_type(LWS_WUG_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_WUG_SID);
     }
 
     /**
@@ -2319,7 +2319,7 @@ trait Query {
      * @since 3.3.0
      */
     protected function get_all_wflw_id_stations() {
-        return $this->get_all_stations_by_type(LWS_WFLW_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_WFLW_SID);
     }
 
     /**
@@ -2329,7 +2329,7 @@ trait Query {
      * @since 3.8.0
      */
     protected function get_all_wlink_id_stations() {
-        return $this->get_all_stations_by_type(LWS_WLINK_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_WLINK_SID);
     }
 
     /**
@@ -2339,7 +2339,7 @@ trait Query {
      * @since 3.3.0
      */
     protected function get_all_piou_id_stations() {
-        return $this->get_all_stations_by_type(LWS_PIOU_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_PIOU_SID);
     }
 
     /**
@@ -2348,7 +2348,7 @@ trait Query {
      * @since 3.3.0
      */
     protected function clear_all_wflw_id_stations() {
-        $this->clear_all_stations_by_type(LWS_WFLW_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_WFLW_SID);
     }
 
     /**
@@ -2358,7 +2358,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_clientraw_id_stations() {
-        return $this->get_all_stations_by_type(LWS_RAW_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_RAW_SID);
     }
 
     /**
@@ -2367,7 +2367,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_clientraw_id_stations() {
-        $this->clear_all_stations_by_type(LWS_RAW_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_RAW_SID);
     }
 
     /**
@@ -2377,7 +2377,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_realtime_id_stations() {
-        return $this->get_all_stations_by_type(LWS_REAL_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_REAL_SID);
     }
 
     /**
@@ -2386,7 +2386,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_realtime_id_stations() {
-        $this->clear_all_stations_by_type(LWS_REAL_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_REAL_SID);
     }
 
     /**
@@ -2396,7 +2396,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_stickertags_id_stations() {
-        return $this->get_all_stations_by_type(LWS_TXT_SID);
+        return $this->get_all_stations_by_type(LIVE_WEATHER_STATION_TXT_SID);
     }
 
     /**
@@ -2405,7 +2405,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_stickertags_id_stations() {
-        $this->clear_all_stations_by_type(LWS_TXT_SID);
+        $this->clear_all_stations_by_type(LIVE_WEATHER_STATION_TXT_SID);
     }
 
     /**
@@ -2741,7 +2741,7 @@ trait Query {
     }
 
     /**
-     * Remove the credentials embedded in a station service_id: WeatherLink stores "id|token|password" (LWS_SERVICE_SEPARATOR),
+     * Remove the credentials embedded in a station service_id: WeatherLink stores "id|token|password" (LIVE_WEATHER_STATION_SERVICE_SEPARATOR),
      * file based stations may store "scheme://user:password@host/path".
      *
      * @param mixed $service_id The service_id of a station.
@@ -2750,12 +2750,12 @@ trait Query {
      */
     public static function strip_service_credentials($service_id) {
         $service_id = (string)$service_id;
-        if (strpos($service_id, LWS_SERVICE_SEPARATOR) !== false) {
-            $parts = explode(LWS_SERVICE_SEPARATOR, $service_id);
+        if (strpos($service_id, LIVE_WEATHER_STATION_SERVICE_SEPARATOR) !== false) {
+            $parts = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $service_id);
             for ($i = 1; $i < count($parts); $i++) {
                 $parts[$i] = '';
             }
-            return implode(LWS_SERVICE_SEPARATOR, $parts);
+            return implode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $parts);
         }
         $stripped = preg_replace('#^([a-z][a-z0-9+.\-]*://)[^/\s]*@#i', '$1', $service_id);
         return is_string($stripped) ? $stripped : $service_id;
@@ -2936,7 +2936,7 @@ trait Query {
                     // Blanked credentials never overwrite the existing ones.
                     $row['service_id'] = $service_ids[$row['station_id']];
                 }
-                elseif (self::strip_service_credentials($imported) === $imported && strpos($imported, LWS_SERVICE_SEPARATOR) !== false) {
+                elseif (self::strip_service_credentials($imported) === $imported && strpos($imported, LIVE_WEATHER_STATION_SERVICE_SEPARATOR) !== false) {
                     Logger::warning('Core', null, isset($row['station_id']) ? $row['station_id'] : null, isset($row['station_name']) ? $row['station_name'] : null, null, null, 601, 'Station imported without its credentials: it must be reconnected.');
                 }
             }

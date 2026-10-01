@@ -190,7 +190,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$("#climat-textual-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed, ref:sc_ref, condition:sc_condition, th1:sc_value1, th2:sc_value2';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed, ref:sc_ref, condition:sc_condition, th1:sc_value1, th2:sc_value2';
         $content .= '}).done(function(data) {$("#climat-textual-measurements-output-' . $this->station_guid . '").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
 
@@ -262,7 +262,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$("#climat-textual-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed ';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed ';
         $content .= '}).done(function(data) {$("#climat-textual-measurements-output-' . $this->station_guid . '").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
 

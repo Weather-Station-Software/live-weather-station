@@ -134,7 +134,7 @@ class WeatherFlowImporter extends Process {
             }
         }
         $result .= "\r\n" . sprintf(__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $result;
     }
 
@@ -636,7 +636,7 @@ class WeatherFlowImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             if ($this->has_computer()) {
                 $history->import_data($nacomputed, $query_start, $query_end + 1, $force);
             }
@@ -709,7 +709,7 @@ class WeatherFlowImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($namodules as $namodule) {
                 $l = $history->import_data($namodule, $query_start, $query_end + 1, $force);
                 $this->params['summary'][$namodule['meta']['module_id']]['measurements'] += $l[0];

@@ -90,8 +90,8 @@ class Handling {
     private $arg_tab;
     private $arg_action;
     private $service = 'Backend';
-    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID, LWS_WLINK_SID);
-    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID, LWS_WLINK_SID);
+    private $publishable = array(LIVE_WEATHER_STATION_NETATMO_SID, LIVE_WEATHER_STATION_LOC_SID, LIVE_WEATHER_STATION_OWM_SID, LIVE_WEATHER_STATION_RAW_SID, LIVE_WEATHER_STATION_REAL_SID, LIVE_WEATHER_STATION_WUG_SID, LIVE_WEATHER_STATION_WFLW_SID, LIVE_WEATHER_STATION_BSKY_SID, LIVE_WEATHER_STATION_AMBT_SID, LIVE_WEATHER_STATION_WLINK_SID);
+    private $sharable = array(LIVE_WEATHER_STATION_NETATMO_SID, LIVE_WEATHER_STATION_RAW_SID, LIVE_WEATHER_STATION_REAL_SID, LIVE_WEATHER_STATION_WFLW_SID, LIVE_WEATHER_STATION_BSKY_SID, LIVE_WEATHER_STATION_AMBT_SID, LIVE_WEATHER_STATION_WLINK_SID);
     private $publishing_proto = array('txt', 'raw', 'real', 'yow');
 
     /**
@@ -100,7 +100,7 @@ class Handling {
      * @since 3.4.0
      */
     private function register_modules() {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         $bsky = self::is_bsky_station($this->station_id);
         Textual::register_module('current');
         Icon::register_module('current');
@@ -155,7 +155,7 @@ class Handling {
             return;
         }
         // This object is built for every admin user: nothing must be read or done without the capability.
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             return;
         }
         $this->Live_Weather_Station = $Live_Weather_Station;
@@ -261,7 +261,7 @@ class Handling {
      * @since 3.0.0
      */
     public function edit_station() {
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to edit a station.');
             return;
         }
@@ -430,13 +430,13 @@ class Handling {
                                     $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
                                     $args['init']['force'] = array_key_exists('lws-option-override', $_POST);
                                     $format = sanitize_key($_POST['lws-format']);
-                                    if ($format === 'netatmo' && $station['station_type'] == LWS_NETATMOHC_SID) {
+                                    if ($format === 'netatmo' && $station['station_type'] == LIVE_WEATHER_STATION_NETATMOHC_SID) {
                                         $format = 'NetatmoHC';
                                     }
-                                    if ($format === 'netatmo' && $station['station_type'] == LWS_NETATMO_SID) {
+                                    if ($format === 'netatmo' && $station['station_type'] == LIVE_WEATHER_STATION_NETATMO_SID) {
                                         $format = 'NetatmoStation';
                                     }
-                                    if ($format === 'pioupiou' && $station['station_type'] == LWS_PIOU_SID) {
+                                    if ($format === 'pioupiou' && $station['station_type'] == LIVE_WEATHER_STATION_PIOU_SID) {
                                         $format = 'Pioupiou';
                                     }
                                     if ($format === 'ndjson') {
@@ -526,7 +526,7 @@ class Handling {
                                         Logger::error($this->service, $service_name, $station['station_id'], $station['station_name'], null, null, null, 'Unable to share data with this service: ' . $result);
                                     }
                                 } catch (\Exception $ex) {
-                                    //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+                                    //error_log(LIVE_WEATHER_STATION_PLUGIN_NAME . ' / ' . LIVE_WEATHER_STATION_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
                                 }
                             }
                             if ($update) {
@@ -579,13 +579,13 @@ class Handling {
     public function station_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles(" . Guard::js($this->screen_id) . ");";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         echo $result;
     }
 
@@ -685,22 +685,22 @@ class Handling {
     public function get() {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->station_name) . '</h1>';
-        if ($this->station_type == LWS_WUG_SID) {
+        if ($this->station_type == LIVE_WEATHER_STATION_WUG_SID) {
             $this->wug_warning();
         }
-        elseif ($this->station_type == LWS_BSKY_SID) {
+        elseif ($this->station_type == LIVE_WEATHER_STATION_BSKY_SID) {
             echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('BloomSky stopped its service in 2022: this station is no longer updated, but its stored data are kept.', 'live-weather-station') . '</p></div>';
         }
-        elseif ($this->station_type == LWS_WFLW_SID) {
-            $wflw_parts = explode(LWS_SERVICE_SEPARATOR, (is_array($this->station_information) && isset($this->station_information['service_id'])) ? (string)$this->station_information['service_id'] : '', 2);
+        elseif ($this->station_type == LIVE_WEATHER_STATION_WFLW_SID) {
+            $wflw_parts = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, (is_array($this->station_information) && isset($this->station_information['service_id'])) ? (string)$this->station_information['service_id'] : '', 2);
             if (count($wflw_parts) < 2 || $wflw_parts[1] === '') {
                 echo '<div class="settings-error error"><p><strong>' . esc_html__('This station is no longer updated.', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('WeatherFlow only lets you read the stations of your own account: edit this station and enter the personal access token of its owner.', 'live-weather-station') . '</p></div>';
             }
         }
-        elseif ($this->station_type == LWS_OWM_SID) {
+        elseif ($this->station_type == LIVE_WEATHER_STATION_OWM_SID) {
             echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('This station is no longer collected because the OpenWeatherMap station service is no longer supported.', 'live-weather-station') . '</p></div>';
         }
-        include(LWS_ADMIN_DIR.'partials/StationTab.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationTab.php');
         settings_errors();
         if ($this->arg_action == 'manage') {
             echo '<form name="lws_station" method="post">';
@@ -731,7 +731,7 @@ class Handling {
             echo '<div id="dashboard-widgets-wrap">';
             echo '    <div id="shortcodes-widgets" class="metabox-holder">';
             echo '        <div id="shortcodes-container" class="postbox-container" style="width:100%">';
-            include(LWS_ADMIN_DIR.'partials/ChooseModuleType.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ChooseModuleType.php');
             foreach ($modules as $module) {
                 if ($module->is_selected()) {
                     $module->print_form();
@@ -751,9 +751,9 @@ class Handling {
      */
     public function wug_warning() {
         $result = '<div class="settings-error error"><p><strong>%s</strong></p></div>';
-        $s = sprintf(__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s = sprintf(__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         $l = InlineHelp::get(-34, '%s', 'Weather Underground closes its doors to individual users') . '.';
-        $a = sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $a = sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         echo sprintf($result, $s . ' ' . $a . ' ' . $l);
     }
 
@@ -777,7 +777,7 @@ class Handling {
             if (in_array($station['station_type'], $this->sharable)) {
                 add_meta_box('lws-sharing-wow', __('Sharing with WOW-BE', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wow'));
                 add_meta_box('lws-sharing-pws', __('Sharing with PWS Weather', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'pws'));
-                if (LWS_WU_ACTIVE) {
+                if (LIVE_WEATHER_STATION_WU_ACTIVE) {
                     add_meta_box('lws-sharing-wug', __('Sharing with Weather Underground', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wug'));
                 }
             }
@@ -817,7 +817,7 @@ class Handling {
         $location_icn = $this->output_iconic_value(0, 'city', false, false, '#999');
         $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, '#999');
         $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
-        include(LWS_ADMIN_DIR.'partials/StationStation.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationStation.php');
     }
 
     /**
@@ -835,7 +835,7 @@ class Handling {
         }
         $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
         $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, '#999');
-        include(LWS_ADMIN_DIR.'partials/StationLocation.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationLocation.php');
     }
 
     /**
@@ -850,7 +850,7 @@ class Handling {
         $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Import historical data', 'live-weather-station').'</a>', rawurlencode($this->station_guid));
         $export_link_icn = $this->output_iconic_value(0, 'export', false, false, '#999');
         $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Export historical data', 'live-weather-station').'</a>', rawurlencode($this->station_guid));
-        include(LWS_ADMIN_DIR.'partials/StationTools.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationTools.php');
     }
 
     /**
@@ -863,7 +863,7 @@ class Handling {
         if (array_key_exists('station', $args['args'])) {
             $station = $args['args']['station'];
         }
-        include(LWS_ADMIN_DIR.'partials/StationPublishing.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationPublishing.php');
     }
 
     /**
@@ -876,7 +876,7 @@ class Handling {
         if (array_key_exists('station', $args['args'])) {
             $station = $args['args']['station'];
         }
-        include(LWS_ADMIN_DIR.'partials/StationPages.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationPages.php');
     }
 
     /**
@@ -915,7 +915,7 @@ class Handling {
         }
         $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
         $shared = esc_html__('This station is currently shared on', 'live-weather-station') . ' <a href="' . esc_url($url) . '"' . $target . '>' . esc_html__('this page', 'live-weather-station') . '</a>';
-        include(LWS_ADMIN_DIR.'partials/StationSharing.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationSharing.php');
     }
 
     /**
@@ -934,6 +934,6 @@ class Handling {
         $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, '#999');
         $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, '#999');
         $static_display = true;
-        include(LWS_ADMIN_DIR.'partials/StationModule.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationModule.php');
     }
 }

@@ -158,7 +158,7 @@ trait Output {
         $title = Guard::enum($_attributes['title'], array('h1', 'h2', 'h3', 'h4', 'h5', 'h6'), 'h3');
         $list = $_attributes['list'];
 
-        $changelog = LWS_PLUGIN_DIR . 'changelog.txt';
+        $changelog = LIVE_WEATHER_STATION_PLUGIN_DIR . 'changelog.txt';
         if (file_exists($changelog)) {
             try {
                 $s = file_get_contents($changelog);
@@ -175,16 +175,16 @@ trait Output {
 
 
         if ($list == 'icon') {
-            lws_font_awesome();
+            live_weather_station_font_awesome();
             $result = str_replace('<ul>', '', $result);
             $result = str_replace('</ul>', '', $result);
             $result = str_replace('<li>', '', $result);
             $result = str_replace('</li>', '<br/>', $result);
-            $result = str_replace('New: ', '<i class="'. LWS_FAS . ' fa-plus-square" aria-hidden="true"></i>&nbsp;', $result);
-            $result = str_replace('Removed: ', '<i class="'. LWS_FAS . ' fa-minus-square" aria-hidden="true"></i>&nbsp;', $result);
-            $result = str_replace('New language: ', '<i class="'. LWS_FAS . ' fa-language" aria-hidden="true"></i>&nbsp;new translation: ', $result);
-            $result = str_replace('Improvement: ', '<i class="'. LWS_FAS . ' fa-check-square" aria-hidden="true"></i>&nbsp;', $result);
-            $result = str_replace('Bug fix: ', '<i class="'. LWS_FAS . ' fa-bug" aria-hidden="true"></i>&nbsp;fixed: ', $result);
+            $result = str_replace('New: ', '<i class="'. LIVE_WEATHER_STATION_FAS . ' fa-plus-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('Removed: ', '<i class="'. LIVE_WEATHER_STATION_FAS . ' fa-minus-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('New language: ', '<i class="'. LIVE_WEATHER_STATION_FAS . ' fa-language" aria-hidden="true"></i>&nbsp;new translation: ', $result);
+            $result = str_replace('Improvement: ', '<i class="'. LIVE_WEATHER_STATION_FAS . ' fa-check-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('Bug fix: ', '<i class="'. LIVE_WEATHER_STATION_FAS . ' fa-bug" aria-hidden="true"></i>&nbsp;fixed: ', $result);
         }
 
         if ($style == 'divi_accordion') {
@@ -5063,7 +5063,7 @@ trait Output {
         }
         $result .= '</div>' . PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -5101,7 +5101,7 @@ trait Output {
 
             $arg = '{' . implode (', ', $args) . '}';
             $result .= 'setTimeout(function() {';
-            $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+            $result .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", ' . $arg . ').done(function(data) {';
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
@@ -5109,7 +5109,7 @@ trait Output {
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
                 $result .= '    ' . $spinner . '.spin(target);' . PHP_EOL;
-                $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+                $result .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", ' . $arg . ').done(function(data) {';
                 $result .= '    data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
                 if ($type == 'distributionrc' || $type == 'valuerc') {
                     $result .= '        chart' . $uniq . '.data(data' . $uniq . ').duration(500).update();' . PHP_EOL;
@@ -5186,7 +5186,7 @@ trait Output {
             $result .= '' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
 
         return $result;
     }
@@ -5611,7 +5611,7 @@ trait Output {
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -5646,7 +5646,7 @@ trait Output {
             }
             $arg = '{' . implode (', ', $args) . '}';
             $result .= 'setTimeout(function() {';
-            $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+            $result .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", ' . $arg . ').done(function(data) {';
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
@@ -5714,7 +5714,7 @@ trait Output {
             $result .= '' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
 
         return $result;
     }
@@ -6041,7 +6041,7 @@ trait Output {
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;"><div id="' . $svg . '"></div></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -6068,7 +6068,7 @@ trait Output {
             }
             $arg = '{' . implode (', ', $args) . '}';
             $result .= 'setTimeout(function() {';
-            $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+            $result .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", ' . $arg . ').done(function(data) {';
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
@@ -6076,7 +6076,7 @@ trait Output {
             $result .= '});' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -7024,7 +7024,7 @@ trait Output {
     public function admin_analytics_shortcodes($attributes) {
         $result = '';
         // Internal statistics (quota, events, cron, database...) are for administrators only
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             return '';
         }
         $_attributes = shortcode_atts( array('item' => '', 'metric' => '', 'height' => ''), $attributes );
@@ -7048,7 +7048,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7068,7 +7068,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
 
             if ($_attributes['metric'] == 'call_short' || $_attributes['metric'] == 'call_long' || $_attributes['metric'] == 'rate_short' || $_attributes['metric'] == 'rate_long') {
@@ -7117,7 +7117,7 @@ trait Output {
                 $result .= '<div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 foreach ($services as $service) {
                     $s = str_replace(' ', '', strtolower($service));
@@ -7159,7 +7159,7 @@ trait Output {
                 $s = preg_replace('/[^a-z0-9_]/', '', $s);
                 $result .= '    $("#selector-'.$s.'-'.$uniq.'").click();' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
         }
 
@@ -7174,7 +7174,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
                 //$result .= '    var xValues'.$uniq.' = ' . self::json_inline($perf['dat'][$_attributes['metric'].'_values']) . ';' . PHP_EOL;
@@ -7195,7 +7195,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
 
             if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
@@ -7225,12 +7225,12 @@ trait Output {
                 }
                 $legend = '[' . implode(',', $legend) . ']';
                 $result = '<div id="selectors-'.$uniq.'" class="wp-core-ui">' . PHP_EOL;
-                $result .= '  <div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LWS_FAS . ' fa-caret-left"></i></div>' . PHP_EOL;
-                $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LWS_FAS . ' fa-caret-right"></i></div>' . PHP_EOL;
+                $result .= '  <div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LIVE_WEATHER_STATION_FAS . ' fa-caret-left"></i></div>' . PHP_EOL;
+                $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LIVE_WEATHER_STATION_FAS . ' fa-caret-right"></i></div>' . PHP_EOL;
                 $result .= '</div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '      var chart'.$uniq.' = new CalHeatMap();' . PHP_EOL;
                 $result .= '      var today_date= new Date();' . PHP_EOL;
@@ -7267,7 +7267,7 @@ trait Output {
                 }
                 $result .= '      });' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
         }
 
@@ -7280,7 +7280,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count_by_pool']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7304,13 +7304,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_by_pool') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time_by_pool']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7332,7 +7332,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_for_history' || $_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
                 wp_enqueue_script('lws-colorbrewer');
@@ -7346,7 +7346,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7368,7 +7368,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
         }
 
@@ -7381,7 +7381,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7405,13 +7405,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7431,13 +7431,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'efficiency') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['efficiency']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7459,13 +7459,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_saving') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time_saving']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7488,7 +7488,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
         }
 
@@ -7501,7 +7501,7 @@ trait Output {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7530,7 +7530,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
             }
         }
         return $result;
@@ -7684,7 +7684,7 @@ trait Output {
         $shortcode = '[live-weather-station-snapshot device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' size=\'' . $_attributes['size'] . '\' fx=\'' . $_attributes['fx'] . '\' speed=\'' . $_attributes['speed'] . '\' mode=\'url\']';
         $result = $this->snapshot_shortcodes($_attributes);
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ((string)$_attributes['size']) {
             case 'micro': $scale = '0.2'; break;
@@ -7699,7 +7699,7 @@ trait Output {
                 wp_enqueue_script('jquery-color');
                 $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
                 break;
             case 'spin':
                 wp_enqueue_script('jquery-color');
@@ -7709,15 +7709,15 @@ trait Output {
                 $result .= '  var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "#ffffff", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
                 $result .= '  var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
                 $result .= '  var ' . $spinner . ' = new Spinner(opts);' . PHP_EOL;
-                $result .= '  setInterval(function() {' . $spinner . '.spin(target); $.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {' . $spinner . '.spin(target); $.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
                 break;
             default:
                 wp_enqueue_script('jquery-color');
                 $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
         }
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -7741,14 +7741,14 @@ trait Output {
             $scalable='true';
         }
         if (is_array($name)) {
-            return __(LWS_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
+            return __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
         }
         $name = function_exists('mb_substr') ? mb_substr($name, 0, 20) : substr($name, 0, 20);
         wp_enqueue_style('lws-lcd');
         wp_enqueue_script('lws-lcd');
         $result  = '<div id="'.$uniq.'"></div>'.PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var c'.$uniq.' = new lws_lcd.LCDPanel({'.PHP_EOL;
         $result .= '                    id              : "id'.$uniq.'",'.PHP_EOL;
@@ -7757,14 +7757,14 @@ trait Output {
         $result .= '                    qDevice         : '.\WeatherStation\System\Output\Guard::js($_attributes['device_id']).','.PHP_EOL;
         $result .= '                    qModule         : '.\WeatherStation\System\Output\Guard::js($_attributes['module_id']).','.PHP_EOL;
         $result .= '                    qMeasure        : '.\WeatherStation\System\Output\Guard::js($_attributes['measure_type']).','.PHP_EOL;
-        $result .= '                    qPostUrl        : '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).','.PHP_EOL;
+        $result .= '                    qPostUrl        : '.\WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL).','.PHP_EOL;
         $result .= '                    design          : '.\WeatherStation\System\Output\Guard::js($_attributes['design']).','.PHP_EOL;
         $result .= '                    size            : '.\WeatherStation\System\Output\Guard::js($_attributes['size']).','.PHP_EOL;
         $result .= '                    scalable        : '.(string)$scalable.','.PHP_EOL;
         $result .= '                    cycleSpeed      : '.\WeatherStation\System\Output\Guard::js($_attributes['speed']).''.PHP_EOL;
         $result .= '    });'.PHP_EOL;
         $result .= '  });'.PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -7822,8 +7822,8 @@ trait Output {
             $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_measurements['condition']['value'];
             if ($raw_measurements['condition']['value'] == 3 || $raw_measurements['condition']['value'] == 4) {
                 $save_locale = setlocale(LC_ALL, 0);
-                setlocale(LC_ALL, lws_get_display_locale());
-                $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
+                setlocale(LC_ALL, live_weather_station_get_display_locale());
+                $measure['title'] = live_weather_station_iconv( __('No data', 'live-weather-station'));
                 setlocale(LC_ALL, $save_locale);
             }
             $measure['battery'] = 'full';
@@ -7847,8 +7847,8 @@ trait Output {
                 $measure['title'] = __( 'Error code ' , 'live-weather-station').$measurements['condition']['value'];
                 if ($measurements['condition']['value'] == 3 || $measurements['condition']['value'] == 4) {
                     $save_locale = setlocale(LC_ALL, 0);
-                    setlocale(LC_ALL, lws_get_display_locale());
-                    $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
+                    setlocale(LC_ALL, live_weather_station_get_display_locale());
+                    $measure['title'] = live_weather_station_iconv( __('No data', 'live-weather-station'));
                     setlocale(LC_ALL, $save_locale);
                 }
                 $measure['battery'] = 'full';
@@ -8365,7 +8365,7 @@ trait Output {
         wp_enqueue_script('lws-justgage');
         $result  = '<div id="'.$uniq.'" style="'.$style.'"></div>'.PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var g'.$uniq.' = new JustGage('.$values.');'.PHP_EOL;
         $result .= '  setInterval(function() {'.PHP_EOL;
@@ -8374,7 +8374,7 @@ trait Output {
         $result .= '    params = params+"&device_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_device).');'.PHP_EOL;
         $result .= '    params = params+"&module_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_module).');'.PHP_EOL;
         $result .= '    params = params+"&measure_type="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_measurement).');'.PHP_EOL;
-        $result .= '    http.open("POST", '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).', true);'.PHP_EOL;
+        $result .= '    http.open("POST", '.\WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL).', true);'.PHP_EOL;
         $result .= '    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");'.PHP_EOL;
         $result .= '    http.onreadystatechange = function () {'.PHP_EOL;
         $result .= '      if (http.readyState == 4 && http.status == 200) {'.PHP_EOL;
@@ -8387,7 +8387,7 @@ trait Output {
         $result .= '    http.send(params);'.PHP_EOL;
         $result .= '  }, '.$time.');'.PHP_EOL;
         $result .= '});'.PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -8999,7 +8999,7 @@ trait Output {
         wp_enqueue_script('lws-steelseries');
         $result  = '<canvas id="'.$uniq.'" style="'.$style.'"></canvas>'.PHP_EOL;
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var g'.$uniq.' = new steelseries.'.$control.'('.$uniq.', '.$params.');'.PHP_EOL;
         if ($aux) {
@@ -9031,7 +9031,7 @@ trait Output {
         $result .= '          params = params+"&device_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_device).');'.PHP_EOL;
         $result .= '          params = params+"&module_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_module).');'.PHP_EOL;
         $result .= '          params = params+"&measure_type="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_measurement).');'.PHP_EOL;
-        $result .= '          http.open("POST", '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).', true);'.PHP_EOL;
+        $result .= '          http.open("POST", '.\WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL).', true);'.PHP_EOL;
         $result .= '          http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");'.PHP_EOL;
         $result .= '          http.onreadystatechange = function () {'.PHP_EOL;
         $result .= '            if (http.readyState == 4 && http.status == 200) {'.PHP_EOL;
@@ -9061,7 +9061,7 @@ trait Output {
             $result .= '      });'.PHP_EOL;
         }
         $result .= '    });'.PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -9456,25 +9456,25 @@ trait Output {
         $shortcode = 'live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'glow':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'blink':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
                 break;
             default:
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -9488,7 +9488,7 @@ trait Output {
     public function icon_shortcodes($attributes) {
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes);
         $args = $_attributes;
         if ($_attributes['format'] !== 'none') {
@@ -9521,7 +9521,7 @@ trait Output {
         wp_enqueue_script('jquery');
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
         foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
             $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
@@ -9536,25 +9536,25 @@ trait Output {
         $shortcode = 'live-weather-station-icon device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+        $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'glow':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'blink':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
                 break;
             default:
-                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -10108,7 +10108,7 @@ trait Output {
      * @since 3.0.0
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null, $mix_day=null) {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
         $extraclass = preg_replace('/[^A-Za-z0-9_ -]/', '', (string)$extraclass);
         $type = strtolower($type);
@@ -10134,12 +10134,12 @@ trait Output {
             $type = 'sunset_trend';
         }
         $marker = array('none' => '',
-                        'min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
-                        'max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
-                        'day_min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
-                        'day_max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
-                        'trend' => LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
-                        'ppressure' => LWS_FAS . ' ' . (LWS_FA5?'fa-ellipsis-v ico-size-0':'fa-ellipsis-v ico-size-1'),
+                        'min' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
+                        'max' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
+                        'day_min' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
+                        'day_max' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
+                        'trend' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
+                        'ppressure' => LIVE_WEATHER_STATION_FAS . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-ellipsis-v ico-size-0':'fa-ellipsis-v ico-size-1'),
                         'degrees' => 'wi wi-degrees');
         $markerstyle = array('none' => 'inherit',
                         'min' => 'text-top',
@@ -10147,12 +10147,12 @@ trait Output {
                         'day_min' => 'text-top',
                         'day_max' => 'text-top',
                         'trend' => 'text-top',
-                        'ppressure' => (LWS_FA5?'baseline':'baseline'),
+                        'ppressure' => (LIVE_WEATHER_STATION_FA5?'baseline':'baseline'),
                         'degrees' => 'text-top',);
         $icons = array( 'absolute_humidity' => 'wi-raindrop',
                         'air_density' => 'fa-adjust',
-                        'alt_pressure' => 'fa-' . (LWS_FA5?'arrow-alt-circle-up':'fa-arrow-circle-o-up'),
-                        'alt_density' => 'fa-' . (LWS_FA5?'arrow-alt-circle-up':'fa-arrow-circle-up'),
+                        'alt_pressure' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'arrow-alt-circle-up':'fa-arrow-circle-o-up'),
+                        'alt_density' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'arrow-alt-circle-up':'fa-arrow-circle-up'),
                         'altitude' => 'fa-rotate-315 fa-location-arrow',
                         'cbi' => 'wi-fire',
                         'city' => 'fa-globe',
@@ -10170,7 +10170,7 @@ trait Output {
                         'equivalent_temperature' => 'wi-thermometer-exterior',
                         'evapotranspiration' => 'wi-flood',
                         'export' => 'fa-upload',
-                        'external_link' => 'fa-' . (LWS_FA5?'external-link-alt':'external-link'),
+                        'external_link' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'external-link-alt':'external-link'),
                         'firmware' => 'fa-cog',
                         'first_setup' => 'fa-wrench',
                         'frost_point' => 'wi-stars',
@@ -10182,19 +10182,19 @@ trait Output {
                         'humint' => 'wi-humidity',
                         'humext' => 'wi-humidity',
                         'humidity_ref' => 'wi-humidity',
-                        'illuminance' => 'fa-' . (LWS_FA5?'long-arrow-alt-down':'long-arrow-down'),
+                        'illuminance' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'long-arrow-alt-down':'long-arrow-down'),
                         'import' => 'fa-download',
-                        'irradiance' => 'fa-rotate-90 fa-' . (LWS_FA5?'sign-in-alt':'sign-in'),
-                        'last_refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
+                        'irradiance' => 'fa-rotate-90 fa-' . (LIVE_WEATHER_STATION_FA5?'sign-in-alt':'sign-in'),
+                        'last_refresh' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'sync-alt ':'refresh'),
                         'last_upgrade' => 'fa-cog',
                         'last_seen' => 'fa-eye',
                         'last_setup' => 'fa-wrench',
-                        'leaf_wetness' => 'fa-' . (LWS_FA5?'leaf ':'envira'),
+                        'leaf_wetness' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'leaf ':'envira'),
                         'loc_altitude' => 'fa-rotate-315 fa-location-arrow',
-                        'loc_timezone' => 'fa-' . (LWS_FA5?'clock ':'clock-o'),
-                        'loc_latitude' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
-                        'loc_longitude' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
-                        'location' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
+                        'loc_timezone' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'clock ':'clock-o'),
+                        'loc_latitude' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'map-marker-alt':'map-marker'),
+                        'loc_longitude' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'map-marker-alt':'map-marker'),
+                        'location' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'map-marker-alt':'map-marker'),
                         'map' => 'fa-map',
                         'module' => 'fa-database',
                         'moisture_content' => 'wi-humidity',
@@ -10211,7 +10211,7 @@ trait Output {
                         'pressure_sl' => 'wi-barometer',
                         'pressure_trend' => 'wi-barometer',
                         'pressure_ref' => 'wi-barometer',
-                        'o3' => 'fa-' . (LWS_FA5?'circle-notch':'circle-o-notch'),
+                        'o3' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'circle-notch':'circle-o-notch'),
                         'o3_distance' => 'fa-crosshairs',
                         'picture' => 'fa-image',
                         'potential_temperature' => 'wi-thermometer-exterior',
@@ -10222,7 +10222,7 @@ trait Output {
                         'rain_season_aggregated' => 'wi-umbrella',
                         'rain_year_aggregated' => 'wi-umbrella',
                         'rain_yesterday_aggregated' => 'wi-umbrella',
-                        'refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
+                        'refresh' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'sync-alt ':'refresh'),
                         'saturation_absolute_humidity' => 'wi-raindrop',
                         'so2' => 'wi-smoke',
                         'snow' => 'wi-snowflake-cold',
@@ -10239,12 +10239,12 @@ trait Output {
                         'sun' => 'wi-day-sunny',
                         'sunrise' => 'wi-sunrise',
                         'sunset' => 'wi-sunset',
-                        'sunshine' => 'fa-' . (LWS_FA5?'umbrella-beach':'sun-o'),
+                        'sunshine' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'umbrella-beach':'sun-o'),
                         'temperature' => 'wi-thermometer',
                         'tempint' => 'wi-thermometer',
                         'tempext' => 'wi-thermometer',
                         'temperature_ref' => 'wi-thermometer',
-                        'timezone' => 'fa-' . (LWS_FA5?'clock ':'clock-o'),
+                        'timezone' => 'fa-' . (LIVE_WEATHER_STATION_FA5?'clock ':'clock-o'),
                         'uv_index' => 'wi-horizon-alt',
                         'video' => 'fa-film',
                         'video_imperial' => 'fa-film',
@@ -10295,7 +10295,7 @@ trait Output {
         $result = '';
         $size = '';
         $icon = 'fa-question';
-        $class = LWS_FAS . ' ';
+        $class = LIVE_WEATHER_STATION_FAS . ' ';
         $align = 'text-top';
         if (!$variable) {
             $type = str_replace(array('_min', '_max', '_trend'), '', $type);
@@ -10312,7 +10312,7 @@ trait Output {
                         $align = 'baseline';
                     }
                 } else {
-                    $class = LWS_FAS . ' ';
+                    $class = LIVE_WEATHER_STATION_FAS . ' ';
                 }
             }
         }
@@ -10340,17 +10340,17 @@ trait Output {
             case 'signal':
                 if (strtolower($module_type) == 'namain') {
                     $icon = 'fa-wifi';
-                    $class = LWS_FAS . ' ';
+                    $class = LIVE_WEATHER_STATION_FAS . ' ';
                 }
                 else  {
                     $icon = 'fa-signal';
-                    $class = LWS_FAS . ' ';
+                    $class = LIVE_WEATHER_STATION_FAS . ' ';
                 }
                 break;
             case 'battery':
                 $level = $this->get_battery_level($value, $module_type);
                 $icon = 'fa-plug';
-                $class = LWS_FAS . ' ';
+                $class = LIVE_WEATHER_STATION_FAS . ' ';
                 if ($show_value) {
                     switch ($level) {
                         case 4:
@@ -10383,7 +10383,7 @@ trait Output {
                 }
                 break;
             case 'alt_pressure':
-                $class = LWS_FAR . ' ';
+                $class = LIVE_WEATHER_STATION_FAR . ' ';
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -10538,19 +10538,19 @@ trait Output {
      * @since 3.7.0
      */
     protected function output_iconic_filetype($format='ukn', $style='', $extra='') {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         switch (strtolower($format)) {
             case 'csv':
             case 'dsv':
             case 'tsv':
-                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-excel':'fa-file-excel-o') . ' %2$s" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LIVE_WEATHER_STATION_FAR . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-file-excel':'fa-file-excel-o') . ' %2$s" aria-hidden="true"></i>';
                 break;
             case 'ndjson':
             case 'wsconf.json':
-                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-code':'fa-file-code-o') . ' %2$s" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LIVE_WEATHER_STATION_FAR . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-file-code':'fa-file-code-o') . ' %2$s" aria-hidden="true"></i>';
                 break;
             default:
-                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LIVE_WEATHER_STATION_FAR . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
         }
         return sprintf($result, $style, esc_attr($extra));
     }
@@ -11491,10 +11491,10 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'alt_pressure':
-                $result = lws_lcfirst(__('Pressure alt.', 'live-weather-station'));
+                $result = live_weather_station_lcfirst(__('Pressure alt.', 'live-weather-station'));
                 break;
             case 'density_pressure':
-                $result = lws_lcfirst(__('Density alt.', 'live-weather-station'));
+                $result = live_weather_station_lcfirst(__('Density alt.', 'live-weather-station'));
                 break;
             case 'zcast_live':
             case 'zcast_best':
@@ -11597,7 +11597,7 @@ trait Output {
      * @since    2.0.0
      */
     protected function get_country_name($value) {
-        return lws_get_region_name('-'.$value, lws_get_display_locale());
+        return live_weather_station_get_region_name('-'.$value, live_weather_station_get_display_locale());
     }
 
     /**
@@ -11609,22 +11609,22 @@ trait Output {
     protected function get_country_names() {
 
         $compareASCII = function ($a, $b) {
-            $at = lws_iconv( $a);
-            $bt = lws_iconv( $b);
+            $at = live_weather_station_iconv( $a);
+            $bt = live_weather_station_iconv( $b);
             return strcmp(strtoupper($at), strtoupper($bt));
         };
 
         $result = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DD', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'UK', 'VD', 'YD', 'YU', 'ZR', 'ZZ');
-        $locale = lws_get_display_locale();
+        $locale = live_weather_station_get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];
                 if (in_array($s, $continue)) {
                     continue;
                 }
-                $t = lws_get_region_name('-'.$s, $locale);
+                $t = live_weather_station_get_region_name('-'.$s, $locale);
                 if ($s != $t || !EnvManager::is_locale_operational()) {
                     $result[$s] = ucfirst($t);
                 }
@@ -11746,7 +11746,7 @@ trait Output {
         if (count($f) == 2) {
             if ((int)$f[1] >= 0 && (int)$f[1] <= 25) {
                 if ($f[0] == 'X') {
-                    $result = __('Exceptional Weather: ', 'live-weather-station') . lws_lcfirst($forecast[(int)$f[1]]) . '.';
+                    $result = __('Exceptional Weather: ', 'live-weather-station') . live_weather_station_lcfirst($forecast[(int)$f[1]]) . '.';
                 }
                 else {
                     $result = $forecast[(int)$f[1]];
@@ -12551,7 +12551,7 @@ trait Output {
      */
     protected function format_lcd_measurements($measurements, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL, 0);
-        setlocale(LC_ALL, lws_get_display_locale());
+        setlocale(LC_ALL, live_weather_station_get_display_locale());
         $result = array();
         $response = array ();
         $battery = array();
@@ -12650,20 +12650,20 @@ trait Output {
                 $measure['show_sub_unit'] = ($unit['comp']!='');
                 $measure['show_min_max'] = false;
                 if ($outdoor || (isset($data['module_name']) && substr((string)$data['module_name'], 0, 1) === '[' && $aggregated && $outdoor)) {
-                    $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
+                    $measure['title'] = live_weather_station_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                 }
                 elseif ($pollution || ($data['measure_type'] == 'o3') || ($data['measure_type'] == 'co')) {
-                    $measure['title'] = lws_iconv($this->get_measurement_type($data['measure_type']));
+                    $measure['title'] = live_weather_station_iconv($this->get_measurement_type($data['measure_type']));
                 }
                 elseif ($psychrometry) {
-                    $measure['title'] = lws_iconv($this->get_measurement_type($data['measure_type']));
+                    $measure['title'] = live_weather_station_iconv($this->get_measurement_type($data['measure_type']));
                 }
                 else {
                     if (isset($data['module_name']) && substr((string)$data['module_name'], 0, 1) === '[') {
-                        $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
+                        $measure['title'] = live_weather_station_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                     }
                     else {
-                        $measure['title'] = lws_iconv(DeviceManager::get_module_name($data['device_id'], $data['module_id']));
+                        $measure['title'] = live_weather_station_iconv(DeviceManager::get_module_name($data['device_id'], $data['module_id']));
                     }
                 }
                 if (array_key_exists($data['module_id'], $battery)) {
@@ -13209,7 +13209,7 @@ trait Output {
             }
         }
         $values = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        $values .= '<!-- Generated by ' . LWS_FULL_NAME . ' - https://weather.station.software -->' . PHP_EOL;
+        $values .= '<!-- Generated by ' . LIVE_WEATHER_STATION_FULL_NAME . ' - https://weather.station.software -->' . PHP_EOL;
         $values .= '<response>' . PHP_EOL;
         $values .= ' <current_weather>' . PHP_EOL;
         if (isset($temp)) {
@@ -13677,7 +13677,7 @@ trait Output {
                     $module['last_setup_txt'] = $this->output_value($data['measure_value'], $data['measure_type'], false, false, $module['module_type'], $station['loc_timezone']);
                     $module['last_setup_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_setup']);
                 }
-                if ($station['station_type'] == LWS_NETATMO_SID || $station['station_type'] == LWS_NETATMOHC_SID) {
+                if ($station['station_type'] == LIVE_WEATHER_STATION_NETATMO_SID || $station['station_type'] == LIVE_WEATHER_STATION_NETATMOHC_SID) {
                     if ($data['measure_type'] == 'battery' && DeviceManager::is_hardware($data['module_type'])) {
                         $module['battery'] = $data['measure_value'];
                         $module['battery_txt'] = $this->get_battery_level_text($data['measure_value'], $data['module_type']);
@@ -13809,7 +13809,7 @@ trait Output {
             $result[$set] = $this->get_operation_name($set);
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(lws_get_display_locale());
+            $collator = new \Collator(live_weather_station_get_display_locale());
             $collator->asort($result);
         }
         else {
@@ -13832,7 +13832,7 @@ trait Output {
     public function get_available_operations($measurement_type, $module_type='NAMain', $comparison=false, $distribution=false, $scores=false) {
         $result = array();
         if ((bool)get_option('live_weather_station_collect_history') && (bool)get_option('live_weather_station_build_history')) {
-            $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new History(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             $operations = $history->get_measurements_operations_type($measurement_type, $module_type, (bool)get_option('live_weather_station_full_history'), $comparison, $distribution);
             $set = array();
             foreach ($operations as $operation) {
@@ -13872,7 +13872,7 @@ trait Output {
      * @since 3.4.0
      */
     public function get_historical_measurements($current=true, $force_mode='standard', $show_always=false) {
-        $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+        $history = new History(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         $names = array();
         $measurements = array();
         $result = array();
@@ -13882,7 +13882,7 @@ trait Output {
             $measurements[$measurement]['extended'] = $this->get_all_historical_operations($history->get_measurements_operations_type($measurement, '', true));
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(lws_get_display_locale());
+            $collator = new \Collator(live_weather_station_get_display_locale());
             $collator->asort($names);
         }
         else {
@@ -13970,10 +13970,10 @@ trait Output {
                     }
                     elseif ($style=='check') {
                         if ($measurements[$itr]['compiled']) {
-                            $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
+                            $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LIVE_WEATHER_STATION_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
                         }
                         else {
-                            $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
+                            $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LIVE_WEATHER_STATION_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
                         }
                     }
                     $result .= '&nbsp;' . esc_html($measurements[$itr]['name']).'</span>';
@@ -14004,9 +14004,9 @@ trait Output {
                             $result .= '<span style="vertical-align:middle">' . $measurements[$itr]['icon'];
                         } elseif ($style == 'check') {
                             if ($measurements[$itr]['aggregated']) {
-                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LIVE_WEATHER_STATION_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
                             } else {
-                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LIVE_WEATHER_STATION_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
                         $cap = '';
@@ -14055,9 +14055,9 @@ trait Output {
                             $result .= '<span style="vertical-align:middle">' . $measurement['icon'];
                         } elseif ($style == 'check') {
                             if ($measurement['aggregated']) {
-                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fa-fw fa-check-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LIVE_WEATHER_STATION_FAS . ' fa-fw fa-check-circle" aria-hidden="true"></i>';
                             } else {
-                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fa-fw fa-times-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LIVE_WEATHER_STATION_FAS . ' fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
                         $result .= '&nbsp;' . esc_html($measurement['name']) . '</span>';
@@ -14102,7 +14102,7 @@ trait Output {
         }
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         wp_enqueue_style('lws-table');
         return $result;
     }

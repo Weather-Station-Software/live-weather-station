@@ -66,7 +66,7 @@ class NetatmoStationImporter extends NetatmoImporter {
             }
         }
         $result .= "\r\n" . sprintf(__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $result;
     }
 }

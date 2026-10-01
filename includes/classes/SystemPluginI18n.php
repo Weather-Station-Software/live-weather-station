@@ -48,7 +48,7 @@ class I18n {
      * @since 3.0.0
      */
 	public function load_local_textdomain_mofile($override, $domain) {
-        if (LWS_PLUGIN_TEXT_DOMAIN == $domain && (bool)get_option('live_weather_station_partial_translation')) {
+        if (LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN == $domain && (bool)get_option('live_weather_station_partial_translation')) {
             remove_filter('override_load_textdomain', array($this, 'load_local_textdomain_mofile'));
             $file = Intl::get_current_mo_file();
             if (!file_exists($file)) {

@@ -63,7 +63,7 @@ class WeatherFlowWindFixer extends Process {
      * @since 3.8.0
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to correctly handle current, daily and historical wind & gust strength with WeatherFlow stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix allows %s to correctly handle current, daily and historical wind & gust strength with WeatherFlow stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -178,7 +178,7 @@ class WeatherFlowWindFixer extends Process {
      * @since 3.8.0
      */
     private function fix($station_id, $station_type) {
-        if ($station_type != LWS_WFLW_SID) {
+        if ($station_type != LIVE_WEATHER_STATION_WFLW_SID) {
             return;
         }
         // DAILY DATA
