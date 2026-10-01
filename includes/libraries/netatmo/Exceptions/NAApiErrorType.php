@@ -22,11 +22,11 @@ class NAApiErrorType extends NAClientException
         $this->result = $result;
         if(isset($result["error"]) && is_array($result["error"]) && isset($result["error"]["code"]))
         {
-            parent::__construct($result["error"]["code"], $result["error"]["message"], API_ERROR_TYPE);
+            parent::__construct($result["error"]["code"], $result["error"]["message"], LIVE_WEATHER_STATION_NETATMO_API_ERROR_TYPE);
         }
         else
         {
-            parent::__construct($code, $message, API_ERROR_TYPE);
+            parent::__construct($code, $message, LIVE_WEATHER_STATION_NETATMO_API_ERROR_TYPE);
         }
 
         ///////////////////////////////////////////////////////////////////
@@ -39,6 +39,7 @@ class NAApiErrorType extends NAClientException
         {
             if (is_array($this->result))
             {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Plugin Check: print_r( ..., true ) only builds a string for the plugin's own log, secrets are redacted.
                 $s = substr(preg_replace('/(\[(?:access_token|refresh_token|client_secret|password|token|apikey|api_key|appid)\]\s*=>\s*)[^\n]*/i', '$1[redacted]', print_r($this->result, true)), 0, 4000);
                 if (isset($this->result['error']['code']) && isset($this->result['error']['message'])) {
                     $c = $this->result['error']['code'];
@@ -47,16 +48,16 @@ class NAApiErrorType extends NAClientException
             }
             else
             {
-                if ($this->result == WP_ERROR_TYPE) {
+                if ($this->result == LIVE_WEATHER_STATION_NETATMO_WP_ERROR_TYPE) {
                     $r = 'WordPress HTTP API';
                 }
-                if ($this->result == JSON_ERROR_TYPE) {
+                if ($this->result == LIVE_WEATHER_STATION_NETATMO_JSON_ERROR_TYPE) {
                     $r = 'JSON';
                 }
-                if ($this->result == INTERNAL_ERROR_TYPE) {
+                if ($this->result == LIVE_WEATHER_STATION_NETATMO_INTERNAL_ERROR_TYPE) {
                     $r = 'internal';
                 }
-                if ($this->result == NOT_LOGGED_ERROR_TYPE) {
+                if ($this->result == LIVE_WEATHER_STATION_NETATMO_NOT_LOGGED_ERROR_TYPE) {
                     $r = 'not logged';
                 }
             }

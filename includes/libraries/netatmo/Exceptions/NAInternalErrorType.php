@@ -12,7 +12,7 @@ class NAInternalErrorType extends NAClientException
 {
     function __construct($message)
     {
-        parent::__construct(0, $message, INTERNAL_ERROR_TYPE);
+        parent::__construct(0, $message, LIVE_WEATHER_STATION_NETATMO_INTERNAL_ERROR_TYPE);
     }
 }
 

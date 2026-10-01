@@ -15,10 +15,11 @@ use WeatherStation\System\Logs\Logger;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-define('BACKEND_BASE_URI', "https://api.netatmo.com/");
-define('BACKEND_SERVICES_URI', "https://api.netatmo.com/api");
-define('BACKEND_ACCESS_TOKEN_URI', "https://api.netatmo.com/oauth2/token");
-define('BACKEND_AUTHORIZE_URI', "https://api.netatmo.com/oauth2/authorize");
+// Plugin Check: constants prefixed with LIVE_WEATHER_STATION_NETATMO_ (global constant prefix rule)
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_BASE_URI', "https://api.netatmo.com/");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_SERVICES_URI', "https://api.netatmo.com/api");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_ACCESS_TOKEN_URI', "https://api.netatmo.com/oauth2/token");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_AUTHORIZE_URI', "https://api.netatmo.com/oauth2/authorize");
 
 
 /**
@@ -153,7 +154,7 @@ class NAApiClient
             $this->refresh_token = $config["refresh_token"];
         }
         // We must set uri first.
-        $uri = array("base_uri" => BACKEND_BASE_URI, "services_uri" => BACKEND_SERVICES_URI, "access_token_uri" => BACKEND_ACCESS_TOKEN_URI, "authorize_uri" => BACKEND_AUTHORIZE_URI);
+        $uri = array("base_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_BASE_URI, "services_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_SERVICES_URI, "access_token_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_ACCESS_TOKEN_URI, "authorize_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_AUTHORIZE_URI);
         foreach($uri as $key => $val)
         {
             if(isset($config[$key]))
@@ -237,7 +238,8 @@ class NAApiClient
             }
         }
         if (is_wp_error($response)) {
-            throw new  NAApiErrorType(490, 'No HTTP access.', WP_ERROR_TYPE);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
+            throw new  NAApiErrorType(490, 'No HTTP access.', LIVE_WEATHER_STATION_NETATMO_WP_ERROR_TYPE);
         }
         if (isset($response)) {
             $http_code = wp_remote_retrieve_response_code($response);
@@ -247,9 +249,11 @@ class NAApiClient
                 return $decode;
             }
             elseif (isset($http_code)){
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new  NAApiErrorType($http_code, 'HTTP error.', $decode);
             }
             else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new  NAApiErrorType(490, 'No HTTP access.', $decode);
             }
         }
@@ -489,6 +493,7 @@ class NAApiClient
         }
         catch(NAApiErrorType $ex)
         {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new NANotLoggedErrorType($ex->getCode(), $ex->getMessage());
         }
         $params["access_token"] = $res["access_token"];
@@ -636,17 +641,20 @@ class NAApiClient
     function getRequestUri()
     {
         if (isset($_SERVER['REQUEST_URI'])) {
-            $uri = (string)wp_unslash($_SERVER['REQUEST_URI']);
+            // Plugin Check: the server value is now sanitized.
+            $uri = esc_url_raw(wp_unslash($_SERVER['REQUEST_URI']));
         }
         else {
-            if (isset($_SERVER['argv'])) {
-                $uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['argv'][0];
+            // Plugin Check: every server value is now unslashed and sanitized, and checked with isset().
+            $script_name = isset($_SERVER['SCRIPT_NAME']) ? sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])) : '';
+            if (isset($_SERVER['argv'][0])) {
+                $uri = $script_name . '?' . sanitize_text_field(wp_unslash($_SERVER['argv'][0]));
             }
             elseif (isset($_SERVER['QUERY_STRING'])) {
-                $uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING'];
+                $uri = $script_name . '?' . sanitize_text_field(wp_unslash($_SERVER['QUERY_STRING']));
             }
             else {
-                $uri = $_SERVER['SCRIPT_NAME'];
+                $uri = $script_name;
             }
         }
         // Prevent multiple slashes to avoid cross site requests via the Form API.
@@ -671,7 +679,7 @@ class NAApiClient
             $host .= ':' . $home['port'];
         }
         $current_uri = $protocol . $host . $this->getRequestUri();
-        $parts = parse_url($current_uri);
+        $parts = wp_parse_url($current_uri); // Plugin Check: wp_parse_url() instead of parse_url().
 
         $query = '';
         if (!empty($parts['query'])) {

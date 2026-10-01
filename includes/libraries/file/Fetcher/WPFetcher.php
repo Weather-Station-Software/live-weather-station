@@ -32,6 +32,7 @@ class WPFetcher implements FetcherInterface
         if (is_wp_error($response)) {
             $code = wp_remote_retrieve_response_code($response);
             $message = wp_remote_retrieve_response_message($response);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new \Exception(substr(sanitize_text_field((string)$message), 0, 200), (int)$code);
         }
         if ((int)wp_remote_retrieve_response_code($response) >= 400) {
