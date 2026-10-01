@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
                 <div class="lws-widget-header lws-widget-wiheader-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
-                    <?php echo $measurements['weather']['icon']; ?>
+                    <?php echo $measurements['weather']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output_iconic_value() (DataOutput trait) returns only span and i markup built from fixed icon class maps, a colour checked by a regex, an extra class stripped to [A-Za-z0-9_ -] and value parts reduced to [A-Za-z0-9_-] ?>
                 </div>
                 <?php if (($show_title || $subtitle != 0) || $show_illuminance || $show_irradiance || $show_sunshine || $show_uv):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo esc_attr($id) ?>"></div>
@@ -46,7 +46,7 @@ if (!defined('ABSPATH')) {
                 <!-- IRRADIANCE -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Irradiance', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['irradiance']['icon']; ?>
+                        <?php echo $measurements['irradiance']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output_iconic_value() (DataOutput trait) returns only span and i markup built from fixed icon class maps, a colour checked by a regex, an extra class stripped to [A-Za-z0-9_ -] and value parts reduced to [A-Za-z0-9_-] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -63,7 +63,7 @@ if (!defined('ABSPATH')) {
                 <!-- ILLUMINANCE -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Illuminance', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['illuminance']['icon']; ?>
+                        <?php echo $measurements['illuminance']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output_iconic_value() (DataOutput trait) returns only span and i markup built from fixed icon class maps, a colour checked by a regex, an extra class stripped to [A-Za-z0-9_ -] and value parts reduced to [A-Za-z0-9_-] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -80,7 +80,7 @@ if (!defined('ABSPATH')) {
                 <!-- UV -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['uv_index']['icon']; ?>
+                        <?php echo $measurements['uv_index']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output_iconic_value() (DataOutput trait) returns only span and i markup built from fixed icon class maps, a colour checked by a regex, an extra class stripped to [A-Za-z0-9_ -] and value parts reduced to [A-Za-z0-9_-] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -101,7 +101,7 @@ if (!defined('ABSPATH')) {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo esc_attr($id) ?>"></div>
                     </div>
                     <div style="padding-right: 6px;" class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['sunshine']['icon']; ?>
+                        <?php echo $measurements['sunshine']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- output_iconic_value() (DataOutput trait) returns only span and i markup built from fixed icon class maps, a colour checked by a regex, an extra class stripped to [A-Za-z0-9_ -] and value parts reduced to [A-Za-z0-9_-] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo esc_attr($id) ?>">

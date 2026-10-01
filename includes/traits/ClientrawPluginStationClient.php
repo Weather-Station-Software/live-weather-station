@@ -506,6 +506,7 @@ trait StationClient {
         $weather = false;
         try {
             $weather = explode(' ', $raw_data);
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the text of a debug event for the plugin Logger (truncated, nothing is printed)
             Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
             if (count($weather) < 167) {
                 Logger::warning($this->facility, $this->service, null, null, null, null, null, '');

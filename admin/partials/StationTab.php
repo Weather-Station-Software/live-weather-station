@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selector, sanitized with sanitize_key(), no state change
 $active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'view');
 $view = array('action'=>'manage', 'tab'=>'view', 'service'=>'station');
 $current = array('action'=>'shortcode', 'tab'=>'current', 'service'=>'station');
@@ -21,9 +22,9 @@ $climat = array('action'=>'shortcode', 'tab'=>'climat', 'service'=>'station');
 ?>
 
 <h2 class="nav-tab-wrapper">
-    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($view)); ?>" class="nav-tab <?php echo $active_tab == 'view' ? 'nav-tab-active' : ''; ?>"><?php echo __('Station details', 'live-weather-station');?></a>
-    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($current)); ?>" class="nav-tab <?php echo $active_tab == 'current' ? 'nav-tab-active' : ''; ?>"><?php echo __('Current records', 'live-weather-station');?></a>
-    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($daily)); ?>" class="nav-tab <?php echo $active_tab == 'daily' ? 'nav-tab-active' : ''; ?>"><?php echo __('Daily data', 'live-weather-station');?></a>
-    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($yearly)); ?>" class="nav-tab <?php echo $active_tab == 'yearly' ? 'nav-tab-active' : ''; ?>"><?php echo __('Historical data', 'live-weather-station');?></a>
-    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($climat)); ?>" class="nav-tab <?php echo $active_tab == 'climat' ? 'nav-tab-active' : ''; ?>"><?php echo __('Climatological data', 'live-weather-station');?></a>
+    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($view)); ?>" class="nav-tab <?php echo $active_tab == 'view' ? 'nav-tab-active' : ''; ?>"><?php echo esc_html__('Station details', 'live-weather-station');?></a>
+    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($current)); ?>" class="nav-tab <?php echo $active_tab == 'current' ? 'nav-tab-active' : ''; ?>"><?php echo esc_html__('Current records', 'live-weather-station');?></a>
+    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($daily)); ?>" class="nav-tab <?php echo $active_tab == 'daily' ? 'nav-tab-active' : ''; ?>"><?php echo esc_html__('Daily data', 'live-weather-station');?></a>
+    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($yearly)); ?>" class="nav-tab <?php echo $active_tab == 'yearly' ? 'nav-tab-active' : ''; ?>"><?php echo esc_html__('Historical data', 'live-weather-station');?></a>
+    <a href="<?php echo esc_url(live_weather_station_re_get_admin_page_url($climat)); ?>" class="nav-tab <?php echo $active_tab == 'climat' ? 'nav-tab-active' : ''; ?>"><?php echo esc_html__('Climatological data', 'live-weather-station');?></a>
 </h2>

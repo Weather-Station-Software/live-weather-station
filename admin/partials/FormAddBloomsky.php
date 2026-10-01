@@ -51,7 +51,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 
             </table>
             <p class="submit"><input type="submit" name="add-bloomsky" id="add-bloomsky" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-add-bloomsky" id="donot-add-bloomsky" class="button" value="<?php esc_html_e( 'Cancel', 'live-weather-station' );?>"  />
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Adding this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Adding this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </form>
     <?php } else { ?>
         <p><?php esc_html_e( 'All BloomSky stations have been already added!', 'live-weather-station' );?></p>

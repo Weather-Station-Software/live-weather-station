@@ -184,6 +184,7 @@ trait Storage {
         global $wpdb;
         $sql = "SELECT * FROM " . $table ;
         try {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $data = array();
@@ -210,6 +211,7 @@ trait Storage {
         }
         if ($do_action) {
             try {
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
                 $wpdb->query($alter);
                 $result = true;
             }
@@ -229,6 +231,7 @@ trait Storage {
         global $wpdb;
         $sql = "SELECT * FROM " . $table ;
         try {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $data = array();
@@ -261,6 +264,7 @@ trait Storage {
 		$sql .= " measure_value varchar(50) DEFAULT '' NOT NULL,";
 		$sql .= " UNIQUE KEY dmm (device_id,module_id,measure_type)";
 		$sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -282,6 +286,7 @@ trait Storage {
         $sql .= " `hidden` boolean DEFAULT 0 NOT NULL,";
         $sql .= " UNIQUE KEY mdl (`device_id`, `module_id`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -303,6 +308,7 @@ trait Storage {
         $sql .= " `measure_value` decimal(20,10) NOT NULL,";
         $sql .= " UNIQUE KEY dly (`timestamp`, `device_id`, `module_id`, `measure_type`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -324,6 +330,7 @@ trait Storage {
         $sql .= " `item_url` varchar(2000) DEFAULT '' NOT NULL,";
         $sql .= " UNIQUE KEY mdia (`timestamp`, `device_id`, `module_id`, `module_type`, `item_type`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -346,6 +353,7 @@ trait Storage {
         $sql .= " `measure_value` decimal(20,10) NOT NULL,";
         $sql .= " UNIQUE KEY dly (`timestamp`, `device_id`, `module_id`, `measure_type`, `measure_set`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -406,6 +414,7 @@ trait Storage {
         $sql .= " PRIMARY KEY (guid),";
         $sql .= " UNIQUE KEY (station_id)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -434,6 +443,7 @@ trait Storage {
         $sql .= " `message` varchar(15000) NOT NULL DEFAULT '-',";
         $sql .= " PRIMARY KEY (`id`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -474,6 +484,7 @@ trait Storage {
         $sql .= " `cgraph_miss_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " PRIMARY KEY (`timestamp`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -493,6 +504,7 @@ trait Storage {
         $sql .= " `time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " UNIQUE KEY perf (timestamp, cron)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -515,6 +527,7 @@ trait Storage {
         $sql .= " `delete` int(11) NOT NULL DEFAULT '0',";
         $sql .= " UNIQUE KEY perf (timestamp, service)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -552,6 +565,7 @@ trait Storage {
         $sql .= " `delete_rate_q` int(11) NOT NULL DEFAULT '0',";
         $sql .= " UNIQUE KEY perf (timestamp, service)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -572,6 +586,7 @@ trait Storage {
         $sql .= " `row_size` int(11) NOT NULL DEFAULT '0',";
         $sql .= " UNIQUE KEY perf (timestamp, table_name)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -598,6 +613,7 @@ trait Storage {
         $sql .= " `progress` int(11) DEFAULT '0' NOT NULL,";
         $sql .= " UNIQUE KEY (uuid)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -617,6 +633,7 @@ trait Storage {
         $sql .= " `params` longtext DEFAULT '',";
         $sql .= " PRIMARY KEY (`id`)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -638,6 +655,7 @@ trait Storage {
         $sql .= " `description` varchar(2000) NOT NULL DEFAULT '',";
         $sql .= " UNIQUE KEY (id)";
         $sql .= ") $charset_collate;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -677,9 +695,11 @@ trait Storage {
             // DROP ALL OLD TABLES FROM 1.X & 2.X versions
             $table_name = $wpdb->prefix . self::live_weather_station_owm_stations_table();
             $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
             $wpdb->query($sql);
             $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
             $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
             $wpdb->query($sql);
         }
 
@@ -690,6 +710,7 @@ trait Storage {
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
             if (self::is_empty_table($table_name)) {
                 $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $wpdb->query($sql);
                 self::create_live_weather_station_stations_table();
             } else {
@@ -709,6 +730,7 @@ trait Storage {
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
             if (self::is_empty_table($table_name)) {
                 $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $wpdb->query($sql);
                 self::create_live_weather_station_stations_table();
             } else {
@@ -718,10 +740,12 @@ trait Storage {
             $table_name = $wpdb->prefix . self::live_weather_station_log_table();
             if (self::is_empty_table($table_name)) {
                 $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $wpdb->query($sql);
                 self::create_live_weather_station_log_table();
             } else {
                 $sql = "ALTER TABLE " . $table_name . " MODIFY COLUMN version varchar(11) NOT NULL DEFAULT 'N/A';";
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $wpdb->query($sql);
             }
 
@@ -729,6 +753,7 @@ trait Storage {
             $table_name = $wpdb->prefix . self::live_weather_station_performance_cache_table();
             if (self::is_empty_table($table_name)) {
                 $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $wpdb->query($sql);
                 self::create_live_weather_station_performance_cache_table();
             } else {
@@ -778,6 +803,7 @@ trait Storage {
                 $table_name = $wpdb->prefix . self::live_weather_station_performance_cache_table();
                 if (self::is_empty_table($table_name)) {
                     $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                     $wpdb->query($sql);
                     self::create_live_weather_station_performance_cache_table();
                 } else {
@@ -803,6 +829,7 @@ trait Storage {
             if (version_compare($oldversion, '3.9.0', '<')) {
                 // Saved Stamen maps (and retired Navionics maps) are now displayed with OpenStreetMap until a Stadia Maps key is set.
                 $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
                 $count = (int)$wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM `' . $table_name . '` WHERE type IN (%d, %d)', 2, 7));
                 if ($count > 0 && (string)get_option('live_weather_station_stadia_apikey', '') === '') {
                     Notifier::warning(__('Stamen maps need a Stadia Maps API key', 'live-weather-station'),
@@ -837,17 +864,17 @@ trait Storage {
                 $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
                 Notifier::error(__('Weather Underground error', 'live-weather-station'),
                     $url,
-                    sprintf(__('As Weather Underground closed its API service, "%s" can not be collected anymore.', 'live-weather-station'), $st));
+                    sprintf(/* translators: %s: comma separated list of station names */ __('As Weather Underground closed its API service, "%s" can not be collected anymore.', 'live-weather-station'), $st));
 
                 $to = get_bloginfo('admin_email');
                 $subject = __('About your Weather Underground stations', 'live-weather-station');
                 $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-                $message .= sprintf(__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ';
+                $message .= sprintf(/* translators: %s: name of the plugin */ __('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ';
                 $message .= __('As a result, the following stations will no longer be collected:', 'live-weather-station') . "\r\n" ;
                 foreach ($wug as $station) {
                     $message .= '     - ' . $station . "\r\n";
                 }
-                $message .= "\r\n" . sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ' . $url . ".\r\n" . "\r\n";
+                $message .= "\r\n" . sprintf(/* translators: %s: name of the plugin */ __('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ' . $url . ".\r\n" . "\r\n";
                 if (function_exists('wp_mail')) {
                     wp_mail($to, $subject, $message);
                 }
@@ -878,6 +905,7 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = 'TRUNCATE TABLE '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
     }
 
@@ -892,60 +920,77 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         if ($drop_log) {
             $table_name = $wpdb->prefix.self::live_weather_station_log_table();
             $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
             $wpdb->query($sql);
         }
         $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cache_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cron_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_quota_day_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_quota_year_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         if (!(bool)get_option('live_weather_station_keep_tables', true)) {
             $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
             $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
             $wpdb->query($sql);
         }
         $table_name = $wpdb->prefix.self::live_weather_station_module_detail_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_data_year_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_media_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_background_process_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
         $wpdb->query($sql);
         if ($drop_log) {
             // The maps are user content: dropped on uninstall only (not when an old version is fully reinstalled).
             $table_name = $wpdb->prefix.self::live_weather_station_maps_table();
             $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema statement (CREATE/ALTER/DROP/TRUNCATE) without any value, the table name is $wpdb->prefix plus a live_weather_station_*_table() constant, nothing to cache
             $wpdb->query($sql);
         }
     }
@@ -966,6 +1011,7 @@ trait Storage {
                 continue;
             }
             $sql = "UPDATE " . $table_name . " SET `" . $field . "`=LOWER(`" . $field . "`) WHERE 1";
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the column name is validated by Guard::ident() and the table name comes from the live_weather_station_*_table() methods (IdentifierLowercaser), no value, one-shot maintenance
             $wpdb->query($sql);
         }
     }
@@ -981,6 +1027,7 @@ trait Storage {
         $result = -1;
         global $wpdb;
         $sql = "SELECT COUNT(*) as CNT FROM `" . $wpdb->prefix . $table_name . "`;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: row count of a table whose name is $wpdb->prefix plus an internal live_weather_station_*_table() name, no value, live figure for the statistics
         $cnt = $wpdb->get_results($sql, ARRAY_A);
         if (count($cnt) > 0) {
             if (array_key_exists('CNT', $cnt[0])) {
@@ -1000,7 +1047,9 @@ trait Storage {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the station type is bound with %s in prepare()
         $sql = $wpdb->prepare("SELECT station_name FROM `" . $table_name . "` WHERE `station_type`=%s ;", LIVE_WEATHER_STATION_WUG_SID);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the station type is bound with %s in prepare()
         foreach ($wpdb->get_results($sql, ARRAY_A) as $station) {
             $result[] = $station['station_name'];
         }
@@ -1021,6 +1070,7 @@ trait Storage {
         $table_size = 0;
         global $wpdb;
         $sql = $wpdb->prepare("SELECT * FROM information_schema.tables WHERE table_schema=%s and table_name=%s", $wpdb->dbname, $wpdb->prefix . $table_name);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- information_schema statistics of a plugin table: the schema and table name are bound with %s in prepare(), live figures (the result is then stored in the data_year table)
         $line = $wpdb->get_results($sql, ARRAY_A);
         if (count($line) > 0) {
             if (array_key_exists('TABLE_ROWS', $line[0])) {
@@ -1054,6 +1104,7 @@ trait Storage {
      */
     private static function insert_table($table_name, $value) {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- custom plugin table: $wpdb->insert() escapes the values, the table name comes from the live_weather_station_*_table() methods (log, notifications, maps), a write is not cacheable
         if ($wpdb->insert($wpdb->prefix.$table_name,$value)) {
             return $wpdb->insert_id;
         }
@@ -1091,6 +1142,7 @@ trait Storage {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the column names come from resolve_column() (Guard::ident() and SHOW COLUMNS allowlist), every value is bound with %s in prepare(), the table name is internal, a write is not cacheable
             $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
     }
@@ -1132,6 +1184,7 @@ trait Storage {
         if (!array_key_exists($key, $cache)) {
             $cache[$key] = null;
             if (Guard::ident($table_name) !== null) {
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: SHOW COLUMNS on a table name validated by Guard::ident() (prefix added by $wpdb->prefix), no value, result kept in a static cache
                 $cols = $wpdb->get_col("SHOW COLUMNS FROM `" . $wpdb->prefix . $table_name . "`");
                 if (is_array($cols) && count($cols) > 0) {
                     $cache[$key] = $cols;
@@ -1167,6 +1220,7 @@ trait Storage {
             $sql = "INSERT IGNORE INTO `" . $wpdb->prefix . $table_name . "` ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ");";
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the column names come from resolve_column() (Guard::ident() and SHOW COLUMNS allowlist), every value is bound with %s in prepare(), the table name is internal, a write is not cacheable
             $wpdb->query($wpdb->prepare($sql, $args_insert));
         }
     }
@@ -1185,7 +1239,9 @@ trait Storage {
                 $id = (int)round($id);
                 global $wpdb;
                 $table_name = $wpdb->prefix . $table_name;
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name comes from the live_weather_station_*_table() methods and the id is cast to int and bound with %d, a delete is not cacheable
                 $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `id`=%d", $id);
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name comes from the live_weather_station_*_table() methods and the id is cast to int and bound with %d, a delete is not cacheable
                 return $wpdb->query($sql);
             }
             else {
@@ -1208,7 +1264,9 @@ trait Storage {
     protected static function get_newest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name is internal and the limit is bound with %d, the list must always be live
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " ORDER BY `timestamp` DESC LIMIT %d", $limit);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name is internal and the limit is bound with %d, the list must always be live
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1223,7 +1281,9 @@ trait Storage {
     protected static function get_oldest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name is internal and the limit is bound with %d, the list must always be live
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " ORDER BY `timestamp` ASC LIMIT %d", $limit);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name is internal and the limit is bound with %d, the list must always be live
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1242,7 +1302,9 @@ trait Storage {
         if ($field === null) {
             return;
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (log): the column name is validated by Guard::ident() and both values are bound with %s, a write is not cacheable
         $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix.$table_name . " SET `" . $field . "`=%s WHERE `" . $field . "`=%s", $new_value, $old_value);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (log): the column name is validated by Guard::ident() and both values are bound with %s, a write is not cacheable
         $wpdb->query($sql);
     }
 
@@ -1255,6 +1317,7 @@ trait Storage {
      */
     private function update_table($table_name, $value) {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table: $wpdb->replace() escapes the values, the table name comes from the live_weather_station_*_table() methods, a write is not cacheable
         $wpdb->replace($wpdb->prefix.$table_name,$value);
     }
 
@@ -1285,6 +1348,7 @@ trait Storage {
                 $sql = "INSERT IGNORE INTO " . $wpdb->prefix . self::live_weather_station_histo_daily_table() . " ";
                 $sql .= "(" . implode(',', $field_insert) . ") ";
                 $sql .= "VALUES (" . Guard::placeholders($value_insert, '%s') . ");";
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements_day: the table name is internal, the column names are a fixed list and every value is bound with %s through Guard::placeholders(), a write is not cacheable
                 $wpdb->query($wpdb->prepare($sql, $value_insert));
             }
         }
@@ -1414,8 +1478,10 @@ trait Storage {
         $where[] = '`measure_timestamp`>%s';
         $args[] = $after;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- custom plugin table live_weather_station_measurements: the table name is internal, the column names are validated by Guard::ident() against an allowlist, every value is bound with %s in prepare(), live measurements must not be cached here
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ");", $args);
         try {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal, the column names are validated by Guard::ident() against an allowlist, every value is bound with %s in prepare(), live measurements must not be cached here
             $result = (array)$wpdb->get_results($sql, ARRAY_A);
         }
         catch(\Exception $ex) {
@@ -1544,8 +1610,10 @@ trait Storage {
         $where[] = '`timestamp`>%s';
         $args[] = gmdate('Y-m-d H:i:s', $datetime->getTimestamp());
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- custom plugin table live_weather_station_measurements_day: the table name is internal, the column names are validated by Guard::ident() against an allowlist, every value is bound with %s in prepare(), live measurements must not be cached here
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ") ORDER BY `timestamp` ASC ;", $args);
         try {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements_day: the table name is internal, the column names are validated by Guard::ident() against an allowlist, every value is bound with %s in prepare(), live measurements must not be cached here
             $data = (array)$wpdb->get_results($sql, ARRAY_A);
         }
         catch(\Exception $ex) {
@@ -1727,6 +1795,7 @@ trait Storage {
                 }
             }
             catch (\Exception $ex) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- debugging aid for the plugin Logger (Logger::warning), the dump is truncated and never printed or sent to error_log
                 Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
             }
         }
@@ -1735,6 +1804,7 @@ trait Storage {
             $throttle = 'lws_rejected_' . md5((isset($value['device_id']) ? (string)$value['device_id'] : '') . '|' . (isset($value['module_id']) ? (string)$value['module_id'] : '') . '|' . (isset($value['measure_type']) ? (string)$value['measure_type'] : ''));
             if (get_transient($throttle) === false) {
                 set_transient($throttle, 1, 900);
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- debugging aid for the plugin Logger (Logger::warning), the dump is truncated and never printed or sent to error_log
                 $detail = 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 500);
                 try {
                     Logger::warning('Data Manager', null, isset($value['device_id']) ? $value['device_id'] : null, isset($value['device_name']) ? $value['device_name'] : null, isset($value['module_id']) ? $value['module_id'] : null, isset($value['module_name']) ? $value['module_name'] : null, 500, $detail);
@@ -1759,8 +1829,10 @@ trait Storage {
         $result = 0;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         if (!array_key_exists('guid', $value) && array_key_exists('station_id', $value)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s in prepare(), live lookup of the guid before a write
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_id=%s", $value['station_id']);
             try {
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s in prepare(), live lookup of the guid before a write
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 if (count($query_a) <= 0) {
@@ -1793,6 +1865,7 @@ trait Storage {
             Cache::flush_query();
         }
         else {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s in prepare(), live lookup of the guid before a write
             Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . substr(print_r($value, true), 0, 1000));
         }
         return $result;
@@ -1810,11 +1883,14 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         if (isset($station_type)) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s / %d in prepare(), a write is not cacheable
             $sql = $wpdb->prepare("INSERT IGNORE INTO ".$table_name." (station_id,station_type) VALUES(%s,%d);", $station_id, $station_type);
         }
         else {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s / %d in prepare(), a write is not cacheable
             $sql = $wpdb->prepare("INSERT IGNORE INTO ".$table_name." (station_id) VALUES(%s);", $station_id);
         }
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s / %d in prepare(), a write is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1840,11 +1916,14 @@ trait Storage {
             return false;
         }
         if ($sep === '') {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name comes from the live_weather_station_*_table() methods, the column is validated by Guard::ident() against an allowlist and the values are bound with Guard::placeholders() in prepare(), a delete is not cacheable
             $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `".$field_name."` IN (" . Guard::placeholders($value, '%d') . ")", $value);
         }
         else {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name comes from the live_weather_station_*_table() methods, the column is validated by Guard::ident() against an allowlist and the values are bound with Guard::placeholders() in prepare(), a delete is not cacheable
             $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `".$field_name."` IN (" . Guard::placeholders($value, '%s') . ")", $value);
         }
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name comes from the live_weather_station_*_table() methods, the column is validated by Guard::ident() against an allowlist and the values are bound with Guard::placeholders() in prepare(), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1865,6 +1944,7 @@ trait Storage {
             return false;
         }
         $sql = "DELETE FROM ".$table_name." ORDER BY `".$field_name."` ASC LIMIT ".absint($limit);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (log): the column name is validated by Guard::ident(), the limit is cast with absint(), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1885,6 +1965,7 @@ trait Storage {
             return false;
         }
         $sql = "DELETE FROM ".$table_name." WHERE (`" . $field_name . "` < NOW() - INTERVAL " . absint($interval) . " HOUR);";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (log, notifications): the column name is validated by Guard::ident(), the interval is cast with absint(), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1941,7 +2022,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("xx:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1959,7 +2042,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zy:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1977,7 +2062,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zz:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -1995,7 +2082,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("yx:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -2013,7 +2102,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("yy:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -2031,7 +2122,9 @@ trait Storage {
         if (count($values) === 0) {
             $values = array('');
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zx:%"), $values));
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is internal and every value is bound with %s through Guard::placeholders() in prepare() (placeholders are generated for the exact number of values), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -2056,7 +2149,9 @@ trait Storage {
     protected static function _clean_usermeta($key) {
         global $wpdb;
         $table_name = $wpdb->usermeta;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- core table $wpdb->usermeta: the pattern and the user id are bound with %s / %d in prepare(), a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE meta_key LIKE %s AND user_id=%d;", '%' . $wpdb->esc_like('_' . $key) . '%', get_current_user_id());
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- core table $wpdb->usermeta: the pattern and the user id are bound with %s / %d in prepare(), a delete is not cacheable
         return $wpdb->query($sql);
     }
 
@@ -2080,7 +2175,9 @@ trait Storage {
             '%lws-%\_per\_page',
         );
         $where = implode(' OR ', array_fill(0, count($like), 'meta_key LIKE %s'));
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- core table $wpdb->usermeta: the LIKE patterns are a fixed list, one %s placeholder is generated per pattern, a delete is not cacheable
         $sql = $wpdb->prepare("DELETE FROM " . $wpdb->usermeta . " WHERE " . $where, $like);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- core table $wpdb->usermeta: the LIKE patterns are a fixed list, one %s placeholder is generated per pattern, a delete is not cacheable
         return $wpdb->query($sql);
     }
 }

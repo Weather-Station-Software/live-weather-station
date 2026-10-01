@@ -19,8 +19,8 @@ $csListTable->prepare_items();
 ?>
 
 <span class="widget_styles-section">
-    <h2><?php echo __('Chart color schemes', 'live-weather-station');?></h2>
-    <p><?php echo __('Custom palettes available for all charts, in addition to standard palettes:', 'live-weather-station');?></p>
+    <h2><?php echo esc_html__('Chart color schemes', 'live-weather-station');?></h2>
+    <p><?php echo esc_html__('Custom palettes available for all charts, in addition to standard palettes:', 'live-weather-station');?></p>
     <style>div.tablenav.top, div.tablenav.bottom {display:none;}.widefat th {padding: 8px 10px !important;font-weight: 400 !important;}.row-actions{padding-left: 28px;}</style>
     <?php $csListTable->display();?>
 </span>

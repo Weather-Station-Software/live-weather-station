@@ -19,7 +19,7 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
 ?>
 
 <div class="wrap">
-    <h1><?php echo sprintf(__('Remove from %s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></h1>
+    <h1><?php echo esc_html(sprintf(/* translators: %s: name of the plugin */ __('Remove from %s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></h1>
     <form method="post" name="remove-station" id="remove-station" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>">
         <input name="service" type="hidden" value="station" />
         <input name="tab" type="hidden" value="delete" />
@@ -40,9 +40,9 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p><?php echo sprintf(__('Are you sure you want to remove this station, and all its data, from %s?', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+            <p><?php echo esc_html(sprintf(/* translators: %s: name of the plugin */ __('Are you sure you want to remove this station, and all its data, from %s?', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></p>
             <p class="submit"><input type="submit" name="delete-station" id="delete-station" class="button button-primary" value="<?php esc_html_e( 'Confirm Removal', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-delete-station" id="donot-delete-station" class="button" value="<?php esc_html_e( 'Cancel Removal', 'live-weather-station' );?>"  />
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Removing this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Removing this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </div>
     </form>
 </div>
