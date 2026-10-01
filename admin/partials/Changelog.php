@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="wrap">
-    <h2><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></h2>
+    <h2><?php echo esc_html(ucfirst(__('changelog', 'live-weather-station'))); ?></h2>
     <div class="markdown">
         <style type="text/css">
             .markdown ul {

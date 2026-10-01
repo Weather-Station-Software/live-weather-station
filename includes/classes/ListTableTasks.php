@@ -59,7 +59,7 @@ class Tasks extends Base {
     protected function column_task($item){
 
         $s = $this->get_icon($item['pool'], $item['hook']) . esc_html($item['task']);
-        $s .= '<br/><span style="color:silver">' . esc_html(ucfirst(sprintf(__('%s pool', 'live-weather-station'), self::get_pool_name($item['pool'])) )). '</span>';
+        $s .= '<br/><span style="color:silver">' . esc_html(ucfirst(sprintf(/* translators: %s: name of the pool of tasks */ __('%s pool', 'live-weather-station'), self::get_pool_name($item['pool'])) )). '</span>';
         return $s;
     }
 
@@ -86,11 +86,13 @@ class Tasks extends Base {
     }
 
     protected function column_next($item){
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter of a list table, whitelisted below (task, avr, next), no state change
         $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'next';
         if (!in_array($orderby, array('task', 'avr', 'next'), true)) {
             $orderby = 'next';
         }
-        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'desc') ? 'desc' : 'asc';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter of a list table, reduced to 'desc' or 'asc', no state change
+        $order = (!empty($_REQUEST['order']) && strtolower(sanitize_text_field(wp_unslash($_REQUEST['order']))) === 'desc') ? 'desc' : 'asc';
         $sort = '&orderby=' . $orderby . '&order=' . $order;
         $actions = array();
         if ($item['next'] != $this->ts_none) {
@@ -109,7 +111,7 @@ class Tasks extends Base {
             $actions['relaunch'] = '<a href="' . esc_url(wp_nonce_url('?page=lws-scheduler&tab=tasks&action=relaunch-watchdog' . $sort, 'relaunch-watchdog')) . '">' . esc_html__('Restart', 'live-weather-station') . '</a>';
         }
         if ($item['next'] != $this->ts_none) {
-            $result = esc_html(ucfirst(sprintf( __('in %s', 'live-weather-station'), human_time_diff(time(), $item['next']))));
+            $result = esc_html(ucfirst(sprintf(/* translators: %s: time left before the next run (for example 5 minutes) */ __('in %s', 'live-weather-station'), human_time_diff(time(), $item['next']))));
             $result .= $this->row_actions($actions);
         }
         return $result;
@@ -140,11 +142,13 @@ class Tasks extends Base {
     }
 
     public function usort_reorder($a,$b){
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter of a list table, whitelisted below (task, avr, next), no state change
         $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'next';
         if (!in_array($orderby, array('task', 'avr', 'next'), true)) {
             $orderby = 'next';
         }
-        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'desc') ? 'desc' : 'asc';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter of a list table, reduced to 'desc' or 'asc', no state change
+        $order = (!empty($_REQUEST['order']) && strtolower(sanitize_text_field(wp_unslash($_REQUEST['order']))) === 'desc') ? 'desc' : 'asc';
         if ($orderby === 'avr') {
             $result = $a[$orderby] - $b[$orderby];
         }

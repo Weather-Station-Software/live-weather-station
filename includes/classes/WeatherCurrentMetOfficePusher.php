@@ -138,7 +138,8 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $response = $content['response'];
         if ($response['code'] != 200) {
-            throw new \Exception($response['message'], $response['code']);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is cleaned by sanitize_remote_message() (sanitize_text_field, 200 characters) and the exception is caught in WeatherCurrentAbstractPusher::push_data(), which logs it or returns the sanitized text
+            throw new \Exception($this->sanitize_remote_message($response['message']), $response['code']);
         }
     }
 

@@ -62,11 +62,14 @@ trait CurrentClient {
     private function get_owm_measurements_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught in the same class (only tested with strpos() then logged with a fixed text, never printed), and the payload is already cleaned by live_weather_station_clean_text() (sanitize_text_field)
             throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200));
         }
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the text of a debug event for the plugin Logger (truncated, nothing is printed)
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- caught in the same class (only tested with strpos() then logged with a fixed text, never printed), and the message is already cleaned by live_weather_station_clean_text() (sanitize_text_field)
                 throw new \Exception(live_weather_station_clean_text($weather['message'], 200));
             }
             else {

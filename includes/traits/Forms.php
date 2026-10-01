@@ -229,15 +229,15 @@ trait Handling {
         $unit = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['unit'];
         $unitlong = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['long'];
         $typetxt = live_weather_station_lcfirst($this->get_measurement_type($type, false, ($type == 'rain' ? 'namodule3' : 'NAMain')));
-        $txt_value = sprintf(__('Limits for %s, values expressed in %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
-        $txt_alarm = sprintf(__('Alarms for %s, values expressed in %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+        $txt_value = sprintf(/* translators: 1: type of measurement, 2: unit */ __('Limits for %1$s, values expressed in %2$s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+        $txt_alarm = sprintf(/* translators: 1: type of measurement, 2: unit */ __('Alarms for %1$s, values expressed in %2$s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
         if ($type == 'humidex' || $type == 'heat_index' || $type == 'cbi' || $type == 'uv_index'  || $type == 'summer_simmer'  || $type == 'steadman') {
-            $txt_value = sprintf(__('Limits for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
-            $txt_alarm = sprintf(__('Alarms for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+            $txt_value = sprintf(/* translators: %s: type of measurement */ __('Limits for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+            $txt_alarm = sprintf(/* translators: %s: type of measurement */ __('Alarms for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
         }
         if ($type == 'strike_count' || $type == 'strike_instant') {
-            $txt_value = sprintf(__('Limits for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
-            $txt_alarm = sprintf(__('Alarms for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
+            $txt_value = sprintf(/* translators: %s: type of measurement */ __('Limits for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
+            $txt_alarm = sprintf(/* translators: %s: type of measurement */ __('Alarms for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
         }
         $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_value" value="' . esc_attr($min_value) . '" />';
         $html .= '&nbsp;<label for="' . $id . 'min_value">' . wp_kses_post($unit) . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';

@@ -63,14 +63,14 @@ $warning = __('All the maps associated to this service will no longer be display
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Thunderforest')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Thunderforest')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is either empty or a fixed target and rel attribute string defined at the top of this template ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API plan', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-43, '%s', __('get details', 'live-weather-station'));?>)</span>
+                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-43, '%s', __('get details', 'live-weather-station')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InlineHelp::get() builds an <a> and a language marker from the plugin's own link table and I18nHelper::get_language_markup(), around the translated anchor passed here ?>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -81,7 +81,7 @@ $warning = __('All the maps associated to this service will no longer be display
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="thunderforest-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -92,9 +92,9 @@ $warning = __('All the maps associated to this service will no longer be display
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="thunderforest-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="thunderforest-disconnect" class="button button-primary" onclick="lws_thunderforest_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_thunderforest_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="thunderforest-disconnect" class="button button-primary" onclick="lws_thunderforest_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns wp_json_encode() with JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS and JSON_HEX_QUOT, a safe JS literal in an HTML attribute ?>); return lws_thunderforest_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>
