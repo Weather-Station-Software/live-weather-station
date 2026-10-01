@@ -2,6 +2,8 @@
 
 namespace WeatherStation\UI\ListTable;
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only display filters of the events log (level, station, system, service, limit): nothing is modified.
+
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Output;
 
@@ -115,13 +117,14 @@ class Log extends Base {
     protected function init_values() {
         $this->filters = array();
         if (isset($_GET['limit'])) {
-            $this->limit = intval($_GET['limit']);
+            $this->limit = intval(sanitize_text_field(wp_unslash($_GET['limit'])));
             if (!$this->limit) {
                 $this->limit = 25;
             }
         }
         if (isset($_GET['level'])) {
-            $this->level = strtolower(sanitize_text_field(urldecode($_GET['level'])));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The value is unslashed, URL decoded then sanitized by sanitize_text_field() (the urldecode() call in between hides it from the sniff).
+            $this->level = strtolower(sanitize_text_field(urldecode(wp_unslash($_GET['level']))));
             if (!array_key_exists($this->level, Logger::$severity)) {
                 $this->level = '';
             }
@@ -132,7 +135,8 @@ class Log extends Base {
             }
         }
         if (isset($_GET['station'])) {
-            $this->station = sanitize_text_field(urldecode($_GET['station']));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The value is unslashed, URL decoded then sanitized by sanitize_text_field() (the urldecode() call in between hides it from the sniff).
+            $this->station = sanitize_text_field(urldecode(wp_unslash($_GET['station'])));
             if (!array_key_exists($this->station, $this->stations)) {
                 $this->station = '';
             }
@@ -143,7 +147,8 @@ class Log extends Base {
             }
         }
         if (isset($_GET['system'])) {
-            $this->system = sanitize_text_field(urldecode($_GET['system']));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The value is unslashed, URL decoded then sanitized by sanitize_text_field() (the urldecode() call in between hides it from the sniff).
+            $this->system = sanitize_text_field(urldecode(wp_unslash($_GET['system'])));
             if (!array_key_exists($this->system, $this->systems)) {
                 $this->system = '';
             }
@@ -154,7 +159,8 @@ class Log extends Base {
             }
         }
         if (isset($_GET['service'])) {
-            $this->service = sanitize_text_field(urldecode($_GET['service']));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The value is unslashed, URL decoded then sanitized by sanitize_text_field() (the urldecode() call in between hides it from the sniff).
+            $this->service = sanitize_text_field(urldecode(wp_unslash($_GET['service'])));
             if (!array_key_exists($this->service, $this->services)) {
                 $this->service = '';
             }
@@ -244,7 +250,7 @@ class Log extends Base {
         foreach ($_disp as $d) {
             $l = array();
             $l['value'] = $d;
-            $l['text'] = sprintf(esc_html__('Show %d lines per page', 'live-weather-station'), $d);
+            $l['text'] = sprintf(/* translators: %d: Number of lines displayed per page. */ esc_html__('Show %d lines per page', 'live-weather-station'), $d);
             $l['selected'] = ($d == $this->limit ? 'selected="selected" ' : '');
             $result[] = $l;
         }
