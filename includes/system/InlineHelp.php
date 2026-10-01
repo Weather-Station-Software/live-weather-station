@@ -191,7 +191,7 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -13) {
-            $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://wow.meteo.be/en/join/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -14) {
             $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -822,10 +822,10 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p><em>' . $s2 . '</em></p>');
 
 
-                $s1 = __('The Met Office WOW website was closed on 1 December 2025 and replaced by WOW-BE, run by the Royal Meteorological Institute of Belgium. Even if you had a Met Office site, you need a new account and a new site. To obtain the site ID (a UUID) and the PIN, please follow these steps:', 'live-weather-station' );
+                $s1 = __('WOW Met Office will be discontinued at the end of 2026 and is replaced by WOW-BE, run by the Royal Meteorological Institute of Belgium. Even if your station was on WOW Met Office, you must register it again on WOW-BE: your old site ID and PIN do not work there, and the history of your station cannot be transferred. The registration gives you the new station ID and lets you choose an authentication key. Please follow these steps:', 'live-weather-station' );
                 $s2 = self::get(-12, __('%s on WOW-BE.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
-                $s3 = self::get(-13, __('After registration, log in and %s.', 'live-weather-station'), __('create a site', 'live-weather-station'));
-                $s4 = __('Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> (the PIN) in the corresponding fields of the "WOW-BE" box, and click on the "connect" button.', 'live-weather-station');
+                $s3 = self::get(-13, __('Register your station again: %s. You will receive the station ID (short or long) by e-mail and choose an authentication key.', 'live-weather-station'), __('join WOW-BE', 'live-weather-station'));
+                $s4 = __('Then, copy and paste the <em>Station ID</em> and the <em>Authentication key</em> in the corresponding fields of the "WOW-BE" box, and click on the "connect" button.', 'live-weather-station');
                 $s5 = self::get(-14, __('After a few hours you\'ll get something %s', 'live-weather-station'), __('like this!', 'live-weather-station'));
                 $tabs[] = array(
                     'title'    => 'WOW-BE',

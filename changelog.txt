@@ -1,5 +1,5 @@
 #3.9.0 / xx September 2026
-* Bug fix: WOW uploads now target WOW-BE (wow.meteo.be), which replaced the Met Office WOW closed on 1 December 2025; a notice asks you to register your station again and enter the new site ID and PIN.
+* Bug fix: WOW uploads now target WOW-BE (wow.meteo.be), which replaced the Met Office WOW closed on 1 December 2025; X
 * Bug fix: WeatherFlow stations are read with the personal access token of their owner (WeatherFlow no longer lets you read the stations of other people); stations saved without a token show a clear message.
 * Improvement: the personal access token of a WeatherFlow station is kept secret and is excluded from the exports.
 * Bug fix: BloomSky, stopped in 2022, is no longer offered when adding a station; existing BloomSky stations are marked as no longer available, are no longer requested and keep their stored data.

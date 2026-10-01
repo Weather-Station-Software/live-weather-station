@@ -898,8 +898,8 @@ class Handling {
         $password = $station[$service.'_password'];
         switch ($service) {
             case 'wow':
-                $f1 = __('Site ID (WOW-BE UUID)', 'live-weather-station');
-                $f2 = __('Authentication key (PIN)', 'live-weather-station');
+                $f1 = __('Station ID', 'live-weather-station');
+                $f2 = __('Authentication key', 'live-weather-station');
                 $url = 'https://wow.meteo.be/';
                 break;
             case 'pws':
