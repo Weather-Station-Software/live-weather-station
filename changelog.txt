@@ -38,6 +38,7 @@
 * Removed: the Navionics map type and its API key setting, as the Navionics Web API v2 is retired; existing Navionics maps are displayed with OpenStreetMap and the stored key is deleted on update.
 * Bug fix: Windy maps use the current loader URL of the Windy Map Forecast API.
 * Improvement: the Windy settings and help now state that a Windy Professional key is required in production (the free Testing version is not allowed).
+* Improvement: global functions, constants and hooks now carry the unique prefix `live_weather_station_` (wordpress.org naming rules). The filter `lws_manage_options_capability` is renamed `live_weather_station_manage_options_capability`; the old name is still honoured.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

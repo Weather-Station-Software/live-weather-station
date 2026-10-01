@@ -41,7 +41,7 @@ class Generator extends Framework {
                 $this->error();
             }
             $classname = ucfirst(strtolower($this->type));
-            $file = LWS_INCLUDES_DIR . 'classes/PageStandalone' . $classname . 'Generator.php';
+            $file = LIVE_WEATHER_STATION_INCLUDES_DIR . 'classes/PageStandalone' . $classname . 'Generator.php';
             if (!file_exists($file)) {
                 $this->error();
             }

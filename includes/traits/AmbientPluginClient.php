@@ -140,10 +140,10 @@ trait Client {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_AMBT_SID);
+            $weather->compute(LIVE_WEATHER_STATION_AMBT_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_AMBT_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_AMBT_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {

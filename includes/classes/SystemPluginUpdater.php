@@ -44,21 +44,21 @@ class Updater {
         }
         set_transient(self::$transient_name, 1, self::$transient_expiry);
         if ($overwrite) {
-            Logger::emergency('Updater',null,null,null,null,null,null,'Unable to update this old version of ' . LWS_PLUGIN_NAME . '... Full reinstallation will be necessary.');
-            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' installation.');
+            Logger::emergency('Updater',null,null,null,null,null,null,'Unable to update this old version of ' . LIVE_WEATHER_STATION_PLUGIN_NAME . '... Full reinstallation will be necessary.');
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' installation.');
             Watchdog::stop();
             self::drop_tables(false);
             self::create_tables();
-            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . '.');
-            Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully installed.');
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . '.');
+            Logger::notice('Updater',null,null,null,null,null,null, LIVE_WEATHER_STATION_PLUGIN_NAME . ' successfully installed.');
         }
         else {
-            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' update.', $oldversion);
             Watchdog::stop();
             self::create_tables();
             self::update_tables($oldversion);
-            Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
-            Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
+            Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . '.', $oldversion);
+            Logger::notice('Updater',null,null,null,null,null,null, LIVE_WEATHER_STATION_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LIVE_WEATHER_STATION_VERSION . '.');
         }
         update_option('live_weather_station_last_update', time());
         Cache::reset();
@@ -73,7 +73,7 @@ class Updater {
                     update_option('live_weather_station_show_update', 0);
                 }
             }
-            Notifier::info(sprintf(__('%s has been updated.', 'live-weather-station'), LWS_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(__('Your site now uses version %s.', 'live-weather-station'), LWS_VERSION));
+            Notifier::info(sprintf(__('%s has been updated.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(__('Your site now uses version %s.', 'live-weather-station'), LIVE_WEATHER_STATION_VERSION));
         }
     }
 }

@@ -74,7 +74,7 @@ class Cache {
      */
     private static function _flush($pref='lws_', $expired=true) {
     	$cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
-        if (LWS_FILE_CACHE) {
+        if (LIVE_WEATHER_STATION_FILE_CACHE) {
             $expiry = 0;
             if (strpos($pref, self::$widget) !== false) {
                 $expiry = self::$widget_expiry;
@@ -97,7 +97,7 @@ class Cache {
             if (strpos($pref, self::$i18n) !== false) {
                 $expiry = self::$i18n_expiry;
             }
-            $result = lws_meta_flcache($pref, $expiry);
+            $result = live_weather_station_meta_flcache($pref, $expiry);
         }
         else {
             global $wpdb;
@@ -198,7 +198,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$backend.'_'.$cache_id, self::$backend_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$backend.'_'.$cache_id, self::$backend_expiry)) {
                 self::_stop_chrono(self::$backend.'_'.$cache_id);
             }
             return $r;
@@ -223,7 +223,7 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
+            $r = live_weather_station_meta_cache(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
             self::_stop_chrono(self::$backend.'_'.$cache_id, false);
             return $r;
         }
@@ -243,7 +243,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$backend.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$backend.'_'.$cache_id);
         }
     }
 
@@ -289,7 +289,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$frontend.'_'.$cache_id, self::$frontend_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$frontend.'_'.$cache_id, self::$frontend_expiry)) {
                 self::_stop_chrono(self::$frontend.'_'.$cache_id);
             }
             return $r;
@@ -314,7 +314,7 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
+            $r = live_weather_station_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
             self::_stop_chrono(self::$frontend.'_'.$cache_id, false);
             return $r;
         }
@@ -334,7 +334,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$frontend.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$frontend.'_'.$cache_id);
         }
     }
 
@@ -384,7 +384,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache($id, $expiry)) {
+            if ($r = live_weather_station_meta_uncache($id, $expiry)) {
                 self::_stop_chrono($id);
             }
             return $r;
@@ -425,7 +425,7 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache($id, $value, $expiry);
+            $r = live_weather_station_meta_cache($id, $value, $expiry);
             self::_stop_chrono($id, false);
             return $r;
         }
@@ -454,7 +454,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache($id);
+            return live_weather_station_meta_rmcache($id);
         }
     }
 
@@ -488,7 +488,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$widget.'_'.$cache_id, self::$widget_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$widget.'_'.$cache_id, self::$widget_expiry)) {
                 self::_stop_chrono(self::$widget.'_'.$cache_id);
             }
             return $r;
@@ -513,7 +513,7 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
+            $r = live_weather_station_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
             self::_stop_chrono(self::$widget.'_'.$cache_id, false);
             return $r;
         }
@@ -533,7 +533,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$widget.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$widget.'_'.$cache_id);
         }
     }
 
@@ -562,7 +562,7 @@ class Cache {
      */
     public static function get_i18n($cache_id) {
         self::_init_chrono(self::$i18n.'_'.$cache_id);
-        if ($r = lws_meta_uncache(self::$i18n.'_'.$cache_id, self::$i18n_expiry)) {
+        if ($r = live_weather_station_meta_uncache(self::$i18n.'_'.$cache_id, self::$i18n_expiry)) {
             self::_stop_chrono(self::$i18n.'_'.$cache_id);
         }
         return $r;
@@ -581,7 +581,7 @@ class Cache {
      *
      */
     public static function set_i18n($cache_id, $value) {
-        $r = lws_meta_cache(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
+        $r = live_weather_station_meta_cache(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
         self::_stop_chrono(self::$i18n.'_'.$cache_id, false);
         return $r;
     }
@@ -595,7 +595,7 @@ class Cache {
      *
      */
     public static function invalidate_i18n($cache_id) {
-        return lws_meta_rmcache(self::$i18n.'_'.$cache_id);
+        return live_weather_station_meta_rmcache(self::$i18n.'_'.$cache_id);
     }
 
     /**

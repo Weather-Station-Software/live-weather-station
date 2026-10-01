@@ -18,21 +18,21 @@ use WeatherStation\System\SQL\Guard;
  * @since 1.0.0
  */
 
-define('LWS_NETATMO_SID', 0);
-define('LWS_LOC_SID', 1);
-define('LWS_OWM_SID', 2);
-define('LWS_WUG_SID', 3);
-define('LWS_RAW_SID', 4);
-define('LWS_REAL_SID', 5);
-define('LWS_NETATMOHC_SID', 6);
-define('LWS_TXT_SID', 7);
-define('LWS_WFLW_SID', 8);
-define('LWS_PIOU_SID', 9);
-define('LWS_BSKY_SID', 10);
-define('LWS_AMBT_SID', 11);
-define('LWS_WLINK_SID', 12);
+define('LIVE_WEATHER_STATION_NETATMO_SID', 0);
+define('LIVE_WEATHER_STATION_LOC_SID', 1);
+define('LIVE_WEATHER_STATION_OWM_SID', 2);
+define('LIVE_WEATHER_STATION_WUG_SID', 3);
+define('LIVE_WEATHER_STATION_RAW_SID', 4);
+define('LIVE_WEATHER_STATION_REAL_SID', 5);
+define('LIVE_WEATHER_STATION_NETATMOHC_SID', 6);
+define('LIVE_WEATHER_STATION_TXT_SID', 7);
+define('LIVE_WEATHER_STATION_WFLW_SID', 8);
+define('LIVE_WEATHER_STATION_PIOU_SID', 9);
+define('LIVE_WEATHER_STATION_BSKY_SID', 10);
+define('LIVE_WEATHER_STATION_AMBT_SID', 11);
+define('LIVE_WEATHER_STATION_WLINK_SID', 12);
 
-define('DEFAULT_UUID', '00000000-0000-0000-0000-000000000000');
+define('LIVE_WEATHER_STATION_DEFAULT_UUID', '00000000-0000-0000-0000-000000000000');
 
 trait Storage {
 
@@ -419,7 +419,7 @@ trait Storage {
         $sql .= " (`id` int(11) NOT NULL AUTO_INCREMENT,";
         $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
         $sql .= " `level` enum('emergency','alert','critical','error','warning','notice','info','debug','unknown') NOT NULL DEFAULT 'unknown',";
-        $sql .= " `plugin` varchar(20) NOT NULL DEFAULT '" . LWS_PLUGIN_NAME . "',";
+        $sql .= " `plugin` varchar(20) NOT NULL DEFAULT '" . LIVE_WEATHER_STATION_PLUGIN_NAME . "',";
         $sql .= " `version` varchar(11) NOT NULL DEFAULT 'N/A',";
         $sql .= " `system` varchar(50) NOT NULL DEFAULT 'N/A',";
         $sql .= " `service` varchar(50) NOT NULL DEFAULT 'N/A',";
@@ -803,7 +803,7 @@ trait Storage {
                 $count = (int)$wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM `' . $table_name . '` WHERE type IN (%d, %d)', 2, 7));
                 if ($count > 0 && (string)get_option('live_weather_station_stadia_apikey', '') === '') {
                     Notifier::warning(__('Stamen maps need a Stadia Maps API key', 'live-weather-station'),
-                        lws_get_admin_page_url('lws-settings', null, 'services'),
+                        live_weather_station_get_admin_page_url('lws-settings', null, 'services'),
                         __('The former Stamen tile servers are closed and Navionics Web API v2 is retired. Your Stamen and Navionics maps are displayed with OpenStreetMap until you enter a Stadia Maps API key in the Services settings.', 'live-weather-station'));
                 }
             }
@@ -839,20 +839,20 @@ trait Storage {
                 $to = get_bloginfo('admin_email');
                 $subject = __('About your Weather Underground stations', 'live-weather-station');
                 $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-                $message .= sprintf(__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ';
+                $message .= sprintf(__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ';
                 $message .= __('As a result, the following stations will no longer be collected:', 'live-weather-station') . "\r\n" ;
                 foreach ($wug as $station) {
                     $message .= '     - ' . $station . "\r\n";
                 }
-                $message .= "\r\n" . sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . $url . ".\r\n" . "\r\n";
+                $message .= "\r\n" . sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME) . ' ' . $url . ".\r\n" . "\r\n";
                 if (function_exists('wp_mail')) {
                     wp_mail($to, $subject, $message);
                 }
                 else {
-                    define('LWS_WUG_ALERT_TO', $to);
-                    define('LWS_WUG_ALERT_SUBJECT', $subject);
-                    define('LWS_WUG_ALERT_MESSAGE', $message);
-                    add_action('wp_loaded', 'lws_send_alert_message');
+                    define('LIVE_WEATHER_STATION_WUG_ALERT_TO', $to);
+                    define('LIVE_WEATHER_STATION_WUG_ALERT_SUBJECT', $subject);
+                    define('LIVE_WEATHER_STATION_WUG_ALERT_MESSAGE', $message);
+                    add_action('wp_loaded', 'live_weather_station_send_alert_message');
                 }
             }
 
@@ -997,7 +997,7 @@ trait Storage {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = $wpdb->prepare("SELECT station_name FROM `" . $table_name . "` WHERE `station_type`=%s ;", LWS_WUG_SID);
+        $sql = $wpdb->prepare("SELECT station_name FROM `" . $table_name . "` WHERE `station_type`=%s ;", LIVE_WEATHER_STATION_WUG_SID);
         foreach ($wpdb->get_results($sql, ARRAY_A) as $station) {
             $result[] = $station['station_name'];
         }

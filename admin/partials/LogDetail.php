@@ -13,7 +13,7 @@ $color = Logger::get_color($log['level']);
 if ($color != '') {
     $color = 'style="color:' . esc_attr($color) . '"';
 }
-$title = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw ' . esc_attr(Logger::get_icon($log['level'])) . '"></i>&nbsp;' . esc_html(Logger::get_name($log['level'])) . ' (#' . absint($log['id']) . ')';
+$title = '<i ' . $color . ' class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw ' . esc_attr(Logger::get_icon($log['level'])) . '"></i>&nbsp;' . esc_html(Logger::get_name($log['level'])) . ' (#' . absint($log['id']) . ')';
 
 ?>
 

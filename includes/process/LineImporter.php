@@ -25,7 +25,7 @@ abstract class LineImporter extends Process {
     protected $batchsize = 1000;
     protected $set = array('avg', 'min', 'max', 'med', 'dev', 'agg', 'maxhr', 'dom');
     protected $auto = array('NAMain', 'NAModule1', 'NAModule2', 'NAModule3', 'NAModule5', 'NAModule6', 'NAModule7', 'NAComputed', 'NACurrent', 'NAPollution');
-    protected $white = array(LWS_NETATMO_SID, LWS_NETATMOHC_SID, LWS_BSKY_SID, LWS_AMBT_SID);
+    protected $white = array(LIVE_WEATHER_STATION_NETATMO_SID, LIVE_WEATHER_STATION_NETATMOHC_SID, LIVE_WEATHER_STATION_BSKY_SID, LIVE_WEATHER_STATION_AMBT_SID);
 
     /**
      * Get the UUID of the process.
@@ -99,7 +99,7 @@ abstract class LineImporter extends Process {
     protected function message() {
         if ($this->is_in_error()) {
             $result = sprintf(__('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
-            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
+            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
             $result = sprintf(__('Historical data has been correctly imported in "%s" for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";

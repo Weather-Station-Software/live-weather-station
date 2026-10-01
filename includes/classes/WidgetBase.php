@@ -34,7 +34,7 @@ abstract class Base extends \WP_Widget {
     public function enqueue_styles() {
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        lws_font_awesome();
+        live_weather_station_font_awesome();
     }
 
     /**
@@ -80,11 +80,11 @@ abstract class Base extends \WP_Widget {
                 }
                 $result = $before . '&nbsp;';
                 $jsInitId = md5(random_bytes(18));
-                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
+                $result .= live_weather_station_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    $.post( ' . Guard::js(LWS_AJAX_URL) . ', {action: ' . Guard::js('lws_w_' . $widget) . ', wnum: ' . $number . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
+                $result .= '    $.post( ' . Guard::js(LIVE_WEATHER_STATION_AJAX_URL) . ', {action: ' . Guard::js('lws_w_' . $widget) . ', wnum: ' . $number . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script($jsInitId);
+                $result .= live_weather_station_print_end_script($jsInitId);
                 $result .= $after;
                 Cache::set_widget($cache_id, $result);
             }
@@ -230,7 +230,7 @@ abstract class Base extends \WP_Widget {
      * @since 3.8.0
      */
     public static function lws_widget_callback() {
-        lws_public_rate_limit('lws_widget_' . static::class);
+        live_weather_station_public_rate_limit('lws_widget_' . static::class);
         $widget = new static;
         $number = (isset($_POST['wnum']) && is_scalar($_POST['wnum'])) ? absint($_POST['wnum']) : 0;
         $options = get_option('widget_' . $widget->id_base);

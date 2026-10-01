@@ -23,7 +23,7 @@ class Logger {
     private $version;
 
     // Per-request flood protection: maximum number of rows a single request can write, and the last written event.
-    // Filterable with 'lws_log_max_rows'; much higher for CLI/cron/background contexts.
+    // Filterable with 'live_weather_station_log_max_rows'; much higher for CLI/cron/background contexts.
     private static $max_rows_per_request = 500;
     private static $max_rows_long_running = 50000;
     private static $rows_written = 0;
@@ -42,7 +42,7 @@ class Logger {
         $long = (defined('WP_CLI') && WP_CLI) || (defined('DOING_CRON') && DOING_CRON) || (function_exists('wp_doing_cron') && wp_doing_cron()) || PHP_SAPI === 'cli';
         $max = $long ? self::$max_rows_long_running : self::$max_rows_per_request;
         if (function_exists('apply_filters')) {
-            $max = (int)apply_filters('lws_log_max_rows', $max, $long);
+            $max = (int)apply_filters('live_weather_station_log_max_rows', $max, $long);
         }
         return $max;
     }
@@ -132,7 +132,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         if (!is_string($level) || !array_key_exists($level, self::$severity)) {
             $level = 'unknown';
         }
@@ -162,7 +162,7 @@ class Logger {
             $values = array();
             $values['level'] = $level;
             $values['timestamp'] = date('Y-m-d H:i:s');
-            $values['plugin'] = LWS_PLUGIN_NAME;
+            $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
             $values['version'] = substr($version, 0, 11);
             if (!is_null($system)) {
                 $values['system'] = substr(sanitize_text_field($system), 0, 49);
@@ -204,8 +204,8 @@ class Logger {
             $values = array();
             $values['level'] = self::$suppressed_level;
             $values['timestamp'] = date('Y-m-d H:i:s');
-            $values['plugin'] = LWS_PLUGIN_NAME;
-            $values['version'] = substr(LWS_VERSION, 0, 11);
+            $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
+            $values['version'] = substr(LIVE_WEATHER_STATION_VERSION, 0, 11);
             $values['system'] = 'Logger';
             $values['message'] = $n . ' further messages suppressed in this request';
             self::insert_table(self::live_weather_station_log_table(), $values);
@@ -237,7 +237,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function emergency($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function emergency($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('emergency', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
     
@@ -255,7 +255,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function alert($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function alert($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('alert', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -273,7 +273,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function critical($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function critical($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('critical', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -291,7 +291,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function error($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function error($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('error', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -309,7 +309,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function warning($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function warning($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('warning', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -327,7 +327,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function notice($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function notice($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('notice', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -345,7 +345,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function info($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function info($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('info', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -363,7 +363,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function debug($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function debug($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('debug', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 

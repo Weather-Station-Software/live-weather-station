@@ -63,7 +63,7 @@ class SunshineAggregator extends Process {
      * @since 3.8.0
      */
     protected function description() {
-        return sprintf(__('This fix modifies the way %s handle and store historical sunshine durations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix modifies the way %s handle and store historical sunshine durations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**

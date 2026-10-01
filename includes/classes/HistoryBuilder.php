@@ -18,7 +18,7 @@ use WeatherStation\Data\DateTime\Conversion;
  * @since 3.3.2
  */
 
-function lws_array_average($arr, $type) {
+function live_weather_station_array_average($arr, $type) {
     $result = 0;
     if (count($arr) > 0) {
         if (in_array($type, array('winddirection', 'gustdirection','windangle', 'gustangle'))) {
@@ -43,7 +43,7 @@ function lws_array_average($arr, $type) {
     return $result;
 }
 
-function lws_array_median($arr) {
+function live_weather_station_array_median($arr) {
     if($arr && is_array($arr)){
         $count = count($arr);
         sort($arr);
@@ -53,7 +53,7 @@ function lws_array_median($arr) {
     return 0;
 }
 
-function lws_array_sd($arr, $type) {
+function live_weather_station_array_sd($arr, $type) {
     $n = count($arr);
     if ($n < 2) {
         return 0;
@@ -78,7 +78,7 @@ function lws_array_sd($arr, $type) {
         }
     }
     else {
-        $mean = lws_array_average($arr, $type);
+        $mean = live_weather_station_array_average($arr, $type);
         $carry = 0.0;
         foreach ($arr as $val) {
             $d = ((float)$val) - $mean;
@@ -329,13 +329,13 @@ class Builder
                                     $v = min($d);
                                     break;
                                 case 'avg':
-                                    $v = lws_array_average($d, $type);
+                                    $v = live_weather_station_array_average($d, $type);
                                     break;
                                 case 'med':
-                                    $v = lws_array_median($d);
+                                    $v = live_weather_station_array_median($d);
                                     break;
                                 case 'dev':
-                                    $v = lws_array_sd($d, $type);
+                                    $v = live_weather_station_array_sd($d, $type);
                                     break;
                                 default:
                                     $v = $no_value;

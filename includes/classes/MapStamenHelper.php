@@ -105,7 +105,7 @@ class StamenHandling extends BaseHandling {
         $result = '';
         if ($this->use_fallback()) {
             // The notice is only for the administrators, in the admin screens (never for the visitors of the site).
-            if (is_admin() && current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            if (is_admin() && current_user_can(live_weather_station_manage_capability())) {
                 $result .= '<p class="notice notice-warning inline" style="padding:8px 12px;">' . esc_html__('This map uses OpenStreetMap: Stamen maps now need a Stadia Maps API key (and an existing style). Please enter your Stadia Maps API key in the Services settings.', 'live-weather-station') . '</p>';
             }
         }

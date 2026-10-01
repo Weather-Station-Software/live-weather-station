@@ -23,12 +23,12 @@ jobs:
       - name: Check that the tag matches every version in the plugin
         run: |
           HEADER=$(sed -n 's/^ \* Version: *//p' live-weather-station.php | head -1)
-          CONST=$(sed -n "s/^define('LWS_VERSION', '\(.*\)');/\1/p" init.php)
+          CONST=$(sed -n "s/^define('LIVE_WEATHER_STATION_VERSION', '\(.*\)');/\1/p" init.php)
           STABLE=$(sed -n 's/^Stable tag: *//p' readme.txt | head -1)
           TOP=$(sed -n 's|^#\([0-9.]*\) / .*|\1|p' changelog.txt | head -1)
           for v in "$HEADER" "$CONST" "$STABLE" "$TOP"; do
             if [ "$v" != "$GITHUB_REF_NAME" ]; then
-              echo "::error::Tag ($GITHUB_REF_NAME) differs from header=$HEADER, LWS_VERSION=$CONST, Stable tag=$STABLE, changelog=$TOP"
+              echo "::error::Tag ($GITHUB_REF_NAME) differs from header=$HEADER, LIVE_WEATHER_STATION_VERSION=$CONST, Stable tag=$STABLE, changelog=$TOP"
               exit 1
             fi
           done

@@ -106,7 +106,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_color_picker('current-justgage-measurements-fc-value-'. $this->station_guid, __('Override value color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
         $jsInitId = md5(random_bytes(18));
-        $content .= lws_print_begin_script($jsInitId);
+        $content .= live_weather_station_print_begin_script($jsInitId);
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -130,7 +130,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= lws_print_end_script($jsInitId);
+        $content .= live_weather_station_print_end_script($jsInitId);
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
@@ -239,7 +239,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'params = params+"&subtitle="+encodeURIComponent(sc_subtitle);';
         $content .= 'params = params+"&unit="+encodeURIComponent(sc_unit);';
         $content .= 'params = params+"&size="+encodeURIComponent(sc_size);';
-        $content .= 'http.open("POST", "' . LWS_AJAX_URL . '", true);';
+        $content .= 'http.open("POST", "' . LIVE_WEATHER_STATION_AJAX_URL . '", true);';
         $content .= 'http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http.onreadystatechange = function () {';
         $content .= 'if (http.readyState == 4 && http.status == 200) {';

@@ -650,7 +650,7 @@ abstract class NetatmoImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             if ($this->has_computer()) {
                 $history->import_data($nacomputed, $query_start, $query_end + 1, $force);
             }
@@ -724,7 +724,7 @@ abstract class NetatmoImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($namodules as $namodule) {
                 $l = $history->import_data($namodule, $query_start, $query_end + 1, $force);
                 $this->params['summary'][$namodule['meta']['module_id']]['measurements'] += $l[0];

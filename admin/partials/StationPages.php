@@ -9,7 +9,7 @@
 
 ?>
 
-<form name="pages" id="pages" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
+<form name="pages" id="pages" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
     <?php wp_nonce_field('edit-station', '_wpnonce', false ); ?>
     <div class="inside" style="padding: 11px;">

@@ -9,7 +9,7 @@
 use WeatherStation\System\Output\Guard;
 use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Initiator;
 
-$n = new Ambient_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+$n = new Ambient_Initiator(LIVE_WEATHER_STATION_PLUGIN_ID, LIVE_WEATHER_STATION_VERSION);
 $stationlist = $n->detect_stations();
 $can_add = false;
 foreach ($stationlist as $s) {
@@ -32,7 +32,7 @@ $message = __('Adding this station, please wait', 'live-weather-station');
     <?php } ?>
 
     <?php if ($can_add || $station['guid'] !== 0) { ?>
-        <form method="post" name="add-edit-ambient-form" id="add-edit-ambient-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
+        <form method="post" name="add-edit-ambient-form" id="add-edit-ambient-form" action="<?php echo esc_url(live_weather_station_get_admin_page_url($url)); ?>">
             <input name="guid" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
             <?php if ($station['guid'] !== 0) { ?>
                 <input name="id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
@@ -144,28 +144,28 @@ $message = __('Adding this station, please wait', 'live-weather-station');
             <?php if ($station['guid'] === 0) { ?>
                 <p class="submit"><input type="submit" name="add-edit-ambient" id="add-edit-ambient" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                     <?php if ($dashboard) { ?>
-                        <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                        <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                     <?php } else { ?>
-                        <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                        <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                     <?php } ?>
-                    <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
+                    <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
             <?php } ?>
             <?php if ($station['guid'] !== 0) { ?>
                 <p class="submit"><input type="submit" name="add-edit-ambient" id="add-edit-ambient" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                     <?php if ($dashboard) { ?>
-                        <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                        <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                     <?php } else { ?>
-                        <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                        <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                     <?php } ?>
-                    <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
             <?php } ?>
         </form>
     <?php } else { ?>
         <p><?php esc_html_e( 'All Ambient stations have been already added!', 'live-weather-station' );?></p>
         <?php if ($dashboard) { ?>
-            <p class="submit"><a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
+            <p class="submit"><a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
         <?php } else { ?>
-            <p class="submit"><a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
+            <p class="submit"><a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
         <?php } ?>
     <?php } ?>
 </div>

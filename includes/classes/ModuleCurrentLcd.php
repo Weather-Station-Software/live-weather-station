@@ -115,7 +115,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'qDevice: ' . Guard::js($this->station_id) . ',';
         $content .= 'qModule: "aggregated",';
         $content .= 'qMeasure: "aggregated",';
-        $content .= 'qPostUrl: "' . LWS_AJAX_URL . '"});';
+        $content .= 'qPostUrl: "' . LIVE_WEATHER_STATION_AJAX_URL . '"});';
         $content .= '$("#current-lcd-measurements-module-' . $this->station_guid . '").change(function() {';
         $content .= 'c' . $this->fingerprint . '.setModule(js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][1]);';
         $content .= 'var js_array_current_lcd_measurement_' . $this->station_guid . ' = js_array_current_lcd_' . $this->station_guid . '[$(this).val()][2];';

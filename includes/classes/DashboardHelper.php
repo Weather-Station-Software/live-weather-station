@@ -66,13 +66,13 @@ class Handling {
     public function dashboard_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-dashboard');";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         echo $result;
     }
 
@@ -109,7 +109,7 @@ class Handling {
         $result .= '<legend>' . __('Boxes', 'live-weather-station') . '</legend>';
         $result .= $this->meta_box_prefs('lws-dashboard');
         // The welcome panel state can be changed by GET only with a valid nonce and capability.
-        if (isset($_GET['welcome']) && current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'lws-welcome-toggle')) {
+        if (isset($_GET['welcome']) && current_user_can(live_weather_station_manage_capability()) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'lws-welcome-toggle')) {
             $welcome_checked = (empty($_GET['welcome']) ? 0 : 1);
             update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', $welcome_checked);
         }
@@ -172,7 +172,7 @@ class Handling {
      */
     public static function update_lws_welcome_panel_callback() {
         // Check user capabilities
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             wp_die(-1);
         }
         
@@ -211,7 +211,7 @@ class Handling {
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . esc_html(sprintf(__('%s Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME)) . '</h1>';
+        echo '<h1>' . esc_html(sprintf(__('%s Dashboard', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME)) . '</h1>';
         settings_errors();
         echo '<form name="lws_dashboard" method="post">';
         $this->welcome_panel();
@@ -273,8 +273,8 @@ class Handling {
         if ($intl->is_translatable()) {
             add_meta_box('lws-translation', __('Translation', 'live-weather-station'), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
         }
-        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
-        add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-disclaimer', __('Disclaimer', 'live-weather-station'), array($this, 'disclaimer_widget'), 'lws-dashboard', 'side');
@@ -286,7 +286,7 @@ class Handling {
      * @since 3.0.0
      */
     public static function add_wp_dashboard_widget() {
-        wp_add_dashboard_widget('lws_dashboard_widget', LWS_FULL_NAME, array(get_called_class(), '_summary_widget'));
+        wp_add_dashboard_widget('lws_dashboard_widget', LIVE_WEATHER_STATION_FULL_NAME, array(get_called_class(), '_summary_widget'));
     }
 
     /**
@@ -321,7 +321,7 @@ class Handling {
      * @since 3.0.0
      */
     public static function _summary_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardSummary.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardSummary.php');
     }
 
     /**
@@ -339,7 +339,7 @@ class Handling {
      * @since 3.6.0
      */
     public static function notifications_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardNotifications.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardNotifications.php');
     }
 
     /**
@@ -350,7 +350,7 @@ class Handling {
     public function perf_quota_widget() {
         $val = Performance::get_quota_values()['agr24'];
         $show_link = true;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
     }
 
     /**
@@ -361,7 +361,7 @@ class Handling {
     public function perf_cache_widget() {
         $val = Performance::get_cache_values()['agr24'];
         $show_link = true;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
     }
 
     /**
@@ -372,7 +372,7 @@ class Handling {
     public function perf_event_widget_24() {
         $val = Performance::get_event_values()['agr24'];
         $show_link = true;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
     }
 
     /**
@@ -381,7 +381,7 @@ class Handling {
      * @since 3.0.0
      */
     public function version_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardVersions.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardVersions.php');
     }
 
     /**
@@ -391,7 +391,7 @@ class Handling {
      */
     public function news_widget() {
         $url = RSS::get(-4);
-        include(LWS_ADMIN_DIR.'partials/DashboardNews.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardNews.php');
     }
 
     /**
@@ -400,7 +400,7 @@ class Handling {
      * @since 3.0.0
      */
     public function signup_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardSignup.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardSignup.php');
     }
 
     /**
@@ -413,7 +413,7 @@ class Handling {
         if (array_key_exists('message', $args['args'])) {
             $message = $args['args']['message'];
         }
-        include(LWS_ADMIN_DIR.'partials/DashboardTranslation.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardTranslation.php');
     }
 
     /**
@@ -422,7 +422,7 @@ class Handling {
      * @since 3.0.0
      */
     public function about_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardAbout.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardAbout.php');
     }
 
     /**
@@ -431,7 +431,7 @@ class Handling {
      * @since 3.0.0
      */
     public function licenses_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardLicenses.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardLicenses.php');
     }
 
     /**
@@ -440,7 +440,7 @@ class Handling {
      * @since 3.7.0
      */
     public function disclaimer_widget() {
-        include(LWS_ADMIN_DIR.'partials/DashboardDisclaimer.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardDisclaimer.php');
     }
 
     /**
@@ -449,6 +449,6 @@ class Handling {
      * @since 3.0.0
      */
     private function welcome_panel() {
-        include(LWS_ADMIN_DIR.'partials/DashboardWelcome.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardWelcome.php');
     }
 }

@@ -18,7 +18,7 @@ $mapsListTable->prepare_items();
     <div class="add-text" style="display:none;">
         <div id="wpcom-stats-meta-box-container" class="metabox-holder">
             <div class="postbox-container" style="width: 100%;margin-right: 10px;">
-                <?php include(LWS_ADMIN_DIR.'partials/ChooseMapType.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ChooseMapType.php'); ?>
             </div>
         </div>
     </div>

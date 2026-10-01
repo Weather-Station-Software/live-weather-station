@@ -269,7 +269,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'params = params+"&index_color="+sc_index_color;';
         $content .= 'params = params+"&glass="+sc_glass;';
         $content .= 'params = params+"&size="+sc_size;';
-        $content .= 'http.open("POST", "' . LWS_AJAX_URL . '", true);';
+        $content .= 'http.open("POST", "' . LIVE_WEATHER_STATION_AJAX_URL . '", true);';
         $content .= 'http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http.onreadystatechange = function () {';
         $content .= 'if (http.readyState == 4 && http.status == 200) {';
@@ -285,7 +285,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'params2 = params2+"&device_id="+sc_device;';
         $content .= 'params2 = params2+"&module_id="+sc_module;';
         $content .= 'params2 = params2+"&measure_type="+sc_measurement;';
-        $content .= 'http2.open("POST", "' . LWS_AJAX_URL . '", true);';
+        $content .= 'http2.open("POST", "' . LIVE_WEATHER_STATION_AJAX_URL . '", true);';
         $content .= 'http2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http2.onreadystatechange = function () {';
         $content .= 'if (http2.readyState == 4 && http2.status == 200) {';

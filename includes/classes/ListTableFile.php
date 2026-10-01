@@ -45,7 +45,7 @@ class File extends Base {
                 $actions[] = '<a href="' . esc_url(add_query_arg('inline', '1', $item['url'])) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('View file', 'live-weather-station').'</a>';
                 $actions[] = '<a href="' . esc_url($item['url']) . '" download>' . esc_html__('Download file', 'live-weather-station').'</a>';
                 if ($item['ext'] == 'wsconf.json') {
-                    $actions[] = '<a href="' . esc_url(lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid'])) . '">' . esc_html__('Import configuration', 'live-weather-station').'</a>';
+                    $actions[] = '<a href="' . esc_url(live_weather_station_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid'])) . '">' . esc_html__('Import configuration', 'live-weather-station').'</a>';
                 }
             }
             else {
@@ -160,7 +160,7 @@ class File extends Base {
         $list = $this;
         $args = compact('list');
         if ($which == 'bottom'){
-            include(LWS_ADMIN_DIR.'partials/ListTableFilesBottom.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ListTableFilesBottom.php');
         }
     }
 

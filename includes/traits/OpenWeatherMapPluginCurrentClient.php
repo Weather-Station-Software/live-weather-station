@@ -62,12 +62,12 @@ trait CurrentClient {
     private function get_owm_measurements_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
-            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
+            throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
-                throw new \Exception(lws_clean_text($weather['message'], 200));
+                throw new \Exception(live_weather_station_clean_text($weather['message'], 200));
             }
             else {
                 throw new \Exception('OpenWeatherMap unknown exception');
@@ -82,7 +82,7 @@ trait CurrentClient {
             $result['module_name'] = __('[OpenWeatherMap Records]', 'live-weather-station');
             $result['battery_vp'] = 6000;
             $result['rf_status'] = 0;
-            $result['firmware'] = LWS_VERSION;
+            $result['firmware'] = LIVE_WEATHER_STATION_VERSION;
             $result['data_type'] = array();
             $dashboard = array();
             $dashboard['time_utc'] = $weather['dt'];

@@ -33,8 +33,8 @@ $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
 ?>
 
 <div class="wrap">
-    <h1><?php echo sprintf(__('Remove from %s', 'live-weather-station'), LWS_PLUGIN_NAME);?></h1>
-    <form method="post" name="remove-map" id="remove-map" action="<?php echo esc_url(lws_get_admin_page_url('lws-maps')); ?>">
+    <h1><?php echo sprintf(__('Remove from %s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></h1>
+    <form method="post" name="remove-map" id="remove-map" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-maps')); ?>">
         <input name="service" type="hidden" value="map" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
@@ -47,16 +47,16 @@ $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
                         <button type="button" class="handlediv button-link" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
                         <h2 class="hndle"><span>Map</span></h2>
                         <div class="inside">
-                            <?php include(LWS_ADMIN_DIR.'partials/MapSummary.php'); ?>
+                            <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/MapSummary.php'); ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p><?php echo sprintf(__('Are you sure you want to remove this map from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+            <p><?php echo sprintf(__('Are you sure you want to remove this map from %s?', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
             <p class="submit"><input type="submit" name="delete-map" id="delete-map" class="button button-primary" value="<?php esc_html_e( 'Confirm Removal', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-delete-map" id="donot-delete-map" class="button" value="<?php esc_html_e( 'Cancel Removal', 'live-weather-station' );?>"  />
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Removing this map, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Removing this map, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </div>
     </form>
 </div>

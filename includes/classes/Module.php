@@ -32,7 +32,7 @@ abstract class Maintainer {
     protected $module_id = '';
     protected $module_name = '';
     protected $module_hint = '';
-    protected $module_icon = LWS_FAR . (LWS_FA5?' fa-question-circle':' fa-fa-question-circle-o') . ' fa-fw';
+    protected $module_icon = LIVE_WEATHER_STATION_FAR . (LIVE_WEATHER_STATION_FA5?' fa-question-circle':' fa-fa-question-circle-o') . ' fa-fw';
     protected $module_icon_color = '#777777';
     protected $module_icon_index = '';
     protected $selected = false;
@@ -259,7 +259,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_parent_url() {
-        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
+        return live_weather_station_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
     }
 
     /**
@@ -269,7 +269,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_module_url() {
-        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
+        return live_weather_station_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
     }
 
     /**
@@ -474,7 +474,7 @@ abstract class Maintainer {
         $result .= '</td>';
         $result .= '</tr>';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         for ($i=1 ; $i<=count($args) ; $i++) {
             $result .= '$(".' . $tab_id . $i . '").click(function() {';
@@ -485,7 +485,7 @@ abstract class Maintainer {
             $result .= '});';
         }
         $result .= '});' . PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -638,7 +638,7 @@ abstract class Maintainer {
     protected function get_script_box($content) {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         // copy button attach action
         $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
@@ -667,7 +667,7 @@ abstract class Maintainer {
         // content
         $result .= $content;
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -705,9 +705,9 @@ abstract class Maintainer {
      */
     private function get_no_collect_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = lws_get_admin_page_url('lws-settings', null, 'history');
+        $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -719,9 +719,9 @@ abstract class Maintainer {
      */
     private function get_no_build_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = lws_get_admin_page_url('lws-settings', null, 'history');
+        $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -733,7 +733,7 @@ abstract class Maintainer {
      */
     private function get_no_history_box() {
         $title = __('No data yet', 'live-weather-station');
-        $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LWS_PLUGIN_NAME);
+        $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -1057,10 +1057,10 @@ abstract class Maintainer {
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         if ($this->module_type === 'timelapse') {
-            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+            $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         }
         else {
-            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
+            $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
             $t = array();
             for ($i=1; $i<=$this->series_number; $i++) {
                 $u = array();

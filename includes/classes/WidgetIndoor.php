@@ -38,7 +38,7 @@ class Indoor extends Base {
         parent::__construct(
             'Live_Weather_Station_Widget_Indoor',
             '<>🛏 ' . __( 'Indoor comfort' , 'live-weather-station'),
-            array('description' => sprintf(__('Display indoor comfort for a module of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
+            array('description' => sprintf(__('Display indoor comfort for a module of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -127,7 +127,7 @@ class Indoor extends Base {
         $medium_url = $instance['medium_url'];
         $bad_url = $instance['bad_url'];
         $modules = $this->get_operational_indoor_stations_list();
-        include(LWS_ADMIN_DIR.'partials/WidgetIndoorSettings.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/WidgetIndoorSettings.php');
     }
 
     /**
@@ -178,7 +178,7 @@ class Indoor extends Base {
      * @since 3.1.0
      */
     public function css($instance, $uid, $flat_design, $health_idx, $background='', $attachment='local') {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         try {
             $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
@@ -267,14 +267,14 @@ class Indoor extends Base {
         $text_shadows = WidgetHelper::text_shadow();
         $box_shadows = WidgetHelper::box_shadow();
         $box_radius = WidgetHelper::box_radius();
-        if (LWS_FA_SVG) {
+        if (LIVE_WEATHER_STATION_FA_SVG) {
             $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
         }
         else {
             $svg = '';
         }
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
         return ob_get_clean();
     }
 
@@ -453,7 +453,7 @@ class Indoor extends Base {
         $result = $args['before_widget'];
         $result .= $this->css($instance, $id, $flat_design, $health_idx, $bg_url, $background_attachment);
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php';
         $result .= ob_get_clean();
         $result .= $args['after_widget'];
         return $result;

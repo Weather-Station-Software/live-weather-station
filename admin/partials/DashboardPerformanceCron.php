@@ -34,20 +34,20 @@ foreach ($fields as $field) {
     $values[$field]['txt'] .= ' - ' .  sprintf(__('tasks executed %s times in an average time of %s ms.', 'live-weather-station'), $val[$field]['count'], $val[$field]['avr_time']);
 }
 
-$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(lws_get_admin_page_url('lws-analytics', null, 'cron')), __('detailed analytics', 'live-weather-station'));
+$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(live_weather_station_get_admin_page_url('lws-analytics', null, 'cron')), __('detailed analytics', 'live-weather-station'));
 
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
             <?php foreach ($fields as $field) { ?>
-                <li><i style="color:<?php echo esc_attr($values[$field]['clr']); ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo esc_html($values[$field]['txt']); ?></li>
+                <li><i style="color:<?php echo esc_attr($values[$field]['clr']); ?>" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo esc_html($values[$field]['txt']); ?></li>
             <?php } ?>
         </ul>
     </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
+            <i style="color:#999;" class="<?php echo LIVE_WEATHER_STATION_FAR;?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
         </div>
     <?php } ?>
 </div>

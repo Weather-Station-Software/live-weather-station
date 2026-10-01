@@ -59,7 +59,7 @@ class Performance {
      * @since 3.2.0
      */
     public static function store() {
-        if (is_lws_active()) {
+        if (live_weather_station_is_active()) {
             Cache::write_stats();
             Watchdog::write_stats();
             Quota::write_stats();
@@ -472,7 +472,7 @@ class Performance {
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $values = array();
         $jsoned = array();
-        $database = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
+        $database = new Data(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

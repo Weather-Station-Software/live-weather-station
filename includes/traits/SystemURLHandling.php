@@ -21,7 +21,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function add_url_station_id_format() {
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Za-z0-9_]{1,40})\/$', LWS_RELATIVE_PLUGIN_URL.'generator.php?type=$matches[2]&station=$matches[1]','top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Za-z0-9_]{1,40})\/$', LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL.'generator.php?type=$matches[2]&station=$matches[1]','top');
     }
 
     /**
@@ -30,10 +30,10 @@ trait Handling {
      * @since 3.0.0
      */
     public static function add_url_station_id_subformat() {
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Z]{0,40})_stickertags\.txt$', LWS_RELATIVE_PLUGIN_URL.'generator.php?type=stickertags&station=$matches[1]&subformat=$matches[2]','top');
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/clientraw\.txt$', LWS_RELATIVE_PLUGIN_URL.'generator.php?type=clientraw&station=$matches[1]','top');
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/realtime\.txt$', LWS_RELATIVE_PLUGIN_URL.'generator.php?type=realtime&station=$matches[1]','top');
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/YoWindow\.xml$', LWS_RELATIVE_PLUGIN_URL.'generator.php?type=yowindow&station=$matches[1]','top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Z]{0,40})_stickertags\.txt$', LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL.'generator.php?type=stickertags&station=$matches[1]&subformat=$matches[2]','top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/clientraw\.txt$', LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL.'generator.php?type=clientraw&station=$matches[1]','top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/realtime\.txt$', LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL.'generator.php?type=realtime&station=$matches[1]','top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/YoWindow\.xml$', LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL.'generator.php?type=yowindow&station=$matches[1]','top');
     }
 
     /**

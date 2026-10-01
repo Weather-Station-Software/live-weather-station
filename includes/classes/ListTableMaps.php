@@ -227,7 +227,7 @@ class Maps extends Base {
         $list = $this;
         $args = compact('list');
         if ($which == 'bottom'){
-            include(LWS_ADMIN_DIR.'partials/ListTableMapsBottom.php');
+            include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ListTableMapsBottom.php');
         }
     }
 

@@ -9,7 +9,7 @@
 use WeatherStation\DB\Stats;
 use WeatherStation\System\Help\InlineHelp;
 
-if (REQUIREMENTS_OK) {
+if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) {
     $stats = new Stats();
     $a = $stats->get_operational();
     if ($a['station'] == 0) {
@@ -67,21 +67,21 @@ if (REQUIREMENTS_OK) {
         $services_str = implode(', ', $services);
     }
     $services_str = __('Connected services:', 'live-weather-station') . ' ' . $services_str . '.';
-    $log_url = '<a href="' . esc_url(LWS_ADMIN_PHP_URL . '?page=lws-events&level=error') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lws_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
+    $log_url = '<a href="' . esc_url(LIVE_WEATHER_STATION_ADMIN_PHP_URL . '?page=lws-events&level=error') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . live_weather_station_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
     $a = $stats->get_log();
     if ($a['emergency'] > 0) {
-        $run_str = sprintf(__('%1$s has encountered operating issues in the last 3 days. You should check the %2$s to know the cause of this problem.', 'live-weather-station'), LWS_PLUGIN_NAME, $log_url);
+        $run_str = sprintf(__('%1$s has encountered operating issues in the last 3 days. You should check the %2$s to know the cause of this problem.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $log_url);
     } else {
         if ($a['error'] > ($a['recent_error'] == 0 ? 2 : 0)) {
-            $run_str = sprintf(__('%1$s has experienced some difficulties while operating. You should take a look at the %2$s to see what could be improved.', 'live-weather-station'), LWS_PLUGIN_NAME, $log_url);
+            $run_str = sprintf(__('%1$s has experienced some difficulties while operating. You should take a look at the %2$s to see what could be improved.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $log_url);
         } else {
-            $run_str = sprintf(__('All good, %1$s runs smoothly.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $run_str = sprintf(__('All good, %1$s runs smoothly.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         }
     }
 }
 else {
-    $req_url = '<a href="' . esc_url(LWS_ADMIN_PHP_URL . '?page=lws-requirements') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
-    $run_str = sprintf(__('%1$s can\'t run: %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, $req_url) . '&hellip;';
+    $req_url = '<a href="' . esc_url(LIVE_WEATHER_STATION_ADMIN_PHP_URL . '?page=lws-requirements') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
+    $run_str = sprintf(__('%1$s can\'t run: %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $req_url) . '&hellip;';
 }
 $quota = get_transient('live_weather_station_quota_alert');
 if ($quota > 0) {
@@ -92,7 +92,7 @@ if ($quota > 0) {
 }
 
 ?>
-<?php if (REQUIREMENTS_OK) { ?>
+<?php if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) { ?>
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
             <li><?php echo $data_str; ?></li>
@@ -103,7 +103,7 @@ if ($quota > 0) {
 <?php if (get_option('live_weather_station_quota_mode') == 1 && $quota > 0) { ?>
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
-            <li><i style="color:#FF4444;" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<?php echo $quota_str; ?></li>
+            <li><i style="color:#FF4444;" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<?php echo $quota_str; ?></li>
         </ul>
     </div>
 <?php } ?>

@@ -65,7 +65,7 @@ class PressureExpander extends Process {
      * @since 3.6.3
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to handle daily and historical barometric and atmospheric pressures measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix allows %s to handle daily and historical barometric and atmospheric pressures measurements for all types of stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -278,7 +278,7 @@ class PressureExpander extends Process {
      */
     private function expand($station_id, $station_spec) {
         $switch = false;
-        if ((int)$station_spec[0] <= 7) { // All stations from LWS_NETATMO_SID to LWS_TXT_SID must be switched
+        if ((int)$station_spec[0] <= 7) { // All stations from LIVE_WEATHER_STATION_NETATMO_SID to LIVE_WEATHER_STATION_TXT_SID must be switched
             $switch = true;
         }
 

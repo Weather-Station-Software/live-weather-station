@@ -21,7 +21,7 @@ else {
 $id = array();
 $exp = array();
 if (isset($station) && is_array($station) && array_key_exists('service_id', $station) && $station['service_id'] !== '') {
-    $exp = explode(LWS_SERVICE_SEPARATOR, $station['service_id']);
+    $exp = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $station['service_id']);
 }
 if (count($exp) !== 3) {
     $id['service_did'] = '';
@@ -44,7 +44,7 @@ else {
     <?php if ($station['guid'] != 0) { ?>
         <h1><?php esc_html_e('Edit a station connected to WeatherLink', 'live-weather-station');?></h1>
     <?php } ?>
-    <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
+    <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(live_weather_station_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
         <input name="guid" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
         <input name="service" type="hidden" value="WeatherLink" />
@@ -85,20 +85,20 @@ else {
         <?php if ($station['guid'] == 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-wlink" id="add-edit-wlink" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-wlink" id="add-edit-wlink" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         <?php } ?>
     </form>
 </div>

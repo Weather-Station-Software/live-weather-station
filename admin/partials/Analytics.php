@@ -7,12 +7,12 @@
  */
 
 $active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
-$page = LWS_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
+$page = LIVE_WEATHER_STATION_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
 $page = str_replace('_short', 'Short', $page);
 $page = str_replace('_long', 'Long', $page);
 if ((!in_array($active_tab, array('general', 'quota_short', 'quota_long', 'cache', 'event', 'task', 'database'), true) || !file_exists($page)) && ($active_tab != 'general')) {
     $active_tab = 'general';
-    $page = LWS_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
+    $page = LIVE_WEATHER_STATION_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
 }
 
 $show_cache = ((bool)get_option('live_weather_station_frontend_cache') ||

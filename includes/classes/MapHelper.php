@@ -63,7 +63,7 @@ class Handling {
             return;
         }
         // This object is built for every admin user: nothing must be read or done without the capability.
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             return;
         }
         $this->Live_Weather_Station = $Live_Weather_Station;
@@ -170,7 +170,7 @@ class Handling {
      * @since 3.7.0
      */
     public function edit_map() {
-       if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+       if (!current_user_can(live_weather_station_manage_capability())) {
            return;
        }
        if ($this->arg_service != 'map' && $this->arg_tab == 'add-edit' && $this->arg_action == 'form') {
@@ -218,7 +218,7 @@ class Handling {
     public function map_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
@@ -228,7 +228,7 @@ class Handling {
         $result .= "        });";
         $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         echo $result;
     }
 
@@ -325,11 +325,11 @@ class Handling {
         wp_enqueue_script('lws-clipboard');
         $id = 'lws-map-sc-' . $this->map_id;
         $jsInitId = md5(random_bytes(18));
-        $result = lws_print_begin_script($jsInitId);
+        $result = live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         $result .= '  new Clipboard(".copy-sc-map-button");';
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         $title = __('Shortcode', 'live-weather-station');
         $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . esc_attr($id) . '">[live-weather-station-map id="' . esc_textarea($this->map_id) . '"]</textarea>';
         $footer = '<button data-clipboard-target="#' . esc_attr($id) . '" class="button button-primary copy-sc-map-button">' . esc_html__('Copy', 'live-weather-station'). '</button>';
@@ -347,7 +347,7 @@ class Handling {
             echo '<div class="wrap">';
             echo '<h1>' . esc_html__('Map', 'live-weather-station') . '</h1>';
             echo '<div class="notice notice-error"><p>' . esc_html__('This map does not exist.', 'live-weather-station') . '</p></div>';
-            echo '<p><a class="button button-primary" href="' . esc_url(lws_get_admin_page_url('lws-maps')) . '">' . esc_html__('Back to the maps list', 'live-weather-station') . '</a></p>';
+            echo '<p><a class="button button-primary" href="' . esc_url(live_weather_station_get_admin_page_url('lws-maps')) . '">' . esc_html__('Back to the maps list', 'live-weather-station') . '</a></p>';
             echo '</div>';
             return;
         }
@@ -436,7 +436,7 @@ class Handling {
             $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
             $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
         }
-        include(LWS_ADMIN_DIR.'partials/MapSummary.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/MapSummary.php');
     }
 
     /**

@@ -30,50 +30,50 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //--- E X P E R I M E N T A L -----------------------------------------------------------------------
 
-define('LWS_FILE_CACHE', false);
+define('LIVE_WEATHER_STATION_FILE_CACHE', false);
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.9.0');
-define('LWS_PREVIEW', false);
+define('LIVE_WEATHER_STATION_VERSION', '3.9.0');
+define('LIVE_WEATHER_STATION_PREVIEW', false);
 
-define('LWS_CODENAME', '"Danakil"');
-define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-8-danakil/');
-define('LWS_SHOW_CHANGELOG', false);
+define('LIVE_WEATHER_STATION_CODENAME', '"Danakil"');
+define('LIVE_WEATHER_STATION_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-8-danakil/');
+define('LIVE_WEATHER_STATION_SHOW_CHANGELOG', false);
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_CHANGELOG', 'https://weather.station.software/handbook/changelog/');
-define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_MINIMUM_WP_VERSION', '4.9');
-define('LWS_MINIMUM_PHP_VERSION', '7.1');
-define('LWS_PLUGIN_ID', 'live-weather-station');
-define('LWS_PLUGIN_SLUG', 'live-weather-station');
-define('LWS_PLUGIN_TEXT_DOMAIN', 'live-weather-station');
-define('LWS_PLUGIN_NAME', 'Weather Station');
-define('LWS_PLUGIN_SIGNATURE', LWS_PLUGIN_NAME . ' v' . LWS_VERSION);
-define('LWS_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('LWS_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('LWS_RELATIVE_PLUGIN_URL', str_replace(get_site_url().'/', '', plugin_dir_url(__FILE__)));
-define('LWS_ADMIN_DIR', plugin_dir_path(__FILE__).'admin/');
-define('LWS_ADMIN_URL', plugin_dir_url(__FILE__).'admin/');
-define('LWS_PUBLIC_DIR', plugin_dir_path(__FILE__).'public/');
-define('LWS_PUBLIC_URL', plugin_dir_url(__FILE__).'public/');
-define('LWS_INCLUDES_DIR', plugin_dir_path(__FILE__).'includes/');
-define('LWS_LANGUAGES_DIR', plugin_dir_path(__FILE__).'languages/');
-define('LWS_ADMIN_PHP_URL', EnvManager::admin_dir_relative_url());
-define('LWS_AJAX_URL', EnvManager::ajax_dir_relative_url());
-define('LWS_I18N_LOADED', EnvManager::is_i18n_loaded());
-define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
-define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
-define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
-define('LWS_IC_WPROCKET', EnvManager::is_wp_rocket_installed());
-define('LWS_IC_WPSC', EnvManager::is_wp_super_cache_installed());
-define('LWS_IC_W3TC', EnvManager::is_w3_total_cache_installed());
-define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
-define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
-define('LWS_WU_ACTIVE', false);
-define('LWS_SERVICE_SEPARATOR', '{/LWS_SEP/}');
+define('LIVE_WEATHER_STATION_CHANGELOG', 'https://weather.station.software/handbook/changelog/');
+define('LIVE_WEATHER_STATION_FULL_NAME', 'Weather Station 3');
+define('LIVE_WEATHER_STATION_MINIMUM_WP_VERSION', '4.9');
+define('LIVE_WEATHER_STATION_MINIMUM_PHP_VERSION', '7.1');
+define('LIVE_WEATHER_STATION_PLUGIN_ID', 'live-weather-station');
+define('LIVE_WEATHER_STATION_PLUGIN_SLUG', 'live-weather-station');
+define('LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN', 'live-weather-station');
+define('LIVE_WEATHER_STATION_PLUGIN_NAME', 'Weather Station');
+define('LIVE_WEATHER_STATION_PLUGIN_SIGNATURE', LIVE_WEATHER_STATION_PLUGIN_NAME . ' v' . LIVE_WEATHER_STATION_VERSION);
+define('LIVE_WEATHER_STATION_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('LIVE_WEATHER_STATION_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('LIVE_WEATHER_STATION_RELATIVE_PLUGIN_URL', str_replace(get_site_url().'/', '', plugin_dir_url(__FILE__)));
+define('LIVE_WEATHER_STATION_ADMIN_DIR', plugin_dir_path(__FILE__).'admin/');
+define('LIVE_WEATHER_STATION_ADMIN_URL', plugin_dir_url(__FILE__).'admin/');
+define('LIVE_WEATHER_STATION_PUBLIC_DIR', plugin_dir_path(__FILE__).'public/');
+define('LIVE_WEATHER_STATION_PUBLIC_URL', plugin_dir_url(__FILE__).'public/');
+define('LIVE_WEATHER_STATION_INCLUDES_DIR', plugin_dir_path(__FILE__).'includes/');
+define('LIVE_WEATHER_STATION_LANGUAGES_DIR', plugin_dir_path(__FILE__).'languages/');
+define('LIVE_WEATHER_STATION_ADMIN_PHP_URL', EnvManager::admin_dir_relative_url());
+define('LIVE_WEATHER_STATION_AJAX_URL', EnvManager::ajax_dir_relative_url());
+define('LIVE_WEATHER_STATION_I18N_LOADED', EnvManager::is_i18n_loaded());
+define('LIVE_WEATHER_STATION_JSON_LOADED', EnvManager::is_json_loaded());
+define('LIVE_WEATHER_STATION_PHPVERSION_OK', EnvManager::is_php_version_ok());
+define('LIVE_WEATHER_STATION_PLUGIN_AGENT', LIVE_WEATHER_STATION_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
+define('LIVE_WEATHER_STATION_IC_WPROCKET', EnvManager::is_wp_rocket_installed());
+define('LIVE_WEATHER_STATION_IC_WPSC', EnvManager::is_wp_super_cache_installed());
+define('LIVE_WEATHER_STATION_IC_W3TC', EnvManager::is_w3_total_cache_installed());
+define('LIVE_WEATHER_STATION_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
+define('LIVE_WEATHER_STATION_IC_HC', EnvManager::is_hyper_cache_installed());
+define('LIVE_WEATHER_STATION_WU_ACTIVE', false);
+define('LIVE_WEATHER_STATION_SERVICE_SEPARATOR', '{/LWS_SEP/}');
 
 
 /**
@@ -81,14 +81,14 @@ define('LWS_SERVICE_SEPARATOR', '{/LWS_SEP/}');
  *
  * @since 2.8.0
  */
-require_once LWS_INCLUDES_DIR.'system/Logger.php';
+require_once LIVE_WEATHER_STATION_INCLUDES_DIR.'system/Logger.php';
 
 /**
  * Begins execution of the plugin.
  *
  * @since 1.0.0
  */
-function run_Live_Weather_Station() {
+function live_weather_station_run() {
     URL::init_rewrite_rules();
     FS::init();
     $plugin = new \WeatherStation\System\Plugin\Core();

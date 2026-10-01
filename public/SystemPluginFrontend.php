@@ -44,17 +44,17 @@ class Frontend {
      * @since 3.2.0
      */
     public function register_styles() {
-        lws_register_style('lws-public', LWS_PUBLIC_URL, 'css/live-weather-station-public.min.css');
-        lws_register_style('lws-font-chart-icons', LWS_PUBLIC_URL, 'css/font-chart-icons.min.css');
-        lws_register_style('lws-lcd', LWS_PUBLIC_URL, 'css/lws-lcd.min.css');
-        lws_register_style('lws-table', LWS_PUBLIC_URL, 'css/live-weather-station-table.min.css');
-        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/fontawesome-4.min.css');
-        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/fontawesome-5.min.css');
-        lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
-        lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
-        lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
-        lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
-        lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
+        live_weather_station_register_style('lws-public', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/live-weather-station-public.min.css');
+        live_weather_station_register_style('lws-font-chart-icons', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/font-chart-icons.min.css');
+        live_weather_station_register_style('lws-lcd', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/lws-lcd.min.css');
+        live_weather_station_register_style('lws-table', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/live-weather-station-table.min.css');
+        live_weather_station_register_style('lws-font-awesome-4', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/fontawesome-4.min.css');
+        live_weather_station_register_style('lws-font-awesome-5', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/fontawesome-5.min.css');
+        live_weather_station_register_style('lws-weather-icons', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/weather-icons.min.css');
+        live_weather_station_register_style('lws-weather-icons-wind', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/weather-icons-wind.min.css');
+        live_weather_station_register_style('lws-nvd3', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
+        live_weather_station_register_style('lws-cal-heatmap', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/cal-heatmap.min.css');
+        live_weather_station_register_style('lws-leaflet', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/leaflet.min.css');
     }
 
 	/**
@@ -100,30 +100,30 @@ class Frontend {
      * @since 1.0.0
      */
     public function register_scripts() {
-        lws_register_script('lws-public', LWS_PUBLIC_URL, 'js/live-weather-station-public.min.js');
-        lws_register_script('lws-lcd', LWS_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
-        lws_register_script('lws-tween', LWS_PUBLIC_URL, 'js/tween.min.js');
-        lws_register_script('lws-steelseries', LWS_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
-        lws_register_script('lws-radarchart', LWS_PUBLIC_URL, 'js/radarchart.min.js', array('lws-d3'));
-        lws_register_script('lws-bilinechart', LWS_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
-        lws_register_script('lws-scale-radial', LWS_PUBLIC_URL, 'js/d3-scale-radial.min.js', array('lws-d3'));
-        lws_register_script('lws-windrose', LWS_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
-        lws_register_script('lws-clipboard', LWS_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
-        lws_register_script('lws-raphael', LWS_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
-        lws_register_script('lws-justgage', LWS_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
-        lws_register_script('lws-d3', LWS_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
-        lws_register_script('lws-d4', LWS_PUBLIC_URL , 'js/d3.v4.min.js', array('jquery'));
-        lws_register_script('lws-nvd3', LWS_PUBLIC_URL , 'js/nv.d3.v3.min.js', array('lws-d3'));
-        lws_register_script('lws-cal-heatmap', LWS_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
-        lws_register_script('lws-colorbrewer', LWS_PUBLIC_URL , 'js/colorbrewer.min.js');
-        lws_register_script('lws-spin', LWS_PUBLIC_URL , 'js/spin.min.js');
-        lws_register_script('lws-fa-loader', LWS_PUBLIC_URL , 'js/fontawesome.min.js');
-        lws_register_script('lws-fa-all', LWS_PUBLIC_URL , 'js/fontawesome-all.min.js');
-        lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet-140.min.js');
-        lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
+        live_weather_station_register_script('lws-public', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/live-weather-station-public.min.js');
+        live_weather_station_register_script('lws-lcd', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
+        live_weather_station_register_script('lws-tween', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/tween.min.js');
+        live_weather_station_register_script('lws-steelseries', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
+        live_weather_station_register_script('lws-radarchart', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/radarchart.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-bilinechart', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
+        live_weather_station_register_script('lws-scale-radial', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/d3-scale-radial.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-windrose', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
+        live_weather_station_register_script('lws-clipboard', LIVE_WEATHER_STATION_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
+        live_weather_station_register_script('lws-raphael', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
+        live_weather_station_register_script('lws-justgage', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
+        live_weather_station_register_script('lws-d3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
+        live_weather_station_register_script('lws-d4', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v4.min.js', array('jquery'));
+        live_weather_station_register_script('lws-nvd3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/nv.d3.v3.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-cal-heatmap', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-colorbrewer', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/colorbrewer.min.js');
+        live_weather_station_register_script('lws-spin', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/spin.min.js');
+        live_weather_station_register_script('lws-fa-loader', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fontawesome.min.js');
+        live_weather_station_register_script('lws-fa-all', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fontawesome-all.min.js');
+        live_weather_station_register_script('lws-fa-brands', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-fa-regular', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-fa-solid', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-leaflet', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/leaflet-140.min.js');
+        live_weather_station_register_script('lws-stamen-boot', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/stamen.min.js');
         wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js');
 
     }
@@ -396,7 +396,7 @@ class Frontend {
      * @since 3.0.0
      */
     public function lws_clientraw_test_callback() {
-        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             wp_send_json(array('result' => __('You are not allowed to do this.', 'live-weather-station')), 403);
         }
         check_ajax_referer('lws_clientraw_test', 'nonce');
@@ -449,7 +449,7 @@ class Frontend {
         if (isset($_POST[$key]) && is_scalar($_POST[$key])) {
             $value = wp_kses($_POST[$key], array());
             // Anonymous visitors must not bypass the cache: only administrators may force a fresh computation.
-            if ($key === 'cache' && $value === 'no_cache' && !current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            if ($key === 'cache' && $value === 'no_cache' && !current_user_can(live_weather_station_manage_capability())) {
                 return 'cache';
             }
             return $value;
@@ -472,13 +472,13 @@ class Frontend {
     }
 
     /**
-     * Rate limit wrapper (see lws_public_rate_limit() in functions.php).
+     * Rate limit wrapper (see live_weather_station_public_rate_limit() in functions.php).
      *
      * @param string $action The endpoint identifier.
      * @since 3.8.15
      */
     private function lws_rate_limit($action) {
-        lws_public_rate_limit($action);
+        live_weather_station_public_rate_limit($action);
     }
 
     public static function lws_widget_callback() {

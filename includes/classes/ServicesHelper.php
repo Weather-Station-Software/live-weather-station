@@ -50,13 +50,13 @@ class Handling {
     public function settings_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-settings');";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         echo $result;
     }
 
@@ -115,7 +115,7 @@ class Handling {
      * @since 3.0.0
      */
     public function netatmo_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNetatmo.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectNetatmo.php');
     }
 
     /**
@@ -124,7 +124,7 @@ class Handling {
      * @since 3.6.0
      */
     public function bloomsky_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectBloomsky.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectBloomsky.php');
     }
 
     /**
@@ -133,7 +133,7 @@ class Handling {
      * @since 3.6.0
      */
     public function ambient_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectAmbient.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectAmbient.php');
     }
 
     /**
@@ -142,7 +142,7 @@ class Handling {
      * @since 3.1.0
      */
     public function netatmohc_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNetatmoHC.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectNetatmoHC.php');
     }
 
     /**
@@ -151,7 +151,7 @@ class Handling {
      * @since 3.0.0
      */
     public function owm_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectOpenWeatherMap.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectOpenWeatherMap.php');
     }
 
     /**
@@ -160,7 +160,7 @@ class Handling {
      * @since 3.7.0
      */
     public function mapbox_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectMapbox.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectMapbox.php');
     }
 
     /**
@@ -169,7 +169,7 @@ class Handling {
      * @since 3.8.0
      */
     public function maptiler_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectMaptiler.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectMaptiler.php');
     }
 
     /**
@@ -178,7 +178,7 @@ class Handling {
      * @since 3.9.0
      */
     public function stadia_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectStadia.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectStadia.php');
     }
 
     /**
@@ -187,7 +187,7 @@ class Handling {
      * @since 3.7.0
      */
     public function thunderforest_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectThunderforest.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectThunderforest.php');
     }
 
     /**
@@ -196,6 +196,6 @@ class Handling {
      * @since 3.7.0
      */
     public function windy_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectWindy.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectWindy.php');
     }
 }

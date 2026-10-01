@@ -88,7 +88,7 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['ID'] = $station['wug_user'];
         $result['PASSWORD'] = ($station['wug_password']);
-        $result['softwaretype'] = (LWS_PLUGIN_SIGNATURE);
+        $result['softwaretype'] = (LIVE_WEATHER_STATION_PLUGIN_SIGNATURE);
         $result['action'] = 'updateraw';
         return $result;
     }

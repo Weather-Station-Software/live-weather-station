@@ -1163,7 +1163,7 @@ trait Generator {
         }
         if ($daily || $historical) {
             $temp = array();
-            $h = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+            $h = new History(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($result as $item) {
             	if ( isset( $item ) ) {
 		            if ($h->is_allowed_measurement($item[1]) || $item[1] == 'none') {
@@ -2059,7 +2059,7 @@ trait Generator {
         foreach ($this->get_comparable_dimensions() as $dimension) {
             $result[] = array($dimension, $this->get_dimension_name($dimension, true));
         }
-        usort($result, 'lws_array_compare_1');
+        usort($result, 'live_weather_station_array_compare_1');
         return $result;
     }
 
@@ -2746,14 +2746,14 @@ trait Generator {
         $country_codes = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'YU', 'ZR', 'ZZ');
-        $locale = lws_get_display_locale();
+        $locale = live_weather_station_get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];
                 if (in_array($s, $continue)) {
                     continue;
                 }
-                $t = lws_get_region_name('-'.$s, $locale);
+                $t = live_weather_station_get_region_name('-'.$s, $locale);
                 if ($s != $t || !EnvManager::is_locale_operational()) {
                     $country_codes[] = $s;
                 }
@@ -2842,9 +2842,9 @@ trait Generator {
     protected function get_fa_mode_js_array() {
         $theme = wp_get_theme();
         $result = array();
-        $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 4));
-        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'CSS'));
-        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'JS+SVG'));
+        $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 4));
+        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'CSS'));
+        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'JS+SVG'));
         $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
         $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
         $result[] = array(5, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
@@ -3155,7 +3155,7 @@ trait Generator {
         $result['csv'] = array('name' => 'CSV', 'description' => __('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
         $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => __('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
         $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => __('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         $result['tsv'] = array('name' => 'TSV', 'description' => __('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
         return $result;
     }
@@ -3179,7 +3179,7 @@ trait Generator {
      */
     public static function _get_import_formats_array($service = 'none') {
         $result = array();
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('Import from a file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('Import from a file previously exported by %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
             $result['netatmo'] = array('name' => __('Netatmo cloud services', 'live-weather-station'), 'description' => __('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
         }

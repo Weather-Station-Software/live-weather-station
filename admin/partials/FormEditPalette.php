@@ -11,7 +11,7 @@ if (!is_array($subject) || !isset($subject['id']) || !isset($subject['detail']['
     <div class="wrap">
         <h1><?php esc_html_e('Modify a custom palette', 'live-weather-station');?></h1>
         <div class="notice notice-error"><p><?php esc_html_e('This palette does not exist.', 'live-weather-station');?></p></div>
-        <p><a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'styles')); ?>"><?php esc_html_e('Back to the settings', 'live-weather-station');?></a></p>
+        <p><a class="button button-primary" href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'styles')); ?>"><?php esc_html_e('Back to the settings', 'live-weather-station');?></a></p>
     </div>
     <?php
     return;
@@ -23,7 +23,7 @@ wp_enqueue_style( 'wp-color-picker' );
 
 <div class="wrap">
     <h2><?php esc_html_e('Modify a custom palette', 'live-weather-station');?></h2>
-    <form method="post" name="edit-palette" id="edit-palette" action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'do', 'styles', 'palette')); ?>">
+    <form method="post" name="edit-palette" id="edit-palette" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', 'do', 'styles', 'palette')); ?>">
         <input name="service" type="hidden" value="palette" />
         <input name="tab" type="hidden" value="edit" />
         <input name="action" type="hidden" value="do" />

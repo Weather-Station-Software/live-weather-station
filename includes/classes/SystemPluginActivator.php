@@ -63,10 +63,10 @@ class Activator {
 	 */
 	private static function activate_site() {
 		Logger::init();
-		Logger::notice('Activator',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' installation and initialization.');
+		Logger::notice('Activator',null,null,null,null,null,null,'Starting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' installation and initialization.');
 		self::create_tables();
 		self::init_options();
-		Logger::notice('Activator',null,null,null,null,null,null,LWS_PLUGIN_NAME.' successfully installed and initialized.');
+		Logger::notice('Activator',null,null,null,null,null,null,LIVE_WEATHER_STATION_PLUGIN_NAME.' successfully installed and initialized.');
 	}
 
 }
