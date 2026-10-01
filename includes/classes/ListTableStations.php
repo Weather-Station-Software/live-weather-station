@@ -165,31 +165,31 @@ class Stations extends Base {
      */
     protected function column_composition($item){
         if ($item['comp_bas'] > 0) {
-            $comp[] = sprintf( _n('%s main base', '%s main bases', $item['comp_bas'], 'live-weather-station'), $item['comp_bas']);
+            $comp[] = sprintf( /* translators: %s: number of main bases of the station */ _n('%s main base', '%s main bases', $item['comp_bas'], 'live-weather-station'), $item['comp_bas']);
         }
         else {
             $comp[] = '';
         }
         if ($item['comp_ext'] > 0) {
-            $comp[] = sprintf( _n('%s outdoor module', '%s outdoor modules', $item['comp_ext'], 'live-weather-station'), $item['comp_ext']);
+            $comp[] = sprintf( /* translators: %s: number of outdoor modules of the station */ _n('%s outdoor module', '%s outdoor modules', $item['comp_ext'], 'live-weather-station'), $item['comp_ext']);
         }
         else {
             $comp[] = '';
         }
         if ($item['comp_int'] > 0) {
-            $comp[] = sprintf( _n('%s indoor module', '%s indoor modules', $item['comp_int'], 'live-weather-station'), $item['comp_int']);
+            $comp[] = sprintf( /* translators: %s: number of indoor modules of the station */ _n('%s indoor module', '%s indoor modules', $item['comp_int'], 'live-weather-station'), $item['comp_int']);
         }
         else {
             $comp[] = '';
         }
         if ($item['comp_xtd'] > 0) {
-            $comp[] = sprintf( _n('%s extra module', '%s extra modules', $item['comp_xtd'], 'live-weather-station'), $item['comp_xtd']);
+            $comp[] = sprintf( /* translators: %s: number of extra modules of the station */ _n('%s extra module', '%s extra modules', $item['comp_xtd'], 'live-weather-station'), $item['comp_xtd']);
         }
         else {
             $comp[] = '';
         }
         if ($item['comp_vrt'] > 0) {
-            $comp[] = sprintf( _n('%s virtual module', '%s virtual modules', $item['comp_vrt'], 'live-weather-station'), $item['comp_vrt']);
+            $comp[] = sprintf( /* translators: %s: number of virtual modules of the station */ _n('%s virtual module', '%s virtual modules', $item['comp_vrt'], 'live-weather-station'), $item['comp_vrt']);
         }
         else {
             $comp[] = '';
@@ -304,7 +304,9 @@ class Stations extends Base {
 
     protected function init_values() {
         $this->filters = array();
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter, nothing is modified.
         if (isset($_GET['limit'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter, cast to integer.
             $this->limit = intval($_GET['limit']);
             if (!$this->limit) {
                 $this->limit = 10;
@@ -313,11 +315,13 @@ class Stations extends Base {
     }
 
     public function usort_reorder($a,$b){
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter, restricted to existing column keys below.
         $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'station_name';
         if (!array_key_exists($orderby, $a)) {
             $orderby = 'station_name';
         }
-        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'desc') ? 'desc' : 'asc';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter, reduced to 'asc' or 'desc'.
+        $order = (!empty($_REQUEST['order']) && strtolower(sanitize_text_field(wp_unslash($_REQUEST['order']))) === 'desc') ? 'desc' : 'asc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }
@@ -391,7 +395,7 @@ class Stations extends Base {
         foreach ($_disp as $d) {
             $l = array();
             $l['value'] = $d;
-            $l['text'] = sprintf(esc_html__('Show %d lines per page', 'live-weather-station'), $d);
+            $l['text'] = sprintf(/* translators: %d: number of lines per page */ esc_html__('Show %d lines per page', 'live-weather-station'), $d);
             $l['selected'] = ($d == $this->limit ? 'selected="selected" ' : '');
             $result[] = $l;
         }

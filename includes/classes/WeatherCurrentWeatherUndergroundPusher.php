@@ -136,6 +136,7 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $body = $content['body'];
         if (strpos(strtolower($body), 'success') === false) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is stripped of tags by wp_strip_all_tags() and is only logged, never printed as HTML.
             throw new \Exception(substr(wp_strip_all_tags($body), 0, 255));
         }
     }

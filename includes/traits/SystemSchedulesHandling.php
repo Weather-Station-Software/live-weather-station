@@ -113,6 +113,7 @@ trait Handling {
     private static function force_cron($cron_id) {
         $result = false;
         if (self::is_legitimate_cron($cron_id)) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- $cron_id is one of the plugin's own lws_* cron hooks, checked by self::is_legitimate_cron() just above
             do_action($cron_id);
             $result = true;
         }

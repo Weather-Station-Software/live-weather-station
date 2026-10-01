@@ -64,7 +64,7 @@ class WindExpander extends Process {
      * @since 3.6.0
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to handle daily and historical wind angle / wind source measurements for all types of stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+        return sprintf(/* translators: %s: name of the plugin */ __('This fix allows %s to handle daily and historical wind angle / wind source measurements for all types of stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -169,7 +169,9 @@ class WindExpander extends Process {
      */
     private function add_source($station_id, $table_name, $fields, $switch) {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
         $sql = $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id=%s AND measure_type IN (" . Guard::placeholders($fields) . ")", array_merge(array($station_id), $fields));
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {

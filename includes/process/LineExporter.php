@@ -66,7 +66,9 @@ abstract class LineExporter extends Process {
     protected function is_needed() {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
         $sql = $wpdb->prepare("SELECT COUNT(*) as CNT FROM " . $table_name . " WHERE device_id = %s AND `timestamp` >= %s AND `timestamp` <= %s", $this->params['init']['station_id'], $this->params['init']['start_date'], $this->params['init']['end_date']);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (count($query) > 0) {
             $count = $query[0]['CNT'];
@@ -105,14 +107,14 @@ abstract class LineExporter extends Process {
      */
     protected function message() {
         if ($this->is_in_error()) {
-            $result = sprintf(__('Unable to create the file named %s in the directory "%s".', 'live-weather-station'), FS::get_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension), FS::get_root_name()) . "\r\n";
-            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
+            $result = sprintf(/* translators: 1: name of the file, 2: name of the directory */ __('Unable to create the file named %1$s in the directory "%2$s".', 'live-weather-station'), FS::get_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension), FS::get_root_name()) . "\r\n";
+            $result .= "\r\n" . sprintf(/* translators: %s: URL of the events log page */ __('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
             // The file is not directly reachable from the web: download it from the files page.
             $fileurl = live_weather_station_get_admin_page_url('lws-files');
-            $result = sprintf(__('Historical data of "%s" has been correctly exported for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
-            $result .= sprintf(__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
+            $result = sprintf(/* translators: 1: name of the station, 2: start date, 3: end date */ __('Historical data of "%1$s" has been correctly exported for the period from %2$s to %3$s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
+            $result .= sprintf(/* translators: %s: number of days */ __('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";
         }
         return $result;
@@ -157,7 +159,9 @@ abstract class LineExporter extends Process {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
             $order_by = 'ORDER BY `timestamp` ASC, `module_id` ASC, `measure_type` ASC';
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id = %s AND `timestamp` >= %s AND `timestamp` <= %s " . $order_by, $this->params['init']['station_id'], $query_start, $query_end);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (count($query) > 0) {
                 $ts = '';
@@ -221,7 +225,9 @@ abstract class LineExporter extends Process {
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
         $sql = $wpdb->prepare("SELECT COUNT(*) as CNT FROM " . $table_name . " WHERE device_id = %s AND `timestamp` >= %s AND `timestamp` <= %s", $this->params['init']['station_id'], $this->params['init']['start_date'], $this->params['init']['end_date']);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (count($query) > 0) {
             $count = $query[0]['CNT'];

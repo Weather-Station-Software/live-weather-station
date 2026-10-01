@@ -123,12 +123,15 @@ trait PublicClient {
         $meta = json_decode($json_meta, true);
         $data = json_decode($json_data, true);
         if (!is_array($meta)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is only inspected by the catch block of this class (strpos) and never printed; the logged texts are fixed strings
             throw new \Exception('JSON / Meta: '.live_weather_station_clean_text($json_meta, 200));
         }
         if (!is_array($data)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is only inspected by the catch block of this class (strpos) and never printed; the logged texts are fixed strings
             throw new \Exception('JSON / Data: '.live_weather_station_clean_text($json_data, 200));
         }
         $weather = array_merge($data, $meta);
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the text handed to the plugin Logger::debug(), nothing is printed
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather) && is_array($weather)) {
             if (array_key_exists('station_name', $weather)) {
