@@ -16,26 +16,26 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
 
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/stickertags/');
 $s = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$message_txt = sprintf(__('This file can be accessed at %s, or at many alternates URLs.', 'live-weather-station'), $s);
-$message_txt .= InlineHelp::get(16, ' ' . __('See %s for detailed information.', 'live-weather-station'),  __('documentation', 'live-weather-station'));
+$message_txt = sprintf( /* translators: %s: link to the file URL */ __('This file can be accessed at %s, or at many alternates URLs.', 'live-weather-station'), $s);
+$message_txt .= InlineHelp::get(16, ' ' . /* translators: %s: link to the documentation */ __('See %s for detailed information.', 'live-weather-station'),  __('documentation', 'live-weather-station'));
 
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/yowindow/');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/YoWindow.xml');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$message_yow = sprintf(__('This file can be accessed at %s or at %s.', 'live-weather-station'), $s1, $s2);
+$message_yow = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/clientraw/');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/clientraw.txt');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$message_raw = sprintf(__('This file can be accessed at %s or at %s.', 'live-weather-station'), $s1, $s2);
+$message_raw = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/realtime/');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $url = site_url('/get-weather/' . strtolower($station['station_id']) . '/realtime.txt');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-weather-station'), $s1, $s2);
+$message_real = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 
 ?>
 
@@ -47,7 +47,7 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
             <fieldset>
                 <label>
                     <input name="txt_sync" id="txt_sync" type="checkbox" value="1"<?php echo ($station['txt_sync'] ? ' checked="checked"' : ''); ?>/>
-                    <?php echo __('Publish outdoor data as stickertags format', 'live-weather-station'); ?>
+                    <?php echo esc_html__('Publish outdoor data as stickertags format', 'live-weather-station'); ?>
                 </label>
             </fieldset>
             <?php if ($station['txt_sync']) { ?>
@@ -56,7 +56,7 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
             <fieldset style="padding-top: 10px;">
                 <label>
                     <input name="yow_sync" id="yow_sync" type="checkbox" value="1"<?php echo ($station['yow_sync'] ? ' checked="checked"' : ''); ?>/>
-                    <?php echo __('Publish outdoor data as YoWindow XML format', 'live-weather-station'); ?>
+                    <?php echo esc_html__('Publish outdoor data as YoWindow XML format', 'live-weather-station'); ?>
                 </label>
             </fieldset>
             <?php if ($station['yow_sync']) { ?>
@@ -66,7 +66,7 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
     </div>
     <div id="major-publishing-actions">
         <div id="publishing-action" style="margin-top: -30px;margin-bottom: -26px;">
-            <?php echo get_submit_button('', 'primary large', 'submit-publish'); ?>
+            <?php echo get_submit_button('', 'primary large', 'submit-publish'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_submit_button() is a WordPress core function that escapes its own arguments ?>
         </div>
         <div class="clear"></div>
     </div>

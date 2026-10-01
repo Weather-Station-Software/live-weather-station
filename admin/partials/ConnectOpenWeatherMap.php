@@ -25,7 +25,7 @@ foreach ($owm_plan as $plan) {
     }
 }
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
-$warning = sprintf(__('All stations associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+$warning = sprintf( /* translators: %s: name of the plugin */ __('All stations associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME );
 
 ?>
 
@@ -63,14 +63,14 @@ $warning = sprintf(__('All stations associated to this service will be removed f
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'OpenWeatherMap')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'OpenWeatherMap')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is built above from the plugin option and fixed attribute text ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API plan', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-3, '%s', __('get details', 'live-weather-station'));?>)</span>
+                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-3, '%s', __('get details', 'live-weather-station')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InlineHelp::get() builds an anchor from a fixed plugin URL; the anchor text is a plugin translated string ?>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -81,7 +81,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="owm-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -92,9 +92,9 @@ $warning = sprintf(__('All stations associated to this service will be removed f
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="owm-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="owm-disconnect" class="button button-primary" onclick="lws_owm_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_owm_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="owm-disconnect" class="button button-primary" onclick="lws_owm_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the string with wp_json_encode() and JSON_HEX_TAG|AMP|APOS|QUOT, safe in an inline attribute ?>); return lws_owm_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>
