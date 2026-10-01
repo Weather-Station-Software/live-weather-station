@@ -250,9 +250,9 @@ class Admin {
             $count = (int)$wpdb->get_var("SELECT COUNT(*) FROM " . $table_name . " WHERE wow_sync=1");
             if ($count > 0) {
                 $nonce = wp_create_nonce('lws-wow-be-nonce');
-                $s = '<strong>' . esc_html__('WOW Met Office has been replaced by WOW-BE.', 'live-weather-station') . '</strong> ';
-                $s .= esc_html__('The Met Office website was closed on 1 December 2025 and the service is now run by the Royal Meteorological Institute of Belgium. Your data are no longer received: please register again on wow.meteo.be, create a new site, then enter its new site ID and PIN in the sharing box of your station.', 'live-weather-station');
-                $s .= ' <a href="' . esc_url('https://wow.meteo.be/') . '">wow.meteo.be</a>';
+                $s = '<strong>' . esc_html__('WOW Met Office will be discontinued at the end of 2026 and is replaced by WOW-BE.', 'live-weather-station') . '</strong> ';
+                $s .= esc_html__('Register your station again on wow.meteo.be, then enter its new station ID and authentication key in the sharing settings of your station. The history of your station cannot be transferred.', 'live-weather-station');
+                $s .= ' <a href="' . esc_url('https://wow.meteo.be/en/connect-your-station/migrating-an-existing-wow-station/') . '">' . esc_html__('How to migrate', 'live-weather-station') . '</a>';
                 print('<div id="lws-wow-be-notice" class="notice notice-warning is-dismissible" data-nonce="' . esc_attr($nonce) . '"><p>' . $s . '</p></div>');
                 print('<script>jQuery(function($){$(document).on("click","#lws-wow-be-notice .notice-dismiss",function(){$.post(ajaxurl,{action:"hide_lws_wow_be_notice",lwswowbenonce:$("#lws-wow-be-notice").data("nonce")});});});</script>');
             }

@@ -845,6 +845,9 @@ trait Query {
                         if ($line['measure_type'] == 'pressure_sl') {
                             $result['pressure'] = $line['measure_value'];
                         }
+                        if ($line['measure_type'] == 'pressure') {
+                            $result['abs_pressure'] = $line['measure_value'];
+                        }
                         if ($line['measure_type'] == 'last_seen') {
                             $result['timestamp'] = $line['measure_value'];
                         }
