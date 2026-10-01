@@ -187,17 +187,17 @@ class Handling {
                 $head = (@filesize($file) > 0 && @filesize($file) <= 5242880) ? @file_get_contents($file, false, null, 0, 4) : false;
                 if ($head !== "\x95\x04\x12\xde" && $head !== "\xde\x12\x04\x95") {
                     Logger::error($this->service_name, null, null, null, null, null, 1, 'Downloaded ' . $this->locale_name . ' translation file is not a valid .mo file.');
-                    @unlink($file);
+                    wp_delete_file($file);
                     return false;
                 }
                 if (!copy($file, $target)) {
                     Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to copy ' . $this->locale_name . ' translation file to /languages directory.');
-                    @unlink($file);
+                    wp_delete_file($file);
                     return false;
                 }
                 else {
                     Logger::notice($this->service_name, null, null, null, null, null, 0, $this->locale_name . ' translation file successfully updated from ' . $branch . ' branch.');
-                    @unlink($file);
+                    wp_delete_file($file);
                     return true;
                 }
             }
@@ -236,22 +236,22 @@ class Handling {
         $locale = $this->locale_name;
         if ($this->translation_exists && $this->percent_translated < $this->percent_min) {
             if ((bool)get_option('live_weather_station_partial_translation')) {
-                $s = __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
+                $s = /* translators: 1: language name, 2: plugin name */ __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
             }
             else {
-                $s = __('There is a partial translation of %2$s in %1$s.', 'live-weather-station');
+                $s = /* translators: 1: language name, 2: plugin name */ __('There is a partial translation of %2$s in %1$s.', 'live-weather-station');
             }
-            $message = $s . ' ' . __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
+            $message = $s . ' ' . /* translators: 3: percentage of the plugin translated, 4: link labelled "see details" to the translation help */ __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
             $locale = (strpos($message, 'We need your help to make it complete') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         if (!$this->translation_exists || $this->percent_translated == 0) {
-            $message = __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
+            $message = /* translators: 1: language name, 2: plugin name, 4: link labelled "see details" to the translation help, 5: number of languages already available */ __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
             $locale = (strpos($message, 'you can help to achieve this goal!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         $help = InlineHelp::get(12, '%s', __('see details', 'live-weather-station'));
         if (!EnvManager::is_plugin_in_production_mode()) {
-            $s = __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
-            $message = $s . ' ' . __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
+            $s = /* translators: 1: language name, 2: plugin name */ __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
+            $message = $s . ' ' . /* translators: 3: percentage of the plugin translated, 4: link labelled "see details" to the translation help */ __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
             $help = InlineHelp::get(-10, '%s', __('see here', 'live-weather-station'));
         }
         return sprintf($message, $locale, LIVE_WEATHER_STATION_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
