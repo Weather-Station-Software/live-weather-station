@@ -24,7 +24,7 @@ $show_files = false;
 ?>
 
 <div class="wrap">
-    <h1><?php echo __('Export historical data', 'live-weather-station');?></h1>
+    <h1><?php esc_html_e('Export historical data', 'live-weather-station');?></h1>
     <form name="export-data" id="export-data" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php wp_nonce_field('edit-station'); ?>

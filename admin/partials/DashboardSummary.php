@@ -20,6 +20,7 @@ if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) {
         $data_str = __('The system is paused: it has no data to collect.', 'live-weather-station');
     }
     else {
+        /* translators: 1: number of stations, 2: number of modules, 3: number of measurements */
         $data_str = sprintf(_n('The system is up and running: it is currently collecting %3$d measurements from %1$d station composed of %2$d modules.', 'The system is up and running: it is currently collecting %3$d measurements from %1$d stations composed of %2$d modules.', $a['station'], 'live-weather-station'), $a['station'], $a['module'], $a['measure']);
     }
     $p = $stats->get_processes();
@@ -27,7 +28,7 @@ if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) {
         $show_processes = true;
         $de = array();
         foreach ($p as $d) {
-            $de[] = esc_html($d['name']) . ' (' . esc_html($d['progress']) . '%)';
+            $de[] = $d['name'] . ' (' . $d['progress'] . '%)';
         }
         $processes_str = __('Currently running:', 'live-weather-station') . ' ' . implode(', ', $de) . '.';
     }
@@ -74,17 +75,21 @@ if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) {
     $log_url = '<a href="' . esc_url(LIVE_WEATHER_STATION_ADMIN_PHP_URL . '?page=lws-events&level=error') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . live_weather_station_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
     $a = $stats->get_log();
     if ($a['emergency'] > 0) {
+        /* translators: 1: name of this plugin, 2: link to the events log */
         $run_str = sprintf(__('%1$s has encountered operating issues in the last 3 days. You should check the %2$s to know the cause of this problem.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $log_url);
     } else {
         if ($a['error'] > ($a['recent_error'] == 0 ? 2 : 0)) {
+            /* translators: 1: name of this plugin, 2: link to the events log */
             $run_str = sprintf(__('%1$s has experienced some difficulties while operating. You should take a look at the %2$s to see what could be improved.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $log_url);
         } else {
+            /* translators: 1: name of this plugin */
             $run_str = sprintf(__('All good, %1$s runs smoothly.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         }
     }
 }
 else {
     $req_url = '<a href="' . esc_url(LIVE_WEATHER_STATION_ADMIN_PHP_URL . '?page=lws-requirements') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
+    /* translators: 1: name of this plugin, 2: link to the requirements page */
     $run_str = sprintf(__('%1$s can\'t run: %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $req_url) . '&hellip;';
 }
 $quota = get_transient('live_weather_station_quota_alert');
@@ -99,27 +104,27 @@ if ($quota > 0) {
 <?php if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) { ?>
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
-            <li><?php echo $data_str; ?></li>
-            <li><?php echo $services_str; ?></li>
+            <li><?php echo esc_html($data_str); ?></li>
+            <li><?php echo esc_html($services_str); ?></li>
         </ul>
     </div>
 <?php } ?>
 <?php if (get_option('live_weather_station_quota_mode') == 1 && $quota > 0) { ?>
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
-            <li><i style="color:#FF4444;" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<?php echo $quota_str; ?></li>
+            <li><i style="color:#FF4444;" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<?php echo esc_html($quota_str); ?></li>
         </ul>
     </div>
 <?php } ?>
 <?php if ($show_processes) { ?>
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
-            <?php echo $processes_str; ?>
+            <?php echo esc_html($processes_str); ?>
         </ul>
     </div>
 <?php } ?>
     <div class="activity-block" style="padding-bottom: 0px;">
-        <?php echo $run_str; ?>
+        <?php echo wp_kses_post($run_str); ?>
     </div>
 
 

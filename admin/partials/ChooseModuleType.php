@@ -32,7 +32,7 @@ foreach ($modules as $module) {
         <?php if ($this->arg_service == 'station') { ?>
             <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php esc_html_e('Please, select the type of control you want to set', 'live-weather-station' );?>&hellip;</span></h3>
         <?php } else { ?>
-            <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo sprintf(__('The type of %s currently selected is %s', 'live-weather-station'), esc_html($type), '<em>' . esc_html($name) . '</em>');?>&hellip;</span></h3>
+            <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo wp_kses_post(sprintf(/* translators: 1: type of module, 2: name of the selected type */ __('The type of %1$s currently selected is %2$s', 'live-weather-station'), esc_html($type), '<em>' . esc_html($name) . '</em>'));?>&hellip;</span></h3>
         <?php } ?>
         <div style="width: 100%;text-align: center;padding: 0px;margin-bottom: 0px;" class="inside">
             <div style="padding: 0px 16px 16px 0px;display:flex;flex-direction:row;flex-wrap:wrap;justify-content: center;align-items: center;align-content: center;">
@@ -64,16 +64,16 @@ foreach ($modules as $module) {
                 $("#tip-text").html("&nbsp;");
             });
             <?php foreach ($modules as $module) { ?>
-                $("#" + <?php echo Guard::js($module->get_id()); ?>).mouseover(function() {
-                    $("#tip-text").html(<?php echo Guard::js($module->get_hint()); ?>);
+                $("#" + <?php echo Guard::js($module->get_id()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>).mouseover(function() {
+                    $("#tip-text").html(<?php echo Guard::js($module->get_hint()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>);
                 });
                 <?php if ($module->is_selected()) { ?>
-                    $("#" + <?php echo Guard::js($module->get_id()); ?>).click(function() {
-                        document.location.href=<?php echo Guard::js($module->get_parent_url()); ?>;
+                    $("#" + <?php echo Guard::js($module->get_id()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>).click(function() {
+                        document.location.href=<?php echo Guard::js($module->get_parent_url()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>;
                     });
                 <?php } else { ?>
-                    $("#" + <?php echo Guard::js($module->get_id()); ?>).click(function() {
-                        document.location.href=<?php echo Guard::js($module->get_module_url()); ?>;
+                    $("#" + <?php echo Guard::js($module->get_id()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>).click(function() {
+                        document.location.href=<?php echo Guard::js($module->get_module_url()); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>;
                     });
                 <?php } ?>
             <?php } ?>

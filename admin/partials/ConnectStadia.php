@@ -41,7 +41,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Stadia')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Stadia')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is set at the top of this file from two fixed attribute literals ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -53,7 +53,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="stadia-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -64,9 +64,9 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="stadia-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="stadia-disconnect" class="button button-primary" onclick="lws_stadia_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_stadia_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="stadia-disconnect" class="button button-primary" onclick="lws_stadia_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script and in an HTML attribute ?>); return lws_stadia_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

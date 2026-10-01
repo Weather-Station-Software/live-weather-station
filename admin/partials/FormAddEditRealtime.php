@@ -28,10 +28,10 @@ if (!isset($station['station_model'])) {
 
 <div class="wrap">
     <?php if ($station['guid'] == 0) { ?>
-        <h1><?php _e('Add a station via <em>realtime</em> file', 'live-weather-station');?></h1>
+        <h1><?php echo wp_kses(__('Add a station via <em>realtime</em> file', 'live-weather-station'), array('em' => array()));?></h1>
     <?php } ?>
     <?php if ($station['guid'] != 0) { ?>
-        <h1><?php _e('Edit a station via <em>realtime</em> file', 'live-weather-station');?></h1>
+        <h1><?php echo wp_kses(__('Edit a station via <em>realtime</em> file', 'live-weather-station'), array('em' => array()));?></h1>
     <?php } ?>
     <form method="post" name="add-edit-real-form" id="add-edit-real-form" action="<?php echo esc_url(live_weather_station_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
@@ -83,8 +83,8 @@ if (!isset($station['station_model'])) {
             <script language="javascript" type="text/javascript">
                 jQuery(document).ready(function($) {
 
-                    var js_array_tz_all = <?php echo Guard::js($timezones); ?>;
-                    var actual_tz = <?php echo Guard::js($station['loc_timezone']); ?>;
+                    var js_array_tz_all = <?php echo Guard::js($timezones); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>;
+                    var actual_tz = <?php echo Guard::js($station['loc_timezone']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script ?>;
                     var selected = "";
 
                     $("#loc_country_code").change(function() {
@@ -141,7 +141,7 @@ if (!isset($station['station_model'])) {
                 <?php } else { ?>
                     <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html($message);?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-real" id="add-edit-real" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
@@ -150,7 +150,7 @@ if (!isset($station['station_model'])) {
                 <?php } else { ?>
                     <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         <?php } ?>
     </form>
 </div>
