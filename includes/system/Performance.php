@@ -107,6 +107,7 @@ class Performance {
             }
         }
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $subresult = array();
@@ -301,6 +302,7 @@ class Performance {
         $jsonable = array();
         $jsoned = array();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -474,6 +476,7 @@ class Performance {
         $jsoned = array();
         $database = new Data(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $tablenames = array();
@@ -564,6 +567,7 @@ class Performance {
         foreach ($counts as $count) {
             $sql = "SELECT `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " WHERE timestamp > '" . $cutoff[$count] . "'GROUP BY `level` ORDER BY `timestamp` ASC;";
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
@@ -578,6 +582,7 @@ class Performance {
             $field_list = array();
             $sql = "SELECT `" . $field . "`, `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " GROUP BY `" . $field . "`, `level` ORDER BY `" . $field . "`, `level` DESC";
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
@@ -603,6 +608,7 @@ class Performance {
         $density_max = 0;
         $density_datemin = time();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -627,6 +633,7 @@ class Performance {
         $tmp_date = 0;
         $tmp_criticality = 0;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -712,6 +719,7 @@ class Performance {
         $service24 = array();
         $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -727,6 +735,7 @@ class Performance {
         $service30 = array();
         $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -753,6 +762,7 @@ class Performance {
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -803,6 +813,7 @@ class Performance {
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -827,6 +838,7 @@ class Performance {
         // 24H verbs breakdown
         $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = (array)$query_a[0];
@@ -848,6 +860,7 @@ class Performance {
         $select = "service, " . implode(', ', $fields);
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -879,6 +892,7 @@ class Performance {
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -900,6 +914,7 @@ class Performance {
         }
         $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -956,6 +971,7 @@ class Performance {
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -979,6 +995,7 @@ class Performance {
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -1088,6 +1105,7 @@ class Performance {
         // 30D verbs breakdown
         $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = (array)$query_a[0];
@@ -1111,6 +1129,7 @@ class Performance {
         $select = "service, " . implode(', ', $fields);
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
