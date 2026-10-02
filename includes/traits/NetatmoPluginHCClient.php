@@ -22,7 +22,8 @@ trait HCClient {
     use BaseClient;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
+    // These are the keys of the Netatmo application registered for this plugin: do not reuse them in another application.
+    // A site can use its own Netatmo application instead of these shared keys (see issue #132 of the repository).
     // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
     private $client_id = '58b353safe8edge160268b8900';
     private $client_secret = 'zgl1vdqZc9wvf78x2YgiWj74su92lV7ff';
