@@ -100,7 +100,7 @@ class Stats
             Quota::verify($this->service, 'GET');
             $args = array();
             $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
             $resp = wp_remote_get($api_url, $args);
             $body = '';
             if (!is_wp_error($resp) && (int)wp_remote_retrieve_response_code($resp) === 200) {

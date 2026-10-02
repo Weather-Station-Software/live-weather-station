@@ -138,10 +138,10 @@ class Framework {
         $type = strtolower($type);
         $subformat = 'standard';
         $raw_subformat = self::query_value(self::QUERY_VAR_SUBFORMAT);
-        if ($raw_subformat !== '' && preg_match('/^[A-Za-z0-9_-]{1,40}$/', $raw_subformat) === 1) {
+        if ($raw_subformat !== '' && preg_match('/^[A-Za-z0-9_-]{1,40}$/D', $raw_subformat) === 1) {
             $subformat = strtolower($raw_subformat);
         }
-        if (preg_match('/^[A-Z0-9]{2}(?::[A-F0-9]{2}){5}$/i', $station) !== 1 || preg_match('/^[a-z0-9_]{1,40}$/', $type) !== 1) {
+        if (preg_match('/^[A-Z0-9]{2}(?::[A-F0-9]{2}){5}$/iD', $station) !== 1 || preg_match('/^[a-z0-9_]{1,40}$/D', $type) !== 1) {
             self::not_found();
         }
         if (in_array($type, self::NOT_IMPLEMENTED_TYPES, true)) {
