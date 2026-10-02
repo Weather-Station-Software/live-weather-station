@@ -81,6 +81,7 @@
 * Improvement: the French translation is completed for the strings added since the last language pack of WordPress.org (176 strings), and shipped with the plugin: it fills the strings which the language pack of WordPress.org does not have yet, without replacing its translations.
 * Bug fix: the suggested privacy policy text no longer mentions the query to ip-api.com, which was removed.
 * Bug fix: when several stations share their data with Weather Underground, PWS Weather, WOW-BE or OpenWeatherMap, each of them is now sent at every run (only the first one was).
+* Security: the number of color steps of a yearly calendar heat map is limited to 20, so a crafted shortcode can no longer exhaust the memory of the server.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5

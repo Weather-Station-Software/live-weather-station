@@ -4786,7 +4786,8 @@ trait Output {
         }
 
         if ($type == 'calendarhm') {
-            $step = max(2, (int)$interpolation); // PHP 8: a non numeric interpolation gave a division by zero
+            // PHP 8: a non numeric interpolation gave a division by zero; the number of color steps is bounded like the other graphs (2 to 20).
+            $step = min(20, max(2, (int)$interpolation));
             $col = new ColorsManipulation($prop['fg_color']);
             $amplitude = ($domain['max'] - $domain['min']) / $step;
             $legend = array();
