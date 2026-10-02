@@ -100,7 +100,7 @@ You can also help by reporting bugs, translating, or sharing the plugin with oth
 
 == External services ==
 
-Weather Station talks to the services below only if you configure them (a station, a map, the newsletter), except the news of the project and the translations, which are described in the last part. The plugin does not send any data about the visitors of your site to the weather services: they only receive what is described here, from your server. For the map providers, it is the browser of your visitors which contacts them.
+Every call to a third party service is under the control of the administrator of the site. Weather Station does not track or monitor its users or the visitors of the site, and it contacts no weather platform by itself: a call exists only because the administrator, on his own initiative, connected a weather platform or a device to display its data, chose to share a station, selected a map provider, or subscribed to the newsletter. A service which is not configured is never contacted. The only exceptions, which do not depend on a station, are the news of the project and the translations, described in the last part. The plugin does not send any data about the visitors of your site to the weather services: they only receive what is described here, from your server. For the map providers, it is the browser of your visitors which contacts them.
 
 = Weather services which provide your measurements =
 
