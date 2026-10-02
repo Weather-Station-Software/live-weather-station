@@ -2948,22 +2948,6 @@ class Admin {
                         $s = $this->connect_ambient($apikey);
                     }
                 }
-                if ($service == 'Netatmo') {
-                    if ($login == '' || $password == '') {
-                        $s = __('the login and password can not be empty', 'live-weather-station');
-                    }
-                    else {
-                        $s = $this->connect_netatmo($login, $password);
-                    }
-                }
-                if ($service == 'NetatmoHC') {
-                    if ($login == '' || $password == '') {
-                        $s = __('the login and password can not be empty', 'live-weather-station');
-                    }
-                    else {
-                        $s = $this->connect_netatmohc($login, $password);
-                    }
-                }
                 if ($service == 'OpenWeatherMap') {
                     if ($key == '') {
                         $s = __('the API key can not be empty', 'live-weather-station');
@@ -3641,26 +3625,190 @@ class Admin {
     }
 
     /**
-     * Connect to a Netatmo account.
+     * Read the keys of the Netatmo application of the site from the posted form (a blank secret keeps the saved one).
      *
-     * @param string $login The login for the account.
-     * @param string $password The password for the account.
-     * @return string The error string if an error occurred, empty string if none.
-     *
-     * @since    3.0.0
+     * @param string $prefix Option prefix of the service.
+     * @return array The client id and the client secret, empty strings if missing.
+     * @since 3.9.0
      */
-    protected function connect_netatmo($login, $password) {
-        $netatmo = new Netatmo_Collector();
-        if ($netatmo->authentication($login, $password)) {
-            Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
-            if (get_option('live_weather_station_auto_manage_netatmo')) {
+    private function netatmo_posted_keys($prefix) {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce of the service is verified by the caller.
+        $id = (isset($_POST['client_id']) && is_string($_POST['client_id'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_id'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept, then the value is checked against a pattern before any use.
+        $secret = (isset($_POST['client_secret']) && is_string($_POST['client_secret'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_secret'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept (a secret must not be altered by sanitize_text_field), then the value is checked against a pattern before any use.
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        if ($secret === '' && $id === (string)get_option('live_weather_station_' . $prefix . '_client_id')) {
+            $secret = (string)get_option('live_weather_station_' . $prefix . '_client_secret');
+        }
+        return array($id, $secret);
+    }
+
+    /**
+     * Prepare what is needed to connect a Netatmo service from an admin-post request.
+     *
+     * @return array|null The service name, the option prefix and the collector, null if the request is refused (the user is then redirected).
+     * @since 3.9.0
+     */
+    private function netatmo_connection_context() {
+        if (!current_user_can($this->get_manage_options_cap())) {
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to connect Netatmo.');
+            wp_die(esc_html__('You do not have sufficient permissions to manage connections.', 'live-weather-station'), '', array('response' => 403));
+        }
+        $service = (isset($_REQUEST['service']) && is_string($_REQUEST['service'])) ? sanitize_text_field(wp_unslash($_REQUEST['service'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only picks the service whose nonce the caller verifies with check_admin_referer().
+        if ($service === 'NetatmoHC') {
+            return array($service, 'netatmohc', new Netatmo_HCCollector());
+        }
+        if ($service === 'Netatmo') {
+            return array($service, 'netatmo', new Netatmo_Collector());
+        }
+        return null;
+    }
+
+    /**
+     * Keep the result of a Netatmo connection to show it on the services screen, and go back to this screen.
+     *
+     * @param string $service The service.
+     * @param string $error The error message, empty if the connection is done.
+     * @since 3.9.0
+     */
+    private function netatmo_connection_done($service, $error) {
+        set_transient('lws_netatmo_result_' . get_current_user_id(), array('service' => $service, 'error' => (string)$error), 300);
+        wp_safe_redirect(live_weather_station_get_admin_page_url('lws-settings', null, 'services'));
+        exit;
+    }
+
+    /**
+     * Finish the connection of a Netatmo service once the tokens are stored.
+     *
+     * @param string $service The service.
+     * @since 3.9.0
+     */
+    private function netatmo_after_connection($service) {
+        Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
+        if (get_option('live_weather_station_auto_manage_netatmo')) {
+            if ($service === 'NetatmoHC') {
+                $this->get_netatmohc(true);
+            }
+            else {
                 $this->get_netatmo(true);
             }
+        }
+    }
+
+    /**
+     * Start the connection with the Netatmo application of the site: send the user to Netatmo (admin-post action).
+     *
+     * @since 3.9.0
+     */
+    public function netatmo_oauth_start() {
+        $ctx = $this->netatmo_connection_context();
+        if ($ctx === null) {
+            wp_die(esc_html__('Unknown service.', 'live-weather-station'), '', array('response' => 400));
+        }
+        list($service, $prefix, $collector) = $ctx;
+        check_admin_referer($service);
+        list($id, $secret) = $this->netatmo_posted_keys($prefix);
+        if (!preg_match('/^[\x21-\x7E]{8,512}$/', $id) || !preg_match('/^[\x21-\x7E]{8,512}$/', $secret)) {
+            $this->netatmo_connection_done($service, __('The client id and the client secret of your Netatmo application are required.', 'live-weather-station'));
+        }
+        $state = bin2hex(random_bytes(16));
+        set_transient('lws_netatmo_state_' . $state, array('service' => $service, 'user' => get_current_user_id(), 'id' => $id, 'secret' => $secret), 10 * MINUTE_IN_SECONDS);
+        // The user is sent to the Netatmo site, on purpose.
+        wp_redirect(Netatmo_Collector::netatmo_authorize_url($id, $state, $collector->get_netatmo_scope())); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+        exit;
+    }
+
+    /**
+     * Receive the user back from Netatmo and finish the connection (admin-post action).
+     *
+     * @since 3.9.0
+     */
+    public function netatmo_oauth_callback() {
+        if (!current_user_can($this->get_manage_options_cap())) {
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to connect Netatmo.');
+            wp_die(esc_html__('You do not have sufficient permissions to manage connections.', 'live-weather-station'), '', array('response' => 403));
+        }
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- The single use random state, bound to the user, replaces the nonce: it is checked just below.
+        $state = (isset($_GET['state']) && is_string($_GET['state'])) ? wp_unslash($_GET['state']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Checked against a strict pattern on the next line.
+        $state = preg_match('/^[a-f0-9]{32}$/', $state) ? $state : '';
+        $code = (isset($_GET['code']) && is_string($_GET['code'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_GET['code'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept, then sent to Netatmo as a value of a request body.
+        $refused = isset($_GET['error']);
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+        $data = ($state !== '') ? get_transient('lws_netatmo_state_' . $state) : false;
+        if ($state !== '') {
+            delete_transient('lws_netatmo_state_' . $state);
+        }
+        if (!is_array($data) || !isset($data['service'], $data['user'], $data['id'], $data['secret']) || (int)$data['user'] !== get_current_user_id()) {
+            Logger::warning('Authentication', 'Netatmo', null, null, null, null, 0, 'Netatmo callback with an unknown or expired state.');
+            $this->netatmo_connection_done('Netatmo', __('The authorization is not valid or has expired. Please, start again.', 'live-weather-station'));
+        }
+        $service = ($data['service'] === 'NetatmoHC') ? 'NetatmoHC' : 'Netatmo';
+        $prefix = ($service === 'NetatmoHC') ? 'netatmohc' : 'netatmo';
+        if ($refused || $code === '') {
+            $this->netatmo_connection_done($service, __('Netatmo did not grant the access.', 'live-weather-station'));
+        }
+        $collector = ($service === 'NetatmoHC') ? new Netatmo_HCCollector() : new Netatmo_Collector();
+        $error = $collector->netatmo_connect_with_own_keys($prefix, $data['id'], $data['secret'], 'code', $code);
+        if ($error === '') {
+            $this->netatmo_after_connection($service);
         }
         else {
             Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
         }
-        return $netatmo->last_netatmo_error;
+        $this->netatmo_connection_done($service, $error);
+    }
+
+    /**
+     * Connect a Netatmo service with a refresh token generated by the user (admin-post action).
+     *
+     * @since 3.9.0
+     */
+    public function netatmo_token_connect() {
+        $ctx = $this->netatmo_connection_context();
+        if ($ctx === null) {
+            wp_die(esc_html__('Unknown service.', 'live-weather-station'), '', array('response' => 400));
+        }
+        list($service, $prefix, $collector) = $ctx;
+        check_admin_referer($service);
+        list($id, $secret) = $this->netatmo_posted_keys($prefix);
+        $token = (isset($_POST['refresh_token']) && is_string($_POST['refresh_token'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['refresh_token'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above by check_admin_referer(); only printable ASCII is kept, then checked against a pattern.
+        $error = $collector->netatmo_connect_with_own_keys($prefix, $id, $secret, 'refresh_token', $token);
+        if ($error === '') {
+            $this->netatmo_after_connection($service);
+        }
+        else {
+            Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        $this->netatmo_connection_done($service, $error);
+    }
+
+    /**
+     * Show the result of a Netatmo connection on the services screen.
+     *
+     * @since 3.9.0
+     */
+    public function netatmo_result_notice() {
+        $key = 'lws_netatmo_result_' . get_current_user_id();
+        $result = get_transient($key);
+        if (!is_array($result) || !isset($result['service'])) {
+            return;
+        }
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only the page is read, to show the notice on the plugin settings.
+        if (!isset($_GET['page']) || $_GET['page'] !== 'lws-settings') {
+            return;
+        }
+        delete_transient($key);
+        if ($result['error'] === '') {
+            $message = /* translators: 1: name of the plugin, 2: name of the service */ __('%1$s is now connected to %2$s.', 'live-weather-station');
+            $message = sprintf($message, LIVE_WEATHER_STATION_PLUGIN_NAME, '<em>' . esc_html($result['service']) . '</em>');
+            echo '<div class="notice notice-success is-dismissible"><p>' . wp_kses($message, array('em' => array())) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by wp_kses() above.
+        }
+        else {
+            $message = /* translators: 1: name of the plugin, 2: name of the service */ __('Unable to connect %1$s to %2$s. Please try again.', 'live-weather-station');
+            $message = sprintf($message, LIVE_WEATHER_STATION_PLUGIN_NAME, '<em>' . esc_html($result['service']) . '</em>');
+            $message .= '<br/>' . /* translators: %s: error message returned by the service */ __('The error message is "%s".', 'live-weather-station');
+            $message = sprintf($message, '<em>' . esc_html($result['error']) . '</em>');
+            echo '<div class="notice notice-error is-dismissible"><p>' . wp_kses($message, array('em' => array(), 'br' => array())) . '</p></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped by wp_kses() above.
+        }
     }
 
     /**
@@ -3675,29 +3823,6 @@ class Admin {
             $this->clear_all_netatmo_stations();
             Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LIVE_WEATHER_STATION_PLUGIN_NAME . '.');
         }
-    }
-
-    /**
-     * Connect to a Netatmo HC account.
-     *
-     * @param string $login The login for the account.
-     * @param string $password The password for the account.
-     * @return string The error string if an error occurred, empty string if none.
-     *
-     * @since 3.1.0
-     */
-    protected function connect_netatmohc($login, $password) {
-        $netatmohc = new Netatmo_HCCollector();
-        if ($netatmohc->authentication($login, $password)) {
-            Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
-            if (get_option('live_weather_station_auto_manage_netatmo')) {
-                $this->get_netatmohc(true);
-            }
-        }
-        else {
-            Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
-        }
-        return $netatmohc->last_netatmo_error;
     }
 
     /**

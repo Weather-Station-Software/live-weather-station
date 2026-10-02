@@ -34,54 +34,6 @@ trait HCClient {
 
 
     /**
-     * Connects to the Netatmo account.
-     *
-     * @since 3.1.0
-     */
-    public function authentication($login, $password) {
-        $config = array();
-        $this->last_netatmo_error = '';
-        $config['client_id'] = $this->client_id;
-        $config['client_secret'] = $this->client_secret;
-        $config['scope'] = $this->netatmo_scope;
-        $this->netatmo_client = new NAWSApiClient($config);
-        $this->netatmo_client->setVariable('username', $login);
-        $this->netatmo_client->setVariable('password', $password);
-        try
-        {
-            if (!Quota::verify($this->service_name, 'GET')) {
-                $this->last_netatmo_error = __('The quota of requests to Netatmo is reached. Please, retry later.', 'live-weather-station');
-                return false;
-            }
-            $tokens = $this->netatmo_client->getAccessToken();
-            update_option('live_weather_station_netatmohc_refresh_token', $tokens['refresh_token']);
-            update_option('live_weather_station_netatmohc_access_token', $tokens['access_token']);
-            update_option('live_weather_station_netatmohc_connected', 1);
-
-        }
-        catch (\Throwable $ex) {
-            // Only a refusal of the identifiers ends the connection: with any other error (Netatmo unreachable, login by
-            // password no longer accepted...) the tokens already stored are kept, so a working connection is not lost.
-            $result = (is_object($ex) && isset($ex->result) && is_array($ex->result)) ? $ex->result : array();
-            if (in_array((int)$ex->getCode(), array(2, 23, 32), true) || (isset($result['error']) && $result['error'] === 'invalid_grant')) {
-                $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
-                update_option('live_weather_station_netatmohc_refresh_token', '');
-                update_option('live_weather_station_netatmohc_access_token', '');
-                update_option('live_weather_station_netatmohc_connected', 0);
-            }
-            elseif ((int)$ex->getCode() === 403) {
-                $this->last_netatmo_error = __('Netatmo refused this way of logging in. Your current connection, if any, has not been changed.', 'live-weather-station');
-            }
-            else {
-                $this->last_netatmo_error = __('Temporarily unable to contact Netatmo servers. Please, retry later.', 'live-weather-station');
-            }
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Get station's measurements.
      *
      * @param boolean $store Optional. Store the data.
@@ -97,8 +49,9 @@ trait HCClient {
         if ($refresh_token != '' && $access_token != '') {
             if (!isset($this->netatmo_client)) {
                 $config = array();
-                $config['client_id'] = $this->client_id;
-                $config['client_secret'] = $this->client_secret;
+                $keys = $this->netatmo_app_keys('netatmohc', $this->client_id, $this->client_secret);
+                $config['client_id'] = $keys[0];
+                $config['client_secret'] = $keys[1];
                 $config['scope'] = $this->netatmo_scope;
                 $config['refresh_token'] = $refresh_token;
                 $config['access_token'] = $access_token;
