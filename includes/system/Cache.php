@@ -86,9 +86,9 @@ class Cache {
         }
         foreach($delete as $transient) {
             $key = str_replace('_transient_timeout_', '', $transient);
-            /*if (delete_transient($key)) {
+            if (delete_transient($key)) {
                 $result += 1;
-            }*/
+            }
         }
         Watchdog::stop_chrono($cron_id);
         return $result;
