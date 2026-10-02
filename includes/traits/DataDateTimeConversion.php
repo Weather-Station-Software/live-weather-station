@@ -85,7 +85,13 @@ trait Conversion {
         // Fixed year & month
         $fixed_month = array();
         $fixed_year = array();
-        $start = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        try {
+            $start = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        }
+        catch (\Exception $ex) {
+            $oldest_date = 'now';
+            $start = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        }
         $current = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
         $util = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
         $year = $start->format('Y');
@@ -299,7 +305,7 @@ trait Conversion {
      */
     public static function get_local_n_days_ago_midnight($n, $tz='UTC') {
         $datetime = new \DateTime('yesterday midnight', self::safe_timezone($tz));
-        $datetime->sub(new \DateInterval('P'.$n.'D'));
+        $datetime->sub(new \DateInterval('P'.absint($n).'D'));
         return $datetime->getTimestamp();
     }
 
@@ -954,7 +960,7 @@ trait Conversion {
         if (!is_numeric($sunrise) || !is_numeric($sunrise_a)) {
             return 0;
         }
-        if ($sunrise_a - $sunrise === 0) {
+        if ($sunrise_a - $sunrise == 0) {
             return 100;
         }
         if (is_null($time)) {
@@ -980,7 +986,7 @@ trait Conversion {
         if (!is_numeric($sunset) || !is_numeric($sunset_a)) {
             return 0;
         }
-        if ($sunset_a - $sunset === 0) {
+        if ($sunset_a - $sunset == 0) {
             return 100;
         }
         if (is_null($time)) {
@@ -1009,8 +1015,13 @@ trait Conversion {
             foreach ($list as $d) {
                 $date = $d['val'];
                 if (isset($start)) {
-                    $dlast = new \DateTime($last);
-                    $ddate = new \DateTime($date);
+                    try {
+                        $dlast = new \DateTime($last);
+                        $ddate = new \DateTime($date);
+                    }
+                    catch (\Exception $ex) {
+                        continue;
+                    }
                     if ($ddate->getTimestamp() - $dlast->getTimestamp() == 86400) {
                         $last = $date;
                         $count += 1;
