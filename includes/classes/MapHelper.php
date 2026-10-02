@@ -179,8 +179,10 @@ class Handling {
             if (array_key_exists('lws-map-' . $this->map_id . '-nonce', $_POST)) {
                 if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['lws-map-' . $this->map_id . '-nonce'])), 'lws-map-' . $this->map_id)) {
                     if (array_key_exists('save-map', $_POST)) {
-                        if (isset($this->aux_handler)) {
-                            $this->aux_handler->set_map($this->get_map_detail($this->map_id), 'auto');
+                        // The handler is chosen by the service of the URL: it must match the stored type of the map.
+                        $detail = $this->get_map_detail($this->map_id);
+                        if (isset($this->aux_handler) && is_array($detail) && count($detail) > 0 && isset($detail['type']) && (int)$detail['type'] === (int)$this->map_type) {
+                            $this->aux_handler->set_map($detail, 'auto');
                             $this->aux_handler->save_map();
                             $message = __('This map has been correctly updated.', 'live-weather-station');
                             add_settings_error('lws_nonce_success', 200, $message, 'updated');

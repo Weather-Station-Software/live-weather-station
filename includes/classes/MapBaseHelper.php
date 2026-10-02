@@ -67,6 +67,12 @@ abstract class BaseHandling {
             $this->map_id = $map['id'];
             $this->map_name = $map['name'];
             $this->map_params = unserialize($map['params'], array('allowed_classes' => false));
+            if (!is_array($this->map_params)) {
+                $this->map_params = array();
+            }
+            if (!isset($this->map_params['marker']) || !is_array($this->map_params['marker'])) {
+                $this->map_params['marker'] = array();
+            }
             if (!array_key_exists('page', $this->map_params['marker'])) {
                 $this->map_params['marker']['page'] = 'none';
             }
@@ -483,6 +489,7 @@ abstract class BaseHandling {
                 $day = null;
                 $weather = null;
                 $wind_angle = null;
+                $rain = null;
                 $wind_force = null;
                 $wind_strength = null;
                 $temperature = null;
@@ -746,7 +753,12 @@ abstract class BaseHandling {
             else {
                 $date = new \DateTime($station['last_refresh']);
             }
-            $date->setTimezone(new \DateTimeZone($station['loc_timezone']));
+            try {
+                $date->setTimezone(new \DateTimeZone((string)$station['loc_timezone']));
+            }
+            catch (\Exception $ex) {
+                // Invalid timezone stored for this station: keep the date as is.
+            }
             $lr = $lr . '&nbsp;' . $date->format('H:i');
             $s['url'] = esc_url($s['url'], array('http', 'https'));
             if ($s['url'] != '') {
