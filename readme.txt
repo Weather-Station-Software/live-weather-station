@@ -137,6 +137,13 @@ Yes. The maps are drawn by the browser of your visitors, which downloads the til
 = Can a station be on my local network? =
 Yes. The stations which are read from a file or a feed (Clientraw, Realtime, Stickertags) can be at an address of your local network (192.168.x.x, 10.x.x.x, a name of your LAN), because many personal stations live there. For this reason the plugin does not block private addresses when it reads a station: only an administrator can add a station, so only enter addresses you trust.
 
+= My site is behind a CDN or a reverse proxy: do the request limits still work? =
+The plugin limits the number of requests per minute that a visitor can make to its live controls, charts and feeds (see "Public requests limit" in the system settings, 0 removes a limit). A visitor is identified by the address the server sees. Behind a CDN or a reverse proxy (Cloudflare, a load balancer...) this address is the one of the proxy, so all your visitors would share the same counter. In that case give the plugin the real address of the visitor, with a few lines in a small plugin or in the functions.php of your child theme. Example for Cloudflare:
+
+`add_filter( 'live_weather_station_public_rate_limit_ip', function ( $ip ) { return isset( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ? $_SERVER['HTTP_CF_CONNECTING_IP'] : $ip; } );`
+
+Only use a header that your proxy sets itself and that visitors cannot forge: the plugin never trusts forwarded headers by default. The other filters are `live_weather_station_public_rate_limit` (the limit, 0 disables it) and `live_weather_station_public_rate_window` (the length of the window in seconds, 60 by default).
+
 = Are there some paid services or limitations? =
 NO. Weather Station is a free software. That means you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
