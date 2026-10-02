@@ -26,7 +26,7 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc
     </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAR );?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $link is built above from translated strings and esc_url() ?>
+            <i style="color:#999;" class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAR );?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo wp_kses_post($link); ?>
         </div>
     <?php } ?>
 </div>
