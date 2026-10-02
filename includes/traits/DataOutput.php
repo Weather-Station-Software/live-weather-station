@@ -7116,7 +7116,7 @@ trait Output {
             return $result;
         }
         // Nothing is cached for an unknown module, and the number of new entries is capped per hour: the key is chosen by the caller (anonymous visitors included).
-        if ($_attributes['cache'] != 'no_cache' && $module_found && self::cache_budget('lws_lttextual_cache_budget', 300)) {
+        if ($_attributes['cache'] != 'no_cache' && $module_found && self::cache_budget('lws_lttextual_cache_budget', (int)apply_filters('live_weather_station_cache_budget', (int)get_option('live_weather_station_cache_budget_text', 300), 'lws_lttextual_cache_budget'))) {
             Cache::set_graph($fingerprint, 'climat', $result);
         }
         return $result;
@@ -7131,6 +7131,9 @@ trait Output {
      * @since 3.9.0
      */
     private static function cache_budget($bucket, $max) {
+        if ($max <= 0) {
+            return true;
+        }
         $state = get_transient($bucket);
         $now = time();
         if (!is_array($state) || !isset($state['start'], $state['count']) || ($now - (int)$state['start']) >= HOUR_IN_SECONDS) {
