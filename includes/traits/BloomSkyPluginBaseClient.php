@@ -153,6 +153,27 @@ trait BaseClient {
     }
 
     /**
+     * Keep only numeric values (cast to numbers) in a block of measures, except the keys allowed to stay as text.
+     *
+     * @param array $data The raw block coming from the BloomSky API.
+     * @param array $text_keys Optional. The keys that are not measures.
+     * @return array The cleaned block.
+     * @since 3.9.0
+     */
+    private function clean_bloomsky_numbers($data, $text_keys=array()) {
+        $result = array();
+        foreach ($data as $key => $value) {
+            if (in_array($key, $text_keys, true)) {
+                $result[$key] = $value;
+            }
+            elseif (is_numeric($value)) {
+                $result[$key] = $value + 0;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Corrects station's measurements.
      *
      * @since 3.6.0
@@ -185,7 +206,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('VideoList', $station)) {
                     $videos = $station['VideoList'];
-                    if (count($videos) > 0) {
+                    if (is_array($videos) && count($videos) > 0) {
                         $dat['video_imperial'] = array();
                         foreach ((array)$videos as $video) {
                             $dat['video_imperial'][] = live_weather_station_clean_url($video);
@@ -195,7 +216,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('VideoList_C', $station)) {
                     $videos = $station['VideoList_C'];
-                    if (count($videos) > 0) {
+                    if (is_array($videos) && count($videos) > 0) {
                         $dat['video_metric'] = array();
                         foreach ((array)$videos as $video) {
                             $dat['video_metric'][] = live_weather_station_clean_url($video);
@@ -204,8 +225,8 @@ trait BaseClient {
                     }
                 }
 
-                if (array_key_exists('Data', $station)) {
-                    $data = $station['Data'];
+                if (array_key_exists('Data', $station) && is_array($station['Data'])) {
+                    $data = $this->clean_bloomsky_numbers($station['Data'], array('DeviceType', 'ImageURL'));
                     if (array_key_exists('TS', $data)) {
                         $dat['time_utc'] = $data['TS'];
                     }
@@ -241,8 +262,8 @@ trait BaseClient {
                         $dat['url_pct'] = live_weather_station_clean_url($data['ImageURL']);
                     }
                 }
-                if (array_key_exists('Storm', $station)) {
-                    $data = $station['Storm'];
+                if (array_key_exists('Storm', $station) && is_array($station['Storm'])) {
+                    $data = $this->clean_bloomsky_numbers($station['Storm']);
                     if ($device_model == '') {
                         $device_model = 'BloomSky - Storm';
                     }
@@ -288,7 +309,7 @@ trait BaseClient {
                     $dat['device_model'] = $device_model;
                 }
                 if (array_key_exists('FullAddress', $station)) {
-                    if (strlen($station['FullAddress']) > 1) {
+                    if (is_string($station['FullAddress']) && strlen($station['FullAddress']) > 1) {
                         $dat['place']['country'] = strtoupper(live_weather_station_clean_text(substr($station['FullAddress'], -2), 2));
                     }
                 }
@@ -296,13 +317,13 @@ trait BaseClient {
                     $dat['place']['city'] = live_weather_station_clean_text($station['CityName'], 60);
                 }
                 if (array_key_exists('ALT', $station)) {
-                    $dat['place']['altitude'] = round($station['ALT']);
+                    $dat['place']['altitude'] = round((float)live_weather_station_clean_number($station['ALT'], 0));
                 }
                 if (array_key_exists('LON', $station)) {
-                    $dat['place']['location'][0] = round($station['LON'], 4);
+                    $dat['place']['location'][0] = round((float)live_weather_station_clean_number($station['LON'], 0), 4);
                 }
                 if (array_key_exists('LAT', $station)) {
-                    $dat['place']['location'][1] = round($station['LAT'], 4);
+                    $dat['place']['location'][1] = round((float)live_weather_station_clean_number($station['LAT'], 0), 4);
                 }
                 if (array_key_exists('place', $dat)) {
                     if (array_key_exists('UTC', $station) && array_key_exists('country', $dat['place'])) {

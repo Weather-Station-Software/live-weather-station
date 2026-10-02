@@ -841,8 +841,8 @@ class Performance {
             // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
-            $query_t = (array)$query_a[0];
-            $cpt = ($query_t['cpt']-1)/144;
+            $query_t = (array)(isset($query_a[0]) ? $query_a[0] : array());
+            $cpt = isset($query_t['cpt']) ? ($query_t['cpt']-1)/144 : 1;
         } catch (\Exception $ex) {
             $cpt = 1;
         }
@@ -1108,8 +1108,8 @@ class Performance {
             // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
-            $query_t = (array)$query_a[0];
-            $cpt = $query_t['cpt'];
+            $query_t = (array)(isset($query_a[0]) ? $query_a[0] : array());
+            $cpt = isset($query_t['cpt']) ? $query_t['cpt'] : 1;
         } catch (\Exception $ex) {
             $cpt = 1;
         }

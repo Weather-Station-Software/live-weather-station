@@ -25,7 +25,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function ident($name, $allowed = null) {
-        if (!is_string($name) || !preg_match('/^[A-Za-z0-9_]{1,64}$/', $name)) {
+        if (!is_string($name) || !preg_match('/^[A-Za-z0-9_]{1,64}$/D', $name)) {
             return null;
         }
         if (is_array($allowed) && !in_array($name, $allowed, true)) {
@@ -57,7 +57,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function datetime($value) {
-        if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/', $value)) {
+        if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2})?$/D', $value)) {
             return $value;
         }
         return null;

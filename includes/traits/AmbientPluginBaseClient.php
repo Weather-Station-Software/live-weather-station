@@ -192,7 +192,7 @@ trait BaseClient {
                 $temperature = 15.0;
                 $altitude = 0;
                 $dat = array();
-                if (array_key_exists('info', $station)) {
+                if (array_key_exists('info', $station) && is_array($station['info'])) {
                     if (array_key_exists('name', $station['info'])) {
                         $dat['fixed_device_name'] = live_weather_station_clean_text($station['info']['name'], 60);
                     }
@@ -213,17 +213,23 @@ trait BaseClient {
                 else {
                     $dat['device_id'] = '00:00:00:00:00:00';
                 }
-                if (array_key_exists('lastData', $station)) {
-                    $data = $station['lastData'];
+                if (array_key_exists('lastData', $station) && is_array($station['lastData'])) {
+                    // Every measure of this feed is a number: anything else is dropped before use.
+                    $data = array();
+                    foreach ($station['lastData'] as $key => $value) {
+                        if (is_numeric($value)) {
+                            $data[$key] = $value + 0;
+                        }
+                    }
                     if (array_key_exists('dateutc', $data)) {
                         $dat['time_utc'] = (int)round($data['dateutc'] / 1000, 0);
                         $dat['last_seen'] = (int)round($data['dateutc'] / 1000, 0);
                     }
                     if (array_key_exists('winddir', $data)) {
                         $dat['windangle'] = $data['winddir'];
-                        $dat['winddirection'] = (int)floor(($data['winddir'] + 180) % 360);
+                        $dat['winddirection'] = (int)floor(((int)round($data['winddir']) + 180) % 360);
                         $dat['gustangle'] = $data['winddir'];
-                        $dat['gustdirection'] = (int)floor(($data['winddir'] + 180) % 360);
+                        $dat['gustdirection'] = (int)floor(((int)round($data['winddir']) + 180) % 360);
                     }
                     if (array_key_exists('windgustmph', $data)) {
                         $dat['guststrength'] = $this->get_reverse_wind_speed($data['windgustmph'], 1);
@@ -284,7 +290,7 @@ trait BaseClient {
                     $result[] = $dat;
                 }
                 else {
-                    Logger::warning($this->facility, $this->service_name, $dat['device_id'], $dat['device_name'], null, null, 900, 'No module found for this station.');
+                    Logger::warning($this->facility, $this->service_name, $dat['device_id'], (isset($dat['fixed_device_name']) ? $dat['fixed_device_name'] : null), null, null, 900, 'No module found for this station.');
                 }
             }
         }
