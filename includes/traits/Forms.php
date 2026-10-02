@@ -239,15 +239,15 @@ trait Handling {
             $txt_value = sprintf(/* translators: %s: type of measurement */ __('Limits for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
             $txt_alarm = sprintf(/* translators: %s: type of measurement */ __('Alarms for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
         }
-        $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_value" value="' . esc_attr($min_value) . '" />';
+        $html .= esc_html__('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_value" value="' . esc_attr($min_value) . '" />';
         $html .= '&nbsp;<label for="' . $id . 'min_value">' . wp_kses_post($unit) . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
-        $html .= __('high:', 'live-weather-station') . ' <input name="' . $id . 'max_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_value" value="' . esc_attr($max_value) . '" />';
+        $html .= esc_html__('high:', 'live-weather-station') . ' <input name="' . $id . 'max_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_value" value="' . esc_attr($max_value) . '" />';
         $html .= '&nbsp;<label for="' . $id . 'max_value">' . wp_kses_post($unit) . '</label>';
         $html .= '<p class="description">' . wp_kses_post($txt_value) . '</p>';
         $html .= '<p class="description">&nbsp;</p>';
-        $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_alarm" value="' . esc_attr($min_alarm) . '" />';
+        $html .= esc_html__('low:', 'live-weather-station') . ' <input name="' . $id . 'min_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_alarm" value="' . esc_attr($min_alarm) . '" />';
         $html .= '&nbsp;<label for="' . $id . 'min_alarm">' . wp_kses_post($unit) . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
-        $html .= __('high:', 'live-weather-station') . ' <input name="' . $id . 'max_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_alarm" value="' . esc_attr($max_alarm) . '" />';
+        $html .= esc_html__('high:', 'live-weather-station') . ' <input name="' . $id . 'max_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_alarm" value="' . esc_attr($max_alarm) . '" />';
         $html .= '&nbsp;<label for="' . $id . 'max_alarm">' . wp_kses_post($unit) . '</label>';
         $html .= '<p class="description">' . wp_kses_post($txt_alarm) . '</p>';
         return $html;
