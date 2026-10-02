@@ -14335,12 +14335,8 @@ trait Output {
         $result .= '</div>';
         wp_enqueue_style('lws-table');
         if ($style == 'icon' || $style == 'multi-icon') {
-            if (EnvManager::is_home_server()) {
-                wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
-            }
-            else {
-                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
-            }
+            // The flags (flag-icon-css, MIT licence) are shipped with the plugin: no request to another domain.
+            wp_enqueue_style('flags', LIVE_WEATHER_STATION_PUBLIC_URL . 'flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
         }
         return $result;
     }
