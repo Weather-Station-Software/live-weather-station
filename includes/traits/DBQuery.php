@@ -878,15 +878,6 @@ trait Query {
                         if ($line['measure_type'] == 'last_seen') {
                             $result['timestamp'] = $line['measure_value'];
                         }
-                        if ($line['measure_type'] == 'altitude') {
-                            $result['altitude'] = $line['measure_value'];
-                        }
-                        if ($line['measure_type'] == 'latitude') {
-                            $result['latitude'] = $line['measure_value'];
-                        }
-                        if ($line['measure_type'] == 'longitude') {
-                            $result['longitude'] = $line['measure_value'];
-                        }
                         break;
                     case 'namodule1': // Outdoor module
                         if ($line['measure_type'] == 'temperature') {
