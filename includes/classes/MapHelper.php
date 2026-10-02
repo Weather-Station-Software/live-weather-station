@@ -146,12 +146,16 @@ class Handling {
      * @since 3.7.0
      */
     private function get_args() {
-        if (!($mid = filter_input(INPUT_GET, 'mid'))) {
-            if (!($mid = filter_input(INPUT_POST, 'mid'))) {
-                $mid = 0;
-            }
+        // phpcs:disable WordPress.Security.NonceVerification -- read-only: the map id only selects what is displayed, edit_map() verifies its own nonce before saving.
+        $mid = 0;
+        if (isset($_GET['mid'])) {
+            $mid = absint(wp_unslash($_GET['mid']));
         }
-        $this->map_id = absint($mid);
+        if (!$mid && isset($_POST['mid'])) {
+            $mid = absint(wp_unslash($_POST['mid']));
+        }
+        $this->map_id = $mid;
+        // phpcs:enable WordPress.Security.NonceVerification
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
             $tab = filter_input(INPUT_GET, 'tab');
         }

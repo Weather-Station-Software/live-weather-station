@@ -11,6 +11,10 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+// This template shows the server host, IP, document root and database user: administrators only.
+if ( ! current_user_can( live_weather_station_manage_capability() ) ) {
+	return;
+}
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="referrers" class="postbox ">

@@ -136,7 +136,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  var shortcode = "[live-weather-station-radial mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' device_id=\'"+sc_device+"\' periodtype=\'"+sc_period_type+"\' period=\'"+sc_period+"\' values=\'"+sc_values+"\' template=\'"+sc_template+"\' valuescale=\'"+sc_valuescale+"\' data=\'"+sc_data+"\' height=\'"+sc_height+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").text(shortcode);';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
         $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_radial_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, periodtype:sc_period_type, period:sc_period, template:sc_template, values:sc_values, valuescale:sc_valuescale, height:sc_height ';
         $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
