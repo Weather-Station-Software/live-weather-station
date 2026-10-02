@@ -42,8 +42,8 @@ trait CurrentClient {
         $weather = json_decode($weather, true);
         if (is_array($weather)) {
             if (array_key_exists('coord', $weather)) {
-                $result['loc_longitude'] = $weather['coord']['lon'];
-                $result['loc_latitude'] = $weather['coord']['lat']; 
+                $result['loc_longitude'] = live_weather_station_clean_number(isset($weather['coord']['lon']) ? $weather['coord']['lon'] : null);
+                $result['loc_latitude'] = live_weather_station_clean_number(isset($weather['coord']['lat']) ? $weather['coord']['lat'] : null);
             }
         }
         return $result;
@@ -88,25 +88,25 @@ trait CurrentClient {
             $result['firmware'] = LIVE_WEATHER_STATION_VERSION;
             $result['data_type'] = array();
             $dashboard = array();
-            $dashboard['time_utc'] = $weather['dt'];
+            $dashboard['time_utc'] = live_weather_station_clean_number(isset($weather['dt']) ? $weather['dt'] : null, 0);
             if (array_key_exists('weather', $weather) && is_array($weather['weather']) && isset($weather['weather'][0]['id'])) {
-                $dashboard['weather'] = $weather['weather'][0]['id'];
+                $dashboard['weather'] = live_weather_station_clean_number($weather['weather'][0]['id'], 0);
                 $result['data_type'][] = 'weather';
             } else {
                 $dashboard['weather'] = 0;
                 $result['data_type'][] = 'weather';
             }
             if (array_key_exists('main', $weather) && isset($weather['main']['temp'])) {
-                $dashboard['temperature'] = $weather['main']['temp'];
+                $temperature = live_weather_station_clean_number($weather['main']['temp'], 15.0);
+                $dashboard['temperature'] = $temperature;
                 $result['data_type'][] = 'temperature';
-                $temperature = $weather['main']['temp'];
             } else {
                 $dashboard['temperature'] = 0;
                 $temperature = 15.0;
             }
             if (array_key_exists('main', $weather) && isset($weather['main']['pressure'])) {
-                $dashboard['pressure_sl'] = $weather['main']['pressure'];
-                $dashboard['pressure'] = $this->convert_from_mslp_to_baro($weather['main']['pressure'], $station['loc_altitude'], $temperature);
+                $dashboard['pressure_sl'] = live_weather_station_clean_number($weather['main']['pressure'], 0);
+                $dashboard['pressure'] = $this->convert_from_mslp_to_baro($dashboard['pressure_sl'], $station['loc_altitude'], $temperature);
                 $result['data_type'][] = 'pressure_sl';
                 $result['data_type'][] = 'pressure';
             } else {
@@ -114,15 +114,17 @@ trait CurrentClient {
                 $dashboard['pressure'] = 0;
             }
             if (array_key_exists('main', $weather) && isset($weather['main']['humidity'])) {
-                $dashboard['humidity'] = $weather['main']['humidity'];
+                $dashboard['humidity'] = live_weather_station_clean_number($weather['main']['humidity'], 0);
                 $result['data_type'][] = 'humidity';
             } else {
                 $dashboard['humidity'] = 0;
             }
             if (array_key_exists('wind', $weather) && isset($weather['wind']['deg']) && isset($weather['wind']['speed'])) {
-                $dashboard['windangle'] = round($weather['wind']['deg']);
-                $dashboard['winddirection'] = (int)floor(($weather['wind']['deg'] + 180) % 360);
-                $dashboard['windstrength'] = round($weather['wind']['speed'] * 3.6);
+                $wind_deg = (float)live_weather_station_clean_number($weather['wind']['deg'], 0);
+                $wind_speed = (float)live_weather_station_clean_number($weather['wind']['speed'], 0);
+                $dashboard['windangle'] = round($wind_deg);
+                $dashboard['winddirection'] = (int)floor(fmod($wind_deg + 180, 360));
+                $dashboard['windstrength'] = round($wind_speed * 3.6);
                 $result['data_type'][] = 'windangle';
                 $result['data_type'][] = 'winddirection';
                 $result['data_type'][] = 'windstrength';
@@ -132,30 +134,30 @@ trait CurrentClient {
                 $dashboard['windstrength'] = 0;
             }
             if (array_key_exists('rain', $weather) && isset($weather['rain']['1h'])) {
-                $dashboard['rain'] = $weather['rain']['1h'];
+                $dashboard['rain'] = live_weather_station_clean_number($weather['rain']['1h'], 0);
                 $result['data_type'][] = 'rain';
             } elseif (array_key_exists('rain', $weather) && isset($weather['rain']['3h'])) {
-                $dashboard['rain'] = (int)($weather['rain']['3h']) / 3;
+                $dashboard['rain'] = (float)live_weather_station_clean_number($weather['rain']['3h'], 0) / 3;
                 $result['data_type'][] = 'rain';
             } else {
                 $dashboard['rain'] = 0;
                 $result['data_type'][] = 'rain';
             }
             if (array_key_exists('snow', $weather) && isset($weather['snow']['3h'])) {
-                $dashboard['snow'] = $weather['snow']['3h'];
+                $dashboard['snow'] = live_weather_station_clean_number($weather['snow']['3h'], 0);
                 $result['data_type'][] = 'snow';
             } else {
                 $dashboard['snow'] = 0;
                 $result['data_type'][] = 'snow';
             }
             if (array_key_exists('clouds', $weather) && isset($weather['clouds']['all'])) {
-                $dashboard['cloudiness'] = $weather['clouds']['all'];
+                $dashboard['cloudiness'] = live_weather_station_clean_number($weather['clouds']['all'], 0);
                 $result['data_type'][] = 'cloudiness';
             } else {
                 $dashboard['cloudiness'] = 0;
             }
             if (array_key_exists('visibility', $weather)) {
-                $dashboard['visibility'] = $weather['visibility'];
+                $dashboard['visibility'] = live_weather_station_clean_number($weather['visibility'], -1);
                 $result['data_type'][] = 'visibility';
             } else {
                 $dashboard['visibility'] = -1;
@@ -221,7 +223,7 @@ trait CurrentClient {
                     return array ();
                 }
             }
-            catch(\Exception $ex)
+            catch(\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
@@ -263,7 +265,7 @@ trait CurrentClient {
             $ephemeris->compute();
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
