@@ -77,6 +77,9 @@
 * Security: the folder of the exports is also protected on IIS servers (web.config), and the Site Health screen of WordPress checks that its files cannot be read from the web, with the rule to add on nginx servers, which ignore the protection files.
 * Bug fix: an OpenWeatherMap map saved with an unknown background (from an older version) is displayed without background instead of not being displayed at all.
 * Bug fix: the "See what's new" link shown after an update no longer sends to the article of a previous version: when the article of the installed version is not referenced, it goes to the release notes of this version.
+* Improvement: the translation template (languages/live-weather-station.pot) is regenerated from the code of this version (about 2,590 strings, the previous one dated from 2018), for the translators.
+* Improvement: the French translation is completed for the strings added since the last language pack of WordPress.org (176 strings), and shipped with the plugin: it fills the strings which the language pack of WordPress.org does not have yet, without replacing its translations.
+* Bug fix: the suggested privacy policy text no longer mentions the query to ip-api.com, which was removed.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5
