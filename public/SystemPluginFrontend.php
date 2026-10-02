@@ -316,7 +316,7 @@ class Frontend {
         $_attributes['module_id'] = $this->lws_post_value('module_id');
         $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->lcd_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -343,7 +343,7 @@ class Frontend {
             $_attributes['force'] = $this->lws_post_value('force');
         }
         $response = $this->justgage_attributes($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -358,7 +358,7 @@ class Frontend {
         $_attributes['module_id'] = $this->lws_post_value('module_id');
         $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->justgage_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -390,7 +390,7 @@ class Frontend {
         $_attributes['glass'] = strtoupper($this->lws_post_value('glass'));
         $_attributes['size'] = $this->lws_post_value('size');
         $response = $this->steelmeter_attributes($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -405,7 +405,7 @@ class Frontend {
         $_attributes['module_id'] = $this->lws_post_value('module_id');
         $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->steelmeter_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -429,7 +429,7 @@ class Frontend {
         if ($s == '') {
             $s = __('File is accessible and its format seems good.', 'live-weather-station');
         }
-        exit (json_encode(array('result' => $s)));
+        wp_send_json(array('result' => $s));
     }
 
 

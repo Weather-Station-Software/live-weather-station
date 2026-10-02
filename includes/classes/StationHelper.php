@@ -322,8 +322,8 @@ class Handling {
                             }
                             if (array_key_exists('wow-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wow_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
-                                    $station['wow_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wow_user'] = htmlspecialchars_decode(is_scalar($_POST['user']) ? (string)wp_unslash($_POST['user']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wow_password'] = htmlspecialchars_decode(is_scalar($_POST['password']) ? (string)wp_unslash($_POST['password']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['wow_sync'] = 1;
                                     $wow = true;
                                     $connect = true;
@@ -331,8 +331,8 @@ class Handling {
                             }
                             if (array_key_exists('pws-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['pws_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
-                                    $station['pws_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['pws_user'] = htmlspecialchars_decode(is_scalar($_POST['user']) ? (string)wp_unslash($_POST['user']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['pws_password'] = htmlspecialchars_decode(is_scalar($_POST['password']) ? (string)wp_unslash($_POST['password']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['pws_sync'] = 1;
                                     $pws = true;
                                     $connect = true;
@@ -340,8 +340,8 @@ class Handling {
                             }
                             if (array_key_exists('wug-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wug_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
-                                    $station['wug_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wug_user'] = htmlspecialchars_decode(is_scalar($_POST['user']) ? (string)wp_unslash($_POST['user']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wug_password'] = htmlspecialchars_decode(is_scalar($_POST['password']) ? (string)wp_unslash($_POST['password']) : '', ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['wug_sync'] = 1;
                                     $wug = true;
                                     $connect = true;

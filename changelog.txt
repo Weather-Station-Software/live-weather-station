@@ -50,6 +50,7 @@
 * Bug fix: the automatic download of the partial translation works again when run by WP-Cron.
 * Bug fix: the public feed addresses /get-weather/... work on every web server (they were rewritten to a PHP file, which only Apache handled, and even there the parameters were lost). The standalone generator.php no longer searches for wp-load.php: the feeds are served by WordPress itself, and the plugin shows the address that matches the permalink setting of the site (a query string address when the permalinks are plain).
 * Bug fix: the services libraries (Netatmo, OpenWeatherMap, WeatherFlow, Pioupiou, BloomSky, Ambient, WeatherLink, file feeds) and the climate chart still used the old LWS_ and lws_ names removed by the 3.9.0 rename and stopped with a fatal error; a CI check now forbids any leftover old name.
+* Security: the public gauge and meter AJAX answers are sent as JSON (not HTML) and the gauge identifier is restricted to safe characters; the credentials of the sharing services are read as text only; the uninstall cleanup of screen settings only touches the screens of the plugin.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

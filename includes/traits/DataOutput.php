@@ -8072,7 +8072,7 @@ trait Output {
      */
     public function justgage_attributes($attributes) {
         $result = array();
-        $result['id'] = $attributes['id'];
+        $result['id'] = Guard::token(isset($attributes['id']) ? $attributes['id'] : '');
         // Only the known values are accepted (the others behave as the defaults).
         $attributes['pointer'] = Guard::enum(isset($attributes['pointer']) ? $attributes['pointer'] : 'none', array('none', 'external', 'internal'), 'none');
         $attributes['size'] = isset($attributes['size']) && is_scalar($attributes['size']) ? (string)$attributes['size'] : '';

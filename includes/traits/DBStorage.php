@@ -1865,7 +1865,7 @@ trait Storage {
             Cache::flush_query();
         }
         else {
-            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- custom plugin table live_weather_station_stations: the table name is internal and the values are bound with %s in prepare(), live lookup of the guid before a write
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds the text passed to Logger::error(), truncated to 1000 characters; nothing is printed
             Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . substr(print_r($value, true), 0, 1000));
         }
         return $result;
@@ -2164,15 +2164,15 @@ trait Storage {
     protected static function clean_all_usermeta() {
         global $wpdb;
         // Exactly the keys written by the plugin: its own welcome-panel flag and the WordPress screen options
-        // (postbox order/visibility, layout, columns, per-page) of its admin screens (screen ids contain 'lws-').
+        // (postbox order/visibility, layout, columns, per-page) of its admin screens (their screen ids end with '_page_lws-<slug>': the patterns are anchored on it so the screens of other plugins are left alone).
         $like = array(
             'show\_lws\_welcome\_panel',
-            'closedpostboxes\_%lws-%',
-            'metaboxhidden\_%lws-%',
-            'meta-box-order\_%lws-%',
-            'screen\_layout\_%lws-%',
-            'manage%lws-%columnshidden',
-            '%lws-%\_per\_page',
+            'closedpostboxes\_%\_page\_lws-%',
+            'metaboxhidden\_%\_page\_lws-%',
+            'meta-box-order\_%\_page\_lws-%',
+            'screen\_layout\_%\_page\_lws-%',
+            'manage%\_page\_lws-%columnshidden',
+            '%\_page\_lws-%\_per\_page',
         );
         $where = implode(' OR ', array_fill(0, count($like), 'meta_key LIKE %s'));
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- core table $wpdb->usermeta: the LIKE patterns are a fixed list, one %s placeholder is generated per pattern, a delete is not cacheable
