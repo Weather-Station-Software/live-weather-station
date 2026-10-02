@@ -65,6 +65,7 @@
 * Improvement: the import of a configuration file is refused when a number (position, altitude, station type, sharing switches) is replaced by text, instead of storing it and breaking the calculations of the station later.
 * Improvement: the debug entries of the events log (answers of the services) hide the position, the altitude, the address and the MAC addresses of the stations by default, so that a log can be shared in a support request; a new setting in the system options keeps the raw values when you need them. The text of these entries is no longer built when the debug level is not recorded, which saves work on every data collection.
 * Security: the uploads to Weather Underground, PWS Weather, WOW-BE and OpenWeatherMap no longer follow redirections, so the credentials and the data of a station can never be forwarded to another server.
+* Improvement: the maximum number of new entries written per hour in the caches of your pages (6000 for widgets, controls and charts, 300 for the textual climate shortcode) can be changed, or removed with 0, in the system settings.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5

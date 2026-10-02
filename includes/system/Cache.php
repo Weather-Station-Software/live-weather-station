@@ -280,13 +280,19 @@ class Cache {
      *
      * @param string $name The full name of the cache item.
      * @param string $bucket The name of the counter.
-     * @param integer $max Optional. The maximum number of writes per hour.
+     * @param integer $max Optional. The maximum number of writes per hour (default: the option, 6000; 0 removes the limit).
      * @return boolean True if the item can be written.
      * @since 3.9.0
      */
-    private static function public_write_allowed($name, $bucket, $max=6000) {
+    private static function public_write_allowed($name, $bucket, $max=null) {
         if (strlen($name) > 150) {
             return false;
+        }
+        if ($max === null) {
+            $max = (int)apply_filters('live_weather_station_cache_budget', (int)get_option('live_weather_station_cache_budget', 6000), $bucket);
+        }
+        if ($max <= 0) {
+            return true;
         }
         $state = get_transient($bucket);
         $now = time();
