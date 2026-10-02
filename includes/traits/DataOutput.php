@@ -218,7 +218,8 @@ trait Output {
                 $val[] = $value;
             }
             else {
-                $val[] = array($value['timestamp'], $value['measure_value']);
+                // The quotes are stripped below: only numbers can reach the inlined script.
+                $val[] = array(is_numeric($value['timestamp']) ? $value['timestamp'] : null, is_numeric($value['measure_value']) ? $value['measure_value'] : null);
             }
         }
         if ($raw) {
@@ -1215,7 +1216,7 @@ trait Output {
                                     }
                                     $d = $__start;
                                     // Bound the number of generated points (steps x sectors): only absurd ranges are truncated.
-                                    $__left = max(1, (int)floor(1000000 / max(1, $sects)));
+                                    $__left = max(1, (int)floor(100000 / max(1, $sects)));
                                     while ($d <= $__end && $__left-- > 0) {
                                         if ($mode == 'yearly') {
                                             $__date = gmdate('Y-m-d', $d);
@@ -1481,11 +1482,9 @@ trait Output {
                                 }
                             } catch (\Throwable $ex) {
                                 self::log_graph_error($ex);
+                                $result = array();
                                 if ($type == 'windrose') {
-                                    $result = '[]';
-                                }
-                                else {
-                                    $result = array();
+                                    $result['values'] = '[]';
                                 }
                             }
                         }
@@ -1892,10 +1891,10 @@ trait Output {
                             }
                             $s = "(`device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND " . $s . ")";
                             if ($select == "") {
-                                $select = "(" . $s ;
+                                $select = $s;
                             }
                             else {
-                                $select .= " OR " . $s . ")";
+                                $select .= " OR " . $s;
                             }
                         }
                         $step['end_prepare'] = gmdate('H:i:s');
@@ -2016,7 +2015,7 @@ trait Output {
                             if ($json) {
                                 $a = array();
                                 foreach ($set as $item) {
-                                    $sub = wp_json_encode($item, JSON_NUMERIC_CHECK);
+                                    $sub = self::json_inline(wp_json_encode($item, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_AMP));
                                     $a[] = $sub;
                                 }
                                 $result['values'][] = implode(',', $a);
@@ -2106,7 +2105,7 @@ trait Output {
                                                 $dummy = '1';
                                             }
                                             if ($d > 1) {
-                                                for ($i = 1; $i < $d; $i++) {
+                                                for ($z = 1; $z < $d; $z++) {
                                                     $dummy .= '0';
                                                 }
                                             }
@@ -2257,7 +2256,7 @@ trait Output {
                                             $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
                                         }
                                     }
-                                } catch (\Exception $ex) {
+                                } catch (\Throwable $ex) {
                                     $set = array();
                                 }
                                 $info = array();
@@ -2570,7 +2569,7 @@ trait Output {
                                         $cmax = $max;
                                     }
                                 }
-                                catch (\Exception $ex) {
+                                catch (\Throwable $ex) {
                                     // keep $y and $c min and max
                                 }
                             }
