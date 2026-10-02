@@ -3,7 +3,7 @@
  * Utilities functions.
  *
  * @package Bootstrap
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -845,7 +845,9 @@ function live_weather_station_public_rate_limit($action) {
     if (current_user_can(live_weather_station_manage_capability()) || current_user_can('edit_posts')) {
         return;
     }
-    $limit = (int)apply_filters('live_weather_station_public_rate_limit', 120, $action);
+    // The limits are set in the system options (0 means no limit): the live controls and charts, and the /get-weather/ feeds.
+    $limit = ($action === 'feed') ? (int)get_option('live_weather_station_rate_limit_feed', 0) : (int)get_option('live_weather_station_rate_limit_public', 120);
+    $limit = (int)apply_filters('live_weather_station_public_rate_limit', $limit, $action);
     if ($limit <= 0) {
         return;
     }
@@ -877,6 +879,10 @@ function live_weather_station_public_rate_limit($action) {
     if ($count > $limit) {
         status_header(429);
         header('Retry-After: ' . $window);
+        if ($action === 'feed') {
+            header('Content-Type: text/plain; charset=utf-8');
+            exit ('Too Many Requests');
+        }
         header('Content-Type: application/json; charset=' . get_option('blog_charset'));
         exit (wp_json_encode(array('error' => 'too_many_requests')));
     }

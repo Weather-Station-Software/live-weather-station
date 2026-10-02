@@ -11,7 +11,7 @@ use WeatherStation\System\Logs\Logger;
  * A process to import old data from a ND-JSON file.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */

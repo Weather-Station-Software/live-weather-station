@@ -13,7 +13,7 @@ use WeatherStation\System\Quota\Quota;
  * Netatmo client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -22,7 +22,8 @@ trait Client {
     use BaseClient;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // these API keys are property of Netatmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
+    // These are the keys of the Netatmo application registered for this plugin: do not reuse them in another application.
+    // A site can use its own Netatmo application instead of these shared keys (see issue #132 of the repository).
     // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
     private $client_id = '561695d4cce37cd35c8b4659';
     private $client_secret = 'yfavTSFLnq5hzJxgMYBkfZdvaX04wx4WFLtqsChm8RGuv';

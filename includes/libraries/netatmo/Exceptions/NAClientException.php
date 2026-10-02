@@ -15,7 +15,7 @@ define('LIVE_WEATHER_STATION_NETATMO_NOT_LOGGED_ERROR_TYPE', 4); //unable to get
 /**
  * @package Includes\Libraries
  * @author Originally written by Thomas Rosenblatt <thomas.rosenblatt@netatmo.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAClientException extends NASDKException

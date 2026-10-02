@@ -7,7 +7,7 @@ namespace WeatherStation\Utilities;
  *
  * @package Includes\Libraries
  * @author Originally written by Arlo Carreon <http://arlocarreon.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 1.0.0
  * @license MIT
  */
