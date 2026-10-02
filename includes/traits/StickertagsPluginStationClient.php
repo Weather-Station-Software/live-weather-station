@@ -367,7 +367,7 @@ trait StationClient {
                 $this->format_and_store($raw_data, $station);
             }
             catch (\Throwable $ex) {
-                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Stickertags file data: ' . $ex->getMessage());
+                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Stickertags file data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 continue;
             }
         }
@@ -394,7 +394,7 @@ trait StationClient {
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {
-            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

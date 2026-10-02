@@ -136,8 +136,15 @@ trait Handling {
         }
         $since = (int)get_option($key);
         if ($since > 0 && (time() - $since) > 60) {
-            update_option($key, time(), 'no');
-            return true;
+            // Compare-and-swap: only the request which still sees the stale value takes the lock over.
+            global $wpdb;
+            $taken = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- atomic compare-and-swap on the lock option
+                $wpdb->prepare("UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", (string)time(), $key, (string)$since));
+            if ($taken === 1) {
+                wp_cache_delete($key, 'options');
+                wp_cache_delete('alloptions', 'options');
+                return true;
+            }
         }
         return false;
     }
@@ -205,7 +212,7 @@ trait Handling {
             }
         }
         else {
-            Logger::alert('Core', null, null, null, null, null, null, 'Trying to (re)schedule an unknown task: '.$cron_id);
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to (re)schedule an unknown task: ' . substr(sanitize_text_field($cron_id), 0, 100));
         }
         return $result;
     }
@@ -229,7 +236,7 @@ trait Handling {
             }
         }
         else {
-            Logger::alert('Core', null, null, null, null, null, null, 'Trying to define an unknown task: '.$cron_id);
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to define an unknown task: ' . substr(sanitize_text_field($cron_id), 0, 100));
         }
         return $result;
     }
