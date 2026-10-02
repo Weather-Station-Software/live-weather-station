@@ -53,11 +53,6 @@ class Base {
 
         $this->_args = $args;
 
-        if ( $args['ajax'] ) {
-             wp_enqueue_script( 'list-table' );
-            add_action( 'admin_footer', array( $this, '_js_vars' ) );
-        }
-
         if ( empty( $this->modes ) ) {
             $this->modes = array(
                 'list'    => __( 'List View' ),
@@ -92,9 +87,6 @@ class Base {
             return call_user_func_array( array( $this, $name ), $arguments );
         }
         return false;
-    }
-    public function ajax_user_can() {
-        die( 'function WP_List_Table::ajax_user_can() must be over-ridden in a sub-class.' );
     }
     public function prepare_items() {
         die( 'function WP_List_Table::prepare_items() must be over-ridden in a sub-class.' );
@@ -657,44 +649,5 @@ class Base {
     }
     protected function handle_row_actions( $item, $column_name, $primary ) {
         return $column_name == $primary ? '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>' : '';
-    }
-    public function ajax_response() {
-        $this->prepare_items();
-
-        ob_start();
-        if ( ! empty( $_REQUEST['no_placeholder'] ) ) {
-            $this->display_rows();
-        } else {
-            $this->display_rows_or_placeholder();
-        }
-
-        $rows = ob_get_clean();
-
-        $response = array( 'rows' => $rows );
-
-        if ( isset( $this->_pagination_args['total_items'] ) ) {
-            $response['total_items_i18n'] = sprintf(
-                /* translators: %s: Number of items. */
-                _n( '%s item', '%s items', $this->_pagination_args['total_items'] ),
-                number_format_i18n( $this->_pagination_args['total_items'] )
-            );
-        }
-        if ( isset( $this->_pagination_args['total_pages'] ) ) {
-            $response['total_pages'] = $this->_pagination_args['total_pages'];
-            $response['total_pages_i18n'] = number_format_i18n( $this->_pagination_args['total_pages'] );
-        }
-
-        die( wp_json_encode( $response ) );
-    }
-    public function _js_vars() {
-        $args = array(
-            'class'  => get_class( $this ),
-            'screen' => array(
-                'id'   => $this->screen->id,
-                'base' => $this->screen->base,
-            )
-        );
-
-        printf( "<script type='text/javascript'>list_args = %s;</script>\n", wp_json_encode( $args ) );
     }
 }
