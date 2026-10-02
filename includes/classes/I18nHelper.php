@@ -301,9 +301,14 @@ class Handling {
     private function find_or_initialize_translation_details() {
         $set = Cache::get_i18n($this->locale);
         $this->count_translated = Cache::get_i18n('count');
+        // A locale which has no translation set is cached too (as 'none'), so the remote platform is not asked again
+        // at every request until the cache expires.
+        if ($set === 'none') {
+            return null;
+        }
         if (!$set || !$this->count_translated) {
             $set = $this->retrieve_translation_details();
-            Cache::set_i18n($this->locale, $set);
+            Cache::set_i18n($this->locale, (is_null($set) ? 'none' : $set));
             Cache::set_i18n('count', $this->cpt);
         }
         return $set;
