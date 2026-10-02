@@ -64,6 +64,7 @@
 * Improvement: the checks run by GitHub on every change now also load every class of the plugin and reject the old global names, so a name collision or a leftover old name can no longer reach a release.
 * Improvement: the import of a configuration file is refused when a number (position, altitude, station type, sharing switches) is replaced by text, instead of storing it and breaking the calculations of the station later.
 * Improvement: the debug entries of the events log (answers of the services) hide the position, the altitude, the address and the MAC addresses of the stations by default, so that a log can be shared in a support request; a new setting in the system options keeps the raw values when you need them. The text of these entries is no longer built when the debug level is not recorded, which saves work on every data collection.
+* Bug fix: a gauge, meter or LCD control set on a measure which has no min and max boundaries (for example the altitude of a station) no longer ends with a fatal error on PHP 8.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
