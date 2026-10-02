@@ -150,6 +150,8 @@ class Framework {
         if (!in_array($type, self::SERVED_TYPES, true)) {
             self::not_found();
         }
+        // The limit per visitor is a setting of the plugin (system options), off by default for the feeds.
+        live_weather_station_public_rate_limit('feed');
         try {
             $classname = '\WeatherStation\Engine\Page\Standalone\\' . ucfirst($type);
             $generator = new $classname();
