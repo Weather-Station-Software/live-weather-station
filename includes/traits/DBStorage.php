@@ -1509,7 +1509,7 @@ trait Storage {
                 }
             }
         }
-        return $this->safe_timezone($result);
+        return $this->safe_timezone_name($result);
     }
 
     /**
@@ -1519,7 +1519,7 @@ trait Storage {
      * @return string The time zone name, or 'UTC' if it is empty or unknown.
      * @since 3.9.0
      */
-    protected function safe_timezone($timezone) {
+    protected function safe_timezone_name($timezone) {
         if (is_scalar($timezone) && (string)$timezone !== '') {
             try {
                 $tz = new \DateTimeZone((string)$timezone);

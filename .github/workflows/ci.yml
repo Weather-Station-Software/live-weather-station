@@ -45,6 +45,22 @@ jobs:
             echo 'A PHP file of the plugin refers to wp-load.php.'
             exit 1
           fi
+      - name: Every plugin class, trait and interface loads
+        run: |
+          # `php -l` checks one file at a time: two traits defining the same method only fail when the class using both is
+          # declared. Each name known to the plugin autoloader is loaded in its own process, outside WordPress.
+          php -r '
+            preg_match_all("/case \x27(WeatherStation\\\\[^\x27]+)\x27:/", file_get_contents("autoload.php"), $m);
+            $bad = 0;
+            foreach (array_unique($m[1]) as $name) {
+              $name = str_replace("\\\\", "\\", $name);
+              exec("php .github/scripts/check-classes-load.php . " . escapeshellarg($name) . " 2>&1", $out, $rc);
+              if ($rc !== 0) { $bad++; echo "FAIL $name: " . substr(implode(" ", $out), 0, 300) . PHP_EOL; }
+              $out = [];
+            }
+            echo count(array_unique($m[1])) . " names, $bad failures" . PHP_EOL;
+            exit($bad ? 1 : 0);
+          '
       - name: No reference to a removed global name
         run: |
           # The global constants and functions were renamed from lws_/LWS_ to live_weather_station_/LIVE_WEATHER_STATION_ in 3.9.0.
