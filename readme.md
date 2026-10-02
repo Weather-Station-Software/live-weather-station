@@ -22,6 +22,13 @@ Whether you own a weather station or not, you can enjoy the power of Weather Sta
 
 You can find many demos and documentation on the [official website](https://weather.station.software/).
 
+## Download without WordPress.org
+The plugin is not available on WordPress.org at the moment. Each release of this repository carries a ready to install zip, with the same files as the WordPress.org package:
+
+[Download the latest version](https://github.com/Weather-Station-Software/live-weather-station/releases/latest/download/live-weather-station.zip)
+
+In your dashboard, go to Plugins, Add New Plugin, Upload Plugin, and choose this file. To receive the updates from this repository, install the [Git Updater](https://git-updater.com/) plugin: the headers of the plugin already tell it where to look.
+
 ## Simple and efficient
 The use of Weather Station requires no knowledge of programming and does not require writing code.
 Just set it, and insert (in a page or an article) the provided shortcodes. And it works!
