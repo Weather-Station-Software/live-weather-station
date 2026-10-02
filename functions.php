@@ -819,6 +819,47 @@ function live_weather_station_meta_rmcache($name) {
 }
 
 /**
+ * Take an exclusive lock, stored as an option which holds its expiry timestamp.
+ *
+ * add_option() fails if the row exists, so two concurrent requests cannot both get the lock. An expired lock is taken
+ * over: it is deleted only if it still holds the expired value that was read (a concurrent request may already have
+ * replaced it), then added again, so that only one concurrent request wins.
+ *
+ * @param string $lock The name of the lock option.
+ * @param integer $ttl The duration of the lock, in seconds.
+ * @return boolean True if the caller holds the lock.
+ * @since 3.9.0
+ */
+function live_weather_station_acquire_lock($lock, $ttl) {
+    if (add_option($lock, time() + $ttl, '', 'no')) {
+        return true;
+    }
+    $expiry = (int)get_option($lock);
+    if ($expiry > time()) {
+        return false;
+    }
+    global $wpdb;
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- compare-and-delete of this plugin's own lock row: it must hit the database, not a cache.
+    if (!$wpdb->delete($wpdb->options, array('option_name' => $lock, 'option_value' => (string)$expiry))) {
+        return false;
+    }
+    wp_cache_delete($lock, 'options');
+    wp_cache_delete('notoptions', 'options');
+    return (bool)add_option($lock, time() + $ttl, '', 'no');
+}
+
+/**
+ * Push back the expiry of a lock held by the caller, so that a long job does not lose it.
+ *
+ * @param string $lock The name of the lock option.
+ * @param integer $ttl The new duration of the lock, in seconds.
+ * @since 3.9.0
+ */
+function live_weather_station_renew_lock($lock, $ttl) {
+    update_option($lock, time() + $ttl, 'no');
+}
+
+/**
  * Cheap per-IP rate limit for public AJAX endpoints. Sends an HTTP 429 JSON response and stops when exceeded.
  *
  * Defaults: 120 requests per 60 seconds, per client IP and per endpoint. A page with many live controls makes
