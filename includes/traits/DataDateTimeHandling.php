@@ -20,6 +20,9 @@ trait Handling {
      * @since 3.6.0
      */
     protected function get_probable_timezone($country, $utc) {
+        if (!is_string($country) || !preg_match('/^[A-Z]{2}$/D', $country)) {
+            return 'UTC';
+        }
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $country);
         if (count($timezones) == 0) {
             switch ($country) {
@@ -79,12 +82,11 @@ trait Handling {
                     $t = '0' . $t;
                 }
                 $tz = $tz . $t;
-                if ((int)$offset != $offset) {
-                    $tz = $tz . '30';
+                $minutes = (int)round((abs((float)$offset) - abs((int)$offset)) * 60);
+                if ($minutes < 10) {
+                    $minutes = '0' . $minutes;
                 }
-                else {
-                    $tz = $tz . '00';
-                }
+                $tz = $tz . $minutes;
                 return $tz;
             }
         }
