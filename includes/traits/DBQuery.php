@@ -2831,6 +2831,17 @@ trait Query {
     }
 
     /**
+     * The columns of the stations table that must hold a number (or be empty).
+     *
+     * @return array The column names.
+     * @since 3.9.0
+     */
+    private static function stations_numeric_columns() {
+        return array('guid', 'station_type', 'connection_type', 'loc_latitude', 'loc_longitude', 'loc_altitude', 'comp_bas', 'comp_ext', 'comp_int', 'comp_xtd', 'comp_vrt',
+            'txt_sync', 'raw_sync', 'real_sync', 'yow_sync', 'owm_sync', 'pws_sync', 'wow_sync', 'wet_sync', 'wug_sync');
+    }
+
+    /**
      * Credential columns of the stations table.
      *
      * @return array The names of the columns containing credentials.
@@ -2931,6 +2942,10 @@ trait Query {
                     return false;
                 }
                 if (!is_scalar($value) && $value !== null) {
+                    return false;
+                }
+                // A text where a number is expected (a hand-edited or damaged file) would later break the calculations of the station.
+                if ($table === self::live_weather_station_stations_table() && $value !== null && $value !== '' && !is_numeric($value) && in_array(self::resolve_column($key, $columns), self::stations_numeric_columns(), true)) {
                     return false;
                 }
             }
