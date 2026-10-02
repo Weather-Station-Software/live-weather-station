@@ -49,7 +49,10 @@ trait HCClient {
         $this->netatmo_client->setVariable('password', $password);
         try
         {
-            Quota::verify($this->service_name, 'GET');
+            if (!Quota::verify($this->service_name, 'GET')) {
+                $this->last_netatmo_error = __('The quota of requests to Netatmo is reached. Please, retry later.', 'live-weather-station');
+                return false;
+            }
             $tokens = $this->netatmo_client->getAccessToken();
             update_option('live_weather_station_netatmohc_refresh_token', $tokens['refresh_token']);
             update_option('live_weather_station_netatmohc_access_token', $tokens['access_token']);
@@ -57,10 +60,21 @@ trait HCClient {
 
         }
         catch (\Throwable $ex) {
-            $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
-            update_option('live_weather_station_netatmohc_refresh_token', '');
-            update_option('live_weather_station_netatmohc_access_token', '');
-            update_option('live_weather_station_netatmohc_connected', 0);
+            // Only a refusal of the identifiers ends the connection: with any other error (Netatmo unreachable, login by
+            // password no longer accepted...) the tokens already stored are kept, so a working connection is not lost.
+            $result = (is_object($ex) && isset($ex->result) && is_array($ex->result)) ? $ex->result : array();
+            if (in_array((int)$ex->getCode(), array(2, 23, 32), true) || (isset($result['error']) && $result['error'] === 'invalid_grant')) {
+                $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
+                update_option('live_weather_station_netatmohc_refresh_token', '');
+                update_option('live_weather_station_netatmohc_access_token', '');
+                update_option('live_weather_station_netatmohc_connected', 0);
+            }
+            elseif ((int)$ex->getCode() === 403) {
+                $this->last_netatmo_error = __('Netatmo refused this way of logging in. Your current connection, if any, has not been changed.', 'live-weather-station');
+            }
+            else {
+                $this->last_netatmo_error = __('Temporarily unable to contact Netatmo servers. Please, retry later.', 'live-weather-station');
+            }
             return false;
         }
 
