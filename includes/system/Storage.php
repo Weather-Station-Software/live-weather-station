@@ -290,6 +290,11 @@ class Manager {
      */
     public static function file_for_write($station_name, $start, $end, $uid, $ext) {
         $filename = '';
+        // Only the extensions managed by the plugin can be created (the last segment counts: 'wsconf.json' is 'json').
+        if (!is_string($ext) || self::managed_extension('x.' . $ext) === '') {
+            Logger::critical(self::$service,null, null, null, null, null, 1, 'Unable to write a file with an unmanaged extension.');
+            return false;
+        }
         if (self::check_for_write()) {
             return self::get_file_name($station_name, $start, $end, $uid, $ext);
         }
@@ -678,7 +683,7 @@ class Manager {
         }
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- the 'add-file' nonce is verified by SystemPluginAdmin::add_file() before it calls upload_file(), which also checks the manage capability
         if(!empty($_FILES['file-to-upload'])) {
-            if (!isset($_FILES['file-to-upload']['size']) || (int)$_FILES['file-to-upload']['size'] > self::$max_upload_size || (int)$_FILES['file-to-upload']['size'] <= 0) {
+            if (!isset($_FILES['file-to-upload']['size']) || !is_scalar($_FILES['file-to-upload']['size']) || !isset($_FILES['file-to-upload']['name']) || !is_string($_FILES['file-to-upload']['name']) || (int)$_FILES['file-to-upload']['size'] > self::$max_upload_size || (int)$_FILES['file-to-upload']['size'] <= 0) {
                 $result['error'] = __('invalid file size', 'live-weather-station');
                 Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: invalid file size.');
                 return $result;
@@ -693,6 +698,8 @@ class Manager {
             if (is_array($file) && !isset($file['error'])) {
                 if (isset($file['file']) && self::check_uploaded_content($file['file'])) {
                     $result['done'] = true;
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- restricts a file just added by the plugin in its own storage root (the plugin serves it itself through download_file()), WP_Filesystem has no credentials here
+                    @chmod($file['file'], 0600);
                 }
                 else {
                     if (isset($file['file'])) {

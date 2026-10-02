@@ -54,7 +54,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function token($value, $default = '', $max_length = 128) {
-        if (is_scalar($value) && preg_match('/^[A-Za-z0-9_:.\-]{1,' . (int)$max_length . '}$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^[A-Za-z0-9_:.\-]{1,' . (int)$max_length . '}$/D', (string)$value)) {
             return (string)$value;
         }
         return $default;
@@ -69,7 +69,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function int($value, $default = 0) {
-        return (is_scalar($value) && preg_match('/^-?\d{1,12}$/', (string)$value)) ? (int)$value : $default;
+        return (is_scalar($value) && preg_match('/^-?\d{1,12}$/D', (string)$value)) ? (int)$value : $default;
     }
 
     /**
@@ -81,7 +81,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function color($value, $default = '') {
-        if (is_scalar($value) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|(rgb|hsl)a?\(\s*[0-9.%]+\s*(,\s*[0-9.%]+\s*){2,3}\))$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|(rgb|hsl)a?\(\s*[0-9.%]+\s*(,\s*[0-9.%]+\s*){2,3}\))$/D', (string)$value)) {
             return (string)$value;
         }
         return $default;
@@ -97,7 +97,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function composite($value, $default = '', $max_length = 128) {
-        if (is_scalar($value) && preg_match('/^[A-Za-z0-9_:.\-|]{1,' . (int)$max_length . '}$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^[A-Za-z0-9_:.\-|]{1,' . (int)$max_length . '}$/D', (string)$value)) {
             return (string)$value;
         }
         return $default;
@@ -112,7 +112,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function css_size($value, $default = '') {
-        if (is_scalar($value) && preg_match('/^(auto|\d{1,4}(\.\d{1,2})?(px|%|em|rem|vh|vw|vmin|vmax)?)$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^(auto|\d{1,4}(\.\d{1,2})?(px|%|em|rem|vh|vw|vmin|vmax)?)$/D', (string)$value)) {
             return (string)$value;
         }
         return $default;
