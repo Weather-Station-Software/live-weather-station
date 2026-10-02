@@ -6,7 +6,7 @@ namespace WeatherStation\SDK\Generic\Plugin\Season;
  * A Season utility that helps calculate seasons dates.
  *
  * @package Includes\Libraries
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @since 3.4.0
  * @license GPL
  */

@@ -16,7 +16,7 @@ use WeatherStation\SDK\OpenWeatherMap\WeatherHistory;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 2.0.0
  * @license MIT
  */
