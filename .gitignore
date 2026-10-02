@@ -28,4 +28,18 @@ cursor-*
 *.tar.lzma.gz
 *.tar.lzma.bz2
 *.tar.lzma.xz
-/.claude/
+# Claude Code: the shared files of .claude/ are tracked, only the local ones are not.
+/.claude/worktrees/
+/.claude/settings.local.json
+
+# Dependencies, caches and local files
+node_modules/
+vendor/
+.env
+.env.*
+Thumbs.db
+*.bak
+*.orig
+*.rej
+.phpunit.result.cache
+usedby.json
