@@ -11,7 +11,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-// Database name and user are for administrators only (the page is already behind the menu capability).
+// This template shows the database name and user: administrators only (the page is already behind the menu capability).
 if ( ! current_user_can( live_weather_station_manage_capability() ) ) {
 	return;
 }

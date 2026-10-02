@@ -27,7 +27,7 @@ $show_files = false;
     <h1><?php esc_html_e('Export historical data', 'live-weather-station');?></h1>
     <form name="export-data" id="export-data" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
-        <?php wp_nonce_field('edit-station'); ?>
+        <?php wp_nonce_field('export-station-data'); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
                 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="margin:0px">

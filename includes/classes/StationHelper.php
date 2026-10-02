@@ -271,7 +271,18 @@ class Handling {
         if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
             if (array_key_exists('_wpnonce', $_POST)) {
-                if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'edit-station')) {
+                // One nonce per action: the export, import and modules forms have their own.
+                $nonce_action = 'edit-station';
+                if (array_key_exists('do-export-data', $_POST)) {
+                    $nonce_action = 'export-station-data';
+                }
+                elseif (array_key_exists('do-import-data', $_POST)) {
+                    $nonce_action = 'import-station-data';
+                }
+                elseif (array_key_exists('do-manage-modules', $_POST) || array_key_exists('reset-manage-modules', $_POST)) {
+                    $nonce_action = 'manage-station-modules';
+                }
+                if (is_string($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), $nonce_action)) {
                     if (array_key_exists('guid', $_POST)) {
                         $guid = sanitize_text_field(wp_unslash($_POST['guid']));
                         $save = false;

@@ -2188,6 +2188,19 @@ class Admin {
         }
         $s = $f;
         $f = LIVE_WEATHER_STATION_ADMIN_DIR.'partials/'.$f.'.php';
+        // The forms can be requested directly (action=form&tab=&service=) from any admin page, with or without their data.
+        if (strpos($name, 'form-') === 0) {
+            if (!isset($dashboard)) {
+                $dashboard = false;
+            }
+            if (!isset($subject)) {
+                $subject = null;
+            }
+            $needs_station = array('form-add-edit-ambient', 'form-add-edit-clientraw', 'form-add-edit-location', 'form-add-edit-pioupiou', 'form-add-edit-realtime', 'form-add-edit-stickertags', 'form-add-edit-weatherflow', 'form-add-edit-weatherlink', 'form-delete-station', 'form-export-data', 'form-import-data', 'form-manage-modules');
+            if (in_array($name, $needs_station, true) && (!isset($station) || !is_array($station) || !isset($station['guid']))) {
+                $f = LIVE_WEATHER_STATION_ADMIN_DIR.'partials/404.php';
+            }
+        }
         if (file_exists($f)) {
             wp_dequeue_script('media-upload');
             include($f);

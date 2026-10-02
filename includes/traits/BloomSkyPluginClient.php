@@ -47,6 +47,7 @@ trait Client {
         $this->get_measurements(false, $apikey);
         if ($this->bloomsky_refused) {
             // The key has not been tested (quota manager refusal): keep the stored settings as they are.
+            $this->last_bloomsky_error = __('the request quota of the service is reached, please try again later', 'live-weather-station');
             return false;
         }
         // An empty key is never a valid connection.
