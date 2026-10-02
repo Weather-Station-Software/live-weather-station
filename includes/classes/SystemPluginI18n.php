@@ -40,7 +40,8 @@ class I18n {
      */
     public function load_shipped_translation() {
         $domain = LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN;
-        $locale = determine_locale();
+        // determine_locale() exists since WordPress 5.0, the plugin still runs on 4.9.
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
         $file = LIVE_WEATHER_STATION_PLUGIN_DIR . 'languages/' . $domain . '-' . $locale . '.mo';
         if (!is_readable($file)) {
             return;
