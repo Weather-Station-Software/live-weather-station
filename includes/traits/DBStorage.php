@@ -182,33 +182,17 @@ trait Storage {
      */
     private static function safe_add_column($table, $column, $alter) {
         global $wpdb;
-        $sql = "SELECT * FROM " . $table ;
+        // Only the column list is read, not the content of the table.
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods, the column name is bound with %s
+        $sql = $wpdb->prepare("SHOW COLUMNS FROM " . $table . " LIKE %s", $wpdb->esc_like($column));
         try {
             // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            $data = array();
-            foreach ($query_a as $val) {
-                $data[] = (array)$val;
-            }
+            $found = (array)$wpdb->get_results($sql);
         } catch (\Exception $ex) {
-            $data = array();
+            $found = array();
         }
-        $do_action = false;
+        $do_action = (count($found) == 0);
         $result = false;
-        if (count($data) > 0) {
-            if (is_array($data[0])) {
-                if (!array_key_exists($column, $data[0])) {
-                    $do_action = true;
-                }
-            }
-            else {
-                $do_action = true;
-            }
-        }
-        else {
-            $do_action = true;
-        }
         if ($do_action) {
             try {
                 // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
@@ -229,15 +213,11 @@ trait Storage {
      */
     private static function is_empty_table($table) {
         global $wpdb;
-        $sql = "SELECT * FROM " . $table ;
+        // One row at most is read, not the whole table.
+        $sql = "SELECT 1 FROM " . $table . " LIMIT 1";
         try {
             // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table: schema migration helper, the table name is built by the callers from $wpdb->prefix and the live_weather_station_*_table() methods and the ALTER text is a constant, no value involved, must read the live table
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            $data = array();
-            foreach ($query_a as $val) {
-                $data[] = (array)$val;
-            }
+            $data = (array)$wpdb->get_results($sql);
         } catch (\Exception $ex) {
             $data = array();
         }
@@ -859,7 +839,8 @@ trait Storage {
 
             // WUG STATION COLLECTED
             $wug = self::wug_stations();
-            if (count($wug) > 0) {
+            // Only once, when coming from a version older than 3.9.0 (not at every later upgrade).
+            if (count($wug) > 0 && version_compare($oldversion, '3.9.0', '<')) {
                 $st = implode('", "', array_map('esc_html', $wug));
                 $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
                 Notifier::error(__('Weather Underground error', 'live-weather-station'),
@@ -1560,7 +1541,7 @@ trait Storage {
         if (array_key_exists('device_name', $attributes)) {
             unset($attributes['device_name']);
         }
-        switch ($attributes['measure_type']) {
+        switch (array_key_exists('measure_type', $attributes) ? $attributes['measure_type'] : '') {
             case 'cloudiness':
             case 'humidity':
             case 'absolute_humidity':
