@@ -134,6 +134,14 @@ Protect your database and its backups like you protect your site. When a service
 = Is the API key of my maps visible on my site? =
 Yes. The maps are drawn by the browser of your visitors, which downloads the tiles directly from the map service (Mapbox, Maptiler, Thunderforest, OpenWeatherMap, Windy, Stadia) with your key in the address, so anyone can read it in the code of the page. It is the same for every map plugin. Use a key restricted to your domain name, as these services let you do in their dashboard: the key then only works on your site.
 
+= How do I connect Netatmo to my site? =
+Netatmo no longer accepts a login with a password from a plugin, so each site uses its own Netatmo application. Create one on [dev.netatmo.com/apps](https://dev.netatmo.com/apps) (free, with your Netatmo account), then in Weather Station, Settings, Services, Netatmo:
+1. Copy the "Redirect URI" shown by the plugin and paste it in the settings of your Netatmo application.
+2. Paste the Client id and the Client secret of your application in the plugin.
+3. Click "Connect with Netatmo", sign in on the Netatmo page and accept: you come back to your site, connected.
+
+If you prefer, you can paste a refresh token of your application instead (second button). The connections made with previous versions keep working: you only need the steps above for a new connection or a reconnection.
+
 = Can a station be on my local network? =
 Yes. The stations which are read from a file or a feed (Clientraw, Realtime, Stickertags) can be at an address of your local network (192.168.x.x, 10.x.x.x, a name of your LAN), because many personal stations live there. For this reason the plugin does not block private addresses when it reads a station: only an administrator can add a station, so only enter addresses you trust.
 

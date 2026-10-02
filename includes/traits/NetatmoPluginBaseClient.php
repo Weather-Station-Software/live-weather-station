@@ -3,6 +3,7 @@
 namespace WeatherStation\SDK\Netatmo\Plugin;
 
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Quota\Quota;
 use WeatherStation\SDK\Netatmo\Clients\NAWSApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 
@@ -30,6 +31,137 @@ trait BaseClient {
 
     protected $facility = 'Weather Collector';
     protected $service_name = 'Netatmo';
+
+    /**
+     * The keys of the Netatmo application to use for the stored tokens.
+     *
+     * A token only works with the application which issued it: a connection made with the application of the site uses
+     * the keys of the site, any other (older) connection keeps using the keys built in the plugin.
+     *
+     * @param string $prefix Option prefix of the service: 'netatmo' or 'netatmohc'.
+     * @param string $builtin_id Client id built in the plugin.
+     * @param string $builtin_secret Client secret built in the plugin.
+     * @return array The client id and the client secret.
+     * @since 3.9.0
+     */
+    protected function netatmo_app_keys($prefix, $builtin_id, $builtin_secret) {
+        if ((bool)get_option('live_weather_station_' . $prefix . '_own_keys')) {
+            $id = (string)get_option('live_weather_station_' . $prefix . '_client_id');
+            $secret = (string)get_option('live_weather_station_' . $prefix . '_client_secret');
+            if ($id !== '' && $secret !== '') {
+                return array($id, $secret);
+            }
+        }
+        return array($builtin_id, $builtin_secret);
+    }
+
+    /**
+     * The scope asked to Netatmo by this service.
+     *
+     * @return string The scope.
+     * @since 3.9.0
+     */
+    public function get_netatmo_scope() {
+        return $this->netatmo_scope;
+    }
+
+    /**
+     * The address where Netatmo sends the user back after the authorization (to be registered in the Netatmo application).
+     *
+     * @return string The address.
+     * @since 3.9.0
+     */
+    public static function netatmo_redirect_uri() {
+        return admin_url('admin-post.php?action=live_weather_station_netatmo_callback');
+    }
+
+    /**
+     * The address of the Netatmo page where the user authorizes the application.
+     *
+     * @param string $client_id Client id of the application of the site.
+     * @param string $state Single use random value, checked when the user comes back.
+     * @param string $scope Scope to ask for.
+     * @return string The address.
+     * @since 3.9.0
+     */
+    public static function netatmo_authorize_url($client_id, $state, $scope) {
+        return 'https://api.netatmo.com/oauth2/authorize?' . http_build_query(array(
+            'client_id' => $client_id,
+            'redirect_uri' => self::netatmo_redirect_uri(),
+            'scope' => $scope,
+            'state' => $state,
+        ), '', '&', PHP_QUERY_RFC3986);
+    }
+
+    /**
+     * Connect the site to Netatmo with its own application, from an authorization code or from a refresh token.
+     *
+     * The tokens are stored only if Netatmo accepts the keys and the grant.
+     *
+     * @param string $prefix Option prefix of the service: 'netatmo' or 'netatmohc'.
+     * @param string $client_id Client id of the application of the site.
+     * @param string $client_secret Client secret of the application of the site.
+     * @param string $grant 'code' or 'refresh_token'.
+     * @param string $value The authorization code or the refresh token.
+     * @return string The error message if the connection failed, an empty string otherwise.
+     * @since 3.9.0
+     */
+    public function netatmo_connect_with_own_keys($prefix, $client_id, $client_secret, $grant, $value) {
+        $pattern = '/^[\x21-\x7E]{8,512}$/';
+        if (!preg_match($pattern, (string)$client_id) || !preg_match($pattern, (string)$client_secret) || !preg_match($pattern, (string)$value)) {
+            return __('The client id, the client secret and the code or the token must be filled in, without spaces.', 'live-weather-station');
+        }
+        if (!Quota::verify($this->service_name, 'GET')) {
+            return __('The quota of requests to Netatmo is reached. Please, retry later.', 'live-weather-station');
+        }
+        $body = array('client_id' => $client_id, 'client_secret' => $client_secret);
+        if ($grant === 'code') {
+            $body['grant_type'] = 'authorization_code';
+            $body['code'] = $value;
+            $body['redirect_uri'] = self::netatmo_redirect_uri();
+            $body['scope'] = $this->netatmo_scope;
+        }
+        else {
+            $body['grant_type'] = 'refresh_token';
+            $body['refresh_token'] = $value;
+        }
+        $response = wp_remote_post('https://api.netatmo.com/oauth2/token', array(
+            'body' => $body,
+            'timeout' => max(1, min(60, (int)get_option('live_weather_station_collection_http_timeout'))),
+            'redirection' => 0,
+            'user-agent' => LIVE_WEATHER_STATION_PLUGIN_AGENT,
+        ));
+        if (is_wp_error($response)) {
+            return __('Temporarily unable to contact Netatmo servers. Please, retry later.', 'live-weather-station');
+        }
+        $code = (int)wp_remote_retrieve_response_code($response);
+        $data = json_decode((string)wp_remote_retrieve_body($response), true);
+        if ($code !== 200 || !is_array($data)) {
+            $error = (is_array($data) && isset($data['error']) && is_string($data['error'])) ? $data['error'] : '';
+            if ($error === 'invalid_client') {
+                return __('Netatmo does not recognize this client id and client secret. Please, check the keys of your Netatmo application.', 'live-weather-station');
+            }
+            if ($error === 'invalid_grant') {
+                return __('Netatmo refused the authorization code or the token. Please, start again.', 'live-weather-station');
+            }
+            if ($code === 403) {
+                return __('Netatmo refused this request.', 'live-weather-station');
+            }
+            return __('Temporarily unable to contact Netatmo servers. Please, retry later.', 'live-weather-station');
+        }
+        $token_pattern = '/^[\x21-\x7E]{8,512}$/';
+        if (!isset($data['access_token'], $data['refresh_token']) || !is_string($data['access_token']) || !is_string($data['refresh_token'])
+            || !preg_match($token_pattern, $data['access_token']) || !preg_match($token_pattern, $data['refresh_token'])) {
+            return __('Netatmo answered without usable tokens. Please, retry later.', 'live-weather-station');
+        }
+        update_option('live_weather_station_' . $prefix . '_client_id', $client_id);
+        update_option('live_weather_station_' . $prefix . '_client_secret', $client_secret);
+        update_option('live_weather_station_' . $prefix . '_refresh_token', $data['refresh_token']);
+        update_option('live_weather_station_' . $prefix . '_access_token', $data['access_token']);
+        update_option('live_weather_station_' . $prefix . '_own_keys', 1);
+        update_option('live_weather_station_' . $prefix . '_connected', 1);
+        return '';
+    }
 
 
 
