@@ -38,13 +38,13 @@ jobs:
             | xargs -0 -n1 -P4 php -d error_reporting=-1 -d display_errors=1 -l \
             | { grep -v '^No syntax errors detected' || true; } | tee lint.log
           test ! -s lint.log
-      - name: The standalone generator loads without WordPress
+      - name: No file searches for wp-load.php
         run: |
-          # generator.php is requested directly, before WordPress and the plugin autoloader exist: a class that needs a trait at declaration time is a fatal error there.
-          # Without a wp-load.php above the plugin it must answer "Service unavailable." and never crash.
-          php -d error_reporting=-1 -d display_errors=1 -r '$_GET = array("type" => "stickertags", "station" => "70:ee:50:12:34:56"); $_SERVER["REQUEST_METHOD"] = "GET"; $_SERVER["REMOTE_ADDR"] = "203.0.113.9"; include "generator.php";' 2>&1 | tee generator.log
-          ! grep -q -E 'Fatal error|Uncaught|not found' generator.log
-          grep -q 'Service unavailable' generator.log
+          # The feeds are served by WordPress itself (template_redirect): no plugin file may load WordPress on its own.
+          if grep -rn --include='*.php' 'wp-load\.php' . --exclude-dir=.git --exclude-dir=.github --exclude-dir=.claude --exclude-dir=docs; then
+            echo 'A PHP file of the plugin refers to wp-load.php.'
+            exit 1
+          fi
 
   compat:
     name: PHPCompatibility ${{ matrix.range }}
