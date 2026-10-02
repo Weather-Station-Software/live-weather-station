@@ -98,6 +98,59 @@ You can also help by reporting bugs, translating, or sharing the plugin with oth
 1. Visit 'Weather Station' in the left-hand menu of your WP Admin to adjust settings.
 2. Enjoy!
 
+== External services ==
+
+Every call to a third party service is under the control of the administrator of the site. Weather Station does not track or monitor its users or the visitors of the site, and it contacts no weather platform by itself: a call exists only because the administrator, on his own initiative, connected a weather platform or a device to display its data, chose to share a station, selected a map provider, or subscribed to the newsletter. A service which is not configured is never contacted. The only exceptions, which do not depend on a station, are the news of the project and the translations, described in the last part. The plugin does not send any data about the visitors of your site to the weather services: they only receive what is described here, from your server. For the map providers, it is the browser of your visitors which contacts them.
+
+= Weather services which provide your measurements =
+
+Netatmo and Netatmo Healthy Home Coach (api.netatmo.com): reads the measurements of your stations. Your server sends the client id and secret of your Netatmo application and its access and refresh tokens at each collection (every few minutes), and when you connect. When you click "Connect with Netatmo", your browser goes to the authorization page of Netatmo and comes back. [Terms](https://legals.netatmo.com/?goto=terms), [developer terms](https://dev.netatmo.com/legal), [privacy policy](https://legals.netatmo.com/?goto=privacy).
+
+WeatherFlow Tempest (swd.weatherflow.com): reads your station. Your server sends the station id and your personal access token at each collection. [Terms](https://help.tempest.earth/hc/en-us/articles/206504298-Terms-Conditions-for-Non-Commercial-Services), [privacy policy](https://tempest.earth/privacy-policy/).
+
+WeatherLink by Davis Instruments (api.weatherlink.com): reads your station. Your server sends the identifier of the device, the owner password and the API token (version 1 of the API only accepts them in the address) at each collection. [Service agreement](https://www.davisinstruments.com/pages/service-agreement), [privacy policy](https://www.davisinstruments.com/policies/privacy-policy).
+
+Ambient Weather (api.ambientweather.net): reads your station. Your server sends the application key of the plugin and your API key at each collection. [Terms](https://ambientweather.com/terms), [privacy policy](https://privacy.nkhome.com/privacy-policy).
+
+Pioupiou / OpenWindMap (api.pioupiou.fr): reads the public data of a station. Your server sends the id of the station at each collection (no account, no key). The service publishes no terms or privacy page.
+
+OpenWeatherMap (api.openweathermap.org): reads the current weather of a place. Your server sends your API key and the place (identifier or coordinates) at each collection. The data of the maps layers is requested by the browser of your visitors (see below). [Terms](https://openweathermap.org/terms), [privacy policy](https://openweather.co.uk/privacy-policy).
+
+BloomSky stopped its service in 2022: the plugin does not contact it anymore.
+
+= Services which receive your measurements (sharing) =
+
+Only if you enable the sharing of a station, at each upload (every few minutes), your server sends the measurements of the station with its identifier and its key or password to:
+
+* Weather Underground (weatherstation.wunderground.com): [terms](https://weather.com/privacy/terms-of-use), [privacy policy](https://weather.com/privacy/privacy-policy).
+* PWS Weather (www.pwsweather.com): [terms](https://www.xweather.com/terms-of-use), [privacy policy](https://www.xweather.com/privacy).
+* WOW-BE (wow.meteo.be): [disclaimer](https://wow.meteo.be/en/disclaimer-en/). The service publishes no privacy page.
+* OpenWeatherMap (openweathermap.org): [terms](https://openweathermap.org/terms), [privacy policy](https://openweather.co.uk/privacy-policy).
+
+= Stations you declare yourself =
+
+For the Clientraw, Realtime and Stickertags stations, your server reads the address you give, at each collection. It can be your own server or any public station feed.
+
+= Maps =
+
+A map loads its tiles or its script from the provider you choose. It is the browser of the visitor which contacts the provider: the provider receives the IP address and the user agent of the visitor, and, for the providers which need a key, the key of your site in the address of the tiles. The plugin loads nothing from these providers on a page without a map.
+
+* OpenStreetMap tiles: [tile usage policy](https://operations.osmfoundation.org/policies/tiles/), [privacy policy](https://osmfoundation.org/wiki/Privacy_Policy).
+* CARTO basemaps: [legal](https://carto.com/legal/), [privacy policy](https://carto.com/privacy/index.html).
+* Mapbox: [terms](https://www.mapbox.com/legal/tos), [privacy policy](https://www.mapbox.com/legal/privacy).
+* MapTiler: [terms](https://www.maptiler.com/terms/), [privacy policy](https://www.maptiler.com/privacy-policy/).
+* Thunderforest: [terms](https://www.thunderforest.com/terms/), [privacy policy](https://www.thunderforest.com/privacy/).
+* Stadia Maps (Stamen maps): [terms](https://stadiamaps.com/terms-of-service/), [privacy policy](https://stadiamaps.com/privacy/privacy-policy/).
+* Windy (script api.windy.com, only on a page with a Windy map, with your Windy key): [terms](https://account.windy.com/agreements/windy-terms-of-use), [privacy policy](https://account.windy.com/agreements/windy-privacy-policy).
+
+= The project and WordPress.org =
+
+Newsletter (Mailchimp): only if you subscribe from the plugin screens, the e-mail address you type is sent to the Mailchimp list of the project. [Terms](https://mailchimp.com/legal/terms/), [privacy policy](https://www.intuit.com/privacy/statement/).
+
+News of the project: the dashboard of the plugin shows the latest articles of the feed https://weather.station.software/feed/ (the site of the project). Your server requests it when an administrator opens the dashboard of the plugin (WordPress keeps the answer in cache), so the site of the project sees the address of your server.
+
+Translations (translate.wordpress.org, api.wordpress.org): the screens of the plugin ask for the translation level of your language (the slug of the plugin is sent), and WordPress itself downloads the language packs. The statistics of the plugin (downloads, installations) are only requested if you enable the option "plugin statistics", which is off by default. [Privacy policy](https://wordpress.org/about/privacy/).
+
 == Frequently Asked Questions ==
 
 = What are the requirements for this plugin to work? =
