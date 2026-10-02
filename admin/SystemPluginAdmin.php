@@ -284,7 +284,7 @@ class Admin {
      * @since 3.9.0
      */
     public static function hide_lws_wow_be_notice_callback() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             wp_die(-1);
         }
         check_ajax_referer('lws-wow-be-nonce', 'lwswowbenonce');
@@ -299,7 +299,7 @@ class Admin {
      */
     public static function hide_lws_whatsnew_callback() {
         // Check user capabilities
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             wp_die(-1);
         }
         
@@ -314,6 +314,10 @@ class Admin {
      * @since 3.0.0
      */
     public function force_resync_if_needed() {
+        // admin_init also fires for anonymous requests to admin-ajax.php and admin-post.php.
+        if (!current_user_can($this->get_manage_options_cap())) {
+            return;
+        }
         if (get_option('live_weather_station_force_resync') == 'yes') {
             update_option('live_weather_station_force_resync', 'no');
             $this->sync_data(true);
@@ -440,7 +444,7 @@ class Admin {
         add_settings_field('lws_system_compatibility', __('Compatibility modes', 'live-weather-station'),
             array($this, 'lws_system_compatibility_callback'), 'lws_system', 'lws_system_section',
             array());
-        register_setting('lws_system', 'lws_system_notif_retention', array('sanitize_callback' => 'sanitize_text_field'));
+        register_setting('lws_system', 'lws_system_compatibility', array('sanitize_callback' => 'sanitize_text_field'));
         add_settings_field('lws_system_redirect_links', __('Links', 'live-weather-station'),
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -448,7 +452,7 @@ class Admin {
         add_settings_field('lws_system_timeout_manage', __('HTTP timeout', 'live-weather-station'),
             array($this, 'lws_system_timeout_manage_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum time to wait for a server response.', 'live-weather-station')));
-        register_setting('lws_system', 'lws_system_cache_manage', array('sanitize_callback' => 'sanitize_text_field'));
+        register_setting('lws_system', 'lws_system_timeout_manage', array('sanitize_callback' => 'sanitize_text_field'));
         add_settings_field('lws_system_special', __('Special', 'live-weather-station'),
             array($this, 'lws_system_special_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -1128,12 +1132,19 @@ class Admin {
      * Read a posted integer setting (unslashed, sanitized, 0 if absent).
      *
      * @param string $key The name of the posted field.
+     * @param int|null $min Optional lower bound (used only together with $max).
+     * @param int|null $max Optional upper bound (used only together with $min).
      * @return int The posted value as an integer.
      * @since 3.9.0
      */
-    private function posted_int($key) {
+    private function posted_int($key, $min = null, $max = null) {
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- only called from save_options(), after check_options() has verified the nonce.
-        return (isset($_POST[$key]) ? (int)sanitize_text_field(wp_unslash($_POST[$key])) : 0);
+        $value = (isset($_POST[$key]) ? (int)sanitize_text_field(wp_unslash($_POST[$key])) : 0);
+        // Same bounds as the HTML number fields, which a crafted request would bypass.
+        if ($min !== null && $max !== null) {
+            $value = max($min, min($max, $value));
+        }
+        return $value;
     }
 
     /**
@@ -1195,7 +1206,7 @@ class Admin {
                     update_option('live_weather_station_build_history', 1);
                 }
                 update_option('live_weather_station_full_history', $this->posted_int('lws_history_full'));
-                update_option('live_weather_station_retention_history', $this->posted_int('lws_history_retention'));
+                update_option('live_weather_station_retention_history', $this->posted_int('lws_history_retention', 0, 600));
             }
             else {
                 $result = false;
@@ -1208,6 +1219,10 @@ class Admin {
                     foreach (array('_min_value', '_max_value', '_min_alarm', '_max_alarm') as $type) {
                         if (array_key_exists('lws_thresholds_' . $threshold . $type, $_POST)) {
                             $sanitized = sanitize_text_field(wp_unslash($_POST['lws_thresholds_' . $threshold . $type]));
+                            if (!is_numeric($sanitized)) {
+                                // A non numeric value would raise a TypeError in round() on PHP 8: keep the stored threshold.
+                                continue;
+                            }
                             update_option('live_weather_station_' . $threshold . $type, $this->convert_value($sanitized, $threshold));
                         }
                     }
@@ -1227,10 +1242,10 @@ class Admin {
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', $this->posted_int('lws_system_log_level'));
                 update_option('live_weather_station_fa_mode', $this->posted_int('lws_system_fa_mode'));
-                update_option('live_weather_station_logger_rotate', $this->posted_int('lws_system_log_rotate'));
-                update_option('live_weather_station_logger_retention', $this->posted_int('lws_system_log_retention'));
-                update_option('live_weather_station_file_retention', $this->posted_int('lws_system_file_retention'));
-                update_option('live_weather_station_retention_notifications', $this->posted_int('lws_system_notif_retention'));
+                update_option('live_weather_station_logger_rotate', $this->posted_int('lws_system_log_rotate', 1000, 100000));
+                update_option('live_weather_station_logger_retention', $this->posted_int('lws_system_log_retention', 2, 400));
+                update_option('live_weather_station_file_retention', $this->posted_int('lws_system_file_retention', 1, 90));
+                update_option('live_weather_station_retention_notifications', $this->posted_int('lws_system_notif_retention', 1, 30));
                 update_option('live_weather_station_upload_allowed', (array_key_exists('lws_system_upload_allowed', $_POST) ? 1 : 0));
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
@@ -1247,21 +1262,21 @@ class Admin {
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_bloomsky', (array_key_exists('lws_system_auto_manage_bloomsky', $_POST) ? 1 : 0));
-                update_option('live_weather_station_time_shift_threshold', $this->posted_int('lws_system_time_shift_threshold'));
+                update_option('live_weather_station_time_shift_threshold', $this->posted_int('lws_system_time_shift_threshold', 0, 300));
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_plugin_stat', (array_key_exists('lws_system_plugin_stat', $_POST) ? 1 : 0));
                 update_option('live_weather_station_keep_tables', (array_key_exists('lws_system_keep_tables', $_POST) ? 1 : 0));
                 update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
-                update_option('live_weather_station_analytics_cutoff', $this->posted_int('lws_system_analytics_cutoff'));
+                update_option('live_weather_station_analytics_cutoff', $this->posted_int('lws_system_analytics_cutoff', 3, 30));
                 update_option('live_weather_station_quota_mode', $this->posted_int('lws_system_quota'));
                 update_option('live_weather_station_cron_speed', $this->posted_int('lws_system_cron_speed'));
                 update_option('live_weather_station_picture_retention', $this->posted_int('lws_system_picture_retention'));
                 update_option('live_weather_station_video_retention', $this->posted_int('lws_system_video_retention'));
-                update_option('live_weather_station_collection_http_timeout', $this->posted_int('lws_collection_http_timeout'));
-                update_option('live_weather_station_sharing_http_timeout', $this->posted_int('lws_sharing_http_timeout'));
-                update_option('live_weather_station_system_http_timeout', $this->posted_int('lws_system_http_timeout'));
+                update_option('live_weather_station_collection_http_timeout', $this->posted_int('lws_collection_http_timeout', 1, 90));
+                update_option('live_weather_station_sharing_http_timeout', $this->posted_int('lws_sharing_http_timeout', 1, 90));
+                update_option('live_weather_station_system_http_timeout', $this->posted_int('lws_system_http_timeout', 1, 60));
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
@@ -2807,7 +2822,8 @@ class Admin {
         }
         $password = '';
         if (array_key_exists('password', $_POST)) {
-            $password = sanitize_text_field(wp_unslash($_POST['password']));
+            // Raw value (never printed, only sent to the service): sanitize_text_field() would alter a password containing <, > or %xx.
+            $password = (is_string($_POST['password']) ? wp_unslash($_POST['password']) : ''); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a password must not be altered by sanitize_text_field().
         }
         $key = '';
         if (array_key_exists('key', $_POST)) {
@@ -3099,6 +3115,9 @@ class Admin {
         
         if (isset($guid) && $guid) {
             $station = $this->get_station_information_by_guid($guid);
+            if (empty($station)) {
+                return;
+            }
             $service = $this->get_service_name($station['station_type']);
             if (wp_verify_nonce((isset($_POST['_wpnonce']) ? sanitize_text_field(wp_unslash($_POST['_wpnonce'])) : ''), 'delete-station-' . (int)$guid)) {
                 // The outcome is the deletion of the station itself: the operational table may legitimately have no row to remove.
@@ -3816,7 +3835,7 @@ class Admin {
             $station['station_type'] = $station_type;
             $station['station_id'] = $device_id;
             foreach ($stations as $item) {
-                if ($item['device_id'] == $device_id) {
+                if ((string)$item['device_id'] === (string)$device_id) {
                     $station = $item;
                 }
             }
@@ -3879,7 +3898,7 @@ class Admin {
             $station['station_type'] = $station_type;
             $station['station_id'] = $device_id;
             foreach ($stations as $item) {
-                if ($item['device_id'] == $device_id) {
+                if ((string)$item['device_id'] === (string)$device_id) {
                     $station = $item;
                 }
             }
@@ -4025,7 +4044,7 @@ class Admin {
             else {
                 if ($update) {
                     $message = $message = /* translators: %s: name of the station */ __('Unable to update the station %s.', 'live-weather-station');
-                    $station_id = $station['id'];
+                    $station_id = $station['station_id'];
                     $station_name = $station['station_name'];
                 }
                 else {
@@ -4490,7 +4509,7 @@ class Admin {
                         $message = $message = /* translators: %s: name of the station */ __('Unable to update the station %s.', 'live-weather-station');
                         $log = 'Unable to update this station.';
                         $station_id = $station['station_id'];
-                        $station_name = $station['station_name'];
+                        $station_name = (isset($station['station_name']) ? $station['station_name'] : '');
                     }
                     else {
                         $message = $message = /* translators: %s: name of the station */ __('Unable to add the station %s.', 'live-weather-station');
@@ -4498,7 +4517,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html((isset($station['station_name']) ? $station['station_name'] : '')) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4507,14 +4526,14 @@ class Admin {
                 if ($update) {
                     $message = $message = /* translators: %s: name of the station */ __('Unable to update the station %s.', 'live-weather-station');
                     $station_id = $station['station_id'];
-                    $station_name = $station['station_name'];
+                    $station_name = (isset($station['station_name']) ? $station['station_name'] : '');
                 }
                 else {
                     $message = $message = /* translators: %s: name of the station */ __('Unable to add the station %s.', 'live-weather-station');
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
+                $message = sprintf($message, '<em>' . esc_html((isset($station['station_name']) ? $station['station_name'] : '')) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
