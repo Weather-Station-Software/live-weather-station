@@ -205,7 +205,7 @@ class NAApiClient
     public function makeRequest($path, $method = 'GET', $params = array()) {
         $response = null;
         $args = array(
-            'user-agent' => LWS_PLUGIN_AGENT,
+            'user-agent' => LIVE_WEATHER_STATION_PLUGIN_AGENT,
             'timeout' => ((int)get_option('live_weather_station_collection_http_timeout') > 0 ? max(5, min(120, (int)get_option('live_weather_station_collection_http_timeout'))) : 10),
             'blocking'    => true,
             'redirection' => 0,

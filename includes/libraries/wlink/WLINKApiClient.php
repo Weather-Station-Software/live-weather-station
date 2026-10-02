@@ -69,14 +69,14 @@ class WLINKApiClient
                 /* translators: 1: name of a field (Device ID, API Token or Password). 2: maximum number of characters. */
                 return array('service_id' => '', 'error' => sprintf(__('%1$s is too long (%2$d characters maximum).', 'live-weather-station'), $field[2], $field[1]));
             }
-            if (strpos($field[0], LWS_SERVICE_SEPARATOR) !== false) {
+            if (strpos($field[0], LIVE_WEATHER_STATION_SERVICE_SEPARATOR) !== false) {
                 /* translators: %s: name of a field (Device ID, API Token or Password). */
                 return array('service_id' => '', 'error' => sprintf(__('%s contains a forbidden character sequence.', 'live-weather-station'), $field[2]));
             }
         }
-        $joined = $did . LWS_SERVICE_SEPARATOR . $token . LWS_SERVICE_SEPARATOR . $pass;
+        $joined = $did . LIVE_WEATHER_STATION_SERVICE_SEPARATOR . $token . LIVE_WEATHER_STATION_SERVICE_SEPARATOR . $pass;
         // A value ending or starting with part of the separator could shift the split: the round trip must be exact.
-        if (explode(LWS_SERVICE_SEPARATOR, $joined) !== array($did, $token, $pass)) {
+        if (explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $joined) !== array($did, $token, $pass)) {
             return array('service_id' => '', 'error' => __('Unable to save these WeatherLink credentials: they contain a forbidden character sequence.', 'live-weather-station'));
         }
         return array('service_id' => $joined, 'error' => '');
@@ -145,7 +145,7 @@ class WLINKApiClient
         $id = array();
         $exp = array();
         if ($params !== '') {
-            $exp = explode(LWS_SERVICE_SEPARATOR, $params);
+            $exp = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $params);
         }
         if (count($exp) !== 3) {
             $id['service_did'] = '-';

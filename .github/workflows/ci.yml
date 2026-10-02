@@ -45,6 +45,18 @@ jobs:
             echo 'A PHP file of the plugin refers to wp-load.php.'
             exit 1
           fi
+      - name: No reference to a removed global name
+        run: |
+          # The global constants and functions were renamed from lws_/LWS_ to live_weather_station_/LIVE_WEATHER_STATION_ in 3.9.0.
+          # The vendored libraries are PHP files too: a leftover old name is a fatal error at run time, which `php -l` cannot see.
+          if grep -rnE --include='*.php' '\bLWS_[A-Z0-9_]+\b' . --exclude-dir=.git --exclude-dir=.claude | grep -v '{/LWS_SEP/}'; then
+            echo 'An old LWS_ constant name is still referenced.'
+            exit 1
+          fi
+          if grep -rnE --include='*.php' '(^|[^>:$A-Za-z0-9_\\])lws_[a-z0-9_]+\(' . --exclude-dir=.git --exclude-dir=.claude | grep -v 'function lws_' | grep -vE ':[0-9]+:[[:space:]]*(//|\*|#|/\*)' | grep -v 'phpcs:ignore'; then
+            echo 'A call to an old lws_ function name remains.'
+            exit 1
+          fi
 
   compat:
     name: PHPCompatibility ${{ matrix.range }}
