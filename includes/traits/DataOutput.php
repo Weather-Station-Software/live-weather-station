@@ -5144,7 +5144,6 @@ trait Output {
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
             $result .= '});' . PHP_EOL;
-            $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
                 $result .= '    ' . $spinner . '.spin(target);' . PHP_EOL;
@@ -5193,7 +5192,7 @@ trait Output {
                 $result .= '' . PHP_EOL;
                 $result .= '' . PHP_EOL;
             }
-            $result .= '});' . PHP_EOL;
+            $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
         }
         if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose' && $data != 'ajax' && $data != 'ajax_refresh') {
             $result .= 'var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
