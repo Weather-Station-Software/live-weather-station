@@ -80,6 +80,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                                 <select id="lws-ndjson" name="lws-ndjson" disabled style="width:100%;">
                                     <option value="X"><?php esc_html_e('No file', 'live-weather-station') ?>&hellip;</option>
                                 </select>
+                                <p class="description"><?php esc_html_e('To import data, first add a file in the Files screen (shown in advanced mode): it will then be listed here.', 'live-weather-station'); ?></p>
                             </span>
                         </td>
                     </tr>

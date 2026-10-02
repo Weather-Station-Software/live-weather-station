@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Weather Station 3.9.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Weather-Station-Software/live-"
 "weather-station/issues\n"
-"POT-Creation-Date: 2026-10-02T21:20:12+00:00\n"
+"POT-Creation-Date: 2026-10-02T21:59:16+00:00\n"
 "PO-Revision-Date: 2026-10-02 22:00+0200\n"
 "Last-Translator: Jason Rouet <https://jasonrouet.com/>\n"
 "Language-Team: French (France)\n"
@@ -17,9 +17,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 
 #. Plugin Name of the plugin
-#: live-weather-station.php includes/traits/DataOutput.php:7880
-#: includes/traits/DBQuery.php:217 includes/traits/DBQuery.php:253
-#: includes/traits/DBQuery.php:278 includes/traits/DBQuery.php:303
+#: live-weather-station.php includes/classes/SystemPluginI18n.php:50
+#: includes/traits/DataOutput.php:7881 includes/traits/DBQuery.php:217
+#: includes/traits/DBQuery.php:253 includes/traits/DBQuery.php:278
+#: includes/traits/DBQuery.php:303
 msgid "Weather Station"
 msgstr "Weather Station"
 
@@ -76,7 +77,7 @@ msgstr "Cache"
 #: admin/SystemPluginAdmin.php:1612 includes/classes/AnalyticsHelper.php:116
 #: includes/classes/AnalyticsHelper.php:133
 #: includes/classes/DashboardHelper.php:270 includes/system/InlineHelp.php:626
-#: includes/traits/DataOutput.php:7390
+#: includes/traits/DataOutput.php:7391
 msgid "Events"
 msgstr "Évènements"
 
@@ -220,6 +221,12 @@ msgstr "exporté il y a %s."
 #: admin/partials/ChooseFormat.php:81
 msgid "No file"
 msgstr "Aucun fichier"
+
+#: admin/partials/ChooseFormat.php:83
+msgid ""
+"To import data, first add a file in the Files screen (shown in advanced "
+"mode): it will then be listed here."
+msgstr "Pour importer des données, ajoutez d’abord un fichier dans l’écran Fichiers (affiché en mode avancé) : il sera alors listé ici."
 
 #. translators: %s: Name of the map provider (a brand name).
 #: admin/partials/ChooseMapType.php:17 includes/system/InlineHelp.php:454
@@ -1033,7 +1040,7 @@ msgstr "Plus d’informations pour bien démarrer"
 msgid "Click to toggle"
 msgstr "Cliquer pour basculer l’affichage"
 
-#: admin/partials/DetailedDB.php:40 includes/traits/DataOutput.php:11347
+#: admin/partials/DetailedDB.php:40 includes/traits/DataOutput.php:11348
 msgid "total"
 msgstr "total"
 
@@ -1476,14 +1483,14 @@ msgstr "Impossible d’utiliser cette source pour une station :"
 #: includes/traits/DataDateTimeConversion.php:338
 #: includes/traits/DataDateTimeConversion.php:616
 #: includes/traits/DataDateTimeConversion.php:666
-#: includes/traits/DataOutput.php:6879 includes/traits/DataOutput.php:6930
-#: includes/traits/DataOutput.php:6971 includes/traits/DataOutput.php:7026
-#: includes/traits/DataOutput.php:7059 includes/traits/DataOutput.php:7093
-#: includes/traits/DataOutput.php:7107 includes/traits/DataOutput.php:9508
-#: includes/traits/DataOutput.php:9513 includes/traits/DataOutput.php:9518
-#: includes/traits/DataOutput.php:9523 includes/traits/DataOutput.php:9528
-#: includes/traits/DataOutput.php:9533 includes/traits/DataOutput.php:9538
-#: includes/traits/DataOutput.php:9760
+#: includes/traits/DataOutput.php:6880 includes/traits/DataOutput.php:6931
+#: includes/traits/DataOutput.php:6972 includes/traits/DataOutput.php:7027
+#: includes/traits/DataOutput.php:7060 includes/traits/DataOutput.php:7094
+#: includes/traits/DataOutput.php:7108 includes/traits/DataOutput.php:9509
+#: includes/traits/DataOutput.php:9514 includes/traits/DataOutput.php:9519
+#: includes/traits/DataOutput.php:9524 includes/traits/DataOutput.php:9529
+#: includes/traits/DataOutput.php:9534 includes/traits/DataOutput.php:9539
+#: includes/traits/DataOutput.php:9761
 msgid "N/A"
 msgstr "N/A"
 
@@ -2289,11 +2296,11 @@ msgstr "installé le"
 msgid "Displayed name"
 msgstr "Nom à afficher"
 
-#: admin/partials/StationModule.php:113 includes/traits/DataOutput.php:13824
+#: admin/partials/StationModule.php:113 includes/traits/DataOutput.php:13825
 msgid "visible"
 msgstr "visible"
 
-#: admin/partials/StationModule.php:114 includes/traits/DataOutput.php:13824
+#: admin/partials/StationModule.php:114 includes/traits/DataOutput.php:13825
 msgid "hidden"
 msgstr "caché"
 
@@ -2404,7 +2411,7 @@ msgstr "Compact"
 #: includes/traits/DataArraysGenerator.php:2862
 #: includes/traits/DataArraysGenerator.php:3142
 #: includes/traits/DataArraysGenerator.php:3338
-#: includes/traits/DataOutput.php:14219
+#: includes/traits/DataOutput.php:14220
 msgid "Standard"
 msgstr "Standard"
 
@@ -4369,7 +4376,7 @@ msgid "code"
 msgstr "code"
 
 #. translators: %s: date, shown in a tooltip
-#: includes/classes/ListTableLog.php:97 includes/traits/DataOutput.php:7390
+#: includes/classes/ListTableLog.php:97 includes/traits/DataOutput.php:7391
 msgid "Event"
 msgstr "Évènement"
 
@@ -4613,7 +4620,7 @@ msgstr "Données"
 msgid "disabled task"
 msgstr "tâche désactivée"
 
-#: includes/classes/ListTableTasks.php:77 includes/traits/DataOutput.php:11878
+#: includes/classes/ListTableTasks.php:77 includes/traits/DataOutput.php:11879
 #: includes/traits/DataTypeDescription.php:1104
 #: includes/traits/SystemSchedulesHandling.php:466
 msgid "unknown"
@@ -4836,8 +4843,8 @@ msgstr "Pied de page"
 msgid "4. Copy the following shortcode"
 msgstr "4. Copiez le code court suivant"
 
-#: includes/classes/Module.php:695 includes/traits/DataOutput.php:7237
-#: includes/traits/DataOutput.php:7962 includes/traits/DataOutput.php:7987
+#: includes/classes/Module.php:695 includes/traits/DataOutput.php:7238
+#: includes/traits/DataOutput.php:7963 includes/traits/DataOutput.php:7988
 msgid "No data"
 msgstr "Aucune donnée"
 
@@ -5993,7 +6000,7 @@ msgid "Display outdoor measurements of a station added to %s."
 msgstr "Affiche les mesures extérieures d’une station ajoutée à %s."
 
 #: includes/classes/WidgetOutdoor.php:531 includes/classes/WidgetSolar.php:362
-#: includes/traits/DataOutput.php:11274
+#: includes/traits/DataOutput.php:11275
 #: includes/traits/DataTypeDescription.php:827
 #: public/partials/WidgetOutdoorDisplay.php:121
 #: public/partials/WidgetSolarDisplay.php:81
@@ -6031,7 +6038,7 @@ msgstr "Affiche les conditions solaires enregistrées par une station ajoutée �
 #: includes/traits/DataOutput.php:4552 includes/traits/DataOutput.php:4560
 #: includes/traits/DataOutput.php:4741 includes/traits/DataOutput.php:4752
 #: includes/traits/DataOutput.php:4765 includes/traits/DataOutput.php:4772
-#: includes/traits/DataOutput.php:4924 includes/traits/DataOutput.php:5641
+#: includes/traits/DataOutput.php:4925 includes/traits/DataOutput.php:5642
 msgid "h"
 msgstr "h"
 
@@ -6052,14 +6059,14 @@ msgid "Display thunderstorm conditions recorded by a station added to %s."
 msgstr "Affiche les conditions orageuses enregistrées par une station ajoutée à %s."
 
 #: includes/classes/WidgetThunderstorm.php:356
-#: includes/traits/DataOutput.php:11010
+#: includes/traits/DataOutput.php:11011
 msgid "/ 3 hr"
 msgstr "/ 3 h."
 
 #: includes/classes/WidgetThunderstorm.php:364
-#: includes/traits/DataOutput.php:10935 includes/traits/DataOutput.php:11031
-#: includes/traits/DataOutput.php:11059 includes/traits/DataOutput.php:11339
-#: includes/traits/DataOutput.php:11393
+#: includes/traits/DataOutput.php:10936 includes/traits/DataOutput.php:11032
+#: includes/traits/DataOutput.php:11060 includes/traits/DataOutput.php:11340
+#: includes/traits/DataOutput.php:11394
 msgid "now"
 msgstr "maint."
 
@@ -7769,7 +7776,7 @@ msgid "Debug information"
 msgstr "Information de déboggage"
 
 #: includes/system/Logger.php:558 includes/system/Logger.php:638
-#: includes/traits/DataOutput.php:12336
+#: includes/traits/DataOutput.php:12337
 #: includes/traits/DataTypeDescription.php:1065
 msgid "Unknown"
 msgid_plural "Unknown"
@@ -8118,8 +8125,8 @@ msgstr "Rapide"
 #: includes/traits/DataArraysGenerator.php:3571
 #: includes/traits/DataArraysGenerator.php:3585
 #: includes/traits/DataArraysGenerator.php:3600
-#: includes/traits/DataOutput.php:12047 includes/traits/DataOutput.php:12295
-#: includes/traits/DataOutput.php:12342
+#: includes/traits/DataOutput.php:12048 includes/traits/DataOutput.php:12296
+#: includes/traits/DataOutput.php:12343
 msgid "Medium"
 msgstr "Intermédiaire"
 
@@ -9242,8 +9249,8 @@ msgstr "Libre"
 #: includes/traits/DataArraysGenerator.php:2101
 #: includes/traits/DataArraysGenerator.php:2581
 #: includes/traits/DataOutput.php:4028 includes/traits/DataOutput.php:4150
-#: includes/traits/DataOutput.php:7191 includes/traits/DataOutput.php:7317
-#: includes/traits/DataOutput.php:7553
+#: includes/traits/DataOutput.php:7192 includes/traits/DataOutput.php:7318
+#: includes/traits/DataOutput.php:7554
 msgid "Grouped"
 msgstr "Groupé"
 
@@ -9252,16 +9259,16 @@ msgstr "Groupé"
 #: includes/traits/DataArraysGenerator.php:2128
 #: includes/traits/DataArraysGenerator.php:2582
 #: includes/traits/DataOutput.php:4028 includes/traits/DataOutput.php:4150
-#: includes/traits/DataOutput.php:7191 includes/traits/DataOutput.php:7317
-#: includes/traits/DataOutput.php:7423 includes/traits/DataOutput.php:7524
-#: includes/traits/DataOutput.php:7553 includes/traits/DataOutput.php:7644
+#: includes/traits/DataOutput.php:7192 includes/traits/DataOutput.php:7318
+#: includes/traits/DataOutput.php:7424 includes/traits/DataOutput.php:7525
+#: includes/traits/DataOutput.php:7554 includes/traits/DataOutput.php:7645
 msgid "Stacked"
 msgstr "Empilé"
 
 #: includes/traits/DataArraysGenerator.php:2116
 #: includes/traits/DataArraysGenerator.php:2130
-#: includes/traits/DataOutput.php:7423 includes/traits/DataOutput.php:7524
-#: includes/traits/DataOutput.php:7644
+#: includes/traits/DataOutput.php:7424 includes/traits/DataOutput.php:7525
+#: includes/traits/DataOutput.php:7645
 msgid "Expanded"
 msgstr "Developpé"
 
@@ -9315,7 +9322,7 @@ msgstr "Coordonnées"
 
 #: includes/traits/DataArraysGenerator.php:2216
 #: includes/traits/DataArraysGenerator.php:3248
-#: includes/traits/DataOutput.php:12053 includes/traits/DataOutput.php:12289
+#: includes/traits/DataOutput.php:12054 includes/traits/DataOutput.php:12290
 msgid "Full"
 msgstr "Excellent"
 
@@ -9476,7 +9483,7 @@ msgid "XS"
 msgstr "XS"
 
 #: includes/traits/DataArraysGenerator.php:2451
-#: includes/traits/DataOutput.php:12157 includes/traits/DataOutput.php:12187
+#: includes/traits/DataOutput.php:12158 includes/traits/DataOutput.php:12188
 msgid "S"
 msgstr "S"
 
@@ -9756,7 +9763,7 @@ msgid "%1$s outputs Font Awesome %2$s as %3$s"
 msgstr "%1$s fournit Font Awesome %2$s en %3$s"
 
 #: includes/traits/DataArraysGenerator.php:2863
-#: includes/traits/DataOutput.php:14222
+#: includes/traits/DataOutput.php:14223
 msgid "Scientific"
 msgstr "Scientifique"
 
@@ -9889,7 +9896,7 @@ msgstr "Importer les données stockées sur les serveurs Pioupiou pour ce capteu
 #: includes/traits/DataArraysGenerator.php:3211
 #: includes/traits/DataOutput.php:2702 includes/traits/DataOutput.php:2705
 #: includes/traits/DataOutput.php:2731 includes/traits/DataOutput.php:2737
-#: includes/traits/DataOutput.php:9001
+#: includes/traits/DataOutput.php:9002
 #: includes/traits/DataTypeDescription.php:185
 #: includes/traits/DataTypeDescription.php:382
 #: includes/traits/DataTypeDescription.php:502
@@ -10394,39 +10401,39 @@ msgstr "Aujourd’hui"
 #: includes/traits/DataOutput.php:3916 includes/traits/DataOutput.php:4026
 #: includes/traits/DataOutput.php:4147 includes/traits/DataOutput.php:4310
 #: includes/traits/DataOutput.php:4511 includes/traits/DataOutput.php:4722
-#: includes/traits/DataOutput.php:5430 includes/traits/DataOutput.php:5604
-#: includes/traits/DataOutput.php:5933
+#: includes/traits/DataOutput.php:5431 includes/traits/DataOutput.php:5605
+#: includes/traits/DataOutput.php:5934
 msgid "No Data To Display"
 msgstr "Aucune donnée à afficher"
 
 #: includes/traits/DataOutput.php:3431 includes/traits/DataOutput.php:3487
-#: includes/traits/DataOutput.php:5433 includes/traits/DataOutput.php:5479
-#: includes/traits/DataOutput.php:5936 includes/traits/DataOutput.php:5950
-#: includes/traits/DataOutput.php:6193 includes/traits/DataOutput.php:6246
-#: includes/traits/DataOutput.php:6250 includes/traits/DataOutput.php:7691
-#: includes/traits/DataOutput.php:7700 includes/traits/DataOutput.php:7796
-#: includes/traits/DataOutput.php:9276 includes/traits/DataOutput.php:14280
+#: includes/traits/DataOutput.php:5434 includes/traits/DataOutput.php:5480
+#: includes/traits/DataOutput.php:5937 includes/traits/DataOutput.php:5951
+#: includes/traits/DataOutput.php:6194 includes/traits/DataOutput.php:6247
+#: includes/traits/DataOutput.php:6251 includes/traits/DataOutput.php:7692
+#: includes/traits/DataOutput.php:7701 includes/traits/DataOutput.php:7797
+#: includes/traits/DataOutput.php:9277 includes/traits/DataOutput.php:14281
 #: public/SystemPluginFrontend.php:470
 msgid "Malformed shortcode. Please verify it!"
 msgstr "Code court malformé. Merci de le vérifier !"
 
 #. translators: %s: date, shown in a tooltip
-#: includes/traits/DataOutput.php:4942 includes/traits/DataOutput.php:4945
-#: includes/traits/DataOutput.php:7396
+#: includes/traits/DataOutput.php:4943 includes/traits/DataOutput.php:4946
+#: includes/traits/DataOutput.php:7397
 #, php-format
 msgid "%s <br/>No data"
 msgstr "%s <br/>Aucune donnée"
 
-#: includes/traits/DataOutput.php:5619 includes/traits/DataOutput.php:5661
+#: includes/traits/DataOutput.php:5620 includes/traits/DataOutput.php:5662
 msgid "day"
 msgstr "jour"
 
-#: includes/traits/DataOutput.php:6316 includes/traits/DataOutput.php:6324
+#: includes/traits/DataOutput.php:6317 includes/traits/DataOutput.php:6325
 msgid "Not enough data to perform this computation."
 msgstr "Pas assez de données pour effectuer ce calcul."
 
 #. translators: %s: number of days
-#: includes/traits/DataOutput.php:7061 includes/traits/DataOutput.php:7090
+#: includes/traits/DataOutput.php:7062 includes/traits/DataOutput.php:7091
 #, php-format
 msgid "%s day"
 msgid_plural "%s days"
@@ -10434,83 +10441,83 @@ msgstr[0] "%s jour"
 msgstr[1] "%s jours"
 
 #. translators: 1: start date, 2: end date
-#: includes/traits/DataOutput.php:7104
+#: includes/traits/DataOutput.php:7105
 #, php-format
 msgid "%1$s to %2$s"
 msgstr "%1$s à %2$s"
 
 #. translators: %s: date, shown in a tooltip
-#: includes/traits/DataOutput.php:7389
+#: includes/traits/DataOutput.php:7390
 #, php-format
 msgid "%s <br/>No event"
 msgstr "%s <br/>Aucun évènement"
 
 #. translators: 1: minimum value, 2: unit name
-#: includes/traits/DataOutput.php:7391
+#: includes/traits/DataOutput.php:7392
 #, php-format
 msgid "Less than %1$s %2$s."
 msgstr "Moins de %1$s %2$s."
 
 #. translators: 1: lower value, 2: upper value, 3: unit name
-#: includes/traits/DataOutput.php:7391
+#: includes/traits/DataOutput.php:7392
 #, php-format
 msgid "Between %1$s and %2$s %3$s."
 msgstr "Entre %1$s et %2$s %3$s."
 
 #. translators: 1: maximum value, 2: unit name
-#: includes/traits/DataOutput.php:7391
+#: includes/traits/DataOutput.php:7392
 #, php-format
 msgid "More than %1$s %2$s."
 msgstr "Plus de %1$s %2$s."
 
 #. translators: 1: date, 2: measurement name, 3: value
-#: includes/traits/DataOutput.php:7396
+#: includes/traits/DataOutput.php:7397
 #, php-format
 msgid "%1$s <br/>%2$s at %3$s"
 msgstr "%1$s <br/>%2$s à %3$s"
 
 #. translators: 1: date, 2: measurement name, 3: value
-#: includes/traits/DataOutput.php:7397
+#: includes/traits/DataOutput.php:7398
 msgid "Criticality"
 msgstr "Criticité"
 
 #. translators: 1: measurement name, 2: value
-#: includes/traits/DataOutput.php:7398
+#: includes/traits/DataOutput.php:7399
 #, php-format
 msgid "%1$s lower than %2$s."
 msgstr "%1$s inférieur à %2$s."
 
 #. translators: 1: measurement name, 2: lower value, 3: upper value
-#: includes/traits/DataOutput.php:7398
+#: includes/traits/DataOutput.php:7399
 #, php-format
 msgid "%1$s between %2$s and %3$s."
 msgstr "%1$s entre %2$s et %3$s."
 
 #. translators: 1: measurement name, 2: value
-#: includes/traits/DataOutput.php:7398
+#: includes/traits/DataOutput.php:7399
 #, php-format
 msgid "%1$s greater than %2$s."
 msgstr "%1$s supérieur à %2$s."
 
-#: includes/traits/DataOutput.php:7423 includes/traits/DataOutput.php:7524
-#: includes/traits/DataOutput.php:7644
+#: includes/traits/DataOutput.php:7424 includes/traits/DataOutput.php:7525
+#: includes/traits/DataOutput.php:7645
 msgid "Stream"
 msgstr "Flux"
 
-#: includes/traits/DataOutput.php:7727
+#: includes/traits/DataOutput.php:7728
 msgid "No timelapse for this date."
 msgstr "Aucun timelapse pour cette date."
 
-#: includes/traits/DataOutput.php:7958 includes/traits/DataOutput.php:7983
+#: includes/traits/DataOutput.php:7959 includes/traits/DataOutput.php:7984
 msgid "Error code "
 msgstr "Code d’erreur "
 
-#: includes/traits/DataOutput.php:8145
+#: includes/traits/DataOutput.php:8146
 #: includes/traits/DataTypeDescription.php:182
 msgid "Outdoor"
 msgstr "Extérieur"
 
-#: includes/traits/DataOutput.php:9001
+#: includes/traits/DataOutput.php:9002
 #: includes/traits/DataTypeDescription.php:514
 #: includes/traits/DataTypeDescription.php:518
 #: includes/traits/DataTypeDescription.php:522
@@ -10518,796 +10525,796 @@ msgstr "Extérieur"
 msgid "Gust"
 msgstr "Rafale"
 
-#: includes/traits/DataOutput.php:10879
+#: includes/traits/DataOutput.php:10880
 msgid "hum"
 msgstr "hum"
 
-#: includes/traits/DataOutput.php:10912
+#: includes/traits/DataOutput.php:10913
 msgid "hlth"
 msgstr "salb"
 
-#: includes/traits/DataOutput.php:10922 includes/traits/DataOutput.php:11551
+#: includes/traits/DataOutput.php:10923 includes/traits/DataOutput.php:11552
 #: includes/traits/DataTypeDescription.php:261
 msgid "CBi"
 msgstr "CBi"
 
-#: includes/traits/DataOutput.php:10937 includes/traits/DataOutput.php:10948
-#: includes/traits/DataOutput.php:11040 includes/traits/DataOutput.php:11068
+#: includes/traits/DataOutput.php:10938 includes/traits/DataOutput.php:10949
+#: includes/traits/DataOutput.php:11041 includes/traits/DataOutput.php:11069
 msgid "/ 1 hr"
 msgstr "/ 1 h."
 
-#: includes/traits/DataOutput.php:10958
+#: includes/traits/DataOutput.php:10959
 msgid "month"
 msgstr "mois"
 
-#: includes/traits/DataOutput.php:10968
+#: includes/traits/DataOutput.php:10969
 msgid "year"
 msgstr "an"
 
-#: includes/traits/DataOutput.php:10978 includes/traits/DataOutput.php:11037
-#: includes/traits/DataOutput.php:11065
+#: includes/traits/DataOutput.php:10979 includes/traits/DataOutput.php:11038
+#: includes/traits/DataOutput.php:11066
 #: public/partials/WidgetFireDisplay.php:181
 #: public/partials/WidgetOutdoorDisplay.php:193
 msgid "today"
 msgstr "aujourd’hui"
 
-#: includes/traits/DataOutput.php:10988
+#: includes/traits/DataOutput.php:10989
 msgid "yda."
 msgstr "hier"
 
-#: includes/traits/DataOutput.php:10998
+#: includes/traits/DataOutput.php:10999
 msgid "season"
 msgstr "saison"
 
-#: includes/traits/DataOutput.php:11034 includes/traits/DataOutput.php:11062
+#: includes/traits/DataOutput.php:11035 includes/traits/DataOutput.php:11063
 msgid "gust"
 msgstr "rafale"
 
-#: includes/traits/DataOutput.php:11214 includes/traits/DataOutput.php:11236
+#: includes/traits/DataOutput.php:11215 includes/traits/DataOutput.php:11237
 msgid "sat."
 msgstr "sat."
 
-#: includes/traits/DataOutput.php:11296
+#: includes/traits/DataOutput.php:11297
 msgid "wet"
 msgstr "mouillé"
 
-#: includes/traits/DataOutput.php:11308 includes/traits/DataOutput.php:11320
+#: includes/traits/DataOutput.php:11309 includes/traits/DataOutput.php:11321
 msgid "moist"
 msgstr "aqueux"
 
-#: includes/traits/DataOutput.php:11330
+#: includes/traits/DataOutput.php:11331
 msgid "evap"
 msgstr "évap"
 
-#: includes/traits/DataOutput.php:11357 includes/traits/DataOutput.php:11367
+#: includes/traits/DataOutput.php:11358 includes/traits/DataOutput.php:11368
 msgid "last"
 msgstr "dernier"
 
-#: includes/traits/DataOutput.php:11548
+#: includes/traits/DataOutput.php:11549
 msgid "health"
 msgstr "salubrité"
 
-#: includes/traits/DataOutput.php:11556
+#: includes/traits/DataOutput.php:11557
 #: includes/traits/DataTypeDescription.php:250
 msgid "CO₂"
 msgstr "CO₂"
 
-#: includes/traits/DataOutput.php:11559
+#: includes/traits/DataOutput.php:11560
 #: includes/traits/DataTypeDescription.php:268
 #: includes/traits/DataTypeDescription.php:279
 msgid "CO"
 msgstr "CO"
 
-#: includes/traits/DataOutput.php:11562
+#: includes/traits/DataOutput.php:11563
 #: includes/traits/DataTypeDescription.php:276
 #: includes/traits/DataTypeDescription.php:286
 msgid "O₃"
 msgstr "O₃"
 
-#: includes/traits/DataOutput.php:11572
+#: includes/traits/DataOutput.php:11573
 msgid "humidity"
 msgstr "humidité"
 
-#: includes/traits/DataOutput.php:11577
+#: includes/traits/DataOutput.php:11578
 msgid "noise"
 msgstr "bruit"
 
-#: includes/traits/DataOutput.php:11586
+#: includes/traits/DataOutput.php:11587
 msgid "rain"
 msgstr "pluie"
 
-#: includes/traits/DataOutput.php:11589 includes/traits/DataOutput.php:11841
+#: includes/traits/DataOutput.php:11590 includes/traits/DataOutput.php:11842
 msgid "snow"
 msgstr "neige"
 
-#: includes/traits/DataOutput.php:11609
+#: includes/traits/DataOutput.php:11610
 msgid "wind"
 msgstr "vent"
 
-#: includes/traits/DataOutput.php:11615
+#: includes/traits/DataOutput.php:11616
 msgid "atm pressure"
 msgstr "pression atmo"
 
-#: includes/traits/DataOutput.php:11621
+#: includes/traits/DataOutput.php:11622
 msgid "baro pressure"
 msgstr "pression baro"
 
-#: includes/traits/DataOutput.php:11624
+#: includes/traits/DataOutput.php:11625
 msgid "dew point"
 msgstr "pt de rosée"
 
-#: includes/traits/DataOutput.php:11627
+#: includes/traits/DataOutput.php:11628
 msgid "air"
 msgstr "air"
 
-#: includes/traits/DataOutput.php:11630
+#: includes/traits/DataOutput.php:11631
 msgid "frost point"
 msgstr "pt de givre"
 
-#: includes/traits/DataOutput.php:11633
+#: includes/traits/DataOutput.php:11634
 msgid "heat-index"
 msgstr "indice chaleur"
 
-#: includes/traits/DataOutput.php:11636
+#: includes/traits/DataOutput.php:11637
 msgid "humidex"
 msgstr "humidex"
 
-#: includes/traits/DataOutput.php:11639
+#: includes/traits/DataOutput.php:11640
 msgid "steadman"
 msgstr "steadman"
 
-#: includes/traits/DataOutput.php:11642
+#: includes/traits/DataOutput.php:11643
 msgid "simmer"
 msgstr "simmer"
 
-#: includes/traits/DataOutput.php:11645
+#: includes/traits/DataOutput.php:11646
 msgid "wind chill"
 msgstr "rf. éolien"
 
-#: includes/traits/DataOutput.php:11648
+#: includes/traits/DataOutput.php:11649
 msgid "cloud base"
 msgstr "alt nuages"
 
-#: includes/traits/DataOutput.php:11651
+#: includes/traits/DataOutput.php:11652
 #: includes/traits/DataTypeDescription.php:796
 msgid "Pressure alt."
 msgstr "Alt-pression"
 
-#: includes/traits/DataOutput.php:11654
+#: includes/traits/DataOutput.php:11655
 #: includes/traits/DataTypeDescription.php:800
 msgid "Density alt."
 msgstr "Alt-densité"
 
-#: includes/traits/DataOutput.php:11658
+#: includes/traits/DataOutput.php:11659
 msgid "forecast"
 msgstr "prévision"
 
-#: includes/traits/DataOutput.php:11663
+#: includes/traits/DataOutput.php:11664
 msgid "cloudiness"
 msgstr "nébulosité"
 
-#: includes/traits/DataOutput.php:11676
+#: includes/traits/DataOutput.php:11677
 msgid "temperature"
 msgstr "température"
 
-#: includes/traits/DataOutput.php:11682
+#: includes/traits/DataOutput.php:11683
 msgid "dawn"
 msgstr "aube"
 
-#: includes/traits/DataOutput.php:11688
+#: includes/traits/DataOutput.php:11689
 msgid "dusk"
 msgstr "crépuscule"
 
-#: includes/traits/DataOutput.php:11692
+#: includes/traits/DataOutput.php:11693
 #: includes/traits/DataTypeDescription.php:780
 msgid "EMC"
 msgstr "EMC"
 
-#: includes/traits/DataOutput.php:11695
+#: includes/traits/DataOutput.php:11696
 msgid "enthalpy"
 msgstr "enthalpie"
 
-#: includes/traits/DataOutput.php:11700
+#: includes/traits/DataOutput.php:11701
 msgid "vapor"
 msgstr "vapeur"
 
-#: includes/traits/DataOutput.php:11705
+#: includes/traits/DataOutput.php:11706
 msgid "irradiance"
 msgstr "irradiance"
 
-#: includes/traits/DataOutput.php:11708
+#: includes/traits/DataOutput.php:11709
 msgid "sunshine"
 msgstr "ensoleillement"
 
-#: includes/traits/DataOutput.php:11713
+#: includes/traits/DataOutput.php:11714
 msgid "illuminance"
 msgstr "éclairement"
 
-#: includes/traits/DataOutput.php:11716
+#: includes/traits/DataOutput.php:11717
 msgid "wetness"
 msgstr "mouillure"
 
-#: includes/traits/DataOutput.php:11724
+#: includes/traits/DataOutput.php:11725
 msgid "moisture"
 msgstr "aquosité"
 
-#: includes/traits/DataOutput.php:11727
+#: includes/traits/DataOutput.php:11728
 #: includes/traits/DataTypeDescription.php:870
 msgid "ET"
 msgstr "ET"
 
-#: includes/traits/DataOutput.php:11730
+#: includes/traits/DataOutput.php:11731
 msgid "distance"
 msgstr "distance"
 
-#: includes/traits/DataOutput.php:11735
+#: includes/traits/DataOutput.php:11736
 msgid "visibility"
 msgstr "visibilité"
 
-#: includes/traits/DataOutput.php:11738
+#: includes/traits/DataOutput.php:11739
 msgid "bearing"
 msgstr "direction"
 
-#: includes/traits/DataOutput.php:11742
+#: includes/traits/DataOutput.php:11743
 msgid "strike"
 msgstr "foudre"
 
-#: includes/traits/DataOutput.php:11811
+#: includes/traits/DataOutput.php:11812
 msgid "thunderstorm with light rain"
 msgstr "Orage, pluie modérée"
 
-#: includes/traits/DataOutput.php:11812
+#: includes/traits/DataOutput.php:11813
 msgid "thunderstorm with rain"
 msgstr "Orage, pluie"
 
-#: includes/traits/DataOutput.php:11813
+#: includes/traits/DataOutput.php:11814
 msgid "thunderstorm with heavy rain"
 msgstr "Orage, forte pluie"
 
-#: includes/traits/DataOutput.php:11814
+#: includes/traits/DataOutput.php:11815
 msgid "light thunderstorm"
 msgstr "léger orage"
 
-#: includes/traits/DataOutput.php:11815
+#: includes/traits/DataOutput.php:11816
 msgid "thunderstorm"
 msgstr "orages"
 
-#: includes/traits/DataOutput.php:11816
+#: includes/traits/DataOutput.php:11817
 msgid "heavy thunderstorm"
 msgstr "orage important"
 
-#: includes/traits/DataOutput.php:11817
+#: includes/traits/DataOutput.php:11818
 msgid "ragged thunderstorm"
 msgstr "passages orageux"
 
-#: includes/traits/DataOutput.php:11818
+#: includes/traits/DataOutput.php:11819
 msgid "thunderstorm with light drizzle"
 msgstr "orage et crachin"
 
-#: includes/traits/DataOutput.php:11819
+#: includes/traits/DataOutput.php:11820
 msgid "thunderstorm with drizzle"
 msgstr "orage et bruine"
 
-#: includes/traits/DataOutput.php:11820
+#: includes/traits/DataOutput.php:11821
 msgid "thunderstorm with heavy drizzle"
 msgstr "orage et forte bruine"
 
-#: includes/traits/DataOutput.php:11821
+#: includes/traits/DataOutput.php:11822
 msgid "light intensity drizzle"
 msgstr "crachin léger"
 
-#: includes/traits/DataOutput.php:11822
+#: includes/traits/DataOutput.php:11823
 msgid "drizzle"
 msgstr "bruine"
 
-#: includes/traits/DataOutput.php:11823
+#: includes/traits/DataOutput.php:11824
 msgid "heavy intensity drizzle"
 msgstr "bruine"
 
-#: includes/traits/DataOutput.php:11824
+#: includes/traits/DataOutput.php:11825
 msgid "light intensity drizzle rain"
 msgstr "crachin léger"
 
-#: includes/traits/DataOutput.php:11825
+#: includes/traits/DataOutput.php:11826
 msgid "drizzle rain"
 msgstr "bruine"
 
-#: includes/traits/DataOutput.php:11826
+#: includes/traits/DataOutput.php:11827
 msgid "heavy intensity drizzle rain"
 msgstr "forte bruine"
 
-#: includes/traits/DataOutput.php:11827
+#: includes/traits/DataOutput.php:11828
 msgid "shower rain and drizzle"
 msgstr "crachin et averses de pluie"
 
-#: includes/traits/DataOutput.php:11828
+#: includes/traits/DataOutput.php:11829
 msgid "heavy shower rain and drizzle"
 msgstr "crachin et grosses averses de pluie"
 
-#: includes/traits/DataOutput.php:11829
+#: includes/traits/DataOutput.php:11830
 msgid "shower drizzle"
 msgstr "crachin"
 
-#: includes/traits/DataOutput.php:11830
+#: includes/traits/DataOutput.php:11831
 msgid "light rain"
 msgstr "pluie légère"
 
-#: includes/traits/DataOutput.php:11831
+#: includes/traits/DataOutput.php:11832
 msgid "moderate rain"
 msgstr "pluie modérée"
 
-#: includes/traits/DataOutput.php:11832
+#: includes/traits/DataOutput.php:11833
 msgid "heavy intensity rain"
 msgstr "pluie de grande intensité"
 
-#: includes/traits/DataOutput.php:11833
+#: includes/traits/DataOutput.php:11834
 msgid "very heavy rain"
 msgstr "pluie de très grande intensité"
 
-#: includes/traits/DataOutput.php:11834
+#: includes/traits/DataOutput.php:11835
 msgid "extreme rain"
 msgstr "pluie extrême"
 
-#: includes/traits/DataOutput.php:11835
+#: includes/traits/DataOutput.php:11836
 msgid "freezing rain"
 msgstr "pluie verglaçante"
 
-#: includes/traits/DataOutput.php:11836
+#: includes/traits/DataOutput.php:11837
 msgid "light intensity shower rain"
 msgstr "averses de pluie de faible intensité"
 
-#: includes/traits/DataOutput.php:11837
+#: includes/traits/DataOutput.php:11838
 msgid "shower rain"
 msgstr "averses de pluie"
 
-#: includes/traits/DataOutput.php:11838
+#: includes/traits/DataOutput.php:11839
 msgid "heavy intensity shower rain"
 msgstr "averses de pluie de grande intensité"
 
-#: includes/traits/DataOutput.php:11839
+#: includes/traits/DataOutput.php:11840
 msgid "ragged shower rain"
 msgstr "passages pluvieux"
 
-#: includes/traits/DataOutput.php:11840
+#: includes/traits/DataOutput.php:11841
 msgid "light snow"
 msgstr "neige légère"
 
-#: includes/traits/DataOutput.php:11842
+#: includes/traits/DataOutput.php:11843
 msgid "heavy snow"
 msgstr "forte neige"
 
-#: includes/traits/DataOutput.php:11843
+#: includes/traits/DataOutput.php:11844
 msgid "sleet"
 msgstr "grésil"
 
-#: includes/traits/DataOutput.php:11844
+#: includes/traits/DataOutput.php:11845
 msgid "shower sleet"
 msgstr "averses de grésil"
 
-#: includes/traits/DataOutput.php:11845
+#: includes/traits/DataOutput.php:11846
 msgid "light rain and snow"
 msgstr "faibles averses de pluie et neige mêlées"
 
-#: includes/traits/DataOutput.php:11846
+#: includes/traits/DataOutput.php:11847
 msgid "rain and snow"
 msgstr "pluie et neige"
 
-#: includes/traits/DataOutput.php:11847
+#: includes/traits/DataOutput.php:11848
 msgid "light shower snow"
 msgstr "faibles de neige modérées"
 
-#: includes/traits/DataOutput.php:11848
+#: includes/traits/DataOutput.php:11849
 msgid "shower snow"
 msgstr "averses de neige"
 
-#: includes/traits/DataOutput.php:11849
+#: includes/traits/DataOutput.php:11850
 msgid "heavy shower snow"
 msgstr "fortes averses de neige"
 
-#: includes/traits/DataOutput.php:11850
+#: includes/traits/DataOutput.php:11851
 msgid "mist"
 msgstr "brouillard"
 
-#: includes/traits/DataOutput.php:11851
+#: includes/traits/DataOutput.php:11852
 msgid "smoke"
 msgstr "fumée"
 
-#: includes/traits/DataOutput.php:11852
+#: includes/traits/DataOutput.php:11853
 msgid "haze"
 msgstr "brume"
 
-#: includes/traits/DataOutput.php:11853
+#: includes/traits/DataOutput.php:11854
 msgid "sand, dust whirls"
 msgstr "sable, tourbillons de poussière"
 
-#: includes/traits/DataOutput.php:11854
+#: includes/traits/DataOutput.php:11855
 msgid "fog"
 msgstr "brouillard"
 
-#: includes/traits/DataOutput.php:11855
+#: includes/traits/DataOutput.php:11856
 msgid "sand"
 msgstr "sable"
 
-#: includes/traits/DataOutput.php:11856
+#: includes/traits/DataOutput.php:11857
 msgid "dust"
 msgstr "poussière"
 
-#: includes/traits/DataOutput.php:11857
+#: includes/traits/DataOutput.php:11858
 msgid "volcanic ash"
 msgstr "cendres volcaniques"
 
-#: includes/traits/DataOutput.php:11858
+#: includes/traits/DataOutput.php:11859
 msgid "squalls"
 msgstr "bourrasques"
 
-#: includes/traits/DataOutput.php:11859
+#: includes/traits/DataOutput.php:11860
 msgid "tornado"
 msgstr "tornade"
 
-#: includes/traits/DataOutput.php:11860
+#: includes/traits/DataOutput.php:11861
 msgid "clear sky"
 msgstr "ciel clair"
 
-#: includes/traits/DataOutput.php:11861
+#: includes/traits/DataOutput.php:11862
 msgid "few clouds"
 msgstr "quelques nuages"
 
-#: includes/traits/DataOutput.php:11862
+#: includes/traits/DataOutput.php:11863
 msgid "scattered clouds"
 msgstr "nuages épars"
 
-#: includes/traits/DataOutput.php:11863
+#: includes/traits/DataOutput.php:11864
 msgid "broken clouds"
 msgstr "nuages épars"
 
-#: includes/traits/DataOutput.php:11864
+#: includes/traits/DataOutput.php:11865
 msgid "overcast clouds"
 msgstr "ciel couvert"
 
-#: includes/traits/DataOutput.php:11880
+#: includes/traits/DataOutput.php:11881
 msgid "Settled fine"
 msgstr "Beau temps"
 
-#: includes/traits/DataOutput.php:11881
+#: includes/traits/DataOutput.php:11882
 msgid "Fine weather"
 msgstr "Beau fixe"
 
-#: includes/traits/DataOutput.php:11882
+#: includes/traits/DataOutput.php:11883
 msgid "Becoming fine"
 msgstr "En voie d’amélioration"
 
-#: includes/traits/DataOutput.php:11883
+#: includes/traits/DataOutput.php:11884
 msgid "Fine, becoming less settled"
 msgstr "Dégagé, devenant plus instable"
 
-#: includes/traits/DataOutput.php:11884
+#: includes/traits/DataOutput.php:11885
 msgid "Fine, possible showers"
 msgstr "Dégagé, averses possibles"
 
-#: includes/traits/DataOutput.php:11885
+#: includes/traits/DataOutput.php:11886
 msgid "Fairly fine, improving"
 msgstr "Plutôt dégagé, en voie d’amélioration"
 
-#: includes/traits/DataOutput.php:11886
+#: includes/traits/DataOutput.php:11887
 msgid "Fairly fine, possible showers early"
 msgstr "Plutôt dégagé, averses matinales possibles"
 
-#: includes/traits/DataOutput.php:11887
+#: includes/traits/DataOutput.php:11888
 msgid "Fairly fine, showery later"
 msgstr "Plutôt dégagé, averses par la suite"
 
-#: includes/traits/DataOutput.php:11888
+#: includes/traits/DataOutput.php:11889
 msgid "Showery early, improving"
 msgstr "Averses matinales, en voie d’amélioration"
 
-#: includes/traits/DataOutput.php:11889
+#: includes/traits/DataOutput.php:11890
 msgid "Changeable, mending"
 msgstr "Changeant, en voie d’amélioration"
 
-#: includes/traits/DataOutput.php:11890
+#: includes/traits/DataOutput.php:11891
 msgid "Fairly fine, showers likely"
 msgstr "Plutôt dégagé, averses probables"
 
-#: includes/traits/DataOutput.php:11891
+#: includes/traits/DataOutput.php:11892
 msgid "Rather unsettled clearing later"
 msgstr "Plutôt instable, se dégageant par la suite"
 
-#: includes/traits/DataOutput.php:11892
+#: includes/traits/DataOutput.php:11893
 msgid "Unsettled, probably improving"
 msgstr "Instable, probablement en amélioration"
 
-#: includes/traits/DataOutput.php:11893
+#: includes/traits/DataOutput.php:11894
 msgid "Showery, bright intervals"
 msgstr "Averses, quelques éclaircies"
 
-#: includes/traits/DataOutput.php:11894
+#: includes/traits/DataOutput.php:11895
 msgid "Showery, becoming less settled"
 msgstr "Averses, devenant instable"
 
-#: includes/traits/DataOutput.php:11895
+#: includes/traits/DataOutput.php:11896
 msgid "Changeable, some rain"
 msgstr "Changeant, quelques averses"
 
-#: includes/traits/DataOutput.php:11896
+#: includes/traits/DataOutput.php:11897
 msgid "Unsettled, short fine intervals"
 msgstr "Instable, quelques éclaircies"
 
-#: includes/traits/DataOutput.php:11897
+#: includes/traits/DataOutput.php:11898
 msgid "Unsettled, rain later"
 msgstr "Instable, pluie par la suite"
 
-#: includes/traits/DataOutput.php:11898
+#: includes/traits/DataOutput.php:11899
 msgid "Unsettled, some rain"
 msgstr "Instable, un peu de pluie"
 
-#: includes/traits/DataOutput.php:11899
+#: includes/traits/DataOutput.php:11900
 msgid "Mostly very unsettled"
 msgstr "Très instable"
 
-#: includes/traits/DataOutput.php:11900
+#: includes/traits/DataOutput.php:11901
 msgid "Occasional rain, worsening"
 msgstr "Pluie occasionnelle, en voie d’aggravation"
 
-#: includes/traits/DataOutput.php:11901
+#: includes/traits/DataOutput.php:11902
 msgid "Rain at times, very unsettled"
 msgstr "Quelques averses, très instable"
 
-#: includes/traits/DataOutput.php:11902
+#: includes/traits/DataOutput.php:11903
 msgid "Rain at frequent intervals"
 msgstr "Pluie à intervalles fréquents"
 
-#: includes/traits/DataOutput.php:11903
+#: includes/traits/DataOutput.php:11904
 msgid "Rain, very unsettled"
 msgstr "Pluie, très instable"
 
-#: includes/traits/DataOutput.php:11904
+#: includes/traits/DataOutput.php:11905
 msgid "Stormy, may improve"
 msgstr "Orageux, en voie d’amélioration"
 
-#: includes/traits/DataOutput.php:11905
+#: includes/traits/DataOutput.php:11906
 msgid "Stormy, much rain"
 msgstr "Orageux, pluie abondante"
 
-#: includes/traits/DataOutput.php:11910
+#: includes/traits/DataOutput.php:11911
 msgid "Exceptional Weather: "
 msgstr "Conditions exceptionnelles : "
 
-#: includes/traits/DataOutput.php:12041 includes/traits/DataOutput.php:12298
-#: includes/traits/DataOutput.php:12345
+#: includes/traits/DataOutput.php:12042 includes/traits/DataOutput.php:12299
+#: includes/traits/DataOutput.php:12346
 msgid "Very low"
 msgstr "Très faible"
 
-#: includes/traits/DataOutput.php:12044 includes/traits/DataOutput.php:12107
+#: includes/traits/DataOutput.php:12045 includes/traits/DataOutput.php:12108
 msgid "Low"
 msgstr "Faible"
 
-#: includes/traits/DataOutput.php:12050 includes/traits/DataOutput.php:12101
-#: includes/traits/DataOutput.php:12292 includes/traits/DataOutput.php:12339
+#: includes/traits/DataOutput.php:12051 includes/traits/DataOutput.php:12102
+#: includes/traits/DataOutput.php:12293 includes/traits/DataOutput.php:12340
 msgid "High"
 msgstr "Élevé"
 
-#: includes/traits/DataOutput.php:12056
+#: includes/traits/DataOutput.php:12057
 msgid "AC Power"
 msgstr "Sur secteur"
 
-#: includes/traits/DataOutput.php:12059
+#: includes/traits/DataOutput.php:12060
 msgid "Unknown Power State"
 msgstr "Inconnu"
 
-#: includes/traits/DataOutput.php:12072
+#: includes/traits/DataOutput.php:12073
 msgid "Healthy"
 msgstr "Sain"
 
-#: includes/traits/DataOutput.php:12074
+#: includes/traits/DataOutput.php:12075
 msgid "Fine"
 msgstr "Bon"
 
-#: includes/traits/DataOutput.php:12077
+#: includes/traits/DataOutput.php:12078
 msgid "Fair"
 msgstr "Acceptable"
 
-#: includes/traits/DataOutput.php:12080
+#: includes/traits/DataOutput.php:12081
 msgid "Poor"
 msgstr "Médiocre"
 
-#: includes/traits/DataOutput.php:12083
+#: includes/traits/DataOutput.php:12084
 msgid "Unhealthy"
 msgstr "Malsain"
 
-#: includes/traits/DataOutput.php:12096
+#: includes/traits/DataOutput.php:12097
 msgid "Extreme"
 msgstr "Extrême"
 
-#: includes/traits/DataOutput.php:12098
+#: includes/traits/DataOutput.php:12099
 msgid "Very high"
 msgstr "Très élevé"
 
-#: includes/traits/DataOutput.php:12104
+#: includes/traits/DataOutput.php:12105
 msgid "Moderate"
 msgstr "Modéré"
 
-#: includes/traits/DataOutput.php:12149 includes/traits/DataOutput.php:12179
-#: includes/traits/DataOutput.php:12195
+#: includes/traits/DataOutput.php:12150 includes/traits/DataOutput.php:12180
+#: includes/traits/DataOutput.php:12196
 msgid "N"
 msgstr "N"
 
-#: includes/traits/DataOutput.php:12150 includes/traits/DataOutput.php:12180
+#: includes/traits/DataOutput.php:12151 includes/traits/DataOutput.php:12181
 msgid "N-NE"
 msgstr "N-NE"
 
-#: includes/traits/DataOutput.php:12151 includes/traits/DataOutput.php:12181
+#: includes/traits/DataOutput.php:12152 includes/traits/DataOutput.php:12182
 msgid "NE"
 msgstr "NE"
 
-#: includes/traits/DataOutput.php:12152 includes/traits/DataOutput.php:12182
+#: includes/traits/DataOutput.php:12153 includes/traits/DataOutput.php:12183
 msgid "E-NE"
 msgstr "E-NE"
 
-#: includes/traits/DataOutput.php:12153 includes/traits/DataOutput.php:12183
+#: includes/traits/DataOutput.php:12154 includes/traits/DataOutput.php:12184
 msgid "E"
 msgstr "E"
 
-#: includes/traits/DataOutput.php:12154 includes/traits/DataOutput.php:12184
+#: includes/traits/DataOutput.php:12155 includes/traits/DataOutput.php:12185
 msgid "E-SE"
 msgstr "E-SE"
 
-#: includes/traits/DataOutput.php:12155 includes/traits/DataOutput.php:12185
+#: includes/traits/DataOutput.php:12156 includes/traits/DataOutput.php:12186
 msgid "SE"
 msgstr "SE"
 
-#: includes/traits/DataOutput.php:12156 includes/traits/DataOutput.php:12186
+#: includes/traits/DataOutput.php:12157 includes/traits/DataOutput.php:12187
 msgid "S-SE"
 msgstr "S-SE"
 
-#: includes/traits/DataOutput.php:12158 includes/traits/DataOutput.php:12188
+#: includes/traits/DataOutput.php:12159 includes/traits/DataOutput.php:12189
 msgid "S-SW"
 msgstr "S-SO"
 
-#: includes/traits/DataOutput.php:12159 includes/traits/DataOutput.php:12189
+#: includes/traits/DataOutput.php:12160 includes/traits/DataOutput.php:12190
 msgid "SW"
 msgstr "SO"
 
-#: includes/traits/DataOutput.php:12160 includes/traits/DataOutput.php:12190
+#: includes/traits/DataOutput.php:12161 includes/traits/DataOutput.php:12191
 msgid "W-SW"
 msgstr "O-SO"
 
-#: includes/traits/DataOutput.php:12161 includes/traits/DataOutput.php:12191
+#: includes/traits/DataOutput.php:12162 includes/traits/DataOutput.php:12192
 msgid "W"
 msgstr "O"
 
-#: includes/traits/DataOutput.php:12162 includes/traits/DataOutput.php:12192
+#: includes/traits/DataOutput.php:12163 includes/traits/DataOutput.php:12193
 msgid "W-NW"
 msgstr "O-NO"
 
-#: includes/traits/DataOutput.php:12163 includes/traits/DataOutput.php:12193
+#: includes/traits/DataOutput.php:12164 includes/traits/DataOutput.php:12194
 msgid "NW"
 msgstr "NO"
 
-#: includes/traits/DataOutput.php:12164 includes/traits/DataOutput.php:12194
+#: includes/traits/DataOutput.php:12165 includes/traits/DataOutput.php:12195
 msgid "N-NW"
 msgstr "N-NO"
 
-#: includes/traits/DataOutput.php:12211 includes/traits/DataOutput.php:12227
+#: includes/traits/DataOutput.php:12212 includes/traits/DataOutput.php:12228
 msgid "North"
 msgstr "Nord"
 
-#: includes/traits/DataOutput.php:12212
+#: includes/traits/DataOutput.php:12213
 msgid "North-Northeast"
 msgstr "Nord-Nord-Est"
 
-#: includes/traits/DataOutput.php:12213
+#: includes/traits/DataOutput.php:12214
 msgid "Northeast"
 msgstr "Nord-Est"
 
-#: includes/traits/DataOutput.php:12214
+#: includes/traits/DataOutput.php:12215
 msgid "East-Northeast"
 msgstr "Est-Nord-Est"
 
-#: includes/traits/DataOutput.php:12215
+#: includes/traits/DataOutput.php:12216
 msgid "East"
 msgstr "Est"
 
-#: includes/traits/DataOutput.php:12216
+#: includes/traits/DataOutput.php:12217
 msgid "East-Southeast"
 msgstr "Est-Sud-Est"
 
-#: includes/traits/DataOutput.php:12217
+#: includes/traits/DataOutput.php:12218
 msgid "Southeast"
 msgstr "Sud-Est"
 
-#: includes/traits/DataOutput.php:12218
+#: includes/traits/DataOutput.php:12219
 msgid "South-Southeast"
 msgstr "Sud-Sud-Est"
 
-#: includes/traits/DataOutput.php:12219
+#: includes/traits/DataOutput.php:12220
 msgid "South"
 msgstr "Sud"
 
-#: includes/traits/DataOutput.php:12220
+#: includes/traits/DataOutput.php:12221
 msgid "South-Southwest"
 msgstr "Sud-Sud-Ouest"
 
-#: includes/traits/DataOutput.php:12221
+#: includes/traits/DataOutput.php:12222
 msgid "Southwest"
 msgstr "Sud-Ouest"
 
-#: includes/traits/DataOutput.php:12222
+#: includes/traits/DataOutput.php:12223
 msgid "West-Southwest"
 msgstr "Ouest-Sud-Ouest"
 
-#: includes/traits/DataOutput.php:12223
+#: includes/traits/DataOutput.php:12224
 msgid "West"
 msgstr "Ouest"
 
-#: includes/traits/DataOutput.php:12224
+#: includes/traits/DataOutput.php:12225
 msgid "West-Northwest"
 msgstr "Ouest-Nord-Ouest"
 
-#: includes/traits/DataOutput.php:12225
+#: includes/traits/DataOutput.php:12226
 msgid "Northwest"
 msgstr "Nord-Ouest"
 
-#: includes/traits/DataOutput.php:12226
+#: includes/traits/DataOutput.php:12227
 msgid "North-Northwest"
 msgstr "Nord-Nord-Ouest"
 
-#: includes/traits/DataOutput.php:12301
+#: includes/traits/DataOutput.php:12302
 msgid "No RF Signal"
 msgstr "Pas de signal radio"
 
-#: includes/traits/DataOutput.php:12348
+#: includes/traits/DataOutput.php:12349
 msgid "No WiFi Signal"
 msgstr "Pas de signal WiFi"
 
-#: includes/traits/DataOutput.php:12364
+#: includes/traits/DataOutput.php:12365
 msgid "Rising"
 msgstr "En hausse"
 
-#: includes/traits/DataOutput.php:12367
+#: includes/traits/DataOutput.php:12368
 msgid "Falling"
 msgstr "En baisse"
 
-#: includes/traits/DataOutput.php:12370
+#: includes/traits/DataOutput.php:12371
 msgid "Stable"
 msgstr "Stable"
 
-#: includes/traits/DataOutput.php:12425 includes/traits/DataOutput.php:12433
+#: includes/traits/DataOutput.php:12426 includes/traits/DataOutput.php:12434
 msgid "New Moon"
 msgstr "Nouvelle Lune"
 
-#: includes/traits/DataOutput.php:12426
+#: includes/traits/DataOutput.php:12427
 msgid "Waxing Crescent"
 msgstr "Premier Croissant"
 
-#: includes/traits/DataOutput.php:12427
+#: includes/traits/DataOutput.php:12428
 msgid "First Quarter"
 msgstr "Premier Quartier"
 
-#: includes/traits/DataOutput.php:12428
+#: includes/traits/DataOutput.php:12429
 msgid "Waxing Gibbous"
 msgstr "Gibbeuse Croissante"
 
-#: includes/traits/DataOutput.php:12429
+#: includes/traits/DataOutput.php:12430
 msgid "Full Moon"
 msgstr "Pleine Lune"
 
-#: includes/traits/DataOutput.php:12430
+#: includes/traits/DataOutput.php:12431
 msgid "Waning Gibbous"
 msgstr "Gibbeuse Décroissante"
 
-#: includes/traits/DataOutput.php:12431
+#: includes/traits/DataOutput.php:12432
 msgid "Third Quarter"
 msgstr "Dernier Quartier"
 
-#: includes/traits/DataOutput.php:12432
+#: includes/traits/DataOutput.php:12433
 msgid "Waning Crescent"
 msgstr "Dernier Croissant"
 
-#: includes/traits/DataOutput.php:12568 includes/traits/DataOutput.php:12757
+#: includes/traits/DataOutput.php:12569 includes/traits/DataOutput.php:12758
 msgid "Successful operation"
 msgstr "Opération réussie"
 
-#: includes/traits/DataOutput.php:12571 includes/traits/DataOutput.php:12760
+#: includes/traits/DataOutput.php:12572 includes/traits/DataOutput.php:12761
 #: includes/traits/DBQuery.php:604 includes/traits/DBQuery.php:632
 #: includes/traits/DBQuery.php:662 includes/traits/DBQuery.php:690
 #: includes/traits/DBQuery.php:718 includes/traits/DBQuery.php:765
@@ -11316,73 +11323,73 @@ msgstr "Opération réussie"
 msgid "Database contains inconsistent measurements"
 msgstr "La base de données contient des mesures incohérentes"
 
-#: includes/traits/DataOutput.php:12832 includes/traits/DataOutput.php:12842
+#: includes/traits/DataOutput.php:12833 includes/traits/DataOutput.php:12843
 msgid "O/DR"
 msgstr "EXT"
 
 #. translators: appears in LCD display, so must not be longer than 6
 #. characters, including punctuation
-#: includes/traits/DataOutput.php:12886
+#: includes/traits/DataOutput.php:12887
 msgid "clouds"
 msgstr "nuages"
 
-#: includes/traits/DataOutput.php:13100
+#: includes/traits/DataOutput.php:13101
 msgid "All data have been filtered: nothing to show"
 msgstr "Toutes les donnée ont été filtrées : il n’y a plus rien à afficher"
 
-#: includes/traits/DataOutput.php:13833
+#: includes/traits/DataOutput.php:13834
 msgid "rev."
 msgstr "rev."
 
-#: includes/traits/DataOutput.php:14027
+#: includes/traits/DataOutput.php:14028
 msgid "Cooling degree day (Denmark)"
 msgstr "Degrés-jours de refroidissement (Danemark)"
 
-#: includes/traits/DataOutput.php:14028
+#: includes/traits/DataOutput.php:14029
 msgid "Cooling degree day (E.U.)"
 msgstr "Degrés-jours de refroidissement (U.E.)"
 
-#: includes/traits/DataOutput.php:14029
+#: includes/traits/DataOutput.php:14030
 msgid "Cooling degree day (Finland)"
 msgstr "Degrés-jours de refroidissement (Finlande)"
 
-#: includes/traits/DataOutput.php:14030
+#: includes/traits/DataOutput.php:14031
 msgid "Cooling degree day (Switzerland)"
 msgstr "Degrés-jours de refroidissement (Suisse)"
 
-#: includes/traits/DataOutput.php:14031
+#: includes/traits/DataOutput.php:14032
 msgid "Cooling degree day (U.S.A.)"
 msgstr "Degrés-jours de refroidissement (U.S.A.)"
 
-#: includes/traits/DataOutput.php:14032
+#: includes/traits/DataOutput.php:14033
 msgid "Heating degree day (Denmark)"
 msgstr "Degrés-jours de chauffage (Danemark)"
 
-#: includes/traits/DataOutput.php:14033
+#: includes/traits/DataOutput.php:14034
 msgid "Heating degree day (E.U.)"
 msgstr "Degrés-jours de chauffage (U.E.)"
 
-#: includes/traits/DataOutput.php:14034
+#: includes/traits/DataOutput.php:14035
 msgid "Heating degree day (Finland)"
 msgstr "Degrés-jours de chauffage (Finlande)"
 
-#: includes/traits/DataOutput.php:14035
+#: includes/traits/DataOutput.php:14036
 msgid "Heating degree day (Switzerland)"
 msgstr "Degrés-jours de chauffage (Suisse)"
 
-#: includes/traits/DataOutput.php:14036
+#: includes/traits/DataOutput.php:14037
 msgid "Heating degree day (U.S.A.)"
 msgstr "Degrés-jours de chauffage (U.S.A.)"
 
-#: includes/traits/DataOutput.php:14037
+#: includes/traits/DataOutput.php:14038
 msgid "Frost score"
 msgstr "Score Frost"
 
-#: includes/traits/DataOutput.php:14038
+#: includes/traits/DataOutput.php:14039
 msgid "Hellmann score"
 msgstr "Score Hellmann"
 
-#: includes/traits/DataOutput.php:14315
+#: includes/traits/DataOutput.php:14316
 msgid "Translation:"
 msgstr "Traduction :"
 
