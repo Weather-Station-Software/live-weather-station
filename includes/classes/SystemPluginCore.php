@@ -135,6 +135,7 @@ class Core {
 		$plugin_i18n = new I18n();
 		$plugin_i18n->set_domain(LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN);
         $this->loader->add_filter('override_load_textdomain', $plugin_i18n, 'load_local_textdomain_mofile', 10, 2 );
+        $this->loader->add_action('init', $plugin_i18n, 'load_shipped_translation', 1);
 	}
 
     /**

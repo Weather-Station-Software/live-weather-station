@@ -30,6 +30,27 @@ class I18n {
 	}
 
     /**
+     * Complete the translation with the file shipped in the plugin, for the strings the language pack is missing.
+     *
+     * The pack of WordPress.org (or the partial translation) is loaded first, as usual: when a file is loaded for a
+     * domain which already has translations, WordPress keeps the strings of the first and adds the missing ones of
+     * the second. So the strings added by a release are translated before the community has translated them.
+     *
+     * @since 3.9.0
+     */
+    public function load_shipped_translation() {
+        $domain = LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN;
+        $locale = determine_locale();
+        $file = LIVE_WEATHER_STATION_PLUGIN_DIR . 'languages/' . $domain . '-' . $locale . '.mo';
+        if (!is_readable($file)) {
+            return;
+        }
+        // Forces the normal loading of the domain (language pack, partial translation) before ours.
+        __('Weather Station', 'live-weather-station');
+        load_textdomain($domain, $file, $locale);
+    }
+
+    /**
      * Override the mo file for the domain.
      *
      * @param string $override The override.
