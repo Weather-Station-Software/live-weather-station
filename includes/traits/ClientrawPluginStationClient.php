@@ -507,7 +507,7 @@ trait StationClient {
         try {
             $weather = explode(' ', $raw_data);
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the text of a debug event for the plugin Logger (truncated, nothing is printed)
-            Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
+            Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(sanitize_text_field(print_r($weather, true)), 0, 4000));
             if (count($weather) < 167) {
                 Logger::warning($this->facility, $this->service, null, null, null, null, null, '');
                 return false;
@@ -515,6 +515,13 @@ trait StationClient {
             else {
                 if ($weather[0] != '12345') {
                     return false;
+                }
+                // Only numeric values are kept (the last field carries the firmware text), a third-party feed must not store free text as a measurement.
+                $last = count($weather) - 1;
+                for ($i = 1; $i < $last; $i++) {
+                    if (!is_numeric($weather[$i])) {
+                        $weather[$i] = null;
+                    }
                 }
             }
         }
@@ -613,7 +620,7 @@ trait StationClient {
                 $this->format_and_store($raw_data, $station);
             }
             catch (\Throwable $ex) {
-                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Clientraw file data: ' . $ex->getMessage());
+                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Clientraw file data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 200));
                 continue;
             }
         }
@@ -640,7 +647,7 @@ trait StationClient {
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
         catch (\Throwable $ex) {
-            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 200));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);
