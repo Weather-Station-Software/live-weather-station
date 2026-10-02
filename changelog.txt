@@ -62,6 +62,7 @@
 * Bug fix: the list limits of the admin tables are bounded, a rain value is no longer carried over from one station to the next on the maps, and saving a map checks that its type matches the screen.
 * Improvement: the JavaScript of the controls and charts is hardened (tooltips escaped, no implicit global variables, protected object merging, bounded timers) and its minified files are rebuilt from the sources.
 * Improvement: the checks run by GitHub on every change now also load every class of the plugin and reject the old global names, so a name collision or a leftover old name can no longer reach a release.
+* Improvement: the import of a configuration file is refused when a number (position, altitude, station type, sharing switches) is replaced by text, instead of storing it and breaking the calculations of the station later.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
