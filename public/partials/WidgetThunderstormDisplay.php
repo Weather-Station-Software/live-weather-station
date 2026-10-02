@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
                 <div class="lws-widget-header lws-widget-header-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current thunderstorm conditions', 'live-weather-station').'"' : ''); ?>>
-                    <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon markup built by output_iconic_value() (DataOutput.php), which whitelists the color and extra class by regex; icon and class names come from its internal tables. ?>
-                    <?php echo $measurements['strikecount']['icon']; ?>
                     <?php if (array_key_exists('strikecount',$measurements)):?>
+                        <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- icon markup built by output_iconic_value() (DataOutput.php), which whitelists the color and extra class by regex; icon and class names come from its internal tables. ?>
+                        <?php echo $measurements['strikecount']['icon']; ?>
                         <?php echo wp_kses_post($measurements['strikecount']['value']); ?>
                     <?php endif;?>
                 </div>

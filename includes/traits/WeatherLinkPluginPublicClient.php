@@ -157,18 +157,27 @@ trait PublicClient {
                 $station['loc_altitude'] = live_weather_station_clean_number($weather['station_elevation_m']);
             }
 
+            $timestamp = gmdate('Y-m-d H:i:s');
             if (array_key_exists('observation_time_rfc822', $weather)) {
-                try {
-                    $timestamp = gmdate('Y-m-d H:i:s', strtotime($weather['observation_time_rfc822']));
-                } catch (Exception $e) {
-                    $timestamp = gmdate('Y-m-d H:i:s');
+                $observed = is_string($weather['observation_time_rfc822']) ? strtotime($weather['observation_time_rfc822']) : false;
+                if ($observed !== false) {
+                    $timestamp = gmdate('Y-m-d H:i:s', $observed);
                 }
-            } else {
-                $timestamp = gmdate('Y-m-d H:i:s');
             }
             $observation = array();
-            if (array_key_exists('davis_current_observation', $weather)) {
+            if (array_key_exists('davis_current_observation', $weather) && is_array($weather['davis_current_observation'])) {
                 $observation = $weather['davis_current_observation'];
+            }
+            // Numeric measures must be numbers: a value from the API that is not numeric is ignored.
+            foreach (array('pressure_mb', 'temp_c', 'relative_humidity', 'wind_degrees', 'wind_mph', 'user_registered_unix') as $key) {
+                if (array_key_exists($key, $weather) && !is_numeric($weather[$key])) {
+                    unset($weather[$key]);
+                }
+            }
+            foreach (array('wind_ten_min_gust_mph', 'rain_day_in', 'rain_rate_in_per_hr', 'rain_month_in', 'rain_year_in', 'uv_index', 'solar_radiation') as $key) {
+                if (array_key_exists($key, $observation) && !is_numeric($observation[$key])) {
+                    unset($observation[$key]);
+                }
             }
 
             $pressure_ref = null;
@@ -299,13 +308,13 @@ trait PublicClient {
                     $updates['measure_value'] = $weather['wind_degrees'];
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'winddirection';
-                    $updates['measure_value'] = (int)floor(($weather['wind_degrees'] + 180) % 360);
+                    $updates['measure_value'] = (int)floor(((int)$weather['wind_degrees'] + 180) % 360);
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'gustangle';
                     $updates['measure_value'] = $weather['wind_degrees'];
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'gustdirection';
-                    $updates['measure_value'] = (int)floor(($weather['wind_degrees'] + 180) % 360);
+                    $updates['measure_value'] = (int)floor(((int)$weather['wind_degrees'] + 180) % 360);
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('wind_mph', $weather)) {
