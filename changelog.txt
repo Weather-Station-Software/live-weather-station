@@ -41,7 +41,7 @@
 * Improvement: global functions, constants and hooks now carry the unique prefix `live_weather_station_` (wordpress.org naming rules). The filter `lws_manage_options_capability` is renamed `live_weather_station_manage_options_capability`; the old name is still honoured.
 * Security: output escaping, input sanitization, prepared queries and translator comments are reviewed on the whole code base with the wordpress.org Plugin Check tool, and the findings are fixed.
 * Improvement: the public CDN option (jsDelivr) is removed: scripts and styles are always served by the plugin itself.
-* Improvement: the plugin no longer forces its own automatic update. Sites that relied on it (the default) are moved to the automatic update setting of WordPress, visible and changeable on the Plugins screen.
+* Improvement: the plugin no longer forces its own automatic update. Sites that relied on it (the default) are moved to the automatic update setting of WordPress, visible and changeable on the Plugins screen. On a multisite this setting is the one of the whole network, and the network administrator can change it at any time.
 * Improvement: the PHP configuration screen (phpinfo) and the hoster lookup through ip-api.com (plain HTTP only) are removed.
 * Improvement: the event log of a refused or failed public feed request keeps an anonymized IP address and no browser identification.
 * Improvement: the copy buttons use the clipboard.js shipped with WordPress instead of an own copy.
