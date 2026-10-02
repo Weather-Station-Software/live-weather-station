@@ -619,7 +619,7 @@ trait Output {
                     }
                     if ($mode == 'daily') {
                         $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
-                        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
+                        $max = gmdate('Y-m-d H:i:s', self::get_local_today_end($station['loc_timezone']));
                         $result['xdomain']['min'] = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['04'] = $result['xdomain']['min'] + 14400000;
                         $result['xdomain']['08'] = $result['xdomain']['min'] + 14400000*2;

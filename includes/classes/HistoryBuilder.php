@@ -507,7 +507,7 @@ class Builder
      */
     private function count_daily_values($device_id, $tz) {
         $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($tz));
-        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_today_end($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()

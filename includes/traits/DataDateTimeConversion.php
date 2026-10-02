@@ -238,13 +238,13 @@ trait Conversion {
     }
 
     /**
-     * Get the timestamp corresponding to noon of today in a specific timezone.
+     * Get the timestamp corresponding to the end of today (23:59:59) in a specific timezone.
      *
      * @param string  $tz The timezone.
-     * @return integer The timestamp corresponding to noon of today in this timezone.
+     * @return integer The timestamp corresponding to the last second of today in this timezone.
      * @since 3.4.0
      */
-    public static function get_local_today_noon($tz) {
+    public static function get_local_today_end($tz) {
         return self::get_local_today_midnight($tz)+86399;
     }
 

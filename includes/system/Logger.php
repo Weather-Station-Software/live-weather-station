@@ -189,7 +189,7 @@ class Logger {
                 $values['code'] = $code;
             }
             if (!is_null($message)) {
-                $values['message'] = mb_substr(is_scalar($message) ? (string)$message : '', 0, 14999);
+                $values['message'] = mb_substr(sanitize_text_field(is_scalar($message) ? (string)$message : ''), 0, 14999);
             }
             self::insert_table(self::live_weather_station_log_table(), $values);
         }
