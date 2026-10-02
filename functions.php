@@ -420,7 +420,7 @@ function live_weather_station_font_awesome($all=false) {
  */
 
 function live_weather_station_is_active() {
-    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ) ) || live_weather_station_is_active_for_network();
+    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ), true ) || live_weather_station_is_active_for_network();
 }
 
 /**
@@ -520,7 +520,11 @@ function live_weather_station_clean_number($value, $default=null) {
     if ($value === null || $value === '') {
         return $value;
     }
-    return is_numeric($value) ? $value + 0 : $default;
+    if (!is_numeric($value)) {
+        return $default;
+    }
+    $number = $value + 0;
+    return is_finite((float)$number) ? $number : $default;
 }
 
 /**
@@ -848,6 +852,13 @@ function live_weather_station_public_rate_limit($action) {
     $window = max(1, (int)apply_filters('live_weather_station_public_rate_window', 60, $action));
     $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
     $ip = (string)apply_filters('live_weather_station_public_rate_limit_ip', $ip, $action);
+    // IPv6: one counter per /64, since a single subscriber controls a whole /64 and can change address at will.
+    if (strpos($ip, ':') !== false && function_exists('inet_pton')) {
+        $packed = @inet_pton($ip);
+        if (is_string($packed) && strlen($packed) === 16) {
+            $ip = bin2hex(substr($packed, 0, 8));
+        }
+    }
     $key = 'lws_rl_' . md5($ip . '|' . $action . '|' . (int)floor(time() / $window));
     if (function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache()) {
         wp_cache_add($key, 0, 'lws_rl', $window * 2);
