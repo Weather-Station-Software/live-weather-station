@@ -127,6 +127,10 @@ Please report security bugs found in the source code of the Weather Station plug
 The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 Alternatively, you can also [contact me directly by email](mailto:weather@station.network).
 
+= Where are the credentials of the weather services stored? =
+The passwords and access tokens that the plugin needs to talk to the services (for example the Netatmo tokens, or the identifiers used to share your data with Weather Underground, PWS Weather or WOW) are stored in the database of your site, in clear, like the secrets stored by WordPress itself and by most plugins. The configuration export only contains them if you tick the option to include the credentials.
+Protect your database and its backups like you protect your site. When a service gives you a key dedicated to your station or to an application, use it instead of the password of your main account: if it leaks, you can replace it without changing your account password.
+
 = Are there some paid services or limitations? =
 NO. Weather Station is a free software. That means you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
