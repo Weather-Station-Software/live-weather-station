@@ -5,3 +5,7 @@
 .gitattributes
 CLAUDE.md
 *.md.bak
+.distignore
+SPONSORS.md
+.wordpress-org
+CONTRIBUTING.md

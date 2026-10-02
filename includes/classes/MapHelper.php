@@ -330,7 +330,7 @@ class Handling {
         $jsInitId = md5(random_bytes(18));
         $result = live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
-        $result .= '  new Clipboard(".copy-sc-map-button");';
+        $result .= '  new ClipboardJS(".copy-sc-map-button");';
         $result .= '});';
         $result .= live_weather_station_print_end_script($jsInitId);
         $title = __('Shortcode', 'live-weather-station');

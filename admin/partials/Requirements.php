@@ -26,7 +26,6 @@ if ( ! defined( 'ABSPATH' ) ) {
             </script>
             <div class="postbox-container" style="width: 100%;margin-right: 10px;">
                 <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedRequirements.php'); ?>
-                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/PhpInfo.php'); ?>
             </div>
         </div>
     </div>

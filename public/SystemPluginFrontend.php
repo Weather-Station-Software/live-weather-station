@@ -108,7 +108,7 @@ class Frontend {
         live_weather_station_register_script('lws-bilinechart', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
         live_weather_station_register_script('lws-scale-radial', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/d3-scale-radial.min.js', array('lws-d3'));
         live_weather_station_register_script('lws-windrose', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
-        live_weather_station_register_script('lws-clipboard', LIVE_WEATHER_STATION_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
+        wp_register_script('lws-clipboard', false, array('clipboard', 'jquery'), LIVE_WEATHER_STATION_VERSION, false); // the copy of clipboard.js shipped with WordPress is used (the plugin no longer bundles its own)
         live_weather_station_register_script('lws-raphael', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
         live_weather_station_register_script('lws-justgage', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
         live_weather_station_register_script('lws-d3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));

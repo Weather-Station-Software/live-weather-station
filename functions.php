@@ -218,47 +218,25 @@ function live_weather_station_manage_capability() {
 }
 
 /**
- * Registers (but don't enqueues) a style asset of the plugin.
+ * Registers (but don't enqueues) a style asset of the plugin, always served from the plugin directory.
  *
- * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
+ * The fifth parameter is kept for the existing callers: the public CDN option was removed in 3.9.0.
  *
  * @since 3.5.0
  */
 function live_weather_station_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
-    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LIVE_WEATHER_STATION_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/admin/' . $file;
-        }
-        else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/public/' . $file;
-        }
-        wp_register_style($handle, $file, $deps, null);
-    }
-    else {
-        wp_register_style($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION);
-    }
+    wp_register_style($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION);
 }
 
 /**
- * Registers (but don't enqueues) a script asset of the plugin.
+ * Registers (but don't enqueues) a script asset of the plugin, always served from the plugin directory.
  *
- * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
+ * The fifth parameter is kept for the existing callers: the public CDN option was removed in 3.9.0.
  *
  * @since 3.5.0
  */
 function live_weather_station_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
-    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LIVE_WEATHER_STATION_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/admin/' . $file;
-        }
-        else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/tags/' . LIVE_WEATHER_STATION_VERSION . '/public/' . $file;
-        }
-        wp_register_script($handle, $file, $deps, null, (bool)get_option('live_weather_station_footer_scripts', false));
-    }
-    else {
-        wp_register_script($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
-    }
+    wp_register_script($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
 }
 
 
@@ -660,17 +638,6 @@ function live_weather_station_sanitize_height_field($h) {
 
 
 /**
- * Adapt phpinfo line.
- *
- * @param string $i The line.
- * @return string The adapted line.
- * @since 3.7.5
- */
-function live_weather_station_phpinfo_line($i) {
-    return ".phpinfodisplay " . preg_replace( '/,/', ',.phpinfodisplay ', $i);
-}
-
-/**
  * Simulate iconv function but without iconv support.
  *
  * @param string $string The string to convert.
@@ -821,113 +788,19 @@ function live_weather_station_esc_html_e__($text, $domain='default') {
  * @since 3.8.0
  */
 function live_weather_station_meta_cache($name, $value, $expiration=0) {
-    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
-        if (LIVE_WEATHER_STATION_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            if (!file_exists($cache_dir)) {
-                try {
-                    mkdir($cache_dir, 0755, true);
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            if (is_dir($cache_dir) && wp_is_writable($cache_dir)) {
-                // Deny direct web access to the cache directory
-                if (!file_exists($cache_dir . 'index.php')) {
-                    @file_put_contents($cache_dir . 'index.php', "<?php\n// Silence is golden.\n");
-                }
-                if (!file_exists($cache_dir . '.htaccess')) {
-                    @file_put_contents($cache_dir . '.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n");
-                }
-                $blog_id = get_current_blog_id();
-                $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-                try {
-                    file_put_contents($cache_file, serialize($value), LOCK_EX);
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return set_transient($name, $value, $expiration);
-        }
-    }
-    else {
-        return set_transient($name, $value, $expiration);
-    }
-}
-
-/**
- * Does a value contain an object (recursively)?
- *
- * @since 3.8.0
- */
-function live_weather_station_value_has_object($value) {
-    if (is_object($value)) {
-        return true;
-    }
-    if (is_array($value)) {
-        foreach ($value as $item) {
-            if (live_weather_station_value_has_object($item)) {
-                return true;
-            }
-        }
-    }
-    return false;
+    return set_transient($name, $value, $expiration);
 }
 
 /**
  * Read the value of a cache item.
  *
  * @param string $name  Cache name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
- * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+ * @param int $expiration Optional. Unused (kept for the existing callers).
  * @return bool|mixed False if value was not set and value if it was set.
  * @since 3.8.0
  */
 function live_weather_station_meta_uncache($name, $expiration=0) {
-    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
-        if (LIVE_WEATHER_STATION_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-            if (file_exists($cache_file)) {
-                try {
-                    $t = filemtime($cache_file);
-                    if (time() - $t > $expiration) {
-                        unlink($cache_file);
-                        return false;
-                    }
-                    else {
-                        // Decision: the experimental file cache (LIVE_WEATHER_STATION_FILE_CACHE, off by default) is expected to hold arrays/scalars only.
-                        // Objects are never instantiated when reading (security): a cached object is treated as a cache miss.
-                        $value = unserialize((string)file_get_contents($cache_file), array('allowed_classes' => false));
-                        if (live_weather_station_value_has_object($value)) {
-                            @unlink($cache_file);
-                            return false;
-                        }
-                        return $value;
-                    }
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return get_transient($name);
-        }
-    }
-    else {
-        return get_transient($name);
-    }
+    return get_transient($name);
 }
 
 /**
@@ -938,52 +811,7 @@ function live_weather_station_meta_uncache($name, $expiration=0) {
  * @since 3.8.0
  */
 function live_weather_station_meta_rmcache($name) {
-    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
-        if (LIVE_WEATHER_STATION_FILE_CACHE) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-            if (file_exists($cache_file)) {
-                try {
-                    unlink($cache_file);
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return delete_transient($name);
-        }
-    }
-    else {
-        return delete_transient($name);
-    }
-}
-
-/**
- * Flush the cache.
- *
- * @param string $pref Prefix name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
- * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
- * @return int Count of removed items.
- * @since 3.8.0
- */
-function live_weather_station_meta_flcache($pref, $expiration=0) {
-    $result = 0;
-    if (defined('LIVE_WEATHER_STATION_FILE_CACHE')) {
-        if (LIVE_WEATHER_STATION_FILE_CACHE) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $pref . '*');
-
-            // TODO : implement flush
-        }
-    }
-    return $result;
+    return delete_transient($name);
 }
 
 /**

@@ -30,7 +30,6 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //--- E X P E R I M E N T A L -----------------------------------------------------------------------
 
-define('LIVE_WEATHER_STATION_FILE_CACHE', false);
 
 //---------------------------------------------------------------------------------------------------
 
@@ -60,7 +59,6 @@ define('LIVE_WEATHER_STATION_ADMIN_URL', plugin_dir_url(__FILE__).'admin/');
 define('LIVE_WEATHER_STATION_PUBLIC_DIR', plugin_dir_path(__FILE__).'public/');
 define('LIVE_WEATHER_STATION_PUBLIC_URL', plugin_dir_url(__FILE__).'public/');
 define('LIVE_WEATHER_STATION_INCLUDES_DIR', plugin_dir_path(__FILE__).'includes/');
-define('LIVE_WEATHER_STATION_LANGUAGES_DIR', plugin_dir_path(__FILE__).'languages/');
 define('LIVE_WEATHER_STATION_ADMIN_PHP_URL', EnvManager::admin_dir_relative_url());
 define('LIVE_WEATHER_STATION_AJAX_URL', EnvManager::ajax_dir_relative_url());
 define('LIVE_WEATHER_STATION_I18N_LOADED', EnvManager::is_i18n_loaded());

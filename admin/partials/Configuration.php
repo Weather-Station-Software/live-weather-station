@@ -29,7 +29,6 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedWebserver.php'); ?>
                 <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedDB.php'); ?>
                 <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedWordPress.php'); ?>
-                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/PhpInfo.php'); ?>
             </div>
         </div>
     </div>

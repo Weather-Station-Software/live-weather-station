@@ -641,7 +641,7 @@ abstract class Maintainer {
         $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         // copy button attach action
-        $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
+        $result .= 'new ClipboardJS(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
         // wrapping control
         $result .= '$(window).resize(function() {';
         $result .= '    var containers = $(".item-boxes-container");';

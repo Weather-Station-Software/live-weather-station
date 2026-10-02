@@ -74,48 +74,21 @@ class Cache {
      */
     private static function _flush($pref='lws_', $expired=true) {
     	$cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
-        if (LIVE_WEATHER_STATION_FILE_CACHE) {
-            $expiry = 0;
-            if (strpos($pref, self::$widget) !== false) {
-                $expiry = self::$widget_expiry;
-            }
-            if (strpos($pref, self::$dgraph) !== false) {
-                $expiry = self::$dgraph_expiry;
-            }
-            if (strpos($pref, self::$ygraph) !== false) {
-                $expiry = self::$ygraph_expiry;
-            }
-            if (strpos($pref, self::$cgraph) !== false) {
-                $expiry = self::$cgraph_expiry;
-            }
-            if (strpos($pref, self::$frontend) !== false) {
-                $expiry = self::$frontend_expiry;
-            }
-            if (strpos($pref, self::$backend) !== false) {
-                $expiry = self::$backend_expiry;
-            }
-            if (strpos($pref, self::$i18n) !== false) {
-                $expiry = self::$i18n_expiry;
-            }
-            $result = live_weather_station_meta_flcache($pref, $expiry);
+        global $wpdb;
+        $result = 0;
+        if ($expired) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
+            $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%', time()));
         }
         else {
-            global $wpdb;
-            $result = 0;
-            if ($expired) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
-                $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%', time()));
-            }
-            else {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
-                $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%'));
-            }
-            foreach($delete as $transient) {
-                $key = str_replace('_transient_timeout_', '', $transient);
-                /*if (delete_transient($key)) {
-                    $result += 1;
-                }*/
-            }
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
+            $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%'));
+        }
+        foreach($delete as $transient) {
+            $key = str_replace('_transient_timeout_', '', $transient);
+            /*if (delete_transient($key)) {
+                $result += 1;
+            }*/
         }
         Watchdog::stop_chrono($cron_id);
         return $result;

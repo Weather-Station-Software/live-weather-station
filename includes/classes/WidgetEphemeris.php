@@ -35,7 +35,6 @@ class Ephemeris extends Base {
      * @since    2.0.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Ephemeris',
             '<>🌒 ' .  __( 'Ephemeris' , 'live-weather-station'),

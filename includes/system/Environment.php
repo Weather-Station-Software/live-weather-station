@@ -274,135 +274,6 @@ class Manager {
     }
 
     /**
-     * Get the full information for the ip of the server.
-     *
-     * @since 3.1.0
-     */
-    public static function server_full_information() {
-        // ip-api.com free tier is plain http only: the public IP of the site would travel in clear and the answer
-        // could be forged. So the lookup is opt-in (option 'live_weather_station_hoster_lookup' or the
-        // 'live_weather_station_hoster_lookup_enabled' filter), off by default.
-        if (!apply_filters('live_weather_station_hoster_lookup_enabled', (bool)get_option('live_weather_station_hoster_lookup', 0))) {
-            return false;
-        }
-        if ($result = get_transient('lws_server_location')) {
-            return $result;
-        }
-        try {
-            Quota::verify('ip-API', 'GET');
-            $ip = filter_var(self::server_ip(), FILTER_VALIDATE_IP);
-            if ($ip === false) {
-                return false;
-            }
-            $query = 'http://ip-api.com/json/' . rawurlencode($ip);
-            $args = array();
-            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
-            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
-            $args['redirection'] = 0;
-            $args['limit_response_size'] = 65536;
-            $content = wp_remote_get($query, $args);
-            if (is_wp_error($content)) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,$content->get_error_code(),substr(sanitize_text_field($content->get_error_message()), 0, 500));
-                return false;
-            }
-            $error = false;
-            $code = 0;
-            $message = 'Unknown error.';
-            if (array_key_exists('response', $content)) {
-                $response = $content['response'];
-            }
-            else {
-                $response = array();
-            }
-            if (array_key_exists('code', $response)) {
-                $code = $response['code'];
-                if ($code != '200') {
-                    $error = true;
-                    if (array_key_exists('message', $response)) {
-                        $message = substr(sanitize_text_field((string)$response['message']), 0, 200);
-                    }
-                }
-            }
-            else {
-                $error = true;
-            }
-            if ($error) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,$code,$message);
-                return false;
-            }
-            if (!array_key_exists('body', $content)) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,null,'The server sent an empty response.');
-                return false;
-            }
-            $decoded = json_decode($content['body'], true);
-            if (!is_array($decoded)) {
-                return false;
-            }
-            // Untrusted (plain http) answer: keep only the fields we use, as plain text.
-            $result = array();
-            foreach (array('org', 'city', 'country', 'status', 'message') as $field) {
-                if (isset($decoded[$field]) && is_scalar($decoded[$field])) {
-                    $result[$field] = substr(sanitize_text_field((string)$decoded[$field]), 0, 100);
-                }
-            }
-        }
-        catch (\Throwable $e) {
-            Logger::error('API / SDK','ip-API',null,null,null,null,$e->getCode(),substr(sanitize_text_field($e->getMessage()), 0, 500));
-            return false;
-        }
-        set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
-        return $result;
-    }
-
-    /**
-     * Get the hoster detail.
-     *
-     * @since 3.1.0
-     */
-    public static function hoster_name() {
-        $s = self::server_full_information();
-        if (is_array($s)) {
-            if (array_key_exists('org', $s)) {
-                return $s['org'];
-            }
-            elseif (array_key_exists('status', $s) && $s['status'] == 'fail') {
-                if (array_key_exists('message', $s)) {
-                    return ucfirst($s['message']);
-                }
-                else {
-                    return __('unknown', 'live-weather-station');
-                }
-            }
-            else {
-                return __('unknown', 'live-weather-station');
-            }
-        }
-        else {
-            return __('unknown', 'live-weather-station');
-        }
-    }
-
-    /**
-     * Get the hoster location.
-     *
-     * @since 3.1.0
-     */
-    public static function hoster_location() {
-        $s = self::server_full_information();
-        if (is_array($s)) {
-            if (array_key_exists('city', $s) && array_key_exists('country', $s)) {
-                return $s['city'] . ', ' . $s['country'];
-            }
-            else {
-                return __('unknown location', 'live-weather-station');
-            }
-        }
-        else {
-            return __('unknown location', 'live-weather-station');
-        }
-    }
-
-    /**
      * Verification of mandatory internationalization extension.
      *
      * @since 2.3.0
@@ -822,15 +693,17 @@ class Manager {
     }
 
     /**
-     * Checks if the plugin's auto-update is enabled.
+     * Checks if the automatic update of the plugin is enabled in WordPress (the native per-plugin setting).
      *
      * @since 3.1.3
      * @return bool Returns true if auto-update is enabled, false otherwise.
      */
     public static function is_autoupdatable() {
-        $is_updatable = self::is_updatable();
-        $auto_update_option = get_option('live_weather_station_auto_update');
-        return ($is_updatable && $auto_update_option);
+        if (!self::is_updatable()) {
+            return false;
+        }
+        $enabled = (array)get_site_option('auto_update_plugins', array());
+        return in_array(plugin_basename(LIVE_WEATHER_STATION_PLUGIN_DIR . 'live-weather-station.php'), $enabled, true);
     }
 
     /**
@@ -855,21 +728,6 @@ class Manager {
             finally {
                 restore_current_blog();
             }
-        }
-    }
-
-    /**
-     * Choose if the plugin must be auto-updated or not.
-     * Concerned hook: auto_update_plugin
-     *
-     * @since 3.1.3
-     */
-    public static function lws_auto_update($update, $item) {
-        if ((is_object($item) && isset($item->slug) && $item->slug == LIVE_WEATHER_STATION_PLUGIN_SLUG) && self::is_autoupdatable()){
-            return true;
-        }
-        else {
-            return $update;
         }
     }
 
