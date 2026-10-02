@@ -184,7 +184,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_format = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-format-' . $this->station_guid . '").val()][1];';
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' element=\'"+sc_element+"\' format=\'"+sc_format+"\' fx=\'"+sc_animation+"\' color=\'"+sc_color+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$("#current-icon-measurements-output-' . $this->station_guid . '").html(output);';
-        $content .= '$("#current-icon-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-icon-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
 
         $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
         $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").change();});';

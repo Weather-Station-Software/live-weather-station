@@ -216,7 +216,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  if (sc_force != ""){sc_force=sc_force+"-";}';
         $content .= '  sc_force = sc_force + "val:" + $("#current-justgage-measurements-fc-value-' . $this->station_guid . '").val();}';
         $content .= 'var shortcode = "[live-weather-station-justgage device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' design=\'"+sc_design+"\' color=\'"+sc_color+"\' force=\'"+sc_force+"\' pointer=\'"+sc_pointer+"\' title=\'"+sc_title+"\' subtitle=\'"+sc_subtitle+"\' unit=\'"+sc_unit+"\' size=\'"+sc_size+"\']";';
-        $content .= '$("#current-justgage-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
+        $content .= '$("#current-justgage-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
         $content .= '$("#current-justgage-bg-' . $this->station_guid . '").css("background-color", "transparent");';
         $content .= '$("#' . $this->fingerprint . '" ).empty();';
         $content .= 'if (sc_size=="micro") {$("#' . $this->fingerprint . '").width(75).height(75);}';

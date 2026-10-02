@@ -30,13 +30,13 @@ trait Handling {
         /*
          * @fixme what to do in case of bbox has out of range coordinates?
          */
-        $lat_shift = ($lat > 0 ? 0.01 : -0.01);
-        $lon_shift = ($lon > 0 ? 0.01 : -0.01);
+        $lat_shift = ($lat >= 0 ? 0.01 : -0.01);
+        $lon_shift = ($lon >= 0 ? 0.01 : -0.01);
         $loc = array();
-        $loc[] = $lon - $lon_shift;
-        $loc[] = $lat - $lat_shift;
-        $loc[] = $lon + $lon_shift;
-        $loc[] = $lat + $lat_shift;
+        $loc[] = max(-180, min(180, $lon - $lon_shift));
+        $loc[] = max(-90, min(90, $lat - $lat_shift));
+        $loc[] = max(-180, min(180, $lon + $lon_shift));
+        $loc[] = max(-90, min(90, $lat + $lat_shift));
         $result = sprintf($result, implode('%2C', $loc), ($marker ? '&amp;marker=' . $lat . '%2C' . $lon : ''));
         return $result;
     }

@@ -105,7 +105,7 @@ class Handling {
         if (!$this->locale_path) {
             return false;
         }
-        if (!in_array($branch, array('stable', 'dev'), true) || !preg_match('/^[A-Za-z0-9_-]{2,20}$/', (string)$this->locale_path)) {
+        if (!in_array($branch, array('stable', 'dev'), true) || !preg_match('/^[A-Za-z0-9_-]{2,20}$/D', (string)$this->locale_path)) {
             return false;
         }
         return 'https://translate.wordpress.org/projects/wp-plugins/live-weather-station/' . $branch . '/' . rawurlencode($this->locale_path) . '/default/export-translations?format=mo';
@@ -189,14 +189,16 @@ class Handling {
             }
             // Only translate.wordpress.org, over https, is trusted as a source.
             $parts = wp_parse_url($url);
-            if (!is_array($parts) || !isset($parts['scheme']) || $parts['scheme'] !== 'https' || !isset($parts['host']) || $parts['host'] !== 'translate.wordpress.org' || !preg_match('/^[a-z]{2,3}(_[A-Za-z0-9]+)*$/', (string)$this->locale)) {
+            if (!is_array($parts) || !isset($parts['scheme']) || $parts['scheme'] !== 'https' || !isset($parts['host']) || $parts['host'] !== 'translate.wordpress.org' || !preg_match('/^[a-z]{2,3}(_[A-Za-z0-9]+)*$/D', (string)$this->locale)) {
                 Logger::error($this->service_name, null, null, null, null, null, 666, 'Translation file source rejected.');
                 return false;
             }
             $file = download_url($url, 30);
             if (!wp_mkdir_p($target)) {
                 Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to create the translation files directory in uploads.');
-                wp_delete_file($file);
+                if (!is_wp_error($file)) {
+                    wp_delete_file($file);
+                }
                 return false;
             }
             $target .= LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
@@ -378,8 +380,8 @@ class Handling {
             $this->last_modified = substr(sanitize_text_field((string)$set->last_modified), 0, 40);
         }
         else {
-            $this->locale_native_name = $translations[$this->locale]['native_name'];
-            $this->locale_name = $translations[$this->locale]['language'];
+            $this->locale_native_name = (isset($translations[$this->locale]['native_name']) ? $translations[$this->locale]['native_name'] : $this->locale);
+            $this->locale_name = (isset($translations[$this->locale]['language']) ? $translations[$this->locale]['language'] : $this->locale);
             $this->percent_translated = '';
             $this->locale_path = false;
             $this->last_modified = false;

@@ -204,19 +204,19 @@ trait PublicClient {
                 if ($station['station_name'] == '') {
                     $station['station_name'] = '< NO NAME >';
                 }
-                if (array_key_exists('timestamp', $observation)) {
+                if (array_key_exists('timestamp', $observation) && is_numeric($observation['timestamp'])) {
                     try {
-                        $timestamp = gmdate('Y-m-d H:i:s', $observation['timestamp']);
-                    } catch (Exception $e) {
+                        $timestamp = gmdate('Y-m-d H:i:s', (int)$observation['timestamp']);
+                    } catch (\Throwable $e) {
                         $timestamp = gmdate('Y-m-d H:i:s');
                     }
                 } else {
                     $timestamp = gmdate('Y-m-d H:i:s');
                 }
-                if (array_key_exists('lightning_strike_last_epoch', $observation)) {
+                if (array_key_exists('lightning_strike_last_epoch', $observation) && is_numeric($observation['lightning_strike_last_epoch'])) {
                     try {
-                        $strikestamp = gmdate('Y-m-d H:i:s', $observation['lightning_strike_last_epoch']);
-                    } catch (Exception $e) {
+                        $strikestamp = gmdate('Y-m-d H:i:s', (int)$observation['lightning_strike_last_epoch']);
+                    } catch (\Throwable $e) {
                         $strikestamp = gmdate('Y-m-d H:i:s');
                     }
                 } else {
@@ -569,7 +569,7 @@ trait PublicClient {
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact WeatherFlow servers. Retry will be done shortly.');
-                    return array();
+                    continue;
                 }
             }
         }

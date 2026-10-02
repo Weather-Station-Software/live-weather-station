@@ -218,7 +218,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
         $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_ltgraph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, module_id:sc_module, measurement:sc_measurement, template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, ';
         $t = array();
         for ($i=1; $i<=$this->series_number; $i++) {

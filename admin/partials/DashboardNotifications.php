@@ -31,8 +31,8 @@ foreach (Notifier::get() as $notification) {
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" rel="noopener noreferrer" ';
-            $url = ' - <a href="' . esc_url($notification['url']) . '"' . $target . '>' . esc_html__('see details', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
         }
+        $url = ' - <a href="' . esc_url($notification['url']) . '"' . $target . '>' . esc_html__('see details', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
     }
     $content = '<div style="display:inline-block; width:100%">' . esc_html($notification['name']) . $url . '</div>';
     $content .= '<div style="font-size:75%; display:inline-block;width:100%">' . $ago . $links . '</div>';

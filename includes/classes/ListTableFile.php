@@ -117,7 +117,7 @@ class File extends Base {
         $this->filters = array();
         if (isset($_GET['limit'])) {
             $this->limit = intval(sanitize_text_field(wp_unslash($_GET['limit'])));
-            if (!$this->limit) {
+            if (!in_array($this->limit, [25, 50, 100, 250, 500], true)) {
                 $this->limit = 25;
             }
         }

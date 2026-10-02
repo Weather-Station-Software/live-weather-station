@@ -46,12 +46,14 @@ class FileGetContentsFetcher implements FetcherInterface
                     if (!preg_match('#^https?://[^/\s]+#i', $url)) {
                         throw new \Exception('Invalid resource', 12);
                     }
+                    self::reject_link_local($url);
                     return 'http';
                 case 'ftp':
                 case 'ftps':
                     if (!preg_match('#^ftps?://[^/\s]+#i', $url)) {
                         throw new \Exception('Invalid resource', 12);
                     }
+                    self::reject_link_local($url);
                     return 'ftp';
                 default:
                     throw new \Exception('Unsupported resource type', 12);
@@ -74,6 +76,37 @@ class FileGetContentsFetcher implements FetcherInterface
             }
         }
         return 'local';
+    }
+
+    /**
+     * Refuses a url whose host is a link-local address (169.254.0.0/16, fe80::/10), where cloud metadata services live.
+     *
+     * Private and loopback addresses are deliberately accepted: stations are often on a LAN or on the same server.
+     *
+     * @param string $url The url to check.
+     * @throws \Exception If the host is link-local.
+     */
+    private static function reject_link_local($url){
+        $host = wp_parse_url(preg_replace('#^(\w+://)[^/\s@]*@#', '$1', $url), PHP_URL_HOST);
+        if (!is_string($host) || $host === '') {
+            throw new \Exception('Invalid resource', 12);
+        }
+        $host = trim($host, '[]');
+        $ips = array();
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            $ips[] = $host;
+        }
+        elseif (function_exists('gethostbynamel')) {
+            $list = @gethostbynamel($host);
+            if (is_array($list)) {
+                $ips = $list;
+            }
+        }
+        foreach ($ips as $ip) {
+            if (strpos($ip, '169.254.') === 0 || preg_match('/^fe[89ab][0-9a-f]:/i', $ip)) {
+                throw new \Exception('Invalid resource', 12);
+            }
+        }
     }
 
     /**

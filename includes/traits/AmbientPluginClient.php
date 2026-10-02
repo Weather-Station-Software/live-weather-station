@@ -24,6 +24,7 @@ trait Client {
     use BaseClient, HTTP, IDManager;
 
     protected $last_ambient_warning = null;
+    private $ambient_refused = false;
 
 
     /**
@@ -34,7 +35,13 @@ trait Client {
     public function authentication($apikey) {
         $apikey = sanitize_text_field((string)$apikey);
         $this->get_measurements(false, $apikey);
-        if ($this->last_ambient_error == '') {
+        if ($this->ambient_refused) {
+            // The key has not been tested (quota manager refusal): keep the stored settings as they are.
+            $this->last_ambient_error = __('the request quota of the service is reached, please try again later', 'live-weather-station');
+            return false;
+        }
+        // An empty key is never a valid connection.
+        if ($apikey !== '' && $this->last_ambient_error == '') {
             update_option('live_weather_station_ambient_key', $apikey);
             update_option('live_weather_station_ambient_connected', 1);
             return true;
@@ -58,6 +65,7 @@ trait Client {
     public function get_measurements($store=true, $apikey=false) {
         $currentkey = get_option('live_weather_station_ambient_key');
         $this->last_ambient_error = '';
+        $this->ambient_refused = false;
         $this->ambient_measurements = array();
         if ($currentkey != '' || $apikey) {
             if ($apikey) {
@@ -74,6 +82,7 @@ trait Client {
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
                 else {
+                    $this->ambient_refused = true;
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                     return array ();
                 }

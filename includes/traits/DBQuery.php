@@ -177,7 +177,7 @@ trait Query {
             $sub_attributes[] = $attributes['measure_type'];
             if (strpos($attributes['measure_type'], 'strength')) {
                 $sub_attributes[] = $attributes['measure_type'] . '_day_min';
-                $sub_attributes[] = $attributes['measure_type'] . '_day__max';
+                $sub_attributes[] = $attributes['measure_type'] . '_day_max';
                 if ($full_mode) {
                     $sub_attributes[] = $attributes['measure_type'] . '_day_trend';
                 }
@@ -993,10 +993,8 @@ trait Query {
                 }
                 $i++;
             }
-            /*
-             * @todo correct obsolescence filtering for this type of array
-             */
-            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
+            // The rows of $result carry no timestamp and obsolescence_filtering() expects a list of rows: filtering this shape would raise a TypeError on PHP 8, so $obsolescence_filtering is not applied here.
+            return $result;
         }
         catch (\Exception $ex) {
             return array();
@@ -1480,7 +1478,7 @@ trait Query {
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT %d,1", $device_id, $type, max(0, (int)($rank-1)));
         try {
-            $cache_id = 'get_video_'.$type . '_' . $device_id;
+            $cache_id = 'get_video_'.$type . '_' . $device_id . '_' . (int)$rank;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
@@ -1513,7 +1511,7 @@ trait Query {
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND `timestamp`=%s AND module_type='NAModuleV'", $device_id, $type, $date);
         try {
-            $cache_id = 'get_video_by_date_'.$type . '_' . $device_id;
+            $cache_id = 'get_video_by_date_'.$type . '_' . $device_id . '_' . md5((string)$date);
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
@@ -2537,6 +2535,10 @@ trait Query {
                     else {
                         $w[] = '1=0';
                     }
+                }
+                elseif (!is_scalar($filter)) {
+                    // A non scalar filter matches nothing (prepare() would read an array as a list of arguments)
+                    $w[] = '1=0';
                 }
                 else {
                     // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- column validated by Guard::ident() against an allowlist, value bound by prepare()

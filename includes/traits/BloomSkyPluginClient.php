@@ -24,6 +24,7 @@ trait Client {
     use BaseClient, HTTP, IDManager;
 
     protected $last_bloomsky_warning = null;
+    private $bloomsky_refused = false;
 
 
     /**
@@ -44,7 +45,13 @@ trait Client {
     public function authentication($apikey) {
         $apikey = sanitize_text_field((string)$apikey);
         $this->get_measurements(false, $apikey);
-        if ($this->last_bloomsky_error == '') {
+        if ($this->bloomsky_refused) {
+            // The key has not been tested (quota manager refusal): keep the stored settings as they are.
+            $this->last_bloomsky_error = __('the request quota of the service is reached, please try again later', 'live-weather-station');
+            return false;
+        }
+        // An empty key is never a valid connection.
+        if ($apikey !== '' && $this->last_bloomsky_error == '') {
             update_option('live_weather_station_bloomsky_key', $apikey);
             update_option('live_weather_station_bloomsky_connected', 1);
             return true;
@@ -67,6 +74,7 @@ trait Client {
      */
     public function get_measurements($store=true, $apikey=false) {
         $this->last_bloomsky_error = '';
+        $this->bloomsky_refused = false;
         $this->bloomsky_measurements = array();
         if (!self::bloomsky_enabled()) {
             // The service stopped in 2022: no request is sent, the stored data are kept.
@@ -91,6 +99,7 @@ trait Client {
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
                 else {
+                    $this->bloomsky_refused = true;
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                     return array ();
                 }

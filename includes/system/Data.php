@@ -157,6 +157,7 @@ class Data {
      * @since 3.5.0
      */
     private function database_statistics() {
+        $this->ws_tables_lazy();
         foreach ($this->ws_tables as $table => $detail) {
             $value = $this->stats_table($table);
             $datetime = new \DateTime();

@@ -219,7 +219,8 @@ trait Client {
                 $nm['dashboard_data']['steadman'] = $steadman;
             }
             if ( ($pressure_sl_ref != $this->value_unknown) &&
-                ($winddirection_ref != $this->value_unknown) ) {
+                ($winddirection_ref != $this->value_unknown) &&
+                array_key_exists('north', $data) && array_key_exists('pressure_sl_max', $data) && array_key_exists('pressure_sl_min', $data) ) {
                 $zcast = $this->compute_zambretti_forecast(100 * $pressure_sl_ref, $pressure_trend_ref, $winddirection_ref, $data['north'], 100 * $data['pressure_sl_max'], 100 * $data['pressure_sl_min']);
                 $nm['data_type'][] = 'zcast_live';
                 $nm['dashboard_data']['time_utc'] = time();

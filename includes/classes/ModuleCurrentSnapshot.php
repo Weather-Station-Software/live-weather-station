@@ -144,7 +144,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
-        $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
         $content .= '$("#current-snapshot-measurements-module-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);
     }

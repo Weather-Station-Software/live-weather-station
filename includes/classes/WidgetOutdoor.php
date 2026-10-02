@@ -548,7 +548,7 @@ class Outdoor extends Base {
                             $measurements['strike'] = array();
                             $measurements['strike']['value'] = $module['measurements']['strike_instant']['value'];
                             $measurements['strike']['unit'] = $module['measurements']['strike_instant']['unit']['unit'];
-                            $measurements['strike']['icon'] = $this->output_iconic_value($module['measurements']['strike']['raw_value'], 'strike', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strike']['icon'] = $this->output_iconic_value($module['measurements']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strike = false;
@@ -695,7 +695,7 @@ class Outdoor extends Base {
         $has_current = (count($current) > 0);
         if (!$NAMain && $has_current) {
             $NAMain = true;
-            if (array_key_exists('pressure', $current['measurements'])) {
+            if (array_key_exists('pressure_sl', $current['measurements'])) {
                 $measurements['pressure_sl'] = array();
                 $measurements['pressure_sl']['value'] = $current['measurements']['pressure_sl']['value'];
                 $measurements['pressure_sl']['unit'] = $current['measurements']['pressure_sl']['unit']['unit'];

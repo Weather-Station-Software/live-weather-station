@@ -127,7 +127,7 @@ trait BaseClient {
             }
 
         }
-        foreach($measurements['devices'] as &$device){
+        foreach($measurements['devices'] as $device_key => &$device){
             if (isset($device) && is_array($device)) {
                 if (!isset($device['station_name'])) {
                     $device['station_name'] = '?';
@@ -157,18 +157,18 @@ trait BaseClient {
                     $device['firmware'] = 0;
                 }
                 if (!isset($device) || !isset($device['_id']) || !array_key_exists('dashboard_data', $device) || (array_key_exists('dashboard_data', $device) && !isset($device['dashboard_data'])) || (array_key_exists('dashboard_data', $device) && !is_array($device['dashboard_data']))) {
-                    unset($device);
+                    unset($measurements['devices'][$device_key]);
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
                     continue;
                 }
-                if (!isset($device['modules'])) {
+                if (!isset($device['modules']) || !is_array($device['modules'])) {
                     $device['modules'] = array();
                 }
                 if (count($device['modules']) > 0) {
                     foreach ($device['modules'] as $key => &$module) {
                         if (isset($module) && is_array($module)) {
                             if (!isset($module['module_name'])) {
-                                $device['module_name'] = '?';
+                                $module['module_name'] = '?';
                             }
                             if (!isset($module['type'])) {
                                 $module['type'] = 'unknown';

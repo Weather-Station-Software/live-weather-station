@@ -47,6 +47,7 @@ trait Handling {
      */
     public static function compute_unique_bsky_id($hdid) {
         $st = str_pad((string)$hdid, 12, '0', STR_PAD_LEFT);
+        $st = str_pad(substr($st, 0, 12), 12, '0');
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower(substr($result, 0, 17));
     }

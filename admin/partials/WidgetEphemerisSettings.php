@@ -24,18 +24,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'format' ) ); ?>"><?php esc_html_e( 'Format' , 'live-weather-station'); ?></label>
     <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'format' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'format' ) ); ?>">
-        <option value="0"<?php if ($format ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Compact' , 'live-weather-station'); ?></option>;
-        <option value="1"<?php if ($format ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
-        <option value="2"<?php if ($format ==2) {echo'selected="selected"';}?>><?php esc_html_e( 'Extended' , 'live-weather-station'); ?></option>;
+        <option value="0"<?php if ($format ==0) {echo ' selected="selected"';}?>><?php esc_html_e( 'Compact' , 'live-weather-station'); ?></option>;
+        <option value="1"<?php if ($format ==1) {echo ' selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
+        <option value="2"<?php if ($format ==2) {echo ' selected="selected"';}?>><?php esc_html_e( 'Extended' , 'live-weather-station'); ?></option>;
     </select>
 </p>
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'mode' ) ); ?>"><?php esc_html_e( 'Ephemeris mode' , 'live-weather-station'); echo InlineHelp::article(8); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InlineHelp::article() builds an icon link to a fixed weather.station.software address chosen in its own switch. ?></label>
     <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'mode' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'mode' ) ); ?>">
-        <option value="0"<?php if ($mode ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
-        <option value="1"<?php if ($mode ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Civil' , 'live-weather-station'); ?></option>;
-        <option value="2"<?php if ($mode ==2) {echo'selected="selected"';}?>><?php esc_html_e( 'Nautical' , 'live-weather-station'); ?></option>;
-        <option value="3"<?php if ($mode ==3) {echo'selected="selected"';}?>><?php esc_html_e( 'Astronomical' , 'live-weather-station'); ?></option>;
+        <option value="0"<?php if ($mode ==0) {echo ' selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
+        <option value="1"<?php if ($mode ==1) {echo ' selected="selected"';}?>><?php esc_html_e( 'Civil' , 'live-weather-station'); ?></option>;
+        <option value="2"<?php if ($mode ==2) {echo ' selected="selected"';}?>><?php esc_html_e( 'Nautical' , 'live-weather-station'); ?></option>;
+        <option value="3"<?php if ($mode ==3) {echo ' selected="selected"';}?>><?php esc_html_e( 'Astronomical' , 'live-weather-station'); ?></option>;
     </select>
 </p>
 <hr>
@@ -46,9 +46,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'subtitle' ) ); ?>"><?php esc_html_e( 'Subtitle to display' , 'live-weather-station'); ?></label>
     <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'subtitle' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'subtitle' ) ); ?>">
-        <option value="0"<?php if ($subtitle ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Nothing' , 'live-weather-station'); ?></option>;
-        <option value="1"<?php if ($subtitle ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Date and time of records' , 'live-weather-station'); ?></option>;
-        <option value="2"<?php if ($subtitle ==2) {echo'selected="selected"';}?>><?php esc_html_e( 'Station coordinates (if known)' , 'live-weather-station'); ?></option>;
+        <option value="0"<?php if ($subtitle ==0) {echo ' selected="selected"';}?>><?php esc_html_e( 'Nothing' , 'live-weather-station'); ?></option>;
+        <option value="1"<?php if ($subtitle ==1) {echo ' selected="selected"';}?>><?php esc_html_e( 'Date and time of records' , 'live-weather-station'); ?></option>;
+        <option value="2"<?php if ($subtitle ==2) {echo ' selected="selected"';}?>><?php esc_html_e( 'Station coordinates (if known)' , 'live-weather-station'); ?></option>;
     </select>
 </p>
 <p>

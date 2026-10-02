@@ -140,8 +140,15 @@ class ProcessManager {
                 Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: another run is in progress, skipping.');
                 return;
             }
-            // Stale lock: delete then re-add so that only one concurrent request wins.
-            delete_option($lock);
+            // Stale lock: delete it only if it still holds the stale value we read (a concurrent request may
+            // already have replaced it), then re-add so that only one concurrent request wins.
+            global $wpdb;
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- compare-and-delete of this plugin's own lock row in the options table, values bound by $wpdb->delete(); a write, so no caching applies
+            if (!$wpdb->delete($wpdb->options, array('option_name' => $lock, 'option_value' => (string)$expiry))) {
+                return;
+            }
+            wp_cache_delete($lock, 'options');
+            wp_cache_delete('notoptions', 'options');
             if (!add_option($lock, time() + $ttl, '', 'no')) {
                 return;
             }

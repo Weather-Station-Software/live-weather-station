@@ -185,8 +185,8 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_element = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-measurements-module-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-element-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_format = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-measurements-module-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-element-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-format-' . $this->station_guid . '").val()][1];';
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' element=\'"+sc_element+"\' format=\'"+sc_format+"\' fx=\'"+sc_animation+"\' color=\'"+sc_color+"\' speed=\'"+sc_speed+"\']";';
-        $content .= '$("#current-textual-measurements-output-' . $this->station_guid . '").html(output);';
-        $content .= '$("#current-textual-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-textual-measurements-output-' . $this->station_guid . '").val(output);';
+        $content .= '$("#current-textual-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
 
         $content .= '$("#current-textual-measurements-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
         $content .= '$("#current-textual-measurements-color-' . $this->station_guid . '").change();});';

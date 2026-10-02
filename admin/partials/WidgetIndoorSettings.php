@@ -51,14 +51,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'subtitle' ) ); ?>"><?php esc_html_e( 'Subtitle to display' , 'live-weather-station'); ?></label>
     <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'subtitle' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'subtitle' ) ); ?>">
-        <option value="0"<?php if ($subtitle ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Nothing' , 'live-weather-station'); ?></option>;
-        <option value="1"<?php if ($subtitle ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Date and time of records' , 'live-weather-station'); ?></option>;
+        <option value="0"<?php if ($subtitle ==0) {echo ' selected="selected"';}?>><?php esc_html_e( 'Nothing' , 'live-weather-station'); ?></option>;
+        <option value="1"<?php if ($subtitle ==1) {echo ' selected="selected"';}?>><?php esc_html_e( 'Date and time of records' , 'live-weather-station'); ?></option>;
     </select>
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo esc_attr( $this->get_field_id('show_status') ); ?>" name="<?php echo esc_attr( $this->get_field_name('show_status') ); ?>"<?php checked( $show_status ); ?> />
     <label for="<?php echo esc_attr( $this->get_field_id('show_status') ); ?>"><?php esc_html_e( 'Show status' , 'live-weather-station'); ?></label>
-<p>
+</p>
 <p>
     <label for="<?php echo esc_attr( $this->get_field_id( 'width' ) ); ?>"><?php esc_html_e( 'Max width (in px)' , 'live-weather-station'); ?></label><br/>
     <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'width' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'width' ) ); ?>" type="text" value="<?php echo esc_attr( $width ); ?>" />

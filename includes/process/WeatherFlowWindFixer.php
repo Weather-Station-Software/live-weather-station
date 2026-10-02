@@ -183,10 +183,20 @@ class WeatherFlowWindFixer extends Process {
         if ($station_type != LIVE_WEATHER_STATION_WFLW_SID) {
             return;
         }
+        // One witness per table: the UPDATE is not idempotent, so a table already fixed is never fixed again if the station is retried.
+        if (!isset($this->params['stations']['fixed'])) {
+            $this->params['stations']['fixed'] = array();
+        }
         // DAILY DATA
-        $this->fix_table($station_id, self::live_weather_station_histo_daily_table());
+        if (empty($this->params['stations']['fixed'][$station_id]['daily'])) {
+            $this->fix_table($station_id, self::live_weather_station_histo_daily_table());
+            $this->params['stations']['fixed'][$station_id]['daily'] = true;
+        }
         // HISTORICAL DATA
-        $this->fix_table($station_id, self::live_weather_station_histo_yearly_table());
+        if (empty($this->params['stations']['fixed'][$station_id]['yearly'])) {
+            $this->fix_table($station_id, self::live_weather_station_histo_yearly_table());
+            $this->params['stations']['fixed'][$station_id]['yearly'] = true;
+        }
     }
 
 }

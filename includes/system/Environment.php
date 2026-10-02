@@ -630,9 +630,8 @@ class Manager {
             $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
             if ($translation['slug'] != 'default') {
                 $slug = $translation['slug'];
-                $name = '%s ' . $name;
                 $slug = ucfirst($slug);
-                $name = sprintf($name, $slug);
+                $name = $slug . ' ' . $name;
             }
             $set[$id] = $name;
         }

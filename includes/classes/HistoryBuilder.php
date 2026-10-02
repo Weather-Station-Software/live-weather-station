@@ -245,13 +245,13 @@ class Builder
      */
     static public function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
         // Imported data is untrusted: values must fit the columns of the table and have the expected shape.
-        if (!is_string($device_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/', $device_id) ||
-            !is_string($module_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/', $module_id) ||
-            !is_string($module_type) || !preg_match('/^[A-Za-z0-9_<>-]{1,12}$/', $module_type) ||
-            !is_string($measure_type) || !preg_match('/^[a-z0-9_]{1,40}$/', $measure_type) ||
-            !is_string($measure_set) || !preg_match('/^[a-z]{1,5}$/', $measure_set) ||
+        if (!is_string($device_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/D', $device_id) ||
+            !is_string($module_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/D', $module_id) ||
+            !is_string($module_type) || !preg_match('/^[A-Za-z0-9_<>-]{1,12}$/D', $module_type) ||
+            !is_string($measure_type) || !preg_match('/^[a-z0-9_]{1,40}$/D', $measure_type) ||
+            !is_string($measure_set) || !preg_match('/^[a-z]{1,5}$/D', $measure_set) ||
             !is_numeric($measure_value) || !is_finite((float)$measure_value) ||
-            !is_string($timestamp) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $timestamp)) {
+            !is_string($timestamp) || !preg_match('/^\d{4}-\d{2}-\d{2}$/D', $timestamp)) {
             return;
         }
         $val = array();
@@ -291,22 +291,30 @@ class Builder
         $date_control = $date_start;
         // Bound the loop: one iteration per day, 20 years at most.
         $date_end = min($date_end, $date_start + 7305 * 86400);
+        // Index the values by type and by day once, ignoring the ones which are not finite numbers.
+        $buckets = array();
+        if (array_key_exists('values', $data) && is_array($data['values'])) {
+            foreach ($data['values'] as $type => $value) {
+                if (!is_array($value)) {
+                    continue;
+                }
+                foreach ($value as $ts => $m) {
+                    if (!is_numeric($ts) || !is_numeric($m) || !is_finite((float)$m) || $ts < $date_start) {
+                        continue;
+                    }
+                    $buckets[$type][(int)floor(($ts - $date_start) / 86400)][] = $m;
+                }
+            }
+        }
         while ($date_control < $date_end) {
             $start = $date_control;
             $end = $date_control + 86399;
             $index = gmdate('Y-m-d', $start + (86400/2));
             $count = false;
-            if (array_key_exists('values', $data) && is_array($data['values'])) {
-                foreach ($data['values'] as $type => $value) {
-                    if (!is_array($value)) {
-                        continue;
-                    }
-                    $d = array();
-                    foreach ($value as $ts => $m) {
-                        if ($ts >= $start && $ts < $end) {
-                            $d[] = $m;
-                        }
-                    }
+            if (count($buckets) > 0) {
+                $day_index = (int)(($date_control - $date_start) / 86400);
+                foreach ($buckets as $type => $days) {
+                    $d = isset($days[$day_index]) ? $days[$day_index] : array();
                     if (count($d) > 0) {
                         if ($type === 'sum_rain') {
                             $sets = array('SUM' => 'agg');
@@ -499,7 +507,7 @@ class Builder
      */
     private function count_daily_values($device_id, $tz) {
         $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($tz));
-        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_today_end($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
@@ -637,7 +645,13 @@ class Builder
         try {
             $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return false;
+            }
             $values = (array)$query_a[0];
+            if (!isset($values['v_val'])) {
+                return false;
+            }
         }
         catch(\Exception $ex) {
             return false;
@@ -678,7 +692,13 @@ class Builder
         try {
             $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return false;
+            }
             $values = (array)$query_a[0];
+            if (!isset($values['v_max']) || !is_numeric($values['v_max']) || !$factor) {
+                return false;
+            }
         }
         catch(\Exception $ex) {
             return false;
@@ -734,7 +754,7 @@ class Builder
                 $med = $result[intval($count / 2)]['v_val'];
             }
             else {
-                $med = ($result[intval($count / 2)]['v_val'] + $result[intval($count / 2) + 1]['v_val']) / 2;
+                $med = ($result[intval($count / 2) - 1]['v_val'] + $result[intval($count / 2)]['v_val']) / 2;
             }
             $val = array();
             $val['timestamp'] = $date;

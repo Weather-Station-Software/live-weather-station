@@ -76,7 +76,7 @@ class Pusher extends Abstract_Pusher {
      */
     protected function complete_pushed_data($device, $station) {
         $result = $device;
-        $device['name'] = $station['station_name'];
+        $result['name'] = $station['station_name'];
         return $result;
     }
 
@@ -130,16 +130,16 @@ class Pusher extends Abstract_Pusher {
             $body = json_decode($body, true);
             if (is_array($body)) {
                 if (array_key_exists('cod', $body)) {
-                    $code = $body['cod'];
+                    $code = (is_scalar($body['cod']) ? $body['cod'] : 498);
                     if ($code != '200') {
                         $error = true;
                         if (array_key_exists('message', $body)) {
-                            $message = $body['message'];
+                            $message = $this->sanitize_remote_message($body['message']);
                         }
                     }
                     else {
                         if (array_key_exists('id', $body)) {
-                            $id = $body['id'];
+                            $id = (is_scalar($body['id']) ? absint($body['id']) : 0);
                         }
                         else {
                             $error = true;
@@ -167,7 +167,7 @@ class Pusher extends Abstract_Pusher {
         }
         if ($error) {
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly. The message is a fixed string or the remote message, which the caller cleans with sanitize_remote_message() before logging or returning it.
-            throw new \Exception($message, $code);
+            throw new \Exception($message, (int)$code);
         }
         if ($id != 0) {
             $station['owm_id'] = $id;

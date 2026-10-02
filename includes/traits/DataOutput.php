@@ -218,7 +218,8 @@ trait Output {
                 $val[] = $value;
             }
             else {
-                $val[] = array($value['timestamp'], $value['measure_value']);
+                // The quotes are stripped below: only numbers can reach the inlined script.
+                $val[] = array(is_numeric($value['timestamp']) ? $value['timestamp'] : null, is_numeric($value['measure_value']) ? $value['measure_value'] : null);
             }
         }
         if ($raw) {
@@ -400,6 +401,10 @@ trait Output {
             if (!isset($item[$key])) {
                 $item[$key] = 'none';
             }
+        }
+        // The set is stored in a 5 characters column (one operation, or two joined by |): bring anything else back to 'none' so it cannot multiply the cache entries of the query.
+        if (!preg_match('/^[A-Za-z0-9]{1,5}(\|[A-Za-z0-9]{1,5})?$/D', (string)$item['set'])) {
+            $item['set'] = 'none';
         }
         return $item;
     }
@@ -618,7 +623,7 @@ trait Output {
                     }
                     if ($mode == 'daily') {
                         $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
-                        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
+                        $max = gmdate('Y-m-d H:i:s', self::get_local_today_end($station['loc_timezone']));
                         $result['xdomain']['min'] = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['04'] = $result['xdomain']['min'] + 14400000;
                         $result['xdomain']['08'] = $result['xdomain']['min'] + 14400000*2;
@@ -1215,7 +1220,7 @@ trait Output {
                                     }
                                     $d = $__start;
                                     // Bound the number of generated points (steps x sectors): only absurd ranges are truncated.
-                                    $__left = max(1, (int)floor(1000000 / max(1, $sects)));
+                                    $__left = max(1, (int)floor(100000 / max(1, $sects)));
                                     while ($d <= $__end && $__left-- > 0) {
                                         if ($mode == 'yearly') {
                                             $__date = gmdate('Y-m-d', $d);
@@ -1481,11 +1486,9 @@ trait Output {
                                 }
                             } catch (\Throwable $ex) {
                                 self::log_graph_error($ex);
+                                $result = array();
                                 if ($type == 'windrose') {
-                                    $result = '[]';
-                                }
-                                else {
-                                    $result = array();
+                                    $result['values'] = '[]';
                                 }
                             }
                         }
@@ -1892,10 +1895,10 @@ trait Output {
                             }
                             $s = "(`device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND " . $s . ")";
                             if ($select == "") {
-                                $select = "(" . $s ;
+                                $select = $s;
                             }
                             else {
-                                $select .= " OR " . $s . ")";
+                                $select .= " OR " . $s;
                             }
                         }
                         $step['end_prepare'] = gmdate('H:i:s');
@@ -2009,14 +2012,15 @@ trait Output {
                                     if ($mode == 'climat' && !$aggregated) {
                                         $yearstr = substr($key, 0, 4);
                                     }
-                                    $set[] = array('year' => $yearstr, 'station' => $station['loc_city'], 'data' => $subset);
+                                    // Security: station is free text and must stay a string (JSON_NUMERIC_CHECK turned a name like 1e999 into an unencodable number).
+                                    $set[] = array('year' => (is_scalar($yearstr) && ctype_digit((string)$yearstr) ? (int)$yearstr : $yearstr), 'station' => (string)$station['loc_city'], 'data' => $subset);
                                     $subset = array();
                                 }
                             }
                             if ($json) {
                                 $a = array();
                                 foreach ($set as $item) {
-                                    $sub = wp_json_encode($item, JSON_NUMERIC_CHECK);
+                                    $sub = self::json_inline(wp_json_encode($item, JSON_HEX_TAG | JSON_HEX_AMP));
                                     $a[] = $sub;
                                 }
                                 $result['values'][] = implode(',', $a);
@@ -2106,7 +2110,7 @@ trait Output {
                                                 $dummy = '1';
                                             }
                                             if ($d > 1) {
-                                                for ($i = 1; $i < $d; $i++) {
+                                                for ($z = 1; $z < $d; $z++) {
                                                     $dummy .= '0';
                                                 }
                                             }
@@ -2257,7 +2261,7 @@ trait Output {
                                             $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
                                         }
                                     }
-                                } catch (\Exception $ex) {
+                                } catch (\Throwable $ex) {
                                     $set = array();
                                 }
                                 $info = array();
@@ -2570,7 +2574,7 @@ trait Output {
                                         $cmax = $max;
                                     }
                                 }
-                                catch (\Exception $ex) {
+                                catch (\Throwable $ex) {
                                     // keep $y and $c min and max
                                 }
                             }
@@ -5139,6 +5143,7 @@ trait Output {
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
+            $result .= '});' . PHP_EOL;
             $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
@@ -5227,6 +5232,39 @@ trait Output {
 
 
     /**
+     * Bring a style parameter of a long-term graph series back to one of its known values.
+     *
+     * @param string $param The name of the parameter (line_mode, dot_style, line_style or line_size).
+     * @param string $value The value, already validated as a token.
+     * @return string The value if it is a known one (numbers bounded), 'none' otherwise.
+     * @since 3.9.0
+     */
+    private static function ltgraph_canonical_style($param, $value) {
+        $known = array(
+            'line_mode' => array('none', 'transparent', 'line', 'area', 'arealine', 'single', 'stackable'),
+            'dot_style' => array('none', 'small-dot', 'large-dot', 'small-circle', 'large-circle'),
+            'line_style' => array('none', 'solid', 'dotted', 'dashed'),
+            'line_size' => array('none', 'thin', 'regular', 'thick'),
+        );
+        if (!isset($known[$param])) {
+            return 'none';
+        }
+        if (in_array($value, $known[$param], true)) {
+            return $value;
+        }
+        if ($param === 'line_mode' && preg_match('/^[0-9]{1,4}s\z/', $value)) {
+            return self::graph_sectors($value) . 's';
+        }
+        if ($param === 'line_mode' && preg_match('/^color-step-[0-9]{1,4}\z/', $value)) {
+            return 'color-step-' . self::graph_steps($value);
+        }
+        if ($param === 'dot_style' && preg_match('/^res-[0-9]{1,5}\z/', $value)) {
+            return 'res-' . self::graph_resolution($value);
+        }
+        return 'none';
+    }
+
+    /**
      * Prepare a graph query.
      *
      * @param array $attributes The type of graph queried by the shortcode.
@@ -5245,6 +5283,10 @@ trait Output {
             foreach ($this->ltgraph_allowed_series as $param) {
                 if (array_key_exists($param.'_'.$i, $attributes)) {
                     $item[$param] = ($param == 'set' ? Guard::composite($attributes[$param.'_'.$i], 'none') : Guard::token($attributes[$param.'_'.$i], ($param == 'period' ? '' : 'none')));
+                    // The style parameters only take a few values: bring the others back to a known one so they cannot multiply the cache entries of the query.
+                    if (in_array($param, array('line_mode', 'dot_style', 'line_style', 'line_size'), true)) {
+                        $item[$param] = self::ltgraph_canonical_style($param, $item[$param]);
+                    }
                 }
             }
             if (array_key_exists('period', $item)) {
@@ -5349,7 +5391,7 @@ trait Output {
         $_attributes['cache'] = Guard::token($_attributes['cache'], 'cache');
         $_attributes['periodtype'] = Guard::token($_attributes['periodtype'], 'none');
         $_attributes['periodvalue'] = Guard::token($_attributes['periodvalue'], 'none');
-        $_attributes['color'] = (is_scalar($_attributes['color']) && preg_match('/^[A-Za-z0-9_]{1,40}$/', (string)$_attributes['color'])) ? (string)$_attributes['color'] : 'Blues';
+        $_attributes['color'] = (is_scalar($_attributes['color']) && preg_match('/^[A-Za-z0-9_]{1,40}$/D', (string)$_attributes['color'])) ? (string)$_attributes['color'] : 'Blues';
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
@@ -5596,7 +5638,7 @@ trait Output {
             else {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
-            if ($dimension === 'duration') {
+            if ((isset($dimension['dimension']) && $dimension['dimension'] === 'duration')) {
                 $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
@@ -5649,7 +5691,7 @@ trait Output {
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
-            $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
+            $result .= '    var data'.$uniq.' =' . self::json_inline($values['values']) . ';' . PHP_EOL;
             $result .= $body;
         }
         elseif ($data == 'ajax' || $data == 'ajax_refresh') {
@@ -5684,7 +5726,7 @@ trait Output {
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
-            $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
+            $result .= '});' . PHP_EOL;
             if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose') {
                 $result .= 'if (observer' . $uniq . ' === null) { ' . PHP_EOL;
                 $result .= '  var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
@@ -5716,7 +5758,7 @@ trait Output {
                 $result .= '' . PHP_EOL;
                 $result .= '' . PHP_EOL;
             }
-            $result .= '});' . PHP_EOL;
+            $result .= '}, ' . $startdelay . ');' . PHP_EOL;
         }
         if ((bool)get_option('live_weather_station_mutation_observer') && $data != 'ajax' && $data != 'ajax_refresh') {
             $result .= 'var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
@@ -5987,7 +6029,7 @@ trait Output {
 
         // -- DATA
         if ($data == 'inline') {
-            $body .= 'var data'.$uniq.' = ' . $values['values'] . ';' . PHP_EOL;
+            $body .= 'var data'.$uniq.' = ' . self::json_inline($values['values']) . ';' . PHP_EOL;
             $body .= 'var parseDate = d4.timeParse("%Y-%m-%d");' . PHP_EOL;
             $body .= 'data'.$uniq.'.forEach(function(Y){Y.data.forEach(function(d) {d.ts = parseDate(d.ts);});});' . PHP_EOL;
         }
@@ -6107,8 +6149,8 @@ trait Output {
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
-            $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
             $result .= '});' . PHP_EOL;
+            $result .= '}, ' . $startdelay . ');' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
         $result .= live_weather_station_print_end_script($jsInitId);
@@ -6129,7 +6171,19 @@ trait Output {
         }
         $_attributes['set'] = Guard::composite($_attributes['set'], '');
         $_attributes['period'] = Guard::token($_attributes['period'], 'none');
-        $fingerprint = md5(json_encode($_attributes));
+        // The thresholds, the condition and the unit reference only matter for the computations that use them: do not let them multiply the cache entries of the others.
+        $_fingerprint_attributes = $_attributes;
+        if (!in_array($_attributes['computed'], array('count-day', 'duration-day', 'duration-dates'), true)) {
+            foreach (array('th1', 'th2', 'ref', 'condition') as $_key) {
+                $_fingerprint_attributes[$_key] = '';
+            }
+        }
+        else {
+            foreach (array('th1', 'th2', 'ref') as $_key) {
+                $_fingerprint_attributes[$_key] = is_numeric($_attributes[$_key]) ? (string)(float)$_attributes[$_key] : '';
+            }
+        }
+        $fingerprint = md5(json_encode($_fingerprint_attributes));
         if ($_attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, 'climat');
             if ($result) {
@@ -6175,6 +6229,9 @@ trait Output {
                 $th2 = $th;
             }
         }
+        // Thresholds written in SQL as plain numbers (no decimal comma whatever the locale, no INF or NAN).
+        $th1_sql = is_finite((float)$th1) ? str_replace(',', '.', (string)(float)$th1) : '0';
+        $th2_sql = is_finite((float)$th2) ? str_replace(',', '.', (string)(float)$th2) : '0';
         $fixed = (strpos($periodtype, 'fixed') !== false);
         if ($computed == 'simple-dev') {
             $both = true;
@@ -6195,9 +6252,11 @@ trait Output {
         }
         $modules = DeviceManager::get_modules_details($device);
         $moduletype = 'NAMain';
+        $module_found = false;
         foreach ($modules as $m) {
             if ($m['module_id'] == $module) {
                 $moduletype = $m['module_type'];
+                $module_found = true;
             }
         }
         $d = explode(':', $periodvalue);
@@ -6670,11 +6729,11 @@ trait Output {
                         $order = '';
                     } else {
                         switch ($condition) {
-                            case 'comp-l': $where2 = "`measure_value`<" . (float)$th1 ;break;
-                            case 'comp-eq': $where2 = "`measure_value`=" . (float)$th1 ;break;
-                            case 'comp-g': $where2 = "`measure_value`>" . (float)$th1 ;break;
-                            case 'comp-b': $where2 = "(`measure_value`>" . (float)$th1 . " AND `measure_value`<" . (float)$th2 . ")";break;
-                            case 'comp-nb': $where2 = "(`measure_value`<" . (float)$th1 . " OR `measure_value`>" . (float)$th2 . ")";break;
+                            case 'comp-l': $where2 = "`measure_value`<" . $th1_sql ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . $th1_sql ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . $th1_sql ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . $th1_sql . " AND `measure_value`<" . $th2_sql . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1_sql . " OR `measure_value`>" . $th2_sql . ")";break;
                         }
                     }
                     if ($set == 'hdd-da') {
@@ -6725,11 +6784,11 @@ trait Output {
                         $order = 'ORDER BY timestamp ASC';
                     } else {
                         switch ($condition) {
-                            case 'comp-l': $where2 = "`measure_value`<" . (float)$th1 ;break;
-                            case 'comp-eq': $where2 = "`measure_value`=" . (float)$th1 ;break;
-                            case 'comp-g': $where2 = "`measure_value`>" . (float)$th1 ;break;
-                            case 'comp-b': $where2 = "(`measure_value`>" . (float)$th1 . " AND `measure_value`<" . (float)$th2 . ")";break;
-                            case 'comp-nb': $where2 = "(`measure_value`<" . (float)$th1 . " OR `measure_value`>" . (float)$th2 . ")";break;
+                            case 'comp-l': $where2 = "`measure_value`<" . $th1_sql ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . $th1_sql ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . $th1_sql ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . $th1_sql . " AND `measure_value`<" . $th2_sql . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1_sql . " OR `measure_value`>" . $th2_sql . ")";break;
                         }
                     }
                     if ($set == 'hdd-da') {
@@ -7057,10 +7116,33 @@ trait Output {
         catch (\Throwable $ex) {
             return $result;
         }
-        if ($_attributes['cache'] != 'no_cache') {
+        // Nothing is cached for an unknown module, and the number of new entries is capped per hour: the key is chosen by the caller (anonymous visitors included).
+        if ($_attributes['cache'] != 'no_cache' && $module_found && self::cache_budget('lws_lttextual_cache_budget', 300)) {
             Cache::set_graph($fingerprint, 'climat', $result);
         }
         return $result;
+    }
+
+    /**
+     * Allow a limited number of new cache entries per hour for a bucket.
+     *
+     * @param string $bucket The name of the counter.
+     * @param integer $max The maximum number of new entries per hour.
+     * @return boolean True if a new entry can be cached.
+     * @since 3.9.0
+     */
+    private static function cache_budget($bucket, $max) {
+        $state = get_transient($bucket);
+        $now = time();
+        if (!is_array($state) || !isset($state['start'], $state['count']) || ($now - (int)$state['start']) >= HOUR_IN_SECONDS) {
+            $state = array('start' => $now, 'count' => 0);
+        }
+        if ((int)$state['count'] >= $max) {
+            return false;
+        }
+        $state['count'] = (int)$state['count'] + 1;
+        set_transient($bucket, $state, HOUR_IN_SECONDS);
+        return true;
     }
 
     /**
@@ -7603,6 +7685,9 @@ trait Output {
                 $d = explode('-', $_attributes['periodvalue']);
                 if (!empty($d) && count($d) === 2) {
                     $station = $this->get_station_information_by_station_id($_attributes['device_id_1']);
+                    if (!is_array($station) || !isset($station['loc_timezone'])) {
+                        return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
+                    }
                     $date = self::get_date_from_mysql_utc(gmdate('Y-m-d', strtotime(sprintf('-%s days', (int)$d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
                 }
                 break;
@@ -7634,7 +7719,7 @@ trait Output {
             $attr .=  ($_attributes['autoplay'] === 'auto' ? ' autoplay' : '');
             $attr .=  ($_attributes['mode'] === 'loop' ? ' loop' : '');
             $attr .=  ($_attributes['controls'] === 'full' ? ' controls' : '');
-            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . esc_url($vidurl) . '"></video>'.PHP_EOL;
+            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . esc_url($vidurl, array('http', 'https')) . '"></video>'.PHP_EOL;
         }
         else {
             $result = esc_html__('No timelapse for this date.', 'live-weather-station');
@@ -7696,9 +7781,10 @@ trait Output {
             else {
                 $style = 'width:80vw; height:80vw; max-width:640px; max-height:640px; display:inline-block;';
             }
-            $style = ' style="' . $style . 'background-image: url(\'' . esc_url($photourl) . '\');' . $transition . ';background-size: contain;"';
+            $style = ' style="' . $style . 'background-image: url(\'' . esc_url(str_replace(array("'", '\\'), array('%27', '%5C'), esc_url_raw($photourl, array('http', 'https'))), array('http', 'https')) . '\');' . $transition . ';background-size: contain;"';
             if ($_attributes['mode'] === 'url') {
-                $result = esc_url_raw($photourl);
+                // Security: only http and https addresses (no javascript: or data:).
+                $result = esc_url_raw($photourl, array('http', 'https'));
             }
             else {
                 $result = '<div id="'.esc_attr($uniq).'" ' . $style . ' class="lws-picture lws-snapshot"></div>'.PHP_EOL;
@@ -8171,7 +8257,7 @@ trait Output {
         }
 
         // DESIGN
-        $design = explode('-',$attributes['design']);
+        $design = explode('-', (isset($attributes['design']) && is_scalar($attributes['design'])) ? (string)$attributes['design'] : '');
         $result['donut'] = (in_array('full', $design));
         if (in_array('thin', $design)) {
             $result['gaugeWidthScale'] = 0.15;
@@ -8624,10 +8710,11 @@ trait Output {
      */
     public function steelmeter_attributes($attributes) {
         $result = array();
+        $attributes['design'] = (isset($attributes['design']) && is_scalar($attributes['design'])) ? (string)$attributes['design'] : '';
         // Every value below ends up as raw JS (steelseries constants): only strict identifiers are accepted.
         $const = function($value, $default) {
             $value = strtoupper((string)$value);
-            return (preg_match('/^[A-Z0-9_]{1,40}$/', $value) === 1 ? $value : $default);
+            return (preg_match('/^[A-Z0-9_]{1,40}$/D', $value) === 1 ? $value : $default);
         };
         $attributes['frame'] = $const($attributes['frame'] ?? '', 'METAL');
         $attributes['background'] = $const($attributes['background'] ?? '', 'DARK_GRAY');
@@ -8997,41 +9084,44 @@ trait Output {
                 $h = '300px';
                 $w = '300px'; 
                 break;
+            default:
+                $h = '200px';
+                $w = '200px';
         }
         $control = 'Radial';
         $minmax = false;
         $alarm = false;
         $trend = false;
         $aux = false;
-        if (strpos($attributes['design'], 'analog') !== false ) {
+        if (strpos($_attributes['design'], 'analog') !== false ) {
             $control = 'Radial';
             $minmax = true;
             $alarm = true;
             $trend = true;
             $aux = false;
         }
-        if (strpos($attributes['design'], 'digital') !== false ) {
+        if (strpos($_attributes['design'], 'digital') !== false ) {
             $control = 'RadialBargraph';
             $minmax = false;
             $alarm = true;
             $trend = true;
             $aux = false;
         }
-        if (strpos($attributes['design'], 'meter-') !== false ) {
+        if (strpos($_attributes['design'], 'meter-') !== false ) {
             $control = 'RadialVertical';
             $minmax = true;
             $alarm = false;
             $trend = false;
             $aux = false;
         }
-        if (strpos($attributes['design'], 'windcompass') !== false ) {
+        if (strpos($_attributes['design'], 'windcompass') !== false ) {
             $control = 'WindDirection';
             $minmax = false;
             $alarm = false;
             $trend = false;
             $aux = true;
         }
-        if (strpos($attributes['design'], 'altimeter') !== false ) {
+        if (strpos($_attributes['design'], 'altimeter') !== false ) {
             $control = 'Altimeter';
             $minmax = false;
             $alarm = false;
@@ -9058,7 +9148,7 @@ trait Output {
             $result .= '      g'.$uniq.'.setValueAnimated('.$value['value'].', function() {'.PHP_EOL;
         }
         if ($alarm) {
-            $result .= '        g'.$uniq.'.blinkUserLed('.$value['alarm'].');'.PHP_EOL;
+            $result .= '        g'.$uniq.'.blinkUserLed('.(!empty($value['alarm']) ? 'true' : 'false').');'.PHP_EOL;
         }
         if ($minmax) {
             $result .= '        g'.$uniq.'.resetMinMeasuredValue();'.PHP_EOL;
@@ -9127,7 +9217,12 @@ trait Output {
         if ($_attributes['device_id'] === '') {
             return;
         }
-        $fingerprint = md5(json_encode($_attributes));
+        // The picture or video of a station does not depend on the module: one cache entry per station, not one per module_id typed by the visitor.
+        $_fingerprint_attributes = $_attributes;
+        if ($_attributes['format'] === 'medias:item_url') {
+            $_fingerprint_attributes['module_id'] = '';
+        }
+        $fingerprint = md5(json_encode($_fingerprint_attributes));
         $result = Cache::get_frontend($fingerprint);
         if ($result) {
             return $result;
@@ -9478,7 +9573,15 @@ trait Output {
         if (is_string($result)) {
             $result = wp_kses($result, array());
         }
-        Cache::set_frontend($fingerprint, $result);
+        // Only a real answer is cached: the key is chosen by the caller (anonymous visitors included), so an unknown device, module, measurement or format must not create one entry per attempt.
+        $_known_formats = array('', 'raw', 'type-formatted', 'type-unit', 'type-meaning', 'type-unit-full', 'type-unit-long', 'type-raw-dimension', 'type-formatted-dimension', 'local-date', 'local-time', 'local-diff', 'plain-text', 'hh-mm', 'hh-mm-ss', 'short-text', 'computed', 'computed-unit', 'computed-wgs84', 'computed-wgs84-unit', 'computed-dms', 'computed-dms-short', 'computed-dms-cardinal-start', 'computed-dms-cardinal-end', 'medias:item_url');
+        $_cacheable = is_string($result) && $result !== '' && $result !== $err && in_array($_attributes['format'], $_known_formats, true) && !in_array($_attributes['element'], array('device_model', 'module_name'), true);
+        if ($_cacheable && $_attributes['format'] === 'medias:item_url') {
+            $_cacheable = in_array($_attributes['measure_type'], array('picture', 'video', 'video_imperial', 'video_metric'), true);
+        }
+        if ($_cacheable) {
+            Cache::set_frontend($fingerprint, $result);
+        }
         return $result;
     }
 
@@ -10106,7 +10209,7 @@ trait Output {
      * @since 3.8.0
      */
     protected function output_zcast_iconic_value($value, $main_color, $extraclass, $is_day=null, $mix_day=null) {
-        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
+        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/D', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
         $extraclass = preg_replace('/[^A-Za-z0-9_ -]/', '', (string)$extraclass);
         $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;">';
         $arrow = false;
@@ -10157,7 +10260,7 @@ trait Output {
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null, $mix_day=null) {
         live_weather_station_font_awesome();
-        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
+        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/D', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
         $extraclass = preg_replace('/[^A-Za-z0-9_ -]/', '', (string)$extraclass);
         $type = strtolower($type);
         if (strpos($type, 'sunrise') === 0) {
@@ -10599,6 +10702,10 @@ trait Output {
                 break;
             default:
                 $result = '<i %1$s class="' . LIVE_WEATHER_STATION_FAR . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
+        }
+        // $style is a trusted inline attribute (style="..."): anything else is dropped.
+        if (preg_match('/^style="[^"<>]*"$/D', (string)$style) !== 1) {
+            $style = '';
         }
         return sprintf($result, $style, esc_attr($extra));
     }
@@ -11681,8 +11788,12 @@ trait Output {
         // Query (0) the current locale, to restore it as it was.
         $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, $locale);
-        uasort($result, $compareASCII);
-        setlocale(LC_ALL, $save_locale);
+        try {
+            uasort($result, $compareASCII);
+        }
+        finally {
+            setlocale(LC_ALL, $save_locale);
+        }
         return $result;
     }
 
@@ -12600,6 +12711,24 @@ trait Output {
     protected function format_lcd_measurements($measurements, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, live_weather_station_get_display_locale());
+        try {
+            return $this->format_lcd_measurements_localized($measurements, $measure_type, $computed);
+        }
+        finally {
+            setlocale(LC_ALL, $save_locale);
+        }
+    }
+
+    /**
+     * Format measurements for lcd controls (the locale is already set by the caller).
+     *
+     * @param array $measurements The measurements.
+     * @param string $measure_type The measure type(s) to include.
+     * @param boolean $computed Includes computed measures too.
+     * @return array An array containing the formatted measurements.
+     * @since 3.9.0
+     */
+    private function format_lcd_measurements_localized($measurements, $measure_type, $computed=false) {
         $result = array();
         $response = array ();
         $battery = array();
@@ -12970,7 +13099,6 @@ trait Output {
         }
         $result['condition'] = array('value' => $err, 'message' =>$msg);
         $result['measurements'] = $response;
-        setlocale(LC_ALL, $save_locale);
         return $result;
     }
 
@@ -13021,38 +13149,38 @@ trait Output {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $values[2] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[2] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'heat_index':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_heat_index($tr, $hr, $dr)) {
-                                $values[3] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[3] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'wind_chill':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
-                                $values[4] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[4] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidity':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $values[5] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[5] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'dew_point':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_dew_point($tr)) {
-                                $values[6] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[6] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'pressure_sl':
                         if (strtolower($data['module_type']) == 'namain') {
-                            $values[7] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[7] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_trend':
@@ -13062,7 +13190,7 @@ trait Output {
                         break;
                     case 'windstrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $values[9] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[9] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'windangle':
@@ -13072,7 +13200,7 @@ trait Output {
                         break;
                     case 'rain_day_aggregated':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $values[11] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[11] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'sunrise':
@@ -13087,7 +13215,7 @@ trait Output {
                         break;
                     case 'guststrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $values[16] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[16] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                 }
@@ -13152,52 +13280,52 @@ trait Output {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $temp = sprintf('%.1F', round($data['measure_value'], 1));
+                            $temp = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'heat_index':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_heat_index($tr, $hr, $dr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'summer_simmer':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_summer_simmer($tr, $hr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'steadman':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_steadman($tr, $hr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidex':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_humidex($tr, $hr, $dr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'wind_chill':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidity':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $humidity = sprintf('%.1F', round($data['measure_value'], 1));
+                            $humidity = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_sl':
                         if (strtolower($data['module_type']) == 'namain') {
-                            $pressure = sprintf('%.1F', round($data['measure_value'], 1));
+                            $pressure = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_sl_trend':
@@ -13207,42 +13335,42 @@ trait Output {
                         break;
                     case 'uv_index':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $uv_index = sprintf('%.1F', round($data['measure_value'], 1));
+                            $uv_index = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'irradiance':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $irradiance = sprintf('%d', round($data['measure_value'],0));
+                            $irradiance = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'illuminance':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $illuminance = sprintf('%d', round($data['measure_value'] / 1000,0));
+                            $illuminance = sprintf('%d', round((float)$data['measure_value'] / 1000,0));
                         }
                         break;
                     case 'windstrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_strength = sprintf('%.1F', round($data['measure_value'], 1));
+                            $wind_strength = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'guststrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_gust = sprintf('%.1F', round($data['measure_value'], 1));
+                            $wind_gust = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'windangle':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_angle = sprintf('%d', round($data['measure_value'],0));
+                            $wind_angle = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'rain':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $rain = sprintf('%d', round($data['measure_value'],0));
+                            $rain = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'rain_day_aggregated':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $rain_day_aggregated = sprintf('%.1F', round($data['measure_value'], 1));
+                            $rain_day_aggregated = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'strike_instant':
@@ -13274,7 +13402,8 @@ trait Output {
         if (isset($pressure)) {
             $s = '';
             if (isset($pressure_trend)) {
-                $s = ' trend="' . esc_attr($pressure_trend) . '"';
+                // Security: XML escaping (esc_xml() does not exist before WordPress 5.5). Every other value of this feed is formatted as a number.
+                $s = ' trend="' . htmlspecialchars((string)$pressure_trend, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '"';
             }
             $values .= '   <pressure value="' . $pressure . '"' . $s . ' unit="hPa"/>' . PHP_EOL;
         }
@@ -14210,7 +14339,7 @@ trait Output {
                 wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
             }
             else {
-                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);
+                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
             }
         }
         return $result;

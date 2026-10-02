@@ -38,7 +38,7 @@ foreach ($fields as $field) {
     $values[$field]['txt'] .= ' - ' .  sprintf(/* translators: 1: Number of executions, 2: Average execution time in milliseconds. */ __('tasks executed %1$s times in an average time of %2$s ms.', 'live-weather-station'), $val[$field]['count'], $val[$field]['avr_time']);
 }
 
-$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(live_weather_station_get_admin_page_url('lws-analytics', null, 'cron')), __('detailed analytics', 'live-weather-station'));
+$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(live_weather_station_get_admin_page_url('lws-analytics', null, 'task')), __('detailed analytics', 'live-weather-station'));
 
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">

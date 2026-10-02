@@ -24,7 +24,7 @@ $buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-we
     <h1><?php echo esc_html(sprintf(__('Manage modules', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></h1>
     <form name="manage-modules" id="manage-modules" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
-        <?php wp_nonce_field('edit-station'); ?>
+        <?php wp_nonce_field('manage-station-modules'); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
                 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="margin:0px">

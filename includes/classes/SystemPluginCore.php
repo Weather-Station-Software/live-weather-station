@@ -293,7 +293,18 @@ class Core {
             self::verify_options();
         }
         if ($old_version != LIVE_WEATHER_STATION_VERSION && $old_version != '-') {
-            Updater::update(get_option('live_weather_station_version'), $option_overwrite);
+            // Lock so that two concurrent requests do not run the migration twice (stale after 10 minutes).
+            $lock = get_option('live_weather_station_update_lock');
+            if ($lock && (int)$lock < time() - 600) {
+                delete_option('live_weather_station_update_lock');
+            }
+            if (add_option('live_weather_station_update_lock', time(), '', 'no')) {
+                Updater::update(get_option('live_weather_station_version'), $option_overwrite);
+                delete_option('live_weather_station_update_lock');
+            }
+            else {
+                return;
+            }
         }
 		update_option('live_weather_station_version', LIVE_WEATHER_STATION_VERSION);
     }

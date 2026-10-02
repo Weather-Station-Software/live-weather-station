@@ -81,7 +81,7 @@ class ValueRC extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('yearly-valuerc-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('yearly-valuerc-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
             if ($i == 1) {
-                $a_group[] = array('content' => $group, 'name' => sprintf(__('Angle', 'live-weather-station'), $i));
+                $a_group[] = array('content' => $group, 'name' => __('Angle', 'live-weather-station'));
             }
             else {
                 $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement', 'live-weather-station'), $i));

@@ -190,7 +190,7 @@ class Handling {
      */
     public static function delete_notification_callback() {
         // Check user capabilities
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can(live_weather_station_manage_capability())) {
             wp_die(-1);
         }
         
@@ -287,6 +287,9 @@ class Handling {
      * @since 3.0.0
      */
     public static function add_wp_dashboard_widget() {
+        if (!current_user_can(live_weather_station_manage_capability())) {
+            return;
+        }
         wp_add_dashboard_widget('lws_dashboard_widget', LIVE_WEATHER_STATION_FULL_NAME, array(get_called_class(), '_summary_widget'));
     }
 

@@ -272,6 +272,36 @@ class Cache {
     }
 
     /**
+     * Check that a write to the public caches (frontend, graph, widget) stays bounded.
+     *
+     * The name must fit in a transient name (172 characters), and the number of entries written per hour is capped
+     * (same mechanism as the budget of the lttextual cache in DataOutput). The cap is far above what a site needs
+     * (entries are shared between visitors and live 2 minutes); when it is reached, the value is just not cached.
+     *
+     * @param string $name The full name of the cache item.
+     * @param string $bucket The name of the counter.
+     * @param integer $max Optional. The maximum number of writes per hour.
+     * @return boolean True if the item can be written.
+     * @since 3.9.0
+     */
+    private static function public_write_allowed($name, $bucket, $max=6000) {
+        if (strlen($name) > 150) {
+            return false;
+        }
+        $state = get_transient($bucket);
+        $now = time();
+        if (!is_array($state) || !isset($state['start'], $state['count']) || ($now - (int)$state['start']) >= HOUR_IN_SECONDS) {
+            $state = array('start' => $now, 'count' => 0);
+        }
+        if ((int)$state['count'] >= $max) {
+            return false;
+        }
+        $state['count'] = (int)$state['count'] + 1;
+        set_transient($bucket, $state, HOUR_IN_SECONDS);
+        return true;
+    }
+
+    /**
      * Set/update the value of a cached element.
      *
      * You do not need to serialize values. If the value needs to be serialized, then
@@ -289,6 +319,9 @@ class Cache {
             return false;
         }
         else {
+            if (!self::public_write_allowed(self::$frontend.'_'.$cache_id, 'lws_frontend_cache_budget')) {
+                return false;
+            }
             $r = live_weather_station_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
             self::_stop_chrono(self::$frontend.'_'.$cache_id, false);
             return $r;
@@ -400,6 +433,9 @@ class Cache {
             return false;
         }
         else {
+            if (!self::public_write_allowed($id, 'lws_graph_cache_budget')) {
+                return false;
+            }
             $r = live_weather_station_meta_cache($id, $value, $expiry);
             self::_stop_chrono($id, false);
             return $r;
@@ -488,6 +524,9 @@ class Cache {
             return false;
         }
         else {
+            if (!self::public_write_allowed(self::$widget.'_'.$cache_id, 'lws_widget_cache_budget')) {
+                return false;
+            }
             $r = live_weather_station_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
             self::_stop_chrono(self::$widget.'_'.$cache_id, false);
             return $r;

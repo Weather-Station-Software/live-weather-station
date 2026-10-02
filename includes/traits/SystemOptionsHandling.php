@@ -204,6 +204,24 @@ trait Handling {
     }
 
     /**
+     * Check that an imported integer is in a sane range: never negative, and an HTTP timeout never above 600 seconds.
+     *
+     * @param string $name The name of the option.
+     * @param int $value The imported (already validated) integer.
+     * @return boolean True if the value can be written.
+     * @since 3.9.0
+     */
+    private static function is_imported_int_in_bounds($name, $value) {
+        if ($value < 0) {
+            return false;
+        }
+        if (substr($name, -13) === '_http_timeout' && $value > 600) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Normalize and validate an imported option value.
      *
      * @param string $type The type of the option.
@@ -1188,7 +1206,8 @@ trait Handling {
         $count = count($val);
         $new_option = array();
         for ($i=0; $i<$count; $i++) {
-            $new_option[$i] = get_option($option_name)[$i];
+            $current = get_option($option_name);
+            $new_option[$i] = (is_array($current) && array_key_exists($i, $current)) ? $current[$i] : false;
             if (false === $new_option[$i]) {
                 $new_option[$i] = $val[$i];
             }
@@ -1430,7 +1449,7 @@ trait Handling {
                 continue;
             }
             $value = self::sanitize_imported_option($type, $option);
-            if ($value === null) {
+            if ($value === null || ($type === 'int' && !self::is_imported_int_in_bounds($key, $value))) {
                 $rejected++;
                 continue;
             }

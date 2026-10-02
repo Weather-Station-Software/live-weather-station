@@ -296,7 +296,7 @@ class PioupiouImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<8; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*40)) {
+            if ((int)ini_get('max_execution_time') > $i*40) {
                 $max += 1;
             }
         }

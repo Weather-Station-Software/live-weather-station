@@ -12,6 +12,10 @@ use WeatherStation\System\Logs\Logger;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+// This template shows the server host, IP, document root and database user: administrators only.
+if ( ! current_user_can( live_weather_station_manage_capability() ) ) {
+	return;
+}
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $OS = Env::server_os();
 

@@ -242,14 +242,17 @@ class Handling {
         }
         $this->station_guid = (is_numeric($id) ? (int)$id : 0);
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
-            $this->arg_tab = filter_input(INPUT_GET, 'tab');
+            $tab = filter_input(INPUT_GET, 'tab');
         }
+        $this->arg_tab = $tab;
         if (!($action = filter_input(INPUT_POST, 'action'))) {
-            $this->arg_action = filter_input(INPUT_GET, 'action');
+            $action = filter_input(INPUT_GET, 'action');
         }
+        $this->arg_action = $action;
         if (!($service = filter_input(INPUT_POST, 'service'))) {
-            $this->arg_service = filter_input(INPUT_GET, 'service');
+            $service = filter_input(INPUT_GET, 'service');
         }
+        $this->arg_service = $service;
         $this->arg_tab = Guard::token(strtolower((string)$this->arg_tab), '');
         $this->arg_action = Guard::token(strtolower((string)$this->arg_action), '');
         $this->arg_service = Guard::token(strtolower((string)$this->arg_service), '');
@@ -268,7 +271,18 @@ class Handling {
         if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
             if (array_key_exists('_wpnonce', $_POST)) {
-                if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'edit-station')) {
+                // One nonce per action: the export, import and modules forms have their own.
+                $nonce_action = 'edit-station';
+                if (array_key_exists('do-export-data', $_POST)) {
+                    $nonce_action = 'export-station-data';
+                }
+                elseif (array_key_exists('do-import-data', $_POST)) {
+                    $nonce_action = 'import-station-data';
+                }
+                elseif (array_key_exists('do-manage-modules', $_POST) || array_key_exists('reset-manage-modules', $_POST)) {
+                    $nonce_action = 'manage-station-modules';
+                }
+                if (is_string($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), $nonce_action)) {
                     if (array_key_exists('guid', $_POST)) {
                         $guid = sanitize_text_field(wp_unslash($_POST['guid']));
                         $save = false;
@@ -357,14 +371,14 @@ class Handling {
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode(sanitize_text_field($p), ENT_COMPAT | ENT_HTML401));
+                                        $m[$k]['screen_name'] = is_scalar($p) ? sanitize_text_field(htmlspecialchars_decode(stripslashes((string)$p), ENT_COMPAT | ENT_HTML401)) : '';
                                     }
                                     if (strpos($key, 'lws-hidden-') === 0) {
                                         $k = str_replace('lws-hidden-', '', $key);
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['hidden'] = (int)stripslashes(htmlspecialchars_decode(sanitize_text_field($p), ENT_COMPAT | ENT_HTML401));
+                                        $m[$k]['hidden'] = is_scalar($p) ? (int)stripslashes(htmlspecialchars_decode(sanitize_text_field((string)$p), ENT_COMPAT | ENT_HTML401)) : 0;
                                     }
                                 }
                                 if (count($m) > 0) {
@@ -372,10 +386,10 @@ class Handling {
                                         $add = array();
                                         $add['device_id'] = $station['station_id'];
                                         $add['module_id'] = $k;
-                                        if ($module['screen_name'] != '') {
+                                        if (isset($module['screen_name']) && $module['screen_name'] != '') {
                                             $add['screen_name'] = $module['screen_name'];
                                         }
-                                        $add['hidden'] = $module['hidden'];
+                                        $add['hidden'] = isset($module['hidden']) ? $module['hidden'] : 0;
                                         $modules[] = $add;
                                     }
                                     if (count($modules) > 0) {
@@ -616,7 +630,7 @@ class Handling {
         if ($this->station_guid == 0) {
             return $current;
         }
-        $current .= '<div id="lws_station" class="metabox-prefs custom-options-panel requires-autosave"><input type="hidden" name="_wpnonce-lws_station" value="' . wp_create_nonce('save_settings_lws_station') . '" />';
+        $current .= '<div id="lws_station" class="metabox-prefs custom-options-panel requires-autosave">';
         $current .= $this->get_options();
         $current .= '</div>';
         return $current ;
@@ -855,11 +869,11 @@ class Handling {
      */
     public function tools_widget($n, $args) {
         $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, '#999');
-        $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Manage modules', 'live-weather-station').'</a>', rawurlencode($this->station_guid));
+        $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>%s</a>', rawurlencode($this->station_guid), esc_html__('Manage modules', 'live-weather-station'));
         $import_link_icn = $this->output_iconic_value(0, 'import', false, false, '#999');
-        $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Import historical data', 'live-weather-station').'</a>', rawurlencode($this->station_guid));
+        $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>%s</a>', rawurlencode($this->station_guid), esc_html__('Import historical data', 'live-weather-station'));
         $export_link_icn = $this->output_iconic_value(0, 'export', false, false, '#999');
-        $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>'.esc_html__('Export historical data', 'live-weather-station').'</a>', rawurlencode($this->station_guid));
+        $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>%s</a>', rawurlencode($this->station_guid), esc_html__('Export historical data', 'live-weather-station'));
         include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationTools.php');
     }
 
@@ -915,7 +929,7 @@ class Handling {
             case 'pws':
                 $f1 = __('Station ID', 'live-weather-station');
                 $f2 = __('Password', 'live-weather-station');
-                $url = 'http://www.pwsweather.com/obs/' . rawurlencode($station['pws_user']) . '.html';
+                $url = 'https://www.pwsweather.com/obs/' . rawurlencode($station['pws_user']) . '.html';
                 break;
             case 'wug':
                 $f1 = __('Station ID', 'live-weather-station');
