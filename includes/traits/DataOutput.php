@@ -402,6 +402,10 @@ trait Output {
                 $item[$key] = 'none';
             }
         }
+        // The set is stored in a 5 characters column (one operation, or two joined by |): bring anything else back to 'none' so it cannot multiply the cache entries of the query.
+        if (!preg_match('/^[A-Za-z0-9]{1,5}(\|[A-Za-z0-9]{1,5})?$/D', (string)$item['set'])) {
+            $item['set'] = 'none';
+        }
         return $item;
     }
 
@@ -2008,14 +2012,15 @@ trait Output {
                                     if ($mode == 'climat' && !$aggregated) {
                                         $yearstr = substr($key, 0, 4);
                                     }
-                                    $set[] = array('year' => $yearstr, 'station' => $station['loc_city'], 'data' => $subset);
+                                    // Security: station is free text and must stay a string (JSON_NUMERIC_CHECK turned a name like 1e999 into an unencodable number).
+                                    $set[] = array('year' => (is_scalar($yearstr) && ctype_digit((string)$yearstr) ? (int)$yearstr : $yearstr), 'station' => (string)$station['loc_city'], 'data' => $subset);
                                     $subset = array();
                                 }
                             }
                             if ($json) {
                                 $a = array();
                                 foreach ($set as $item) {
-                                    $sub = self::json_inline(wp_json_encode($item, JSON_NUMERIC_CHECK | JSON_HEX_TAG | JSON_HEX_AMP));
+                                    $sub = self::json_inline(wp_json_encode($item, JSON_HEX_TAG | JSON_HEX_AMP));
                                     $a[] = $sub;
                                 }
                                 $result['values'][] = implode(',', $a);
@@ -5138,6 +5143,7 @@ trait Output {
             $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
+            $result .= '});' . PHP_EOL;
             $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
@@ -7713,7 +7719,7 @@ trait Output {
             $attr .=  ($_attributes['autoplay'] === 'auto' ? ' autoplay' : '');
             $attr .=  ($_attributes['mode'] === 'loop' ? ' loop' : '');
             $attr .=  ($_attributes['controls'] === 'full' ? ' controls' : '');
-            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . esc_url($vidurl) . '"></video>'.PHP_EOL;
+            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . esc_url($vidurl, array('http', 'https')) . '"></video>'.PHP_EOL;
         }
         else {
             $result = esc_html__('No timelapse for this date.', 'live-weather-station');
@@ -7775,9 +7781,10 @@ trait Output {
             else {
                 $style = 'width:80vw; height:80vw; max-width:640px; max-height:640px; display:inline-block;';
             }
-            $style = ' style="' . $style . 'background-image: url(\'' . esc_url(str_replace(array("'", '\\'), array('%27', '%5C'), esc_url_raw($photourl))) . '\');' . $transition . ';background-size: contain;"';
+            $style = ' style="' . $style . 'background-image: url(\'' . esc_url(str_replace(array("'", '\\'), array('%27', '%5C'), esc_url_raw($photourl, array('http', 'https'))), array('http', 'https')) . '\');' . $transition . ';background-size: contain;"';
             if ($_attributes['mode'] === 'url') {
-                $result = esc_url_raw($photourl);
+                // Security: only http and https addresses (no javascript: or data:).
+                $result = esc_url_raw($photourl, array('http', 'https'));
             }
             else {
                 $result = '<div id="'.esc_attr($uniq).'" ' . $style . ' class="lws-picture lws-snapshot"></div>'.PHP_EOL;
@@ -13395,7 +13402,8 @@ trait Output {
         if (isset($pressure)) {
             $s = '';
             if (isset($pressure_trend)) {
-                $s = ' trend="' . esc_attr($pressure_trend) . '"';
+                // Security: XML escaping (esc_xml() does not exist before WordPress 5.5). Every other value of this feed is formatted as a number.
+                $s = ' trend="' . htmlspecialchars((string)$pressure_trend, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '"';
             }
             $values .= '   <pressure value="' . $pressure . '"' . $s . ' unit="hPa"/>' . PHP_EOL;
         }

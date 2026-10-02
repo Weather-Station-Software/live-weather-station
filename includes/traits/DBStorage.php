@@ -1509,10 +1509,27 @@ trait Storage {
                 }
             }
         }
-        if (!$result) {
-            $result = 'UTC';
+        return $this->safe_timezone($result);
+    }
+
+    /**
+     * Get a time zone name that PHP accepts.
+     *
+     * @param mixed $timezone The time zone name, coming from a vendor API or from the database.
+     * @return string The time zone name, or 'UTC' if it is empty or unknown.
+     * @since 3.9.0
+     */
+    protected function safe_timezone($timezone) {
+        if (is_scalar($timezone) && (string)$timezone !== '') {
+            try {
+                $tz = new \DateTimeZone((string)$timezone);
+                return $tz->getName();
+            }
+            catch (\Exception $ex) {
+                return 'UTC';
+            }
         }
-        return $result;
+        return 'UTC';
     }
 
     /**
@@ -1653,11 +1670,24 @@ trait Storage {
             $verified = !is_null($value['measure_value']);
         }
         if ($verified) {
+            // Security: the value is stored in a varchar(50). Numbers are kept as they are, a text (trend, date, name...) is sanitized.
+            if (!is_scalar($value['measure_value'])) {
+                $verified = false;
+            }
+            elseif (!is_numeric($value['measure_value'])) {
+                $value['measure_value'] = live_weather_station_clean_text($value['measure_value'], 50);
+            }
+        }
+        if ($verified) {
             if (!in_array(strtolower($value['module_type']), array('nacomputed', 'naephemer', 'napollution', 'naforecast', 'namodulev', 'namodulep'))) {
                 $min = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'min');
                 $max = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'max');
                 if ($min !== 'NaN' && $max !== 'NaN') {
-                    if (is_numeric($min) && is_numeric($max) && is_numeric($value['measure_value'])) {
+                    if (is_numeric($min) && is_numeric($max) && !is_numeric($value['measure_value'])) {
+                        // A measurement with numeric boundaries is a number: refuse anything else.
+                        $verified = false;
+                    }
+                    elseif (is_numeric($min) && is_numeric($max) && is_numeric($value['measure_value'])) {
                         if ($value['measure_value'] < $min) {
                             $verified = false;
                         }

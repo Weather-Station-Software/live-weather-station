@@ -297,7 +297,7 @@ trait Handling {
             $updates['measure_type'] = 'loc_timezone';
             $updates['measure_value'] = 'UTC';
             if (array_key_exists('timezone', $place)) {
-                $updates['measure_value'] = str_replace('\\', '', $place['timezone']);
+                $updates['measure_value'] = $this->safe_timezone(str_replace('\\', '', $place['timezone']));
             }
             $this->update_data_table($updates, $timezone);
         }
@@ -588,7 +588,7 @@ trait Handling {
             $updates['measure_type'] = 'loc_timezone';
             $updates['measure_value'] = 'UTC';
             if (array_key_exists('timezone', $place)) {
-                $updates['measure_value'] = str_replace('\\', '', $place['timezone']);
+                $updates['measure_value'] = $this->safe_timezone(str_replace('\\', '', $place['timezone']));
             }
             $this->update_data_table($updates, $timezone);
             if ($is_station) {
