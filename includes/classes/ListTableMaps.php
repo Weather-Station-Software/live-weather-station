@@ -72,10 +72,13 @@ class Maps extends Base {
     protected function column_stations($item){
         $result = '-';
         $params = unserialize($item['params'], array('allowed_classes' => false));
-        if (!$params['common']['all']) {
+        if (!is_array($params)) {
+            $params = array();
+        }
+        if (empty($params['common']['all'])) {
             if (array_key_exists('stations', $params)) {
                 $list = $params['stations'];
-                if (count($list) > 0) {
+                if (is_array($list) && count($list) > 0) {
                     $r = array();
                     foreach ($this->stations as $station) {
                         if (in_array($station['guid'], $list)) {
@@ -96,6 +99,9 @@ class Maps extends Base {
 
     protected function column_zoom($item){
         $params = unserialize($item['params'], array('allowed_classes' => false));
+        if (!is_array($params)) {
+            $params = array();
+        }
         if (array_key_exists('common', $params)) {
             if (array_key_exists('loc_zoom', $params['common'])) {
                 return esc_html($params['common']['loc_zoom']);
@@ -106,6 +112,9 @@ class Maps extends Base {
 
     protected function column_size($item){
         $params = unserialize($item['params'], array('allowed_classes' => false));
+        if (!is_array($params)) {
+            $params = array();
+        }
         $width = '-';
         $height = '-';
         if (array_key_exists('common', $params)) {
@@ -125,6 +134,9 @@ class Maps extends Base {
 
     protected function column_center($item){
         $params = unserialize($item['params'], array('allowed_classes' => false));
+        if (!is_array($params)) {
+            $params = array();
+        }
         $lat = '-';
         $lon = '-';
         if (array_key_exists('common', $params)) {
@@ -185,7 +197,7 @@ class Maps extends Base {
         if (isset($_GET['limit'])) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter of the list table (intval), it changes no state
             $this->limit = intval($_GET['limit']);
-            if (!$this->limit) {
+            if (!in_array($this->limit, [25, 50, 100, 250, 500], true)) {
                 $this->limit = 25;
             }
         }

@@ -308,7 +308,7 @@ class Stations extends Base {
         if (isset($_GET['limit'])) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter, cast to integer.
             $this->limit = intval($_GET['limit']);
-            if (!$this->limit) {
+            if (!in_array($this->limit, [10, 20, 30], true)) {
                 $this->limit = 10;
             }
         }
