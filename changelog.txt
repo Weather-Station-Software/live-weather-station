@@ -67,6 +67,7 @@
 * Security: the uploads to Weather Underground, PWS Weather, WOW-BE and OpenWeatherMap no longer follow redirections, so the credentials and the data of a station can never be forwarded to another server.
 * Improvement: the maximum number of new entries written per hour in the caches of your pages (6000 for widgets, controls and charts, 300 for the textual climate shortcode) can be changed, or removed with 0, in the system settings.
 * Security: the data answers of the graphs are sent as plain text, so a browser never displays them as a web page.
+* Bug fix: clearing the cache (cache reset, update of the plugin, deactivation, station removal) really deletes the cached data again, which was no longer the case since the removal of the cache warm-up.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5
