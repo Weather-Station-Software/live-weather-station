@@ -143,11 +143,16 @@ abstract class LineImporter extends Process {
             }
         }
 
+        $max_line = max(1024, (int)apply_filters('live_weather_station_import_max_line_length', MB_IN_BYTES));
         try {
             $file = new \SplFileObject(FS::construct_full_file_name($this->params['file']));
             $file->seek($this->params['current']);
             for ($i=1; $i <= $this->batchsize; $i++) {
                 $args['values'] = $file->current();
+                // A real line is about 150 bytes: a huge line is skipped, since decoding it could exhaust the memory.
+                if (is_string($args['values']) && strlen($args['values']) > $max_line) {
+                    $args['values'] = '';
+                }
                 $values = $this->transform($args, $this->params['init']['start_date'], $this->params['init']['end_date']);
                 foreach ($values as $v) {
                     if (array_key_exists('timestamp', $v) &&

@@ -73,6 +73,7 @@
 * Improvement: the keys built in the plugin are only used by the Netatmo connections made before this version, which keep working.
 * Bug fix: the lock of the background processes is renewed after each process and lasts 10 minutes, so a long import can no longer be run twice in parallel; the lock of the version migration is taken over atomically when it expires.
 * Security: a logged-in user without the right to download files can no longer fill the log with refused download attempts (one entry per minute at most).
+* Security: the import of a configuration file is limited to 10 MB (a real export is about 20 KB) and a line of a data file larger than 1 MB is skipped (a real line is about 150 bytes), so a crafted file cannot exhaust the memory of the server; both limits can be changed with the live_weather_station_import_max_configuration_size and live_weather_station_import_max_line_length filters.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5
