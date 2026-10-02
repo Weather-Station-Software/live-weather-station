@@ -103,6 +103,13 @@ class InlineHelp {
         if (Manager::patch_version() != 0 && LIVE_WEATHER_STATION_SHOW_CHANGELOG) {
             $url = LIVE_WEATHER_STATION_CHANGELOG;
         }
+        // Fallback, with no request: if the article of the constant is not the one of the installed major.minor version
+        // (it was not updated for this release), the link goes to the release notes of this version on GitHub.
+        $parts = explode('.', LIVE_WEATHER_STATION_VERSION);
+        $minor = $parts[0] . '-' . (isset($parts[1]) ? $parts[1] : '0');
+        if ($url === LIVE_WEATHER_STATION_WHATSNEW && !preg_match('/(^|[^0-9])' . preg_quote($minor, '/') . '([^0-9]|$)/', $url)) {
+            $url = 'https://github.com/Weather-Station-Software/live-weather-station/releases/tag/' . rawurlencode(LIVE_WEATHER_STATION_VERSION);
+        }
         return $url;
     }
 

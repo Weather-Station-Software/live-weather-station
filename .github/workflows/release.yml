@@ -32,6 +32,9 @@ jobs:
               exit 1
             fi
           done
+      - name: Check the "See what's new" link of the plugin
+        # The article of this version must be published and referenced in init.php (LIVE_WEATHER_STATION_WHATSNEW).
+        run: .github/scripts/check-whatsnew.sh release
       - name: Build the release notes
         env:
           GH_TOKEN: ${{ github.token }}

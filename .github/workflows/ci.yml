@@ -74,6 +74,15 @@ jobs:
             exit 1
           fi
 
+  whats-new:
+    name: What's new link
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: The "See what's new" link is the article of the current version (a warning, the release workflow makes it an error)
+        run: .github/scripts/check-whatsnew.sh warn
+
   compat:
     name: PHPCompatibility ${{ matrix.range }}
     runs-on: ubuntu-latest
