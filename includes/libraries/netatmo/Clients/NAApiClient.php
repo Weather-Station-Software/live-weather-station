@@ -27,7 +27,7 @@ define('LIVE_WEATHER_STATION_NETATMO_BACKEND_AUTHORIZE_URI', "https://api.netatm
  *
  * @package Includes\Libraries
  * @author Originally written by Thomas Rosenblatt <thomas.rosenblatt@netatmo.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAApiClient
@@ -780,7 +780,7 @@ class NAApiClient
  *
  * @package Includes\Libraries
  * @author Originally written by Fred Potter <fred.potter@netatmo.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAApiHelper

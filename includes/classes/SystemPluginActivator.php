@@ -14,7 +14,7 @@ use WeatherStation\DB\Storage as Storage;
  * This class defines all code necessary to run during the plugin's activation.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */

@@ -5,7 +5,7 @@ namespace WeatherStation\SDK\Pioupiou\Fetcher;
 /**
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  * @license MIT
  */

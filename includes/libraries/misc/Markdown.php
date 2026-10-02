@@ -7,7 +7,7 @@ namespace WeatherStation\Utilities;
  *
  * @package Includes\Libraries
  * @author Originally written by Emanuil Rusev <http://erusev.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.7
  * @license MIT
  */

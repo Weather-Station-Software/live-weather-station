@@ -14,7 +14,7 @@ use WeatherStation\System\URL\Handling as URL;
  * fallback) and answered on the `template_redirect` action: no standalone PHP file that has to load WordPress by itself.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */

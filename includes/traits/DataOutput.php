@@ -33,7 +33,7 @@ use WeatherStation\System\Output\Guard;
  * Outputting / shortcoding functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -13939,13 +13939,13 @@ trait Output {
         $result = array();
         $t = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '');
         if ($data['pws_sync']) {
-            $result[] = '<a href="' . esc_url('http://www.pwsweather.com/obs/' . rawurlencode($data['pws_user']) . '.html') . '"' . $t . '>PWS Weather</a>';
+            $result[] = '<a href="' . esc_url('https://www.pwsweather.com/station/pws/' . rawurlencode($data['pws_user'])) . '"' . $t . '>PWS Weather</a>';
         }
         if ($data['wow_sync']) {
             $result[] = '<a href="' . esc_url('https://wow.meteo.be/') . '"' . $t . '>WOW-BE</a>';
         }
         if ($data['wug_sync']) {
-            $result[] = '<a href="' . esc_url('https://www.wunderground.com/personal-weather-station/dashboard?ID=' . rawurlencode($data['wug_user'])) . '"' . $t . '>Weather Underground</a>';
+            $result[] = '<a href="' . esc_url('https://www.wunderground.com/dashboard/pws/' . rawurlencode($data['wug_user'])) . '"' . $t . '>Weather Underground</a>';
         }
         return $result;
     }

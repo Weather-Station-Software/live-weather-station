@@ -11,7 +11,7 @@ namespace WeatherStation\System\Output;
  * color(), css_size() or int() before being used to build markup, JS or CSS.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.15
  */
