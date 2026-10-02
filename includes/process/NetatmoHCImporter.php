@@ -62,7 +62,7 @@ class NetatmoHCImporter extends NetatmoImporter {
                 $result .= '     - ' . sprintf(/* translators: %s: name of a module */ __('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
             }
             else {
-                $result .= '     - ' . sprintf(/* translators: 1: name of a module, 2: number of measurements, 3: number of days */ __('"%1$s": %2$s measurements spread over %3$s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
+                $result .= '     - ' . sprintf(/* translators: 1: module name, 2: number of measurements, 3: number of days */ __('"%1$s": %2$s measurements spread over %3$s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
             }
         }
         $result .= "\r\n" . sprintf(/* translators: %s: duration, e.g. "2 hours" */ __('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
