@@ -149,7 +149,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_size = $("#current-lcd-measurements-size-' . $this->station_guid . '").val();';
         $content .= 'var sc_speed = $("#current-lcd-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var shortcode = "[live-weather-station-lcd device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' design=\'"+sc_design+"\' size=\'"+sc_size+"\' speed=\'"+sc_speed+"\']";';
-        $content .= '$("#current-lcd-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-lcd-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
 
         $content .= '$("#current-lcd-measurements-module-' . $this->station_guid . '" ).change();';
 
