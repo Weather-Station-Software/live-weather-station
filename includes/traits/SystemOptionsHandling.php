@@ -63,6 +63,8 @@ trait Handling {
     private static $live_weather_station_collection_http_timeout = 45;
     private static $live_weather_station_rate_limit_public = 120;
     private static $live_weather_station_rate_limit_feed = 0;
+    private static $live_weather_station_cache_budget = 6000;
+    private static $live_weather_station_cache_budget_text = 300;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;
     private static $live_weather_station_picture_retention = 31;
@@ -155,7 +157,7 @@ trait Handling {
         'live_weather_station_auto_manage_ambient' => 'bool', 'live_weather_station_overload_hc' => 'bool', 'live_weather_station_show_technical' => 'bool',
         'live_weather_station_show_analytics' => 'bool', 'live_weather_station_show_tasks' => 'bool', 
         'live_weather_station_cron_speed' => 'int', 'live_weather_station_show_update' => 'bool', 'live_weather_station_plugin_stat' => 'bool',
-        'live_weather_station_keep_tables' => 'bool', 'live_weather_station_ajax_widget' => 'bool', 'live_weather_station_collection_http_timeout' => 'int', 'live_weather_station_rate_limit_public' => 'int', 'live_weather_station_rate_limit_feed' => 'int',
+        'live_weather_station_keep_tables' => 'bool', 'live_weather_station_ajax_widget' => 'bool', 'live_weather_station_collection_http_timeout' => 'int', 'live_weather_station_rate_limit_public' => 'int', 'live_weather_station_rate_limit_feed' => 'int', 'live_weather_station_cache_budget' => 'int', 'live_weather_station_cache_budget_text' => 'int',
         'live_weather_station_sharing_http_timeout' => 'int', 'live_weather_station_system_http_timeout' => 'int', 'live_weather_station_picture_retention' => 'int',
         'live_weather_station_video_retention' => 'int', 'live_weather_station_retention_notifications' => 'int', 'live_weather_station_partial_translation' => 'bool',
         'live_weather_station_map_zoom' => 'int', 'live_weather_station_map_layer' => 'token',
@@ -873,6 +875,8 @@ trait Handling {
         delete_option('live_weather_station_collection_http_timeout');
         delete_option('live_weather_station_rate_limit_public');
         delete_option('live_weather_station_rate_limit_feed');
+        delete_option('live_weather_station_cache_budget');
+        delete_option('live_weather_station_cache_budget_text');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
         delete_option('live_weather_station_picture_retention');
@@ -1056,6 +1060,8 @@ trait Handling {
         update_option('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
         update_option('live_weather_station_rate_limit_public', self::$live_weather_station_rate_limit_public);
         update_option('live_weather_station_rate_limit_feed', self::$live_weather_station_rate_limit_feed);
+        update_option('live_weather_station_cache_budget', self::$live_weather_station_cache_budget);
+        update_option('live_weather_station_cache_budget_text', self::$live_weather_station_cache_budget_text);
         update_option('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         update_option('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         update_option('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
@@ -1321,6 +1327,8 @@ trait Handling {
         self::verify_option_integer('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
         self::verify_option_integer('live_weather_station_rate_limit_public', self::$live_weather_station_rate_limit_public);
         self::verify_option_integer('live_weather_station_rate_limit_feed', self::$live_weather_station_rate_limit_feed);
+        self::verify_option_integer('live_weather_station_cache_budget', self::$live_weather_station_cache_budget);
+        self::verify_option_integer('live_weather_station_cache_budget_text', self::$live_weather_station_cache_budget_text);
         self::verify_option_integer('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         self::verify_option_integer('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         self::verify_option_integer('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);

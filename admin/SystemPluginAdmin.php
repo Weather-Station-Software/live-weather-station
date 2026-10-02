@@ -391,6 +391,10 @@ class Admin {
             array($this, 'lws_system_rate_limit_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum number of requests per minute and per visitor on the live controls and charts of your pages (the default is 120), and on the /get-weather/ feeds (no limit by default). 0 means no limit. A limit per visitor does not protect against an attack coming from many addresses: use the firewall or the CDN of your host for that. Behind a proxy or a CDN all the visitors share the same address: raise the limits or set them to 0.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_rate_limit', array('sanitize_callback' => 'sanitize_text_field'));
+        add_settings_field('lws_system_cache_budget', __('Cache entries limit', 'live-weather-station'),
+            array($this, 'lws_system_cache_budget_callback'), 'lws_system', 'lws_system_section',
+            array(__('Maximum number of new entries written per hour in the caches of your pages, to keep the database small when a bot requests endless variations (the defaults are 6000 for the widgets, controls and charts, and 300 for the textual climate shortcode). Beyond it, the data is computed again instead of being cached. 0 removes the limit.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_cache_budget', array('sanitize_callback' => 'sanitize_text_field'));
         add_settings_field('lws_system_log_level', __('Logging policy', 'live-weather-station'),
             array($this, 'lws_system_log_level_callback'), 'lws_system', 'lws_system_section',
             array(__('Minimum level of severity that will be recorded in the events log.', 'live-weather-station')));
@@ -666,6 +670,31 @@ class Admin {
      */
     public function lws_system_quota_callback($args) {
         echo $this->field_select($this->get_quota_js_array(), get_option('live_weather_station_quota_mode'), 'lws_system_quota', $args[0]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns a complete form control whose dynamic parts are escaped there with esc_attr(), esc_html() and wp_kses_post().
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.9.0
+     */
+    public function lws_system_cache_budget_callback($args) {
+        $nmbrs = array();
+        $nmbrs[] = array('label' => __('Widgets, controls and charts', 'live-weather-station'),
+                        'value' => get_option('live_weather_station_cache_budget', 6000),
+                        'id' => 'lws_system_cache_budget',
+                        'min' => 0,
+                        'max' => 10000000,
+                        'step' => 1,
+                        'unit' => __('entries per hour', 'live-weather-station'));
+        $nmbrs[] = array('label' => __('Textual climate', 'live-weather-station'),
+                        'value' => get_option('live_weather_station_cache_budget_text', 300),
+                        'id' => 'lws_system_cache_budget_text',
+                        'min' => 0,
+                        'max' => 10000000,
+                        'step' => 1,
+                        'unit' => __('entries per hour', 'live-weather-station'));
+        echo $this->field_multi_horizontal_input_number($nmbrs, $args[0]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns markup which escapes its values.
     }
 
     /**
@@ -1286,6 +1315,8 @@ class Admin {
                 update_option('live_weather_station_logger_level', $this->posted_int('lws_system_log_level'));
                 update_option('live_weather_station_rate_limit_public', $this->posted_int('lws_system_rate_limit_public', 0, 100000));
                 update_option('live_weather_station_rate_limit_feed', $this->posted_int('lws_system_rate_limit_feed', 0, 100000));
+                update_option('live_weather_station_cache_budget', $this->posted_int('lws_system_cache_budget', 0, 10000000));
+                update_option('live_weather_station_cache_budget_text', $this->posted_int('lws_system_cache_budget_text', 0, 10000000));
                 update_option('live_weather_station_logger_mask_sensitive', (array_key_exists('lws_system_log_mask', $_POST) ? 1 : 0));
                 update_option('live_weather_station_fa_mode', $this->posted_int('lws_system_fa_mode'));
                 update_option('live_weather_station_logger_rotate', $this->posted_int('lws_system_log_rotate', 1000, 100000));
