@@ -142,6 +142,13 @@ Netatmo no longer accepts a login with a password from a plugin, so each site us
 
 If you prefer, you can paste a refresh token of your application instead (second button). The connections made with previous versions keep working: you only need the steps above for a new connection or a reconnection.
 
+= Are the exports of the plugin protected? =
+The exports (configuration, data) are stored in the folder `wp-content/uploads/live-weather-station/`. Their names contain a random identifier, the plugin never shows their address, and an administrator downloads them through a protected link. In addition the plugin protects the folder for Apache (`.htaccess`) and IIS (`web.config`). nginx ignores these files: if your site runs on nginx, add this to its configuration and reload it:
+
+`location ^~ /wp-content/uploads/live-weather-station/ { deny all; }`
+
+The Site Health screen of WordPress (Tools, Site Health) tells you if the folder can be read from the web.
+
 = Can a station be on my local network? =
 Yes. The stations which are read from a file or a feed (Clientraw, Realtime, Stickertags) can be at an address of your local network (192.168.x.x, 10.x.x.x, a name of your LAN), because many personal stations live there. For this reason the plugin does not block private addresses when it reads a station: only an administrator can add a station, so only enter addresses you trust.
 

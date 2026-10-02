@@ -54,6 +54,10 @@ class Manager {
         if (!has_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'))) {
             add_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'));
         }
+        if (!has_filter('site_status_tests', array(__CLASS__, 'site_health_tests'))) {
+            add_filter('site_status_tests', array(__CLASS__, 'site_health_tests'));
+            add_action('wp_ajax_health-check-lwsstorage', array(__CLASS__, 'site_health_ajax'));
+        }
     }
 
     /**
@@ -68,6 +72,94 @@ class Manager {
         if (!file_exists(self::$dir . '.htaccess')) {
             @file_put_contents(self::$dir . '.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n");
         }
+        // Same rule for IIS (Windows servers).
+        if (!file_exists(self::$dir . 'web.config')) {
+            @file_put_contents(self::$dir . 'web.config', "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n");
+        }
+    }
+
+    /**
+     * Add the test of the exposure of the storage dir to the Site Health screen of WordPress.
+     *
+     * @param array $tests The tests of the Site Health screen.
+     * @return array The tests.
+     * @since 3.9.0
+     */
+    public static function site_health_tests($tests) {
+        $tests['async']['lwsstorage'] = array(
+            'label' => __('Files of Weather Station are not reachable from the web', 'live-weather-station'),
+            'test' => 'lwsstorage',
+        );
+        return $tests;
+    }
+
+    /**
+     * Answer the AJAX call of the Site Health test: try to read a small file of the storage dir from the outside.
+     *
+     * @since 3.9.0
+     */
+    public static function site_health_ajax() {
+        check_ajax_referer('health-check-site-status');
+        if (!current_user_can('view_site_health_checks')) {
+            wp_send_json_error();
+        }
+        $badge = array('label' => LIVE_WEATHER_STATION_PLUGIN_NAME, 'color' => 'blue');
+        $result = array(
+            'label' => __('Files of Weather Station are not reachable from the web', 'live-weather-station'),
+            'status' => 'good',
+            'badge' => $badge,
+            'description' => '<p>' . esc_html__('The exports of Weather Station can only be downloaded by an administrator.', 'live-weather-station') . '</p>',
+            'actions' => '',
+            'test' => 'lwsstorage',
+        );
+        $exposed = self::probe_exposure();
+        if ($exposed === true) {
+            $result['status'] = 'recommended';
+            $result['label'] = __('Files of Weather Station can be read from the web', 'live-weather-station');
+            $result['description'] = '<p>' . esc_html__('The folder where Weather Station stores its exports can be read by anyone who knows the address of a file. The plugin protects it for Apache and IIS servers, but your server seems to ignore these rules (this is usual with nginx).', 'live-weather-station') . '</p>'
+                . '<p>' . esc_html__('With nginx, add this to the configuration of your site, then reload nginx:', 'live-weather-station') . '</p>'
+                . '<pre><code>location ^~ /wp-content/uploads/' . esc_html(LIVE_WEATHER_STATION_PLUGIN_SLUG) . '/ { deny all; }</code></pre>';
+        }
+        elseif ($exposed === null) {
+            $result['description'] = '<p>' . esc_html__('The exports of Weather Station can only be downloaded by an administrator. The protection of their folder could not be checked from this site.', 'live-weather-station') . '</p>';
+        }
+        wp_send_json_success($result);
+    }
+
+    /**
+     * Try to read a small file of the storage dir through the web, then remove it.
+     *
+     * @return boolean|null True if the file was served, false if it was refused, null if the check could not be done.
+     * @since 3.9.0
+     */
+    private static function probe_exposure() {
+        self::init();
+        if (!wp_mkdir_p(self::$dir)) {
+            return null;
+        }
+        self::protect_dir();
+        $marker = wp_generate_password(24, false);
+        $name = 'lws-probe-' . wp_generate_password(12, false) . '.txt';
+        if (@file_put_contents(self::$dir . $name, $marker) === false) {
+            return null;
+        }
+        $result = null;
+        try {
+            $response = wp_remote_get(self::$url . $name, array('timeout' => 8, 'redirection' => 0, 'sslverify' => (bool)apply_filters('https_local_ssl_verify', false))); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter of the loopback requests
+            if (!is_wp_error($response)) {
+                $code = (int)wp_remote_retrieve_response_code($response);
+                if ($code === 200) {
+                    $result = (strpos((string)wp_remote_retrieve_body($response), $marker) !== false) ? true : false;
+                }
+                elseif ($code === 401 || $code === 403 || $code === 404) {
+                    $result = false;
+                }
+            }
+        }
+        finally {
+            wp_delete_file(self::$dir . $name);
+        }
+        return $result;
     }
 
     /**
@@ -385,7 +477,7 @@ class Manager {
         $result = array();
         if (self::check_for_write()) {
             foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
-                if (!is_dir(self::$dir . $item) && $item !== 'index.php' && $item !== '.htaccess') {
+                if (!is_dir(self::$dir . $item) && $item !== 'index.php' && $item !== '.htaccess' && $item !== 'web.config') {
                     $result[] = $item;
                 }
             }
