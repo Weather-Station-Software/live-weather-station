@@ -29,8 +29,7 @@ class Yowindow extends TXTGenerator {
      */
     protected function get_data($params, $subformat='standard') {
         $this->content_type = 'Content-type: application/xml; charset=utf-8';
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $params, true ) only builds the text handed to the plugin Logger::debug(), nothing is printed.
-        Logger::debug('YoWindow XML Renderer', null, null, null, null, null, null, print_r($params, true));
+        Logger::debug('YoWindow XML Renderer', null, null, null, null, null, null, Logger::dump($params, 4000));
         if (is_array($params) && !empty($params) && array_key_exists('station', $params)) {
             try {
                 $station = $this->get_station_information_by_station_id($params['station']);

@@ -185,8 +185,7 @@ trait BaseClient {
      */
     private function normalize_ambient_measurements() {
         $result = array();
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- feeds the plugin Logger at debug level (print_r with the return flag set returns a string, nothing is printed), the text is truncated to 4000 characters
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($this->ambient_measurements, true), 0, 4000));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($this->ambient_measurements));
         foreach($this->ambient_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;

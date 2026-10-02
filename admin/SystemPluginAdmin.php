@@ -391,6 +391,10 @@ class Admin {
             array($this, 'lws_system_log_level_callback'), 'lws_system', 'lws_system_section',
             array(__('Minimum level of severity that will be recorded in the events log.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_log_level', array('sanitize_callback' => 'sanitize_text_field'));
+        add_settings_field('lws_system_log_mask', '',
+            array($this, 'lws_system_log_mask_callback'), 'lws_system', 'lws_system_section',
+            array(__('When the "debug" level is recorded, the answers of the services are written in the events log. Hiding the position, the altitude, the address and the identifiers of the stations in these entries lets you share a log (for example in a support request) without publishing them. Uncheck it if you need the raw values to diagnose a problem.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_log_mask', array('sanitize_callback' => 'sanitize_text_field'));
         add_settings_field('lws_system_log_retention', '',
             array($this, 'lws_system_log_retention_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum number and maximum age of events stored in the events log.', 'live-weather-station')));
@@ -668,6 +672,16 @@ class Admin {
      */
     public function lws_system_log_level_callback($args) {
         echo $this->field_select($this->get_log_level_js_array(), get_option('live_weather_station_logger_level'), 'lws_system_log_level', $args[0]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns a complete form control whose dynamic parts are escaped there with esc_attr(), esc_html() and wp_kses_post().
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.9.0
+     */
+    public function lws_system_log_mask_callback($args) {
+        echo $this->field_checkbox(__('Hide the personal data of the stations in the debug entries of the events log', 'live-weather-station'), 'lws_system_log_mask', (bool)get_option('live_weather_station_logger_mask_sensitive', 1), $args[0]); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns a complete form control
     }
 
     /**
@@ -1241,6 +1255,7 @@ class Admin {
             $override = get_option('live_weather_station_overload_hc');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', $this->posted_int('lws_system_log_level'));
+                update_option('live_weather_station_logger_mask_sensitive', (array_key_exists('lws_system_log_mask', $_POST) ? 1 : 0));
                 update_option('live_weather_station_fa_mode', $this->posted_int('lws_system_fa_mode'));
                 update_option('live_weather_station_logger_rotate', $this->posted_int('lws_system_log_rotate', 1000, 100000));
                 update_option('live_weather_station_logger_retention', $this->posted_int('lws_system_log_retention', 2, 400));

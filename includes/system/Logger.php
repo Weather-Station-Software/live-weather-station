@@ -371,6 +371,68 @@ class Logger {
     }
 
     /**
+     * The normalized names (lower case letters only) of the keys whose value is the position or the identity of a station.
+     */
+    private static $sensitive_keys = array('mac', 'macaddress', 'lat', 'lon', 'lng', 'latitude', 'longitude', 'alt', 'altitude', 'elevation', 'location',
+        'coord', 'coords', 'coordinates', 'address', 'fulladdress', 'street', 'streetname', 'city', 'cityname', 'zip', 'zipcode', 'postcode', 'postalcode');
+
+    /**
+     * Get the text of a value for a debug entry (an answer of a service, for example).
+     *
+     * Nothing is built when the "debug" level is not recorded. By default the position, the altitude, the address and the MAC addresses
+     * are hidden, so that a log can be shared in a support request: the option 'live_weather_station_logger_mask_sensitive' turns this off.
+     *
+     * @param mixed $value The value to dump.
+     * @param integer $max Optional. The maximum length of the text.
+     * @return string The text, empty if the debug level is not recorded.
+     * @since 3.9.0
+     */
+    public static function dump($value, $max = 4000) {
+        if ((int)get_option('live_weather_station_logger_level', 5) < self::$severity['debug']) {
+            return '';
+        }
+        if ((bool)get_option('live_weather_station_logger_mask_sensitive', 1)) {
+            $value = self::mask_sensitive($value);
+        }
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds a text for the events log, nothing is printed.
+        return substr(print_r($value, true), 0, $max);
+    }
+
+    /**
+     * Hide the position and the identity of a station in a value.
+     *
+     * @param mixed $value The value.
+     * @param integer $depth Optional. The current depth.
+     * @return mixed The value without the sensitive parts.
+     * @since 3.9.0
+     */
+    private static function mask_sensitive($value, $depth = 0) {
+        if ($depth > 12) {
+            return '[...]';
+        }
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+        if (is_array($value)) {
+            $result = array();
+            foreach ($value as $key => $item) {
+                if (is_string($key) && in_array(strtolower(preg_replace('/[^A-Za-z]/', '', $key)), self::$sensitive_keys, true)) {
+                    $result[$key] = '[hidden]';
+                }
+                else {
+                    $result[$key] = self::mask_sensitive($item, $depth + 1);
+                }
+            }
+            return $result;
+        }
+        if (is_string($value)) {
+            // A MAC address: only the first three bytes (the manufacturer) are kept.
+            return preg_replace('/\b([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})([:-][0-9A-Fa-f]{2}){3}\b/', '$1:xx:xx:xx', $value);
+        }
+        return $value;
+    }
+
+    /**
      * Log a debug string while developing.
      *
      * @param $message string Optional. The error message.

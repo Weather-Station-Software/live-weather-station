@@ -183,7 +183,7 @@ trait PublicClient {
         else {
             throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- remote payload cleaned by live_weather_station_clean_text() (plain text, 200 characters max), the exception is only caught and logged by the caller
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds a string for Logger::debug(), nothing is printed
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, Logger::dump($weather));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             if (array_key_exists('timezone', $weather)) {
                 $timezone = live_weather_station_clean_text($weather['timezone'], 64);

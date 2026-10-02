@@ -180,8 +180,7 @@ trait BaseClient {
      */
     private function normalize_bloomsky_measurements() {
         $result = array();
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the string (cut to 4000 characters) that Logger::debug() stores in the plugin log table, nothing is printed
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($this->bloomsky_measurements, true), 0, 4000));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($this->bloomsky_measurements));
         foreach($this->bloomsky_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;
