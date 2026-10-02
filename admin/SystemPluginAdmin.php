@@ -253,7 +253,7 @@ class Admin {
                 $nonce = wp_create_nonce('lws-wow-be-nonce');
                 $s = '<strong>' . esc_html__('WOW Met Office will be discontinued at the end of 2026 and is replaced by WOW-BE.', 'live-weather-station') . '</strong> ';
                 $s .= esc_html__('Register your station again on wow.meteo.be, then enter its new station ID and authentication key in the sharing settings of your station. The history of your station cannot be transferred.', 'live-weather-station');
-                $s .= ' <a href="' . esc_url('https://wow.meteo.be/en/connect-your-station/migrating-an-existing-wow-station/') . '">' . esc_html__('How to migrate', 'live-weather-station') . '</a>';
+                $s .= ' <a href="' . esc_url('https://wow.meteo.be/en/join/') . '">' . esc_html__('How to migrate', 'live-weather-station') . '</a>';
                 print('<div id="lws-wow-be-notice" class="notice notice-warning is-dismissible" data-nonce="' . esc_attr($nonce) . '"><p>' . $s . '</p></div>'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $s is built just above from esc_html__() strings and a link whose URL goes through esc_url(); the nonce goes through esc_attr().
                 print('<script>jQuery(function($){$(document).on("click","#lws-wow-be-notice .notice-dismiss",function(){$.post(ajaxurl,{action:"hide_lws_wow_be_notice",lwswowbenonce:$("#lws-wow-be-notice").data("nonce")});});});</script>');
             }

@@ -161,7 +161,7 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -3) {
-            $result = sprintf($message, '<a href="http://openweathermap.org/price"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://openweathermap.org/price"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -4) {
             $result = 'https://weather.station.software/feed/';
@@ -170,22 +170,22 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -6) {
-            $result = '<a href="https://twitter.com/cyril_lakech"' . $target . '>Cyril Lakech</a>'. Intl::get_language_markup(array('fr'));
+            $result = '<a href="https://x.com/cyril_lakech"' . $target . '>Cyril Lakech</a>'. Intl::get_language_markup(array('fr'));
         }
         if ($number == -7) {
             $result = '<a href="http://www.punz.info/"' . $target . '>Martin Punz</a>'. Intl::get_language_markup(array('de'));
         }
         if ($number == -8) {
-            $result = '<a href="http://reseaumeteofrance.fr/"' . $target . '>Patrice Corre</a>'. Intl::get_language_markup(array('fr'));
+            $result = 'Patrice Corre'. Intl::get_language_markup(array('fr'));
         }
         if ($number == -9) {
-            $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
+            $result = '<a href="https://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
         }
         if ($number == -10) {
             $result = sprintf($message, '<a href="https://weather.station.software/languages-translation/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -11) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/login?action=member-apikeys"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -12) {
             $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -197,28 +197,28 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -15) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/register.php"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.pwsweather.com/register/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -16) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/station.php"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.pwsweather.com/station/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -17) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/obs/MOUVAUX.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.pwsweather.com/station/pws/MOUVAUX"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -18) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/member/devices/new"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -19) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup?new=1"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/member/devices/new"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -20) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/dashboard/pws/INORDPAS92"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -21) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/signup"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -22) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/login?action=member-apikeys"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -23) {
             $result = sprintf($message, '<a href="https://home.openweathermap.org/users/sign_up"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -233,10 +233,10 @@ class InlineHelp {
             $result = '<a href="http://developers.pioupiou.fr/data-licensing/"' . $target . '>Open Data</a>'. Intl::get_language_markup(array('en'));
         }
         if ($number == -27) {
-            $result = sprintf($message, '<a href="https://dashboard.ambientweather.net/signin"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://ambientweather.net/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -28) {
-            $result = sprintf($message, '<a href="https://dashboard.ambientweather.net/account"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://ambientweather.net/account"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -29) {
             $result = sprintf($message, '<a href="https://dashboard.bloomsky.com/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -248,7 +248,7 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://weather.station.software/community/general-questions/weather-underground-free-api-keys/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -32) {
-            $result = '<a href="http://weatherlink.gedfr.info/"' . $target . '>Francis Gedeon</a>'. Intl::get_language_markup(array('fr'));
+            $result = 'Francis Gedeon'. Intl::get_language_markup(array('fr'));
         }
         if ($number == -33) {
             $result = sprintf($message, '<a href="https://weather.station.software/blog/scheduled-task-interface/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -263,13 +263,13 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://www.windy.com"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -37) {
-            $result = sprintf($message, '<a href="https://api4.windy.com/api-key/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://api.windy.com/keys"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -38) {
-            $result = sprintf($message, '<a href="https://www.mapbox.com/signup/?plan=paygo-1"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://account.mapbox.com/auth/signup/?plan=paygo-1"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -39) {
-            $result = sprintf($message, '<a href="https://www.mapbox.com/account/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://console.mapbox.com/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -40) {
             $result = sprintf($message, '<a href="https://manage.thunderforest.com/users/sign_up?plan=hobby-project"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -287,7 +287,7 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://www.mapbox.com/pricing/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -45) {
-            $result = sprintf($message, '<a href="https://www.maptiler.com/cloud/plans/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.maptiler.com/cloud/pricing/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -46) {
             $result = sprintf($message, '<a href="https://cloud.maptiler.com/auth/widget?mode=select"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));

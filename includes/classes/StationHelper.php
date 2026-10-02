@@ -929,12 +929,12 @@ class Handling {
             case 'pws':
                 $f1 = __('Station ID', 'live-weather-station');
                 $f2 = __('Password', 'live-weather-station');
-                $url = 'https://www.pwsweather.com/obs/' . rawurlencode($station['pws_user']) . '.html';
+                $url = 'https://www.pwsweather.com/station/pws/' . rawurlencode($station['pws_user']);
                 break;
             case 'wug':
                 $f1 = __('Station ID', 'live-weather-station');
                 $f2 = __('Password', 'live-weather-station');
-                $url = 'https://www.wunderground.com/personal-weather-station/dashboard?ID=' . rawurlencode($station['wug_user']);
+                $url = 'https://www.wunderground.com/dashboard/pws/' . rawurlencode($station['wug_user']);
                 break;
         }
         $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');

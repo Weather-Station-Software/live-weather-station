@@ -824,7 +824,7 @@ trait Storage {
             // OUTDATED PHP
             if (!Env::is_php_version_uptodate()) {
                 Notifier::error(__('Your PHP version is deprecated', 'live-weather-station'),
-                               'http://php.net/supported-versions.php',
+                               'https://www.php.net/supported-versions.php',
                                 __('This version of PHP is no longer supported by the PHP team and will not even receive security fixes in a few weeks. You should seriously consider to update it.', 'live-weather-station') .
                                 '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
             }
@@ -832,7 +832,7 @@ trait Storage {
             // OUTDATED WordPress
             if (!Env::is_wp_version_uptodate()) {
                 Notifier::error(__('Your WordPress version is old', 'live-weather-station'),
-                    'https://codex.wordpress.org/Current_events',
+                    'https://wordpress.org/download/',
                     __('This version of WordPress is old. You should seriously consider to update it.', 'live-weather-station') .
                     '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
             }

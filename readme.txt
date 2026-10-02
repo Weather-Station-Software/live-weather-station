@@ -123,7 +123,7 @@ You can find instructions [here](https://weather.station.software/handbook/).
 You can report bugs and suggest ideas [via the Github repository](https://github.com/Weather-Station-Software/live-weather-station/issues).
 
 = Where do I report security bugs found in this plugin? =
-Please report security bugs found in the source code of the Weather Station plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/live-weather-station).
+Please report security bugs found in the source code of the Weather Station plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/wordpress/plugin/live-weather-station).
 The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 Alternatively, you can also [contact me directly by email](mailto:weather@station.network).
 

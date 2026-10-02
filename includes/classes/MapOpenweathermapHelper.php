@@ -127,7 +127,7 @@ class OpenweathermapHandling extends BaseHandling {
                 if (strtolower($m[0]) === 'carto') {
                     $quota = Quota::verify('Carto', 'GET', 20);
                     $result .= "var bg = new L.tileLayer(" . Guard::js('https://{s}.basemaps.cartocdn.com/' . rawurlencode($m[1]) . '/{z}/{x}/{y}.png') . ", {" . PHP_EOL;
-                    $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a> &amp; <a href=\"https://carto.com/attributions\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
+                    $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a> &amp; <a href=\"https://carto.com/attribution/\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                     $result .= '});' . PHP_EOL;
                 }
             }
