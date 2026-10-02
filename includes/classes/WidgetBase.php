@@ -45,6 +45,10 @@ abstract class Base extends \WP_Widget {
      * @since 3.8.0
      */
     public function widget($args, $instance) {
+        // A visitor sees nothing of a station which is not public.
+        if (!live_weather_station_visitor_may_see(array('device_id' => isset($instance['station']) ? $instance['station'] : ''))) {
+            return;
+        }
         $this->enqueue_styles();
         // The AJAX mode needs a stored widget instance to refer to (the server never trusts client-supplied settings).
         // Widgets rendered without a real sidebar slot (Legacy Widget block, Customizer preview: number = -1 or
@@ -243,6 +247,9 @@ abstract class Base extends \WP_Widget {
         }
         $args = array('before_widget' => '', 'after_widget' => '', 'before_title' => '', 'after_title' => '');
         $instance = self::sanitize_instance($options[$number]);
+        if (!live_weather_station_visitor_may_see(array('device_id' => isset($instance['station']) ? $instance['station'] : ''))) {
+            exit ('');
+        }
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget markup (it can hold script and canvas elements) built by widget_content() of the widget classes, which escape their own values; before_widget/after_widget come from the theme sidebar definition, as for any WordPress widget.
         echo $widget->widget_content($args, $instance);
         exit;

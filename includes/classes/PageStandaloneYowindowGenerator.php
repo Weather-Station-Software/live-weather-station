@@ -41,15 +41,16 @@ class Yowindow extends TXTGenerator {
                 // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException is only logged and answered as text/plain through PageStandaloneFramework::error(), which replaces it by the HTTP status text.
                 throw new LoggableException('error', 'YoWindow XML Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.');
             }
-            if (array_key_exists('yow_sync', $station) && $station['yow_sync'] == 1) {
+            if (array_key_exists('yow_sync', $station) && $station['yow_sync'] == 1 && !empty($station['public_access'])) {
                 $data = $this->format_yowindow_data($this->get_outdoor_measurements($params['station'], false, true));
                 $result = $data['values'];
                 $this->timestamp = $data['timestamp'];
                 Logger::info('YoWindow XML Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');
             }
             else {
-                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException is only logged and answered as text/plain through PageStandaloneFramework::error(), which replaces it by the HTTP status text.
-                throw new LoggableException('error', 'YoWindow XML Renderer', null, $station['station_id'], $station['station_name'], null, null , 405, 'The station does not publish its data via this method/format.');
+                // A feed which is not enabled, or of a station which is not public, answers like an unknown station: the status does not reveal which stations exist.
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException builds the response through the framework.
+                throw new LoggableException('error', 'YoWindow XML Renderer', null, null, null, null, null , 400, 'Not a valid station ID.');
             }
         }
         else {

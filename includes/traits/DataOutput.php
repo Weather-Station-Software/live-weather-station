@@ -3362,6 +3362,10 @@ trait Output {
      * @since 3.4.0
      */
     public function graph_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
         $_attributes['mode'] = Guard::token($_attributes['mode'], '');
         $_attributes['type'] = Guard::token($_attributes['type'], '');
@@ -5374,6 +5378,10 @@ trait Output {
      * @since 3.8.0
      */
     public function ltgraph_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
         $_attributes['mode'] = Guard::token($_attributes['mode'], '');
         $_attributes['type'] = Guard::token($_attributes['type'], '');
@@ -5900,6 +5908,10 @@ trait Output {
      * @since 3.8.0
      */
     public function radial_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $result = '';
         $_attributes = shortcode_atts(array('mode' => '', 'type' => '', 'values' => 'temperature-rain-threshold', 'valuescale' => 'auto', 'template' => 'neutral', 'device_id' => '', 'height' => '300px', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'period' => 'none'), $attributes);
         $_attributes['mode'] = Guard::token($_attributes['mode'], '');
@@ -6165,6 +6177,10 @@ trait Output {
      * @since 3.8.0
      */
     public function lttextual_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('mode' => 'climat', 'type' => 'textual', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'th1' => '', 'th2' => '', 'computed' => 'simple-avg', 'condition' => 'comp-eq', 'ref' => '0', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
         foreach (array('mode', 'type', 'device_id', 'module_id', 'measurement', 'computed', 'condition', 'periodtype', 'cache') as $key) {
             $_attributes[$key] = Guard::token($_attributes[$key], '');
@@ -7676,6 +7692,10 @@ trait Output {
      * @since 3.6.0
      */
     public function timelapse_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('device_id_1' => '','module_id_1' => '','measurement_1' => '','periodtype' => '','periodvalue' => '','size' => '','autoplay' => '','mode' => '','controls' => ''), $attributes );
         foreach (array('device_id_1', 'module_id_1', 'measurement_1', 'periodtype', 'periodvalue', 'size', 'autoplay', 'mode', 'controls') as $key) {
             $_attributes[$key] = Guard::token($_attributes[$key], '');
@@ -7737,6 +7757,10 @@ trait Output {
      * @since 3.6.0
      */
     public function snapshot_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','size' => '','fx' => '','speed' => '','mode'=>'full','uid'=>'','debug'=>''), $attributes);
         foreach (array('device_id', 'module_id', 'measure_type', 'size', 'fx', 'uid', 'debug') as $key) {
             $_attributes[$key] = Guard::token($_attributes[$key], '');
@@ -7806,6 +7830,10 @@ trait Output {
      * @since 3.6.0
      */
     public function livesnapshot_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $fingerprint = uniqid('', true);
         $uniq = 'snapshot'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $spinner = 'spinner'.substr ($fingerprint, strlen($fingerprint)-6, 80);
@@ -7865,6 +7893,10 @@ trait Output {
      * @since 1.0.0
      */
     public function lcd_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '','size' => '','speed' => ''), $attributes );
         foreach (array('device_id', 'module_id', 'measure_type', 'design', 'size', 'speed') as $_key) {
             $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
@@ -7912,6 +7944,10 @@ trait Output {
      * @since 1.0.0
      */
     public function lcd_value($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return array();
+        }
         // The cache key is built from sanitized identifiers only (anonymous callers must not be able to create unbounded entries).
         $attributes = array(
             'device_id' => Guard::token(isset($attributes['device_id']) ? $attributes['device_id'] : '', ''),
@@ -8034,6 +8070,10 @@ trait Output {
      * @since    2.1.0
      */
     public function justgage_value($attributes, $full=false) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return array();
+        }
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
         foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
             $_attributes[$_key] = Guard::token($_attributes[$_key], '');
@@ -8468,6 +8508,10 @@ trait Output {
      * @since    2.1.0
      */
     public function justgage_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $fingerprint = uniqid('', true);
         $uniq = 'jgg'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $time = 1000 * (120 + wp_rand(-20, 20));
@@ -8535,6 +8579,10 @@ trait Output {
      * @since    2.2.0
      */
     public function steelmeter_value($attributes, $full=false) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return array();
+        }
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
         foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
             $_attributes[$_key] = Guard::token($_attributes[$_key], '');
@@ -9024,6 +9072,10 @@ trait Output {
      * @since    2.2.0
      */
     public function steelmeter_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $result = '';
         $fingerprint = uniqid('', true);
         $uniq = 'ssm'.substr ($fingerprint, strlen($fingerprint)-6, 80);
@@ -9213,6 +9265,10 @@ trait Output {
      * @since 1.0.0
      */
     public function textual_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes );
         foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
             $_attributes[$_key] = Guard::token($_attributes[$_key], '');
@@ -9595,6 +9651,10 @@ trait Output {
      * @since 3.6.0
      */
     public function livetextual_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         wp_enqueue_script('jquery');
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
         foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
@@ -9640,6 +9700,10 @@ trait Output {
      * @since 3.8.0
      */
     public function icon_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
         live_weather_station_font_awesome();
@@ -9672,6 +9736,10 @@ trait Output {
      * @since 3.8.0
      */
     public function liveicon_shortcodes($attributes) {
+        // A visitor sees nothing of a station which is not public, nor of a hidden module.
+        if (!live_weather_station_visitor_may_see($attributes)) {
+            return '';
+        }
         wp_enqueue_script('jquery');
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');

@@ -470,6 +470,10 @@ abstract class BaseHandling {
             $stations = $this->get_ordered_stations_list($this->map_params['stations']);
         }
         foreach ($stations as $station) {
+            // The visitors do not see the markers of the stations which are not public.
+            if (!live_weather_station_visitor_may_see(array('device_id' => isset($station['station_id']) ? $station['station_id'] : ''))) {
+                continue;
+            }
             $s = array();
             $s['id'] = $station['guid'];
             $s['lat'] = $station['loc_latitude'];

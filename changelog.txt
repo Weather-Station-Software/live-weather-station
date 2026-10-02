@@ -85,6 +85,8 @@
 * Improvement: the readme now lists every external service the plugin can contact, what is sent to it and when, with its terms and privacy policy (section "External services").
 * Bug fix: a language which has no translation set on translate.wordpress.org is remembered for 12 hours instead of being asked again at every request.
 * Improvement: the data import screen explains that a file must first be added in the Files screen when none is listed.
+* New: each station has a "Public" setting (Visibility box). A station which is not public shows nothing to the visitors of the site (shortcodes, widgets, charts, controls, maps and feeds); the administrators always see everything. The stations which exist when you update stay public; a station added afterwards is private until the box is ticked.
+* Security: the public feeds (/get-weather/...) answer a station which is not public, a feed which is not enabled and an unknown station in exactly the same way (HTTP 400), so the status no longer tells which stations exist.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5
