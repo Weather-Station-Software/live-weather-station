@@ -341,7 +341,7 @@ trait PublicClient {
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact Pioupiou servers. Retry will be done shortly.');
-                    return array();
+                    continue;
                 }
             }
         }
