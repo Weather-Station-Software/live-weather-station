@@ -145,6 +145,9 @@ If you prefer, you can paste a refresh token of your application instead (second
 = What is the admin analytics shortcode? =
 The Analytics screens of the plugin (API quotas, events, cache, database, scheduled tasks) are drawn by the shortcode `[live-weather-station-admin-analytics item="quota" metric="service_short"]` (and its variants). It shows internal statistics of your site, so it only displays something to an administrator: for any other visitor it returns nothing. You can put it in a page to see these charts on the front of your site, but do not publish it on a page that is served to visitors through a full-page cache (cache plugin, host cache, CDN page cache): if the page is cached while an administrator is logged in, the charts would be kept in the cache and shown to everyone. Exclude that page from the cache, or keep these statistics in the Analytics screens of the dashboard.
 
+= Can I show two Windy maps on the same page? =
+No. The Windy library looks for one element with the identifier `windy` and refuses to start without it, so it can only draw one map per page. Use one Windy map per page, and a map of another provider (Mapbox, MapTiler, OpenWeatherMap...) for the others.
+
 = Are the exports of the plugin protected? =
 The exports (configuration, data) are stored in the folder `wp-content/uploads/live-weather-station/`. Their names contain a random identifier, the plugin never shows their address, and an administrator downloads them through a protected link. In addition the plugin protects the folder for Apache (`.htaccess`) and IIS (`web.config`). nginx ignores these files: if your site runs on nginx, add this to its configuration and reload it:
 

@@ -121,17 +121,20 @@ class OpenweathermapHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $quota = true;
+        $bg_defined = false;
         if ($this->map_params['specific']['options']['basemap'] != 'none') {
             $m = explode(':', $this->map_params['specific']['options']['basemap']);
             if (count($m) === 2) {
                 if (strtolower($m[0]) === 'carto') {
                     $quota = Quota::verify('Carto', 'GET', 20);
+                    $bg_defined = true;
                     $result .= "var bg = new L.tileLayer(" . Guard::js('https://{s}.basemaps.cartocdn.com/' . rawurlencode($m[1]) . '/{z}/{x}/{y}.png') . ", {" . PHP_EOL;
                     $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a> &amp; <a href=\"https://carto.com/attribution/\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                     $result .= '});' . PHP_EOL;
                 }
             }
             else {
+                $bg_defined = true;
                 $result .= "var bg = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" . PHP_EOL;
                 $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                 $result .= '});' . PHP_EOL;
@@ -177,7 +180,7 @@ class OpenweathermapHandling extends BaseHandling {
         $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');";
-        if ($quota && $this->map_params['specific']['options']['basemap'] != 'none') {
+        if ($quota && $bg_defined) {
             $result .= "map.addLayer(bg);" . PHP_EOL;
         }
         $result .= "map.addLayer(layer);" . PHP_EOL;
