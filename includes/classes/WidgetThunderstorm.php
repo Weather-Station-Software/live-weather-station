@@ -372,7 +372,7 @@ class Thunderstorm extends Base {
                         if (array_key_exists('strike_bearing', $module['measurements'])) {
                             $NAModule7 = true;
                             $measurements['strikebearing'] = array();
-                            $measurements['strikebearing']['value'] = $module['measurements']['strike_count']['value'];
+                            $measurements['strikebearing']['value'] = $module['measurements']['strike_bearing']['value'];
                             $measurements['strikebearing']['unit'] = $this->get_angle_text($module['measurements']['strike_bearing']['raw_value']);
                             $measurements['strikebearing']['icon'] = $this->output_iconic_value($module['measurements']['strike_bearing']['raw_value'], 'strike_bearing', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }

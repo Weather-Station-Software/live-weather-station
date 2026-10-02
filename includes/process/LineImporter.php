@@ -146,7 +146,7 @@ abstract class LineImporter extends Process {
         try {
             $file = new \SplFileObject(FS::construct_full_file_name($this->params['file']));
             $file->seek($this->params['current']);
-            for ($i=1; $i < $this->batchsize; $i++) {
+            for ($i=1; $i <= $this->batchsize; $i++) {
                 $args['values'] = $file->current();
                 $values = $this->transform($args, $this->params['init']['start_date'], $this->params['init']['end_date']);
                 foreach ($values as $v) {
@@ -165,7 +165,7 @@ abstract class LineImporter extends Process {
                     break;
                 }
             }
-            $this->params['current'] = $this->params['current'] + $i;
+            $this->params['current'] = $this->params['current'] + min($i, $this->batchsize);
         }
         catch (\Exception $ex) {
             $this->params['error'] = true;
@@ -183,7 +183,7 @@ abstract class LineImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<20; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*15)) {
+            if ((int)ini_get('max_execution_time') > $i*15) {
                 $max += 1;
             }
         }
