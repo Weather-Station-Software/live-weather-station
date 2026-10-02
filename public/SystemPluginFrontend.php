@@ -156,6 +156,10 @@ class Frontend {
         }
         $result = $this->graph_query($this->graph_prepare($attributes), true);
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
+        }
         echo $this->lws_result_values($result);
         exit;
     }
@@ -184,6 +188,10 @@ class Frontend {
         }
         $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
+        }
         echo $this->lws_result_values($result);
         exit;
     }
@@ -204,6 +212,10 @@ class Frontend {
         }
         $result = $this->graph_query($this->radial_prepare($attributes), true);
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
+        }
         echo $this->lws_result_values($result);
         exit;
     }
