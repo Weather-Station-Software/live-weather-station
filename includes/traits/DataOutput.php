@@ -10600,6 +10600,10 @@ trait Output {
             default:
                 $result = '<i %1$s class="' . LIVE_WEATHER_STATION_FAR . ' ' . (LIVE_WEATHER_STATION_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
         }
+        // $style is a trusted inline attribute (style="..."): anything else is dropped.
+        if (preg_match('/^style="[^"<>]*"$/D', (string)$style) !== 1) {
+            $style = '';
+        }
         return sprintf($result, $style, esc_attr($extra));
     }
 
@@ -11681,8 +11685,12 @@ trait Output {
         // Query (0) the current locale, to restore it as it was.
         $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, $locale);
-        uasort($result, $compareASCII);
-        setlocale(LC_ALL, $save_locale);
+        try {
+            uasort($result, $compareASCII);
+        }
+        finally {
+            setlocale(LC_ALL, $save_locale);
+        }
         return $result;
     }
 
@@ -12600,6 +12608,24 @@ trait Output {
     protected function format_lcd_measurements($measurements, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, live_weather_station_get_display_locale());
+        try {
+            return $this->format_lcd_measurements_localized($measurements, $measure_type, $computed);
+        }
+        finally {
+            setlocale(LC_ALL, $save_locale);
+        }
+    }
+
+    /**
+     * Format measurements for lcd controls (the locale is already set by the caller).
+     *
+     * @param array $measurements The measurements.
+     * @param string $measure_type The measure type(s) to include.
+     * @param boolean $computed Includes computed measures too.
+     * @return array An array containing the formatted measurements.
+     * @since 3.9.0
+     */
+    private function format_lcd_measurements_localized($measurements, $measure_type, $computed=false) {
         $result = array();
         $response = array ();
         $battery = array();
@@ -12970,7 +12996,6 @@ trait Output {
         }
         $result['condition'] = array('value' => $err, 'message' =>$msg);
         $result['measurements'] = $response;
-        setlocale(LC_ALL, $save_locale);
         return $result;
     }
 
@@ -13021,38 +13046,38 @@ trait Output {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $values[2] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[2] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'heat_index':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_heat_index($tr, $hr, $dr)) {
-                                $values[3] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[3] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'wind_chill':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
-                                $values[4] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[4] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidity':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $values[5] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[5] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'dew_point':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_dew_point($tr)) {
-                                $values[6] = sprintf('%.1F', round($data['measure_value'], 1));
+                                $values[6] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'pressure_sl':
                         if (strtolower($data['module_type']) == 'namain') {
-                            $values[7] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[7] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_trend':
@@ -13062,7 +13087,7 @@ trait Output {
                         break;
                     case 'windstrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $values[9] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[9] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'windangle':
@@ -13072,7 +13097,7 @@ trait Output {
                         break;
                     case 'rain_day_aggregated':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $values[11] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[11] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'sunrise':
@@ -13087,7 +13112,7 @@ trait Output {
                         break;
                     case 'guststrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $values[16] = sprintf('%.1F', round($data['measure_value'], 1));
+                            $values[16] = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                 }
@@ -13152,52 +13177,52 @@ trait Output {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $temp = sprintf('%.1F', round($data['measure_value'], 1));
+                            $temp = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'heat_index':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_heat_index($tr, $hr, $dr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'summer_simmer':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_summer_simmer($tr, $hr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'steadman':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_steadman($tr, $hr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidex':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_humidex($tr, $hr, $dr)) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'wind_chill':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
-                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                                $temp_like = sprintf('%.1F', round((float)$data['measure_value'], 1));
                             }
                         }
                         break;
                     case 'humidity':
                         if (strtolower($data['module_type']) == 'namodule1') {
-                            $humidity = sprintf('%.1F', round($data['measure_value'], 1));
+                            $humidity = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_sl':
                         if (strtolower($data['module_type']) == 'namain') {
-                            $pressure = sprintf('%.1F', round($data['measure_value'], 1));
+                            $pressure = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'pressure_sl_trend':
@@ -13207,42 +13232,42 @@ trait Output {
                         break;
                     case 'uv_index':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $uv_index = sprintf('%.1F', round($data['measure_value'], 1));
+                            $uv_index = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'irradiance':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $irradiance = sprintf('%d', round($data['measure_value'],0));
+                            $irradiance = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'illuminance':
                         if (strtolower($data['module_type']) == 'namodule5') {
-                            $illuminance = sprintf('%d', round($data['measure_value'] / 1000,0));
+                            $illuminance = sprintf('%d', round((float)$data['measure_value'] / 1000,0));
                         }
                         break;
                     case 'windstrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_strength = sprintf('%.1F', round($data['measure_value'], 1));
+                            $wind_strength = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'guststrength':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_gust = sprintf('%.1F', round($data['measure_value'], 1));
+                            $wind_gust = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'windangle':
                         if (strtolower($data['module_type']) == 'namodule2') {
-                            $wind_angle = sprintf('%d', round($data['measure_value'],0));
+                            $wind_angle = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'rain':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $rain = sprintf('%d', round($data['measure_value'],0));
+                            $rain = sprintf('%d', round((float)$data['measure_value'],0));
                         }
                         break;
                     case 'rain_day_aggregated':
                         if (strtolower($data['module_type']) == 'namodule3') {
-                            $rain_day_aggregated = sprintf('%.1F', round($data['measure_value'], 1));
+                            $rain_day_aggregated = sprintf('%.1F', round((float)$data['measure_value'], 1));
                         }
                         break;
                     case 'strike_instant':
@@ -14210,7 +14235,7 @@ trait Output {
                 wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
             }
             else {
-                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);
+                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
             }
         }
         return $result;
