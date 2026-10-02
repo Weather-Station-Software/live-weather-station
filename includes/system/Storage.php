@@ -192,7 +192,12 @@ class Manager {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- this line only reads the nonce, wp_verify_nonce() checks it on the next statement
         $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash((string)$_GET['_wpnonce'])) : '';
         if (!current_user_can(live_weather_station_manage_capability()) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
-            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
+            // One row per minute and per user at most: a logged-in user without the right must not be able to fill the log.
+            $flag = 'lws_dl_denied_' . get_current_user_id();
+            if (!get_transient($flag)) {
+                set_transient($flag, 1, MINUTE_IN_SECONDS);
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
+            }
             wp_die(esc_html__('You do not have sufficient permissions to download this file.', 'live-weather-station'), '', array('response' => 403));
         }
         $ext = self::managed_extension($file);
