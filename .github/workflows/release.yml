@@ -66,6 +66,14 @@ jobs:
           else
             echo "_No contributor identified._" >> /tmp/notes.md
           fi
+      - name: Build the plugin zip
+        # The same files as the wordpress.org package (.distignore), in a folder named after the plugin slug, so that
+        # WordPress installs and updates it in the right place. The fixed file name keeps the "latest" download link stable.
+        run: |
+          mkdir -p /tmp/build/live-weather-station
+          rsync -a --exclude-from=.distignore ./ /tmp/build/live-weather-station/
+          (cd /tmp/build && zip -q -r live-weather-station.zip live-weather-station)
+          unzip -l /tmp/build/live-weather-station.zip | tail -1
       - name: Create the draft release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -73,4 +81,5 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --draft \
             --title "Weather Station $GITHUB_REF_NAME" \
-            --notes-file /tmp/notes.md
+            --notes-file /tmp/notes.md \
+            /tmp/build/live-weather-station.zip
