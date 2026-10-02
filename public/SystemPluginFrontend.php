@@ -154,7 +154,7 @@ class Frontend {
                 }
             }
         }
-        $result = $this->graph_query($this->graph_prepare($attributes), true);
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->graph_prepare($attributes), true);
         // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
         if (!headers_sent()) {
             header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
@@ -186,7 +186,7 @@ class Frontend {
                 }
             }
         }
-        $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->ltgraph_prepare($attributes), true);
         // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
         if (!headers_sent()) {
             header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
@@ -210,7 +210,7 @@ class Frontend {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        $result = $this->graph_query($this->radial_prepare($attributes), true);
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->radial_prepare($attributes), true);
         // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
         if (!headers_sent()) {
             header('Content-Type: text/plain; charset=' . get_option('blog_charset'));

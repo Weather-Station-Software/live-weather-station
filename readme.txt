@@ -201,6 +201,9 @@ The Analytics screens of the plugin (API quotas, events, cache, database, schedu
 = Can I show two Windy maps on the same page? =
 No. The Windy library looks for one element with the identifier `windy` and refuses to start without it, so it can only draw one map per page. Use one Windy map per page, and a map of another provider (Mapbox, MapTiler, OpenWeatherMap...) for the others.
 
+= Why do my visitors see nothing of a station? =
+Each station has a "Public" box in the Visibility box of its screen. When it is not ticked, the visitors of the site see nothing of this station: its shortcodes, widgets, charts, controls, maps and public feeds stay empty, and an unknown station and a private one cannot be told apart. You, as an administrator, always see everything, so the previews keep working. The stations which existed when you updated to 3.9.0 are public; a station added afterwards is private until you tick the box. If your site uses a full-page cache, do not let it keep pages rendered while an administrator is logged in: such a page would show the station to everyone.
+
 = Are the exports of the plugin protected? =
 The exports (configuration, data) are stored in the folder `wp-content/uploads/live-weather-station/`. Their names contain a random identifier, the plugin never shows their address, and an administrator downloads them through a protected link. In addition the plugin protects the folder for Apache (`.htaccess`) and IIS (`web.config`). nginx ignores these files: if your site runs on nginx, add this to its configuration and reload it:
 

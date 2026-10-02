@@ -39,14 +39,16 @@ class Stickertags extends TXTGenerator {
              catch (\Exception $e) {
                  throw new LoggableException('error', 'Stickertags Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.'); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message, the exception is only logged (Logger::exception) and the client gets the HTTP status text from PageStandaloneFramework::error()
              }
-             if (array_key_exists('txt_sync', $station) && $station['txt_sync'] == 1) {
+             if (array_key_exists('txt_sync', $station) && $station['txt_sync'] == 1 && !empty($station['public_access'])) {
                  $data = $this->format_stickertags_data($this->get_outdoor_measurements($params['station'], false, true));
                  $result = $data['values'];
                  $this->timestamp = $data['timestamp'];
                  Logger::info('Stickertags Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');
              }
              else {
-                 throw new LoggableException('error', 'Stickertags Renderer', null, $station['station_id'], $station['station_name'], null, null , 405, 'The station does not publish its data via this method/format.'); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message, the exception is only logged (Logger::exception) and the client gets the HTTP status text from PageStandaloneFramework::error()
+                 // A feed which is not enabled, or of a station which is not public, answers like an unknown station: the status does not reveal which stations exist.
+                 // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException builds the response through the framework.
+                 throw new LoggableException('error', 'Stickertags Renderer', null, null, null, null, null , 400, 'Not a valid station ID.');
              }
          }
          else {

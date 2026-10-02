@@ -860,6 +860,81 @@ function live_weather_station_renew_lock($lock, $ttl) {
 }
 
 /**
+ * Is the station readable by the visitors of the site?
+ *
+ * A station is public when its box "Public" is ticked (Publishing tab of the station). An unknown station is reported
+ * as public: it has no data, so nothing is revealed (an unknown and a private station give the same, empty, result).
+ *
+ * @param string $station_id The id of the station (the device_id of its measurements).
+ * @return bool True if the visitors may read it.
+ * @since 3.9.0
+ */
+function live_weather_station_station_is_public($station_id) {
+    static $cache = array();
+    if (!is_string($station_id) || $station_id === '') {
+        return true;
+    }
+    if (!isset($cache[$station_id])) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'live_weather_station_stations';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, the name comes from the plugin itself; cached for the request just above.
+        $value = $wpdb->get_var($wpdb->prepare("SELECT public_access FROM " . $table . " WHERE station_id=%s LIMIT 1", $station_id));
+        $cache[$station_id] = ($value === null) ? true : ((int)$value === 1);
+    }
+    return $cache[$station_id];
+}
+
+/**
+ * May the current user see the stations and the modules which a shortcode, a widget or an AJAX request refers to?
+ *
+ * An administrator (who can manage the plugin), WP-Cron and WP-CLI see everything: the previews and the background jobs keep
+ * working. A visitor sees nothing of a station which is not public, nor of a module which is marked as hidden.
+ *
+ * @param mixed $attributes The attributes of the request: device_id, device_id_1 to device_id_8, module_id, module_id_1 to module_id_8.
+ * @return bool True if everything it refers to may be shown.
+ * @since 3.9.0
+ */
+function live_weather_station_visitor_may_see($attributes) {
+    if (!is_array($attributes)) {
+        return true;
+    }
+    if ((function_exists('wp_doing_cron') && wp_doing_cron()) || (defined('WP_CLI') && WP_CLI) || current_user_can(live_weather_station_manage_capability())) {
+        return true;
+    }
+    $devices = array();
+    $modules = array();
+    foreach ($attributes as $key => $value) {
+        if (!is_string($key) || !is_scalar($value)) {
+            continue;
+        }
+        if (preg_match('/^device_id(_[1-8])?$/', $key)) {
+            $devices[] = (string)$value;
+        }
+        elseif (preg_match('/^module_id(_[1-8])?$/', $key)) {
+            $modules[] = (string)$value;
+        }
+    }
+    foreach ($devices as $device) {
+        if (!live_weather_station_station_is_public($device)) {
+            return false;
+        }
+    }
+    foreach ($modules as $module) {
+        if ($module === '' || $module === 'aggregated') {
+            continue;
+        }
+        global $wpdb;
+        $table = $wpdb->prefix . 'live_weather_station_module_detail';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, the name comes from the plugin itself.
+        $row = $wpdb->get_row($wpdb->prepare("SELECT device_id, hidden FROM " . $table . " WHERE module_id=%s LIMIT 1", $module), ARRAY_A);
+        if (is_array($row) && ((int)$row['hidden'] === 1 || !live_weather_station_station_is_public((string)$row['device_id']))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Cheap per-IP rate limit for public AJAX endpoints. Sends an HTTP 429 JSON response and stops when exceeded.
  *
  * Defaults: 120 requests per 60 seconds, per client IP and per endpoint. A page with many live controls makes

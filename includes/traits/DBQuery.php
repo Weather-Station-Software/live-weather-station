@@ -2838,7 +2838,7 @@ trait Query {
      */
     private static function stations_numeric_columns() {
         return array('guid', 'station_type', 'connection_type', 'loc_latitude', 'loc_longitude', 'loc_altitude', 'comp_bas', 'comp_ext', 'comp_int', 'comp_xtd', 'comp_vrt',
-            'txt_sync', 'raw_sync', 'real_sync', 'yow_sync', 'owm_sync', 'pws_sync', 'wow_sync', 'wet_sync', 'wug_sync');
+            'public_access', 'txt_sync', 'raw_sync', 'real_sync', 'yow_sync', 'owm_sync', 'pws_sync', 'wow_sync', 'wet_sync', 'wug_sync');
     }
 
     /**

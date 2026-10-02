@@ -295,6 +295,10 @@ class Handling {
                         if (($guid != 0) && ($guid == $this->station_guid)) {
                             $station = $this->get_station_information_by_guid($guid);
                             $update = true;
+                            if (array_key_exists('submit-visibility', $_POST)) {
+                                $station['public_access'] = array_key_exists('public_access', $_POST) ? 1 : 0;
+                                $save = true;
+                            }
                             if (array_key_exists('submit-publish', $_POST)) {
                                 foreach ($this->publishing_proto as $proto) {
                                     if (array_key_exists($proto . '_sync', $_POST)) {
@@ -722,6 +726,9 @@ class Handling {
         elseif ($this->station_type == LIVE_WEATHER_STATION_OWM_SID) {
             echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('This station is no longer collected because the OpenWeatherMap station service is no longer supported.', 'live-weather-station') . '</p></div>';
         }
+        if (is_array($this->station_information) && empty($this->station_information['public_access'])) {
+            echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__('This station is not public.', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('The visitors of your site see nothing of it (shortcodes, widgets, maps and feeds). You, as an administrator, see everything. To show it, tick "Public" in the Visibility box.', 'live-weather-station') . '</p></div>';
+        }
         include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationTab.php');
         settings_errors();
         if ($this->arg_action == 'manage') {
@@ -793,6 +800,7 @@ class Handling {
             $gid = strtolower(str_replace(':', '', $station['station_id']));
             // Left column
             add_meta_box('lws-station', __('Station', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
+            add_meta_box('lws-visibility', __('Visibility', 'live-weather-station' ), array($this, 'visibility_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-location', __('Location', 'live-weather-station' ), array($this, 'location_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-tools', __('Tools', 'live-weather-station' ), array($this, 'tools_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             if (in_array($station['station_type'], $this->publishable)) {
@@ -888,6 +896,19 @@ class Handling {
             $station = $args['args']['station'];
         }
         include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationPublishing.php');
+    }
+
+    /**
+     * Get content of the visibility widget box (is the station shown to the visitors of the site?).
+     *
+     * @since 3.9.0
+     */
+    public function visibility_widget($n, $args) {
+        $station = array();
+        if (array_key_exists('station', $args['args'])) {
+            $station = $args['args']['station'];
+        }
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/StationVisibility.php');
     }
 
     /**

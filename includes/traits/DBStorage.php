@@ -365,6 +365,7 @@ trait Storage {
         $sql .= " comp_int int(11) NOT NULL DEFAULT '0',";
         $sql .= " comp_xtd int(11) NOT NULL DEFAULT '0',";
         $sql .= " comp_vrt int(11) NOT NULL DEFAULT '0',";
+        $sql .= " public_access boolean DEFAULT 0 NOT NULL,";
         $sql .= " txt_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " raw_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " real_sync boolean DEFAULT 0 NOT NULL,";
@@ -873,6 +874,14 @@ trait Storage {
         // Idempotent: the related crons are cleared on upgrade and on deactivation (see $cron_old), the stations of these types are kept
         // in place (viewable and removable) and only the settings of the removed widget are dropped.
         delete_option('widget_Live_Weather_Station_Widget_Pollution');
+
+        // VERSION 3.9.0: the visitors only see the stations marked as public. The stations which already exist stay visible, so
+        // nothing changes for the current sites; a station added afterwards is private until the box is ticked.
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        if (self::safe_add_column($table_name, 'public_access', "ALTER TABLE " . $table_name . " ADD public_access boolean DEFAULT 0 NOT NULL")) {
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, one time migration
+            $wpdb->query("UPDATE " . $table_name . " SET public_access=1");
+        }
     }
 
 
