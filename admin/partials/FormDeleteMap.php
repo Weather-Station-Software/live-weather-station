@@ -10,9 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
-if (!($mid = filter_input(INPUT_GET, 'mid'))) {
-    $mid = filter_input(INPUT_POST, 'mid');
+// phpcs:disable WordPress.Security.NonceVerification -- read-only lookup, the deletion itself is protected by a nonce
+$mid = 0;
+if (isset($_GET['mid'])) {
+    $mid = absint(wp_unslash($_GET['mid']));
 }
+if (!$mid && isset($_POST['mid'])) {
+    $mid = absint(wp_unslash($_POST['mid']));
+}
+// phpcs:enable WordPress.Security.NonceVerification
 $map = array();
 if (isset($mid) && $mid) {
     $map = $this->get_map_detail($mid);

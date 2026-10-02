@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
-$map = ' ('.sprintf('<a href="https://www.openstreetmap.org/?mlat=%1$s&mlon=%2$s#map=%3$s/%1$s/%2$s"' . ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '') . '>'.lcfirst(__('Verify on a map', 'live-weather-station')).'</a>',esc_attr(rawurlencode($station['loc_latitude'])), esc_attr(rawurlencode($station['loc_longitude'])), esc_attr(rawurlencode(get_option('live_weather_station_map_zoom')))).')';
+$map = ' ('.sprintf('<a href="https://www.openstreetmap.org/?mlat=%1$s&amp;mlon=%2$s#map=%3$s/%1$s/%2$s"' . ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '') . '>'.lcfirst(__('Verify on a map', 'live-weather-station')).'</a>',esc_attr(rawurlencode($station['loc_latitude'])), esc_attr(rawurlencode($station['loc_longitude'])), esc_attr(rawurlencode(get_option('live_weather_station_map_zoom')))).')';
 $confirm = sprintf(/* translators: 1: Link to a map to verify the coordinates, 2: Label of the button (Add This Station or Save Changes). */ __('Here are the coordinates we\'ve found %1$s. You can confirm it by clicking again on the button <em>%2$s</em>!', 'live-weather-station'),$map, ($station['station_id'] == 0 ? __( 'Add This Station', 'live-weather-station' ) : __( 'Save Changes', 'live-weather-station' )));
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 
