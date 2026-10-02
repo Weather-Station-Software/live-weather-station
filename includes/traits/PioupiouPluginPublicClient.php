@@ -106,8 +106,7 @@ trait PublicClient {
             // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly. The remote text is first cleaned by live_weather_station_clean_text().
             throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200));
         }
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( ..., true ) only builds the string sent to the plugin debug log (Logger::debug, truncated to 4000 characters), nothing is printed.
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, Logger::dump($weather));
         if (!empty($weather)) {
             $meta = null;
             $location = null;

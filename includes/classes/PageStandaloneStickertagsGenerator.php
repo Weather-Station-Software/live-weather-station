@@ -28,7 +28,7 @@ class Stickertags extends TXTGenerator {
      * @since 3.0.0
      */
      protected function get_data($params, $subformat='standard') {
-         Logger::debug('Stickertags Renderer', null, null, null, null, null, null, print_r($params, true)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds a string for Logger::debug(), nothing is printed
+         Logger::debug('Stickertags Renderer', null, null, null, null, null, null, Logger::dump($params, 4000));
          if (is_array($params) && !empty($params) && array_key_exists('station', $params)) {
              try {
                  $station = $this->get_station_information_by_station_id($params['station']);

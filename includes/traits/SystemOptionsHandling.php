@@ -30,6 +30,7 @@ trait Handling {
 
     private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_only_valid_files = true;
+    private static $live_weather_station_logger_mask_sensitive = true;
     private static $live_weather_station_upload_allowed = false;
 
     private static $live_weather_station_footer_scripts = true;
@@ -141,7 +142,7 @@ trait Handling {
     private static $exportable_options = array(
         'live_weather_station_logger_level' => 'int', 'live_weather_station_logger_rotate' => 'int', 'live_weather_station_logger_retention' => 'int',
         'live_weather_station_analytics_cutoff' => 'int', 'live_weather_station_quota_mode' => 'int', 'live_weather_station_force_frontend_styling' => 'bool',
-        'live_weather_station_mutation_observer' => 'bool', 'live_weather_station_file_retention' => 'int', 'live_weather_station_only_valid_files' => 'bool',
+        'live_weather_station_mutation_observer' => 'bool', 'live_weather_station_logger_mask_sensitive' => 'bool', 'live_weather_station_file_retention' => 'int', 'live_weather_station_only_valid_files' => 'bool',
         'live_weather_station_upload_allowed' => 'bool', 'live_weather_station_footer_scripts' => 'bool',
         'live_weather_station_wait_for_dom' => 'bool', 'live_weather_station_fa_mode' => 'int', 'live_weather_station_advanced_mode' => 'bool',
         'live_weather_station_txt_cache_bypass' => 'bool', 'live_weather_station_backend_cache' => 'bool', 'live_weather_station_query_cache' => 'bool',
@@ -787,6 +788,7 @@ trait Handling {
     protected static function delete_options() {
         delete_option('live_weather_station_use_cdn');
         delete_option('live_weather_station_only_valid_files');
+        delete_option('live_weather_station_logger_mask_sensitive');
         delete_option('live_weather_station_upload_allowed');
         delete_option('live_weather_station_footer_scripts');
         delete_option('live_weather_station_wait_for_dom');
@@ -1013,6 +1015,7 @@ trait Handling {
      */
     protected static function init_system_options() {
         update_option('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        update_option('live_weather_station_logger_mask_sensitive', self::$live_weather_station_logger_mask_sensitive);
         update_option('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         update_option('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         update_option('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);
@@ -1292,6 +1295,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_file_retention', self::$live_weather_station_file_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        self::verify_option_boolean('live_weather_station_logger_mask_sensitive', self::$live_weather_station_logger_mask_sensitive);
         self::verify_option_boolean('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         self::verify_option_boolean('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);

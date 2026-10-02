@@ -84,8 +84,7 @@ trait BaseClient {
         $measurements = $this->netatmo_measurements ;
         unset($measurements['time_server']);
         $result = array();
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- feeds the plugin Logger at debug level (print_r with the return flag set returns a string, nothing is printed), the text is truncated to 4000 characters
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($measurements, true), 0, 4000));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($measurements));
         if (count($measurements) > 0) {
             $result['start'] = array_keys($measurements)[0];
             foreach ($measurements as $ts => $data) {
@@ -111,11 +110,9 @@ trait BaseClient {
     private function normalize_netatmo_measurements($station_type) {
         $measurements = $this->netatmo_measurements ;
         $d = $measurements;
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- feeds the plugin Logger at debug level (print_r with the return flag set returns a string, nothing is printed), the text is truncated to 4000 characters
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($d, true), 0, 4000));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($d));
         unset($d['devices']);
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- feeds the plugin Logger at debug level (print_r with the return flag set returns a string, nothing is printed), the text is truncated to 4000 characters
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($d, true), 0, 4000));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($d));
         $measurements['timeshift'] = 0;
         if (array_key_exists('time_server', $measurements)) {
             $measurements['timeshift'] = time() - $measurements['time_server'];

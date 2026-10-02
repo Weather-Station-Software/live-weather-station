@@ -131,8 +131,7 @@ trait PublicClient {
             throw new \Exception('JSON / Data: '.live_weather_station_clean_text($json_data, 200));
         }
         $weather = array_merge($data, $meta);
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $x, true ) only builds the text handed to the plugin Logger::debug(), nothing is printed
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, Logger::dump($weather));
         if (!empty($weather) && is_array($weather)) {
             if (array_key_exists('station_name', $weather)) {
                 $station['station_name'] = live_weather_station_clean_text($weather['station_name'], 100);
