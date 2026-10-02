@@ -134,6 +134,9 @@ Protect your database and its backups like you protect your site. When a service
 = Is the API key of my maps visible on my site? =
 Yes. The maps are drawn by the browser of your visitors, which downloads the tiles directly from the map service (Mapbox, Maptiler, Thunderforest, OpenWeatherMap, Windy, Stadia) with your key in the address, so anyone can read it in the code of the page. It is the same for every map plugin. Use a key restricted to your domain name, as these services let you do in their dashboard: the key then only works on your site.
 
+= Can a station be on my local network? =
+Yes. The stations which are read from a file or a feed (Clientraw, Realtime, Stickertags) can be at an address of your local network (192.168.x.x, 10.x.x.x, a name of your LAN), because many personal stations live there. For this reason the plugin does not block private addresses when it reads a station: only an administrator can add a station, so only enter addresses you trust.
+
 = Are there some paid services or limitations? =
 NO. Weather Station is a free software. That means you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
