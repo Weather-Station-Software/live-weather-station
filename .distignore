@@ -9,3 +9,6 @@ CLAUDE.md
 SPONSORS.md
 .wordpress-org
 CONTRIBUTING.md
+phpdoc.dist.xml
+readme.md
+usedby.json
