@@ -32,13 +32,13 @@ abstract class Maintainer {
     protected $module_id = '';
     protected $module_name = '';
     protected $module_hint = '';
-    protected $module_icon = LIVE_WEATHER_STATION_FAR . (LIVE_WEATHER_STATION_FA5?' fa-question-circle':' fa-fa-question-circle-o') . ' fa-fw';
+    protected $module_icon = LIVE_WEATHER_STATION_FAR . (LIVE_WEATHER_STATION_FA5?' fa-question-circle':' fa-question-circle-o') . ' fa-fw';
     protected $module_icon_color = '#777777';
     protected $module_icon_index = '';
     protected $selected = false;
     protected $station_guid = 0;
     protected $station_id = '';
-    protected $station_name = 0;
+    protected $station_name = '';
     protected $station_information;
     protected $data = null;
     protected $period = null;
@@ -868,7 +868,7 @@ abstract class Maintainer {
         elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && !(bool)get_option('live_weather_station_build_history')) {
             $this->print_error(2);
         }
-        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && $this->station_information['oldest_data'] == '0000-00-00') {
+        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && (empty($this->station_information['oldest_data']) || $this->station_information['oldest_data'] == '0000-00-00')) {
             $this->print_error(3);
         }
         else {
@@ -1075,7 +1075,7 @@ abstract class Maintainer {
             $content .= implode(', ', $t);
             $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         }
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
         // INIT
         if (self::$module_mode === 'yearly' || self::$module_mode == 'climat') {
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
