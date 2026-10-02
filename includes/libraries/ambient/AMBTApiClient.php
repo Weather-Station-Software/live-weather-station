@@ -30,7 +30,7 @@ class AMBTApiClient
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // these application key is property of Ambient licensed to Jason Rouet, you CAN'T use it for your apps.
     // If you are thinking to develop something, get your application key here: https://dashboard.ambientweather.net
-    // The key can be overridden with the LWS_AMBIENT_APPLICATION_KEY constant or the 'live_weather_station_ambient_application_key'
+    // The key can be overridden with the LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY constant or the 'live_weather_station_ambient_application_key'
     // filter (so it can be rotated without touching the code). The default is kept for backward compatibility.
     private $application_key = 'aa2fe7d796fa4ccfa484c41592fc27044970de1019234d0599e7af14d42797fa';
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ class AMBTApiClient
      */
     private function buildUrl() {
         $result = $this->mainUrl;
-        $application_key = (defined('LWS_AMBIENT_APPLICATION_KEY') ? LWS_AMBIENT_APPLICATION_KEY : $this->application_key);
+        $application_key = (defined('LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY') ? LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY : $this->application_key);
         // Plugin Check: hook renamed from lws_ambient_application_key (new in 3.9.0, never released under the old name).
         $application_key = apply_filters('live_weather_station_ambient_application_key', $application_key);
         $result = str_replace('{application}', rawurlencode((string)$application_key), $result);

@@ -104,7 +104,7 @@ class FileGetContentsFetcher implements FetcherInterface
             $url = $prepared[0];
             $response = wp_remote_get($url, array(
                 'headers' => $prepared[1],
-                'user-agent' => defined('LWS_PLUGIN_AGENT') ? LWS_PLUGIN_AGENT : 'WeatherStation',
+                'user-agent' => defined('LIVE_WEATHER_STATION_PLUGIN_AGENT') ? LIVE_WEATHER_STATION_PLUGIN_AGENT : 'WeatherStation',
                 'timeout' => ($timeout > 0 ? max(5, min(120, $timeout)) : 10),
                 'redirection' => 3,
                 'limit_response_size' => self::MAX_SIZE,
