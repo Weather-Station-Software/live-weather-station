@@ -258,6 +258,9 @@ class WeatherFlowImporter extends Process {
                 $this->params['summary'][$row['module_id']]['days_todo'] = $days_todo;
             }
         }
+        if (empty($old_dates)) {
+            $old_dates = array($this->params['init']['start_date']);
+        }
         $this->params['process']['start_date'] = max(min($old_dates), $this->params['init']['start_date']);
         $this->params['process']['end_date'] = $this->params['init']['end_date'];
         $this->params['process']['now_ext_date'] = $this->params['process']['start_date'];
@@ -731,7 +734,7 @@ class WeatherFlowImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<8; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*40)) {
+            if ((int)ini_get('max_execution_time') > $i*40) {
                 $max += 1;
             }
         }

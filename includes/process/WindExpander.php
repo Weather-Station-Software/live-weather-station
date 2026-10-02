@@ -176,7 +176,9 @@ class WindExpander extends Process {
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {
                 $wind = $row['measure_value'];
-                $new_wind = round(fmod($wind + 180, 360), strlen(strrchr($wind, '.')) -1);
+                $wind_str = (string)$wind;
+                $wind_dot = strpos($wind_str, '.');
+                $new_wind = round(fmod((float)$wind + 180, 360), ($wind_dot === false) ? 0 : strlen($wind_str) - $wind_dot - 1);
                 if (array_key_exists('measure_set', $row)) {
                     if ($row['measure_set'] === 'dev') {
                         $new_wind = $wind;
