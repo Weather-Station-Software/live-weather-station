@@ -176,8 +176,8 @@ abstract class Pusher {
                         return '';
                     }
                     else {
+                        // Every station which shares its data is pushed, not only the first one.
                         Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Outdoor data pushed.');
-                        return '';
                     }
                 }
                 else {
