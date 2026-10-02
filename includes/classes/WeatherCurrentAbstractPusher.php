@@ -162,7 +162,8 @@ abstract class Pusher {
                 }
                 $args['body'] = $values;
                 $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_sharing_http_timeout')));
-                $args['redirection'] = 2;
+                // The services never redirect an upload: a redirection would forward the credentials and the data to another host.
+                $args['redirection'] = 0;
                 $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
                 if (Quota::verify($this->get_service_name(), 'POST')) {
                     $content = wp_remote_post($this->get_post_url(), $args);
