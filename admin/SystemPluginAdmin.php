@@ -3633,8 +3633,8 @@ class Admin {
      */
     private function netatmo_posted_keys($prefix) {
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce of the service is verified by the caller.
-        $id = (isset($_POST['client_id']) && is_string($_POST['client_id'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_id'])) : '';
-        $secret = (isset($_POST['client_secret']) && is_string($_POST['client_secret'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_secret'])) : '';
+        $id = (isset($_POST['client_id']) && is_string($_POST['client_id'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_id'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept, then the value is checked against a pattern before any use.
+        $secret = (isset($_POST['client_secret']) && is_string($_POST['client_secret'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['client_secret'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept (a secret must not be altered by sanitize_text_field), then the value is checked against a pattern before any use.
         // phpcs:enable WordPress.Security.NonceVerification.Missing
         if ($secret === '' && $id === (string)get_option('live_weather_station_' . $prefix . '_client_id')) {
             $secret = (string)get_option('live_weather_station_' . $prefix . '_client_secret');
@@ -3653,7 +3653,7 @@ class Admin {
             Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to connect Netatmo.');
             wp_die(esc_html__('You do not have sufficient permissions to manage connections.', 'live-weather-station'), '', array('response' => 403));
         }
-        $service = (isset($_REQUEST['service']) && is_string($_REQUEST['service'])) ? sanitize_text_field(wp_unslash($_REQUEST['service'])) : '';
+        $service = (isset($_REQUEST['service']) && is_string($_REQUEST['service'])) ? sanitize_text_field(wp_unslash($_REQUEST['service'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only picks the service whose nonce the caller verifies with check_admin_referer().
         if ($service === 'NetatmoHC') {
             return array($service, 'netatmohc', new Netatmo_HCCollector());
         }
@@ -3728,8 +3728,9 @@ class Admin {
             wp_die(esc_html__('You do not have sufficient permissions to manage connections.', 'live-weather-station'), '', array('response' => 403));
         }
         // phpcs:disable WordPress.Security.NonceVerification.Recommended -- The single use random state, bound to the user, replaces the nonce: it is checked just below.
-        $state = (isset($_GET['state']) && is_string($_GET['state']) && preg_match('/^[a-f0-9]{32}$/', $_GET['state'])) ? $_GET['state'] : '';
-        $code = (isset($_GET['code']) && is_string($_GET['code'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_GET['code'])) : '';
+        $state = (isset($_GET['state']) && is_string($_GET['state'])) ? wp_unslash($_GET['state']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Checked against a strict pattern on the next line.
+        $state = preg_match('/^[a-f0-9]{32}$/', $state) ? $state : '';
+        $code = (isset($_GET['code']) && is_string($_GET['code'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_GET['code'])) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Only printable ASCII is kept, then sent to Netatmo as a value of a request body.
         $refused = isset($_GET['error']);
         // phpcs:enable WordPress.Security.NonceVerification.Recommended
         $data = ($state !== '') ? get_transient('lws_netatmo_state_' . $state) : false;
@@ -3769,8 +3770,7 @@ class Admin {
         list($service, $prefix, $collector) = $ctx;
         check_admin_referer($service);
         list($id, $secret) = $this->netatmo_posted_keys($prefix);
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified above by check_admin_referer().
-        $token = (isset($_POST['refresh_token']) && is_string($_POST['refresh_token'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['refresh_token'])) : '';
+        $token = (isset($_POST['refresh_token']) && is_string($_POST['refresh_token'])) ? preg_replace('/[^\x21-\x7E]/', '', wp_unslash($_POST['refresh_token'])) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Verified above by check_admin_referer(); only printable ASCII is kept, then checked against a pattern.
         $error = $collector->netatmo_connect_with_own_keys($prefix, $id, $secret, 'refresh_token', $token);
         if ($error === '') {
             $this->netatmo_after_connection($service);
