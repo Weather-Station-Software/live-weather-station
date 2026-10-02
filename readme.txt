@@ -131,6 +131,9 @@ Alternatively, you can also [contact me directly by email](mailto:weather@statio
 The passwords and access tokens that the plugin needs to talk to the services (for example the Netatmo tokens, or the identifiers used to share your data with Weather Underground, PWS Weather or WOW) are stored in the database of your site, in clear, like the secrets stored by WordPress itself and by most plugins. The configuration export only contains them if you tick the option to include the credentials.
 Protect your database and its backups like you protect your site. When a service gives you a key dedicated to your station or to an application, use it instead of the password of your main account: if it leaks, you can replace it without changing your account password.
 
+= Is the API key of my maps visible on my site? =
+Yes. The maps are drawn by the browser of your visitors, which downloads the tiles directly from the map service (Mapbox, Maptiler, Thunderforest, OpenWeatherMap, Windy, Stadia) with your key in the address, so anyone can read it in the code of the page. It is the same for every map plugin. Use a key restricted to your domain name, as these services let you do in their dashboard: the key then only works on your site.
+
 = Are there some paid services or limitations? =
 NO. Weather Station is a free software. That means you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
