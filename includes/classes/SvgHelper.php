@@ -36,7 +36,7 @@ class Handling {
      * @since 3.8.15
      */
     private static function safe_color($color) {
-        if (is_string($color) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|(rgb|hsl)a?\(\s*[0-9.,%\s]+\))$/', $color)) {
+        if (is_string($color) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|(rgb|hsl)a?\(\s*[0-9.,%\s]+\))$/D', $color)) {
             return $color;
         }
         return '#000';
