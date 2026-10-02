@@ -71,6 +71,7 @@
 * Bug fix: a failed login to Netatmo (Netatmo unreachable, request quota reached, login method refused) no longer deletes the tokens of a working connection and no longer reports wrong credentials; the tokens are only deleted when Netatmo refuses the identifiers.
 * New: Netatmo and Netatmo Healthy Home Coach are connected with the Netatmo application of your own site: a button sends you to Netatmo and brings you back, or you paste a refresh token. Netatmo no longer accepts a login with a password, so new connections and reconnections could not succeed before.
 * Improvement: the keys built in the plugin are only used by the Netatmo connections made before this version, which keep working.
+* Bug fix: the lock of the background processes is renewed after each process and lasts 10 minutes, so a long import can no longer be run twice in parallel; the lock of the version migration is taken over atomically when it expires.
 ||||||| b34e3f5
 * Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
 ||||||| b34e3f5

@@ -28,6 +28,8 @@ class ProcessManager {
     private $facility = 'Background Process';
     private static $namespace = 'WeatherStation\Process\\';
     private $max_time = 0;
+    private static $lock_name = 'live_weather_station_background_process_lock';
+    private static $lock_ttl = 600;
     private $start = 0;
     private $chrono = 0;
 
@@ -116,6 +118,7 @@ class ProcessManager {
             catch (\Throwable $ex) {
                 Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
             }
+            live_weather_station_renew_lock(self::$lock_name, self::$lock_ttl);
             if ($this->chrono > $this->max_time) {
                 break;
             }
@@ -130,28 +133,11 @@ class ProcessManager {
      * @since 3.6.0
      */
     public function run(){
-        // Atomic run lock: add_option() fails if the row exists, so two overlapping runs cannot both get it.
-        // The stored value is the expiry timestamp; an expired (stale) lock is taken over.
-        $lock = 'live_weather_station_background_process_lock';
-        $ttl = 300;
-        if (!add_option($lock, time() + $ttl, '', 'no')) {
-            $expiry = (int)get_option($lock);
-            if ($expiry > time()) {
-                Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: another run is in progress, skipping.');
-                return;
-            }
-            // Stale lock: delete it only if it still holds the stale value we read (a concurrent request may
-            // already have replaced it), then re-add so that only one concurrent request wins.
-            global $wpdb;
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- compare-and-delete of this plugin's own lock row in the options table, values bound by $wpdb->delete(); a write, so no caching applies
-            if (!$wpdb->delete($wpdb->options, array('option_name' => $lock, 'option_value' => (string)$expiry))) {
-                return;
-            }
-            wp_cache_delete($lock, 'options');
-            wp_cache_delete('notoptions', 'options');
-            if (!add_option($lock, time() + $ttl, '', 'no')) {
-                return;
-            }
+        // Atomic run lock (see live_weather_station_acquire_lock()); it is renewed after each process, so a long job keeps it.
+        $lock = self::$lock_name;
+        if (!live_weather_station_acquire_lock($lock, self::$lock_ttl)) {
+            Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: another run is in progress, skipping.');
+            return;
         }
         try {
             $this->do_run();
