@@ -598,7 +598,9 @@ class Manager {
             return false;
         }
         $path = self::construct_full_file_name($file['file']);
-        if (!is_file($path) || filesize($path) > self::$max_upload_size) {
+        // A real configuration export is a few tens of KB: the decoded array of a large file could exhaust the memory.
+        $max = min(self::$max_upload_size, max(1024, (int)apply_filters('live_weather_station_import_max_configuration_size', 10 * MB_IN_BYTES)));
+        if (!is_file($path) || filesize($path) > $max) {
             return false;
         }
         $content = file_get_contents($path);
