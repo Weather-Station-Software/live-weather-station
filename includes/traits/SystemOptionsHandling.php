@@ -80,6 +80,7 @@ trait Handling {
     private static $live_weather_station_netatmo_client_id = '';
     private static $live_weather_station_netatmo_client_secret = '';
     private static $live_weather_station_netatmo_own_keys = false;
+    private static $live_weather_station_ambient_application_key = '';
     private static $live_weather_station_netatmohc_refresh_token = '';
     private static $live_weather_station_netatmohc_access_token = '';
     private static $live_weather_station_netatmohc_connected = false;
@@ -168,7 +169,7 @@ trait Handling {
         'live_weather_station_sharing_http_timeout' => 'int', 'live_weather_station_system_http_timeout' => 'int', 'live_weather_station_picture_retention' => 'int',
         'live_weather_station_video_retention' => 'int', 'live_weather_station_retention_notifications' => 'int', 'live_weather_station_partial_translation' => 'bool',
         'live_weather_station_map_zoom' => 'int', 'live_weather_station_map_layer' => 'token',
-        'live_weather_station_netatmo_refresh_token' => 'secret', 'live_weather_station_netatmo_access_token' => 'secret', 'live_weather_station_netatmo_connected' => 'flag', 'live_weather_station_netatmo_client_id' => 'secret', 'live_weather_station_netatmo_client_secret' => 'secret', 'live_weather_station_netatmo_own_keys' => 'flag',
+        'live_weather_station_netatmo_refresh_token' => 'secret', 'live_weather_station_ambient_application_key' => 'secret', 'live_weather_station_netatmo_access_token' => 'secret', 'live_weather_station_netatmo_connected' => 'flag', 'live_weather_station_netatmo_client_id' => 'secret', 'live_weather_station_netatmo_client_secret' => 'secret', 'live_weather_station_netatmo_own_keys' => 'flag',
         'live_weather_station_netatmohc_refresh_token' => 'secret', 'live_weather_station_netatmohc_access_token' => 'secret', 'live_weather_station_netatmohc_connected' => 'flag', 'live_weather_station_netatmohc_client_id' => 'secret', 'live_weather_station_netatmohc_client_secret' => 'secret', 'live_weather_station_netatmohc_own_keys' => 'flag',
         'live_weather_station_bloomsky_key' => 'secret', 'live_weather_station_bloomsky_connected' => 'flag',
         'live_weather_station_ambient_key' => 'secret', 'live_weather_station_ambient_connected' => 'flag',
@@ -819,6 +820,7 @@ trait Handling {
         delete_option('live_weather_station_netatmo_client_id');
         delete_option('live_weather_station_netatmo_client_secret');
         delete_option('live_weather_station_netatmo_own_keys');
+        delete_option('live_weather_station_ambient_application_key');
         delete_option('live_weather_station_netatmohc_refresh_token');
         delete_option('live_weather_station_netatmohc_access_token');
         delete_option('live_weather_station_netatmohc_connected');
@@ -1379,6 +1381,7 @@ trait Handling {
         self::verify_option_string('live_weather_station_netatmo_client_id', self::$live_weather_station_netatmo_client_id);
         self::verify_option_string('live_weather_station_netatmo_client_secret', self::$live_weather_station_netatmo_client_secret);
         self::verify_option_boolean('live_weather_station_netatmo_own_keys', self::$live_weather_station_netatmo_own_keys);
+        self::verify_option_string('live_weather_station_ambient_application_key', self::$live_weather_station_ambient_application_key);
         self::verify_option_string('live_weather_station_bloomsky_key', self::$live_weather_station_bloomsky_key);
         self::verify_option_boolean('live_weather_station_bloomsky_connected', self::$live_weather_station_bloomsky_connected);
         self::verify_option_string('live_weather_station_ambient_key', self::$live_weather_station_ambient_key);

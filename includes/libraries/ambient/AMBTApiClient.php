@@ -94,7 +94,15 @@ class AMBTApiClient
      */
     private function buildUrl() {
         $result = $this->mainUrl;
-        $application_key = (defined('LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY') ? LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY : $this->application_key);
+        // The application of the site if it has one, else the shared one shipped with the plugin (a constant of wp-config.php wins over both).
+        $application_key = $this->application_key;
+        $own_key = (string)get_option('live_weather_station_ambient_application_key', '');
+        if ($own_key !== '') {
+            $application_key = $own_key;
+        }
+        if (defined('LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY')) {
+            $application_key = LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY;
+        }
         // Plugin Check: hook renamed from lws_ambient_application_key (new in 3.9.0, never released under the old name).
         $application_key = apply_filters('live_weather_station_ambient_application_key', $application_key);
         $result = str_replace('{application}', rawurlencode((string)$application_key), $result);

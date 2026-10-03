@@ -209,6 +209,7 @@ class SiteHealth {
             'Netatmo Healthy Home Coach' => (bool)get_option('live_weather_station_netatmohc_connected'),
             'Netatmo own keys' => (bool)get_option('live_weather_station_netatmo_own_keys'),
             'Ambient Weather' => (bool)get_option('live_weather_station_ambient_connected'),
+            'Ambient own application key' => self::is_set('live_weather_station_ambient_application_key'),
             'OpenWeatherMap key' => self::is_set('live_weather_station_owm_apikey'),
             'Windy key' => self::is_set('live_weather_station_windy_apikey'),
         );
