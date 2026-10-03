@@ -99,6 +99,7 @@
 * New: the Site Health screen of WordPress now warns when a station has not been refreshed for a while (60 minutes by default, 0 turns it off); the delay is a setting ("Late data warning") and the warning says when WP-Cron is disabled by the configuration.
 * Bug fix: the Site Health report showed 0 as the retention of the history whatever the setting.
 * Improvement: each site can enter the application key of its own Ambient application next to its API key (kept secret, never exported); the connection screens of Netatmo and Ambient now say that the keys shipped with the plugin are a shared demo, limited and without promise, and invite to create your own.
+* Bug fix: the BloomSky connection box (a service stopped in 2022) is no longer shown in the services settings, except to disconnect an account which is still stored; BloomSky is no longer listed as a supported device in the readme.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
