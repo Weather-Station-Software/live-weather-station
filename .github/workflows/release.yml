@@ -69,8 +69,6 @@ jobs:
           else
             echo "_No contributor identified._" >> /tmp/notes.md
           fi
-          # Reporters of the fixed problems, by source (GitHub, wordpress.org, forum, blog...), from .github/credits/X.Y.Z.txt
-          .github/scripts/build-credits.sh ".github/credits/${GITHUB_REF_NAME}.txt" >> /tmp/notes.md
       - name: Build the plugin zip
         # The same files as the wordpress.org package (.distignore), in a folder named after the plugin slug, so that
         # WordPress installs and updates it in the right place. The fixed file name keeps the "latest" download link stable.
