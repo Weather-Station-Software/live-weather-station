@@ -92,6 +92,14 @@ You can also help by reporting bugs, translating, or sharing the plugin with oth
 2. Upload the `live-weather-station` directory to your `/wp-content/plugins/` directory, using your favorite method (ftp, sftp, scp, etc...).
 3. Activate Weather Station from your Plugins page.
 
+= From GitHub =
+
+1. Download `live-weather-station.zip` from the [latest release](https://github.com/Weather-Station-Software/live-weather-station/releases/latest) of the repository.
+2. In 'Plugins > Add New Plugin', click 'Upload Plugin' and choose the file.
+3. Activate Weather Station.
+
+Use the latest release only: the older versions do not have the security fixes of version 3.9.0.
+
 = Once Activated =
 
 1. Visit 'Weather Station' in the left-hand menu of your WP Admin to adjust settings.
