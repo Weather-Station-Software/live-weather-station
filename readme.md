@@ -27,7 +27,7 @@ The plugin is not available on WordPress.org at the moment. Each release of this
 
 [Download the latest version](https://github.com/Weather-Station-Software/live-weather-station/releases/latest/download/live-weather-station.zip)
 
-In your dashboard, go to Plugins, Add New Plugin, Upload Plugin, and choose this file. To receive the updates from this repository, install the [Git Updater](https://git-updater.com/) plugin: the headers of the plugin already tell it where to look.
+Use the latest release only: the older versions do not have the security fixes of version 3.9.0. In your dashboard, go to Plugins, Add New Plugin, Upload Plugin, and choose this file. To receive the updates from this repository, install the [Git Updater](https://git-updater.com/) plugin: the headers of the plugin already tell it where to look.
 
 ## Simple and efficient
 The use of Weather Station requires no knowledge of programming and does not require writing code.
