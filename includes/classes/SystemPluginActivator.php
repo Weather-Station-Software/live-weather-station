@@ -65,7 +65,8 @@ class Activator {
 		Logger::init();
 		Logger::notice('Activator',null,null,null,null,null,null,'Starting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' installation and initialization.');
 		self::create_tables();
-		self::init_options();
+		// Only the missing options are created: a reactivation keeps the settings, the connections and the history retention.
+		self::verify_options();
 		// The feed addresses are rewrite rules: have them flushed (once) on the first request after the activation.
 		delete_option('live_weather_station_rewrite_flushed');
 		Logger::notice('Activator',null,null,null,null,null,null,LIVE_WEATHER_STATION_PLUGIN_NAME.' successfully installed and initialized.');
