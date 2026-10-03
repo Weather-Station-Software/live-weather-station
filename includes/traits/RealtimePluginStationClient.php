@@ -30,6 +30,28 @@ trait StationClient {
     protected $service = 'File Handler - Realtime';
 
     /**
+     * Converts a time of the day of the file (hh:mm, station time) into a UTC date.
+     *
+     * @param string $hhmm The time of the day, as written in the file.
+     * @param integer $locat_ts The time of the file, as a timestamp which reads the local time (see format_and_store()).
+     * @param string $timezone The timezone of the station.
+     * @param string $default UTC date to return when the time is not readable.
+     * @return string The UTC date (Y-m-d H:i:s) of the last occurrence of this time, never later than the time of the file.
+     * @since 3.9.0
+     */
+    private function get_time_of_the_day($hhmm, $locat_ts, $timezone, $default) {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])[:.]([0-5][0-9])/', trim((string)$hhmm), $m)) {
+            return $default;
+        }
+        $day = gmdate('Y-m-d', $locat_ts);
+        $local = gmmktime((int)$m[1], (int)$m[2], 0, (int)substr($day, 5, 2), (int)substr($day, 8, 2), (int)substr($day, 0, 4));
+        if ($local > $locat_ts) {
+            $local -= 86400;
+        }
+        return gmdate('Y-m-d H:i:s', $this->get_date_from_tz($local, $timezone));
+    }
+
+    /**
      * Format and store data.
      *
      * @param string $raw_data Weather raw data.
@@ -154,12 +176,16 @@ trait StationClient {
         $updates['measure_type'] = 'temperature';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[2], $temperature_unit);
         $this->update_data_table($updates, $timezone);
+        // The minimum and the maximum of the day carry the time of their reading (fields 29 and 27), not the time of the last measure.
         $updates['measure_type'] = 'temperature_min';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[28], $temperature_unit);
+        $updates['measure_timestamp'] = $this->get_time_of_the_day($weather[29], $locat_ts, $timezone, $timestamp);
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature_max';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[26], $temperature_unit);
+        $updates['measure_timestamp'] = $this->get_time_of_the_day($weather[27], $locat_ts, $timezone, $timestamp);
         $this->update_data_table($updates, $timezone);
+        $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[3];
         $this->update_data_table($updates, $timezone);
