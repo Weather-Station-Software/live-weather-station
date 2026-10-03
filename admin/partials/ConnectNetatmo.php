@@ -86,6 +86,17 @@ $warning = sprintf(/* translators: %s: name of this plugin */ __('All stations a
                         <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Netatmo')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is set at the top of this file from two fixed attribute literals ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
+            <?php if (!(bool)get_option('live_weather_station_netatmo_own_keys')) { ?>
+                <tr>
+                    <td colspan="3">
+                        <p class="description"><?php
+                        /* translators: %s: link to the page of the Netatmo applications */
+                        $demo = __('This connection uses the keys shipped with the plugin, a shared demo: it is limited by rate limits shared with every site using it and nothing promises that it keeps working. To rely on it, change the connection and use your own application, created on %s.', 'live-weather-station');
+                        echo wp_kses(sprintf($demo, '<a href="' . esc_url('https://dev.netatmo.com/apps') . '" target="_blank" rel="noopener noreferrer">dev.netatmo.com/apps</a>'), array('a' => array('href' => array(), 'target' => array(), 'rel' => array())));
+                        ?></p>
+                    </td>
+                </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>

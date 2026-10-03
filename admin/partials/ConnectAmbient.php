@@ -33,6 +33,22 @@ $warning = sprintf(/* translators: %s: name of the plugin */ __('All stations as
                         <span class="login"><input id="apikey" name="apikey" type="text" size="20" value="" class="regular-text"></span>
                     </td>
                 </tr>
+                <tr>
+                    <th class="lws-login" width="35%" align="left" scope="row"><label for="ambient-application-key"><?php esc_html_e('Application key (optional)', 'live-weather-station');?></label></th>
+                    <td width="2%"/>
+                    <td align="left">
+                        <input id="ambient-application-key" name="application_key" type="password" size="20" value="" class="regular-text" autocomplete="off" spellcheck="false">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <p class="description"><?php
+                        /* translators: %s: link to the account page of the service */
+                        $demo = __('Without an application key of your own, the plugin uses a shared demo key: it is limited by rate limits shared with every site using it and nothing promises that it keeps working. To rely on your connection, create your own application key in your account on %s and enter it here.', 'live-weather-station');
+                        echo wp_kses(sprintf($demo, '<a href="' . esc_url('https://ambientweather.net/account') . '" target="_blank" rel="noopener noreferrer">ambientweather.net/account</a>'), array('a' => array('href' => array(), 'target' => array(), 'rel' => array())));
+                        ?></p>
+                    </td>
+                </tr>
             <?php } else {?>
                 <tr>
                     <th class="lws-login" width="35%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
@@ -42,6 +58,17 @@ $warning = sprintf(/* translators: %s: name of the plugin */ __('All stations as
                     </td>
                 </tr>
             <?php } ?>
+            <?php if (get_option('live_weather_station_ambient_connected') != 0 && (string)get_option('live_weather_station_ambient_application_key', '') === '' && !defined('LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY')) { ?>
+                <tr>
+                    <td colspan="3">
+                        <p class="description"><?php
+                        /* translators: %s: link to the account page of the service */
+                        $demo = __('This connection uses the shared demo key shipped with the plugin: it is limited by rate limits shared with every site using it and nothing promises that it keeps working. To rely on it, disconnect, then connect again with your own application key, created in your account on %s.', 'live-weather-station');
+                        echo wp_kses(sprintf($demo, '<a href="' . esc_url('https://ambientweather.net/account') . '" target="_blank" rel="noopener noreferrer">ambientweather.net/account</a>'), array('a' => array('href' => array(), 'target' => array(), 'rel' => array())));
+                        ?></p>
+                    </td>
+                </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>

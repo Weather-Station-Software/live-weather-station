@@ -2968,7 +2968,19 @@ class Admin {
                         $s = __('the API key can not be empty', 'live-weather-station');
                     }
                     else {
+                        // The application key of the site (optional): without it the shared key shipped with the plugin is used.
+                        $application_key = '';
+                        if (array_key_exists('application_key', $_POST) && is_string($_POST['application_key'])) {
+                            $application_key = sanitize_text_field(wp_unslash($_POST['application_key']));
+                        }
+                        if ($application_key !== '') {
+                            update_option('live_weather_station_ambient_application_key', $application_key);
+                        }
                         $s = $this->connect_ambient($apikey);
+                        if ($s != '') {
+                            // A refused connection forgets the credentials which were tried.
+                            delete_option('live_weather_station_ambient_application_key');
+                        }
                     }
                 }
                 if ($service == 'OpenWeatherMap') {
@@ -3640,6 +3652,7 @@ class Admin {
      */
     protected function disconnect_ambient($delete=true) {
         self::init_ambient_options();
+        delete_option('live_weather_station_ambient_application_key');
         Logger::notice('Authentication', 'Ambient', null, null, null, null, null, 'Correctly disconnected from service.');
         if ($delete) {
             $this->clear_all_ambt_stations();

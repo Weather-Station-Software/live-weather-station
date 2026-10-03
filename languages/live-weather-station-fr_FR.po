@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Weather Station 3.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/live-weather-"
 "station\n"
-"POT-Creation-Date: 2026-10-03T13:16:10+00:00\n"
+"POT-Creation-Date: 2026-10-03T13:24:00+00:00\n"
 "PO-Revision-Date: 2026-10-02 22:00+0200\n"
 "Last-Translator: Jason Rouet <https://jasonrouet.com/>\n"
 "Language-Team: French (France)\n"
@@ -424,7 +424,21 @@ msgstr "Toutes les stations associées à ce service seront retirées de %s."
 msgid "API key"
 msgstr "Clé de l’API"
 
-#: admin/partials/ConnectAmbient.php:38 admin/partials/ConnectBloomsky.php:38
+#: admin/partials/ConnectAmbient.php:37
+msgid "Application key (optional)"
+msgstr "Clé d’application (facultative)"
+
+#. translators: %s: link to the account page of the service
+#: admin/partials/ConnectAmbient.php:47
+#, php-format
+msgid ""
+"Without an application key of your own, the plugin uses a shared demo key: "
+"it is limited by rate limits shared with every site using it and nothing "
+"promises that it keeps working. To rely on your connection, create your own "
+"application key in your account on %s and enter it here."
+msgstr "Sans clé d’application personnelle, l’extension utilise une clé de démonstration partagée : elle est soumise à des limites de débit partagées avec tous les sites qui l’utilisent et rien ne garantit qu’elle continue de fonctionner. Pour pouvoir compter sur votre connexion, créez votre propre clé d’application dans votre compte sur %s et saisissez-la ici."
+
+#: admin/partials/ConnectAmbient.php:54 admin/partials/ConnectBloomsky.php:38
 #: admin/partials/ConnectMapbox.php:63 admin/partials/ConnectMaptiler.php:63
 #: admin/partials/ConnectNetatmo.php:83 admin/partials/ConnectNetatmoHC.php:83
 #: admin/partials/ConnectOpenWeatherMap.php:63
@@ -434,7 +448,7 @@ msgstr "Clé de l’API"
 msgid "Status"
 msgstr "État"
 
-#: admin/partials/ConnectAmbient.php:41 admin/partials/ConnectBloomsky.php:41
+#: admin/partials/ConnectAmbient.php:57 admin/partials/ConnectBloomsky.php:41
 #: admin/partials/ConnectMapbox.php:66 admin/partials/ConnectMaptiler.php:66
 #: admin/partials/ConnectNetatmo.php:86 admin/partials/ConnectNetatmoHC.php:87
 #: admin/partials/ConnectOpenWeatherMap.php:66
@@ -444,7 +458,7 @@ msgstr "État"
 msgid "Up and running"
 msgstr "Opérationnel"
 
-#: admin/partials/ConnectAmbient.php:41 admin/partials/ConnectBloomsky.php:41
+#: admin/partials/ConnectAmbient.php:57 admin/partials/ConnectBloomsky.php:41
 #: admin/partials/ConnectMapbox.php:66 admin/partials/ConnectMaptiler.php:66
 #: admin/partials/ConnectNetatmo.php:86 admin/partials/ConnectNetatmoHC.php:87
 #: admin/partials/ConnectOpenWeatherMap.php:66
@@ -454,7 +468,17 @@ msgstr "Opérationnel"
 msgid "See events log"
 msgstr "Voir le journal des évènements"
 
-#: admin/partials/ConnectAmbient.php:52 admin/partials/ConnectBloomsky.php:52
+#. translators: %s: link to the account page of the service
+#: admin/partials/ConnectAmbient.php:66
+#, php-format
+msgid ""
+"This connection uses the shared demo key shipped with the plugin: it is "
+"limited by rate limits shared with every site using it and nothing promises "
+"that it keeps working. To rely on it, disconnect, then connect again with "
+"your own application key, created in your account on %s."
+msgstr "Cette connexion utilise la clé de démonstration partagée fournie avec l’extension : elle est soumise à des limites de débit partagées avec tous les sites qui l’utilisent et rien ne garantit qu’elle continue de fonctionner. Pour pouvoir compter sur elle, déconnectez-vous puis reconnectez-vous avec votre propre clé d’application, créée dans votre compte sur %s."
+
+#: admin/partials/ConnectAmbient.php:79 admin/partials/ConnectBloomsky.php:52
 #: admin/partials/ConnectMapbox.php:84 admin/partials/ConnectMaptiler.php:84
 #: admin/partials/ConnectOpenWeatherMap.php:84
 #: admin/partials/ConnectStadia.php:56
@@ -463,7 +487,7 @@ msgstr "Voir le journal des évènements"
 msgid "Connecting to service, please wait"
 msgstr "Connexion au service, merci de patienter"
 
-#: admin/partials/ConnectAmbient.php:54 admin/partials/ConnectBloomsky.php:54
+#: admin/partials/ConnectAmbient.php:81 admin/partials/ConnectBloomsky.php:54
 #: admin/partials/ConnectMapbox.php:86 admin/partials/ConnectMaptiler.php:86
 #: admin/partials/ConnectOpenWeatherMap.php:86
 #: admin/partials/ConnectStadia.php:58
@@ -472,9 +496,10 @@ msgstr "Connexion au service, merci de patienter"
 msgid "Connect"
 msgstr "Connecter"
 
-#: admin/partials/ConnectAmbient.php:61 admin/partials/ConnectBloomsky.php:61
+#: admin/partials/ConnectAmbient.php:88 admin/partials/ConnectBloomsky.php:61
 #: admin/partials/ConnectMapbox.php:93 admin/partials/ConnectMaptiler.php:93
-#: admin/partials/ConnectNetatmo.php:94 admin/partials/ConnectNetatmoHC.php:95
+#: admin/partials/ConnectNetatmo.php:105
+#: admin/partials/ConnectNetatmoHC.php:106
 #: admin/partials/ConnectOpenWeatherMap.php:93
 #: admin/partials/ConnectStadia.php:65
 #: admin/partials/ConnectThunderforest.php:93
@@ -482,9 +507,10 @@ msgstr "Connecter"
 msgid "Change"
 msgstr "Modifier"
 
-#: admin/partials/ConnectAmbient.php:63 admin/partials/ConnectBloomsky.php:63
+#: admin/partials/ConnectAmbient.php:90 admin/partials/ConnectBloomsky.php:63
 #: admin/partials/ConnectMapbox.php:95 admin/partials/ConnectMaptiler.php:95
-#: admin/partials/ConnectNetatmo.php:96 admin/partials/ConnectNetatmoHC.php:97
+#: admin/partials/ConnectNetatmo.php:107
+#: admin/partials/ConnectNetatmoHC.php:108
 #: admin/partials/ConnectOpenWeatherMap.php:95
 #: admin/partials/ConnectStadia.php:67
 #: admin/partials/ConnectThunderforest.php:95
@@ -492,9 +518,10 @@ msgstr "Modifier"
 msgid "Disconnecting from service, please wait"
 msgstr "Déconnexion du service, merci de patienter"
 
-#: admin/partials/ConnectAmbient.php:65 admin/partials/ConnectBloomsky.php:65
+#: admin/partials/ConnectAmbient.php:92 admin/partials/ConnectBloomsky.php:65
 #: admin/partials/ConnectMapbox.php:97 admin/partials/ConnectMaptiler.php:97
-#: admin/partials/ConnectNetatmo.php:98 admin/partials/ConnectNetatmoHC.php:100
+#: admin/partials/ConnectNetatmo.php:109
+#: admin/partials/ConnectNetatmoHC.php:111
 #: admin/partials/ConnectOpenWeatherMap.php:97
 #: admin/partials/ConnectStadia.php:69
 #: admin/partials/ConnectThunderforest.php:97
@@ -576,6 +603,16 @@ msgstr "Connexion en cours…"
 #: admin/partials/ConnectNetatmo.php:68 admin/partials/ConnectNetatmoHC.php:68
 msgid "Connect with Netatmo"
 msgstr "Se connecter avec Netatmo"
+
+#. translators: %s: link to the page of the Netatmo applications
+#: admin/partials/ConnectNetatmo.php:94 admin/partials/ConnectNetatmoHC.php:95
+#, php-format
+msgid ""
+"This connection uses the keys shipped with the plugin, a shared demo: it is "
+"limited by rate limits shared with every site using it and nothing promises "
+"that it keeps working. To rely on it, change the connection and use your own "
+"application, created on %s."
+msgstr "Cette connexion utilise les clés fournies avec l’extension, une démonstration partagée : elle est soumise à des limites de débit partagées avec tous les sites qui l’utilisent et rien ne garantit qu’elle continue de fonctionner. Pour pouvoir compter sur elle, modifiez la connexion et utilisez votre propre application, créée sur %s."
 
 #. translators: %s: plugin name
 #: admin/partials/ConnectNetatmoHC.php:16
@@ -1739,7 +1776,7 @@ msgstr "Ajout de l’appareil en cours, merci de patienter"
 msgid "All Netatmo \"Healthy Home Coach\" devices have been already added!"
 msgstr "Toutes les appareils Netatmo « Healthy Home Coach » ont déjà été ajoutés !"
 
-#: admin/partials/FormDeleteMap.php:28 admin/SystemPluginAdmin.php:3390
+#: admin/partials/FormDeleteMap.php:28 admin/SystemPluginAdmin.php:3402
 #: includes/classes/MapHelper.php:358 includes/traits/DataOutput.php:142
 msgid "This map does not exist."
 msgstr "Cette carte n’existe pas."
@@ -3987,193 +4024,193 @@ msgstr "La palette personnalisée a été correctement mise à jour."
 msgid "Custom palette has not been updated. Please try again."
 msgstr "La palette personnalisée n’a pas été mise à jour. Veuillez réessayer."
 
-#: admin/SystemPluginAdmin.php:2909 admin/SystemPluginAdmin.php:3677
-#: admin/SystemPluginAdmin.php:3751
+#: admin/SystemPluginAdmin.php:2909 admin/SystemPluginAdmin.php:3690
+#: admin/SystemPluginAdmin.php:3764
 msgid "You do not have sufficient permissions to manage connections."
 msgstr "Vous n’avez pas les droits suffisants pour gérer les connexions."
 
-#: admin/SystemPluginAdmin.php:2957 admin/SystemPluginAdmin.php:3728
-#: admin/SystemPluginAdmin.php:3791
+#: admin/SystemPluginAdmin.php:2957 admin/SystemPluginAdmin.php:3741
+#: admin/SystemPluginAdmin.php:3804
 msgid "Unknown service."
 msgstr "Service inconnu."
 
 #: admin/SystemPluginAdmin.php:2960 admin/SystemPluginAdmin.php:2968
-#: admin/SystemPluginAdmin.php:2976 admin/SystemPluginAdmin.php:2984
-#: admin/SystemPluginAdmin.php:2992 admin/SystemPluginAdmin.php:3000
-#: admin/SystemPluginAdmin.php:3008 admin/SystemPluginAdmin.php:3016
+#: admin/SystemPluginAdmin.php:2988 admin/SystemPluginAdmin.php:2996
+#: admin/SystemPluginAdmin.php:3004 admin/SystemPluginAdmin.php:3012
+#: admin/SystemPluginAdmin.php:3020 admin/SystemPluginAdmin.php:3028
 msgid "the API key can not be empty"
 msgstr "la clé d’API ne peut pas être vide"
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3023 admin/SystemPluginAdmin.php:3824
+#: admin/SystemPluginAdmin.php:3035 admin/SystemPluginAdmin.php:3837
 #, php-format
 msgid "%1$s is now connected to %2$s."
 msgstr "%1$s est maintenant connecté à %2$s."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3029 admin/SystemPluginAdmin.php:3829
+#: admin/SystemPluginAdmin.php:3041 admin/SystemPluginAdmin.php:3842
 #, php-format
 msgid "Unable to connect %1$s to %2$s. Please try again."
 msgstr "Impossible de connecter %1$s à %2$s. Veuillez réessayer."
 
 #. translators: %s: error message returned by the service
-#: admin/SystemPluginAdmin.php:3031 admin/SystemPluginAdmin.php:3831
+#: admin/SystemPluginAdmin.php:3043 admin/SystemPluginAdmin.php:3844
 #, php-format
 msgid "The error message is \"%s\"."
 msgstr "Le message d’erreur est « %s »."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3083 admin/SystemPluginAdmin.php:3141
+#: admin/SystemPluginAdmin.php:3095 admin/SystemPluginAdmin.php:3153
 #, php-format
 msgid "%1$s is now disconnected from %2$s."
 msgstr "%1$s est maintenant déconnecté de %2$s."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3089 admin/SystemPluginAdmin.php:3148
+#: admin/SystemPluginAdmin.php:3101 admin/SystemPluginAdmin.php:3160
 #, php-format
 msgid "Unable to disconnect %1$s from %2$s. Please try again."
 msgstr "Impossible de déconnecter %1$s de %2$s. Veuillez réessayer."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3142
+#: admin/SystemPluginAdmin.php:3154
 msgid "You can set your new credentials."
 msgstr "Vous pouvez saisir vos nouveaux identifiants."
 
 #. translators: %s: name of the service
-#: admin/SystemPluginAdmin.php:3156
+#: admin/SystemPluginAdmin.php:3168
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr "La connexion à %s n’a pas été mise à jour. Veuillez réessayer."
 
-#: admin/SystemPluginAdmin.php:3173
+#: admin/SystemPluginAdmin.php:3185
 msgid "You do not have sufficient permissions to subscribe."
 msgstr "Vous n’avez pas les droits suffisants pour vous abonner."
 
 #. translators: 1: email address, 2: name of the plugin
-#: admin/SystemPluginAdmin.php:3181
+#: admin/SystemPluginAdmin.php:3193
 #, php-format
 msgid "An email has been sent to %1$s to confirm subscription to %2$s news."
 msgstr "Un e-mail a été envoyé à %1$s pour confirmer l’inscription aux actualités de %2$s."
 
 #. translators: 1: email address, 2: name of the plugin
-#: admin/SystemPluginAdmin.php:3186 admin/SystemPluginAdmin.php:3192
+#: admin/SystemPluginAdmin.php:3198 admin/SystemPluginAdmin.php:3204
 #, php-format
 msgid "Unable to subscribe the email %1$s to %2$s news."
 msgstr "Impossible d’inscrire l’adresse %1$s aux actualités de %2$s."
 
-#: admin/SystemPluginAdmin.php:3208
+#: admin/SystemPluginAdmin.php:3220
 msgid "You do not have sufficient permissions to delete stations."
 msgstr "Vous n’avez pas les droits suffisants pour supprimer des stations."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:3226
+#: admin/SystemPluginAdmin.php:3238
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr "La station %s a été correctement retirée."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:3232 admin/SystemPluginAdmin.php:3239
+#: admin/SystemPluginAdmin.php:3244 admin/SystemPluginAdmin.php:3251
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr "Impossible de retirer la station %s."
 
-#: admin/SystemPluginAdmin.php:3261
+#: admin/SystemPluginAdmin.php:3273
 msgid "You do not have sufficient permissions to import configuration."
 msgstr "Vous n’avez pas les droits suffisants pour importer la configuration."
 
-#: admin/SystemPluginAdmin.php:3305
+#: admin/SystemPluginAdmin.php:3317
 msgid "The configuration has been correctly imported."
 msgstr "La configuration a été correctement importée."
 
-#: admin/SystemPluginAdmin.php:3310 admin/SystemPluginAdmin.php:3316
+#: admin/SystemPluginAdmin.php:3322 admin/SystemPluginAdmin.php:3328
 msgid "Unable to import the configuration."
 msgstr "Impossible d’importer la configuration."
 
-#: admin/SystemPluginAdmin.php:3336 includes/system/Storage.php:780
+#: admin/SystemPluginAdmin.php:3348 includes/system/Storage.php:780
 msgid "You do not have sufficient permissions to add files."
 msgstr "Vous n’avez pas les droits suffisants pour ajouter des fichiers."
 
-#: admin/SystemPluginAdmin.php:3348
+#: admin/SystemPluginAdmin.php:3360
 msgid "The file has been correctly added."
 msgstr "Le fichier a été correctement ajouté."
 
-#: admin/SystemPluginAdmin.php:3353
+#: admin/SystemPluginAdmin.php:3365
 msgid "Unable to add this file: "
 msgstr "Impossible d’ajouter ce fichier :"
 
-#: admin/SystemPluginAdmin.php:3359 admin/SystemPluginAdmin.php:3366
+#: admin/SystemPluginAdmin.php:3371 admin/SystemPluginAdmin.php:3378
 msgid "Unable to add this file."
 msgstr "Impossible d’ajouter ce fichier."
 
-#: admin/SystemPluginAdmin.php:3382
+#: admin/SystemPluginAdmin.php:3394
 msgid "You do not have sufficient permissions to delete maps."
 msgstr "Vous n’avez pas les droits suffisants pour supprimer des cartes."
 
 #. translators: %s: name of the map
-#: admin/SystemPluginAdmin.php:3398
+#: admin/SystemPluginAdmin.php:3410
 #, php-format
 msgid "The map %s has been correctly removed."
 msgstr "La carte %s a été correctement retirée."
 
 #. translators: %s: name of the map
-#: admin/SystemPluginAdmin.php:3404 admin/SystemPluginAdmin.php:3411
+#: admin/SystemPluginAdmin.php:3416 admin/SystemPluginAdmin.php:3423
 #, php-format
 msgid "Unable to remove the map %s."
 msgstr "Impossible de retirer la carte %s."
 
-#: admin/SystemPluginAdmin.php:3734
+#: admin/SystemPluginAdmin.php:3747
 msgid ""
 "The client id and the client secret of your Netatmo application are required."
 msgstr "L’identifiant client et le secret client de votre application Netatmo sont obligatoires."
 
-#: admin/SystemPluginAdmin.php:3765
+#: admin/SystemPluginAdmin.php:3778
 msgid "The authorization is not valid or has expired. Please, start again."
 msgstr "L’autorisation n’est pas valide ou a expiré. Veuillez recommencer."
 
-#: admin/SystemPluginAdmin.php:3770
+#: admin/SystemPluginAdmin.php:3783
 msgid "Netatmo did not grant the access."
 msgstr "Netatmo n’a pas accordé l’accès."
 
-#: admin/SystemPluginAdmin.php:4053 admin/SystemPluginAdmin.php:4123
-#: admin/SystemPluginAdmin.php:4181 admin/SystemPluginAdmin.php:4358
-#: admin/SystemPluginAdmin.php:4522 admin/SystemPluginAdmin.php:4665
-#: admin/SystemPluginAdmin.php:4799 admin/SystemPluginAdmin.php:4950
-#: admin/SystemPluginAdmin.php:5101 admin/SystemPluginAdmin.php:5244
+#: admin/SystemPluginAdmin.php:4066 admin/SystemPluginAdmin.php:4136
+#: admin/SystemPluginAdmin.php:4194 admin/SystemPluginAdmin.php:4371
+#: admin/SystemPluginAdmin.php:4535 admin/SystemPluginAdmin.php:4678
+#: admin/SystemPluginAdmin.php:4812 admin/SystemPluginAdmin.php:4963
+#: admin/SystemPluginAdmin.php:5114 admin/SystemPluginAdmin.php:5257
 msgid "You do not have sufficient permissions to add stations."
 msgstr "Vous n’avez pas les droits suffisants pour ajouter des stations."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:4082 admin/SystemPluginAdmin.php:4145
-#: admin/SystemPluginAdmin.php:4255 admin/SystemPluginAdmin.php:4459
-#: admin/SystemPluginAdmin.php:4601 admin/SystemPluginAdmin.php:4735
-#: admin/SystemPluginAdmin.php:4886 admin/SystemPluginAdmin.php:5037
-#: admin/SystemPluginAdmin.php:5180 admin/SystemPluginAdmin.php:5341
+#: admin/SystemPluginAdmin.php:4095 admin/SystemPluginAdmin.php:4158
+#: admin/SystemPluginAdmin.php:4268 admin/SystemPluginAdmin.php:4472
+#: admin/SystemPluginAdmin.php:4614 admin/SystemPluginAdmin.php:4748
+#: admin/SystemPluginAdmin.php:4899 admin/SystemPluginAdmin.php:5050
+#: admin/SystemPluginAdmin.php:5193 admin/SystemPluginAdmin.php:5354
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr "La station %s a été correctement ajoutée."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:4094 admin/SystemPluginAdmin.php:4101
-#: admin/SystemPluginAdmin.php:4152 admin/SystemPluginAdmin.php:4159
-#: admin/SystemPluginAdmin.php:4271 admin/SystemPluginAdmin.php:4289
-#: admin/SystemPluginAdmin.php:4329 admin/SystemPluginAdmin.php:4477
-#: admin/SystemPluginAdmin.php:4494 admin/SystemPluginAdmin.php:4619
-#: admin/SystemPluginAdmin.php:4636 admin/SystemPluginAdmin.php:4753
-#: admin/SystemPluginAdmin.php:4770 admin/SystemPluginAdmin.php:4904
-#: admin/SystemPluginAdmin.php:4921 admin/SystemPluginAdmin.php:5055
-#: admin/SystemPluginAdmin.php:5072 admin/SystemPluginAdmin.php:5198
-#: admin/SystemPluginAdmin.php:5215 admin/SystemPluginAdmin.php:5359
-#: admin/SystemPluginAdmin.php:5376
+#: admin/SystemPluginAdmin.php:4107 admin/SystemPluginAdmin.php:4114
+#: admin/SystemPluginAdmin.php:4165 admin/SystemPluginAdmin.php:4172
+#: admin/SystemPluginAdmin.php:4284 admin/SystemPluginAdmin.php:4302
+#: admin/SystemPluginAdmin.php:4342 admin/SystemPluginAdmin.php:4490
+#: admin/SystemPluginAdmin.php:4507 admin/SystemPluginAdmin.php:4632
+#: admin/SystemPluginAdmin.php:4649 admin/SystemPluginAdmin.php:4766
+#: admin/SystemPluginAdmin.php:4783 admin/SystemPluginAdmin.php:4917
+#: admin/SystemPluginAdmin.php:4934 admin/SystemPluginAdmin.php:5068
+#: admin/SystemPluginAdmin.php:5085 admin/SystemPluginAdmin.php:5211
+#: admin/SystemPluginAdmin.php:5228 admin/SystemPluginAdmin.php:5372
+#: admin/SystemPluginAdmin.php:5389
 #, php-format
 msgid "Unable to add the station %s."
 msgstr "Impossible d’ajouter la station %s."
 
 #. translators: %s: name of the station
 #. translators: %s: station name
-#: admin/SystemPluginAdmin.php:4251 admin/SystemPluginAdmin.php:4455
-#: admin/SystemPluginAdmin.php:4597 admin/SystemPluginAdmin.php:4731
-#: admin/SystemPluginAdmin.php:4882 admin/SystemPluginAdmin.php:5033
-#: admin/SystemPluginAdmin.php:5176 admin/SystemPluginAdmin.php:5337
+#: admin/SystemPluginAdmin.php:4264 admin/SystemPluginAdmin.php:4468
+#: admin/SystemPluginAdmin.php:4610 admin/SystemPluginAdmin.php:4744
+#: admin/SystemPluginAdmin.php:4895 admin/SystemPluginAdmin.php:5046
+#: admin/SystemPluginAdmin.php:5189 admin/SystemPluginAdmin.php:5350
 #: includes/classes/StationHelper.php:559
 #, php-format
 msgid "The station %s has been correctly updated."
@@ -4181,21 +4218,21 @@ msgstr "La station %s a été correctement mise à jour."
 
 #. translators: %s: name of the station
 #. translators: %s: station name
-#: admin/SystemPluginAdmin.php:4265 admin/SystemPluginAdmin.php:4284
-#: admin/SystemPluginAdmin.php:4334 admin/SystemPluginAdmin.php:4471
-#: admin/SystemPluginAdmin.php:4489 admin/SystemPluginAdmin.php:4613
-#: admin/SystemPluginAdmin.php:4631 admin/SystemPluginAdmin.php:4747
-#: admin/SystemPluginAdmin.php:4765 admin/SystemPluginAdmin.php:4898
-#: admin/SystemPluginAdmin.php:4916 admin/SystemPluginAdmin.php:5049
-#: admin/SystemPluginAdmin.php:5067 admin/SystemPluginAdmin.php:5192
-#: admin/SystemPluginAdmin.php:5210 admin/SystemPluginAdmin.php:5353
-#: admin/SystemPluginAdmin.php:5371 includes/classes/StationHelper.php:566
+#: admin/SystemPluginAdmin.php:4278 admin/SystemPluginAdmin.php:4297
+#: admin/SystemPluginAdmin.php:4347 admin/SystemPluginAdmin.php:4484
+#: admin/SystemPluginAdmin.php:4502 admin/SystemPluginAdmin.php:4626
+#: admin/SystemPluginAdmin.php:4644 admin/SystemPluginAdmin.php:4760
+#: admin/SystemPluginAdmin.php:4778 admin/SystemPluginAdmin.php:4911
+#: admin/SystemPluginAdmin.php:4929 admin/SystemPluginAdmin.php:5062
+#: admin/SystemPluginAdmin.php:5080 admin/SystemPluginAdmin.php:5205
+#: admin/SystemPluginAdmin.php:5223 admin/SystemPluginAdmin.php:5366
+#: admin/SystemPluginAdmin.php:5384 includes/classes/StationHelper.php:566
 #: includes/classes/StationHelper.php:573
 #, php-format
 msgid "Unable to update the station %s."
 msgstr "Impossible de mettre à jour la station %s."
 
-#: admin/SystemPluginAdmin.php:5154 admin/SystemPluginAdmin.php:5298
+#: admin/SystemPluginAdmin.php:5167 admin/SystemPluginAdmin.php:5311
 msgid "no name"
 msgstr "sans nom"
 
@@ -6050,12 +6087,12 @@ msgid "Open the scheduled tasks of Weather Station"
 msgstr "Ouvrir les tâches planifiées de Weather Station"
 
 #: includes/classes/SystemSiteHealth.php:138
-#: includes/classes/SystemSiteHealth.php:257
+#: includes/classes/SystemSiteHealth.php:258
 msgid "Yes"
 msgstr "Oui"
 
 #: includes/classes/SystemSiteHealth.php:138
-#: includes/classes/SystemSiteHealth.php:257
+#: includes/classes/SystemSiteHealth.php:258
 msgid "No"
 msgstr "Non"
 
@@ -6095,47 +6132,47 @@ msgstr "Actualisation la plus récente d’une station (UTC)"
 msgid "Oldest last refresh of a station (UTC)"
 msgstr "Dernière actualisation la plus ancienne d’une station (UTC)"
 
-#: includes/classes/SystemSiteHealth.php:221
+#: includes/classes/SystemSiteHealth.php:222
 msgid "Connected services and keys set"
 msgstr "Services connectés et clés renseignées"
 
-#: includes/classes/SystemSiteHealth.php:225
+#: includes/classes/SystemSiteHealth.php:226
 msgid "WP-Cron disabled by the configuration"
 msgstr "WP-Cron désactivé par la configuration"
 
-#: includes/classes/SystemSiteHealth.php:241
+#: includes/classes/SystemSiteHealth.php:242
 msgid "Scheduled jobs of the plugin"
 msgstr "Tâches planifiées de l’extension"
 
-#: includes/classes/SystemSiteHealth.php:242
+#: includes/classes/SystemSiteHealth.php:243
 msgid "Jobs more than 15 minutes late"
 msgstr "Tâches en retard de plus de 15 minutes"
 
-#: includes/classes/SystemSiteHealth.php:252
+#: includes/classes/SystemSiteHealth.php:253
 msgid "Last 200 entries of the events log, by level"
 msgstr "200 dernières entrées du journal des évènements, par niveau"
 
-#: includes/classes/SystemSiteHealth.php:253
+#: includes/classes/SystemSiteHealth.php:254
 msgid "Level of the events log"
 msgstr "Niveau du journal des évènements"
 
-#: includes/classes/SystemSiteHealth.php:256
+#: includes/classes/SystemSiteHealth.php:257
 msgid "Retention of the history (weeks, 0 = unlimited)"
 msgstr "Conservation de l’historique (semaines, 0 = illimitée)"
 
-#: includes/classes/SystemSiteHealth.php:257
+#: includes/classes/SystemSiteHealth.php:258
 msgid "Caches: frontend, backend"
 msgstr "Caches : public, administration"
 
-#: includes/classes/SystemSiteHealth.php:258
+#: includes/classes/SystemSiteHealth.php:259
 msgid "Limits (requests per minute: controls, feeds; cache entries per hour)"
 msgstr "Limites (requêtes par minute : contrôles, flux ; entrées de cache par heure)"
 
-#: includes/classes/SystemSiteHealth.php:259
+#: includes/classes/SystemSiteHealth.php:260
 msgid "Partial translation"
 msgstr "Traduction partielle"
 
-#: includes/classes/SystemSiteHealth.php:260
+#: includes/classes/SystemSiteHealth.php:261
 msgid "Personal data masked in the events log"
 msgstr "Données personnelles masquées dans le journal des évènements"
 
@@ -13524,12 +13561,12 @@ msgstr "Clé API OpenWeatherMap erronée."
 msgid "OpenWeatherMap servers have returned empty response. Please retry."
 msgstr "Les serveurs OpenWeatherMap ont renvoyé une réponse vide. Merci de réessayer."
 
-#: includes/traits/SystemOptionsHandling.php:417
 #: includes/traits/SystemOptionsHandling.php:418
 #: includes/traits/SystemOptionsHandling.php:419
 #: includes/traits/SystemOptionsHandling.php:420
 #: includes/traits/SystemOptionsHandling.php:421
 #: includes/traits/SystemOptionsHandling.php:422
+#: includes/traits/SystemOptionsHandling.php:423
 msgid "Customized palette"
 msgstr "Palette personnalisée"
 
