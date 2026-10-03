@@ -43,7 +43,6 @@ To see all available widgets, controls and viewers, please take a look at the [l
 ## Supported devices & services
 Weather Station supports:
 
-* the BloomSky stations (Sky1, Sky2 & Storm)
 * the Netatmo station (all modules)
 * the Netatmo *Healthy Home Coach*
 * the Pioupiou wind stations (V1 & V2)

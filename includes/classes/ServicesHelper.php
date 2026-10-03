@@ -96,7 +96,10 @@ class Handling {
      */
     public function add_metaboxes() {
         // Left column
-        add_meta_box('lws-connect-bloomsky', 'Bloomsky', array($this, 'bloomsky_box'), 'lws-settings', 'normal');
+        // BloomSky stopped its service in 2022: its box is only shown to disconnect an account which is still stored.
+        if (get_option('live_weather_station_bloomsky_connected')) {
+            add_meta_box('lws-connect-bloomsky', 'Bloomsky', array($this, 'bloomsky_box'), 'lws-settings', 'normal');
+        }
         add_meta_box('lws-connect-netatmo', 'Netatmo', array($this, 'netatmo_box'), 'lws-settings', 'normal');
         add_meta_box('lws-connect-netatmohc', 'Netatmo (Healthy Home Coach)', array($this, 'netatmohc_box'), 'lws-settings', 'normal');
 
