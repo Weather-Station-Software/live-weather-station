@@ -4,9 +4,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Weather Station 3.9.0\n"
-"Report-Msgid-Bugs-To: https://github.com/Weather-Station-Software/live-"
-"weather-station/issues\n"
-"POT-Creation-Date: 2026-10-03T10:42:19+00:00\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/live-weather-"
+"station\n"
+"POT-Creation-Date: 2026-10-03T13:16:10+00:00\n"
 "PO-Revision-Date: 2026-10-02 22:00+0200\n"
 "Last-Translator: Jason Rouet <https://jasonrouet.com/>\n"
 "Language-Team: French (France)\n"
@@ -50,7 +50,7 @@ msgstr "https://jasonrouet.com/"
 msgid "This view does not exist"
 msgstr "Cette vue n’existe pas"
 
-#: admin/partials/Analytics.php:35 admin/SystemPluginAdmin.php:1592
+#: admin/partials/Analytics.php:35 admin/SystemPluginAdmin.php:1615
 msgid "Analytics"
 msgstr "Analyse de données"
 
@@ -68,13 +68,13 @@ msgid "API long-time scale"
 msgstr "API - long terme"
 
 #. translators: %s: name of the item that has been reset, for example "Cache"
-#: admin/partials/Analytics.php:42 admin/SystemPluginAdmin.php:2642
+#: admin/partials/Analytics.php:42 admin/SystemPluginAdmin.php:2665
 msgid "Cache"
 msgstr "Cache"
 
 #. translators: %s: date, shown in a tooltip
-#: admin/partials/Analytics.php:44 admin/SystemPluginAdmin.php:1590
-#: admin/SystemPluginAdmin.php:1612 includes/classes/AnalyticsHelper.php:116
+#: admin/partials/Analytics.php:44 admin/SystemPluginAdmin.php:1613
+#: admin/SystemPluginAdmin.php:1635 includes/classes/AnalyticsHelper.php:116
 #: includes/classes/AnalyticsHelper.php:133
 #: includes/classes/DashboardHelper.php:270 includes/system/InlineHelp.php:626
 #: includes/traits/DataOutput.php:7407
@@ -874,7 +874,7 @@ msgstr "En cours d’exécution :"
 
 #: admin/partials/DashboardSummary.php:39
 #: includes/classes/ListTableStations.php:225
-#: includes/traits/DataUnitConversion.php:1124
+#: includes/traits/DataUnitConversion.php:1127
 msgid "none"
 msgstr "aucun"
 
@@ -884,8 +884,8 @@ msgstr "Services connectés :"
 
 #. translators: %s: name of the item that has been reset, for example "Cache"
 #: admin/partials/DashboardSummary.php:75 admin/partials/ListTableLogs.php:20
-#: admin/SystemPluginAdmin.php:1590 admin/SystemPluginAdmin.php:1612
-#: admin/SystemPluginAdmin.php:2672 includes/system/Data.php:89
+#: admin/SystemPluginAdmin.php:1613 admin/SystemPluginAdmin.php:1635
+#: admin/SystemPluginAdmin.php:2695 includes/system/Data.php:89
 msgid "Events log"
 msgstr "Journal des évènements"
 
@@ -1178,7 +1178,7 @@ msgstr "Ajouter une station Bloomsky"
 #: admin/partials/FormAddEditAmbient.php:54
 #: admin/partials/FormAddEditAmbient.php:65
 #: admin/partials/FormAddNetatmo.php:40 admin/partials/LogDetail.php:35
-#: admin/SystemPluginAdmin.php:2239 includes/classes/ListTableLog.php:100
+#: admin/SystemPluginAdmin.php:2262 includes/classes/ListTableLog.php:100
 #: includes/classes/ListTableStations.php:281
 #: includes/classes/StationHelper.php:802
 #: includes/traits/DataArraysGenerator.php:2213
@@ -1687,11 +1687,13 @@ msgid "Edit a station connected to WeatherLink"
 msgstr "Modifier une station connectée à WeatherLink"
 
 #: admin/partials/FormAddEditWeatherlink.php:73
+#: includes/libraries/wlink/WLINKApiClient.php:64
 #: includes/system/InlineHelp.php:963
 msgid "Device ID"
 msgstr "ID de l’appareil"
 
 #: admin/partials/FormAddEditWeatherlink.php:77
+#: includes/libraries/wlink/WLINKApiClient.php:65
 #: includes/system/InlineHelp.php:964
 msgid "API Token"
 msgstr "Jeton d’API"
@@ -1703,7 +1705,9 @@ msgstr "Inchangé"
 
 #: admin/partials/FormAddEditWeatherlink.php:81
 #: includes/classes/StationHelper.php:952
-#: includes/classes/StationHelper.php:957 includes/system/InlineHelp.php:965
+#: includes/classes/StationHelper.php:957
+#: includes/libraries/wlink/WLINKApiClient.php:66
+#: includes/system/InlineHelp.php:965
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -1735,7 +1739,7 @@ msgstr "Ajout de l’appareil en cours, merci de patienter"
 msgid "All Netatmo \"Healthy Home Coach\" devices have been already added!"
 msgstr "Toutes les appareils Netatmo « Healthy Home Coach » ont déjà été ajoutés !"
 
-#: admin/partials/FormDeleteMap.php:28 admin/SystemPluginAdmin.php:3367
+#: admin/partials/FormDeleteMap.php:28 admin/SystemPluginAdmin.php:3390
 #: includes/classes/MapHelper.php:358 includes/traits/DataOutput.php:142
 msgid "This map does not exist."
 msgstr "Cette carte n’existe pas."
@@ -1836,7 +1840,7 @@ msgid "Please, select the elements you want to import:"
 msgstr "Veuillez sélectionner les éléments que vous souhaitez importer :"
 
 #: admin/partials/FormImportConfiguration.php:31 admin/partials/Settings.php:25
-#: admin/SystemPluginAdmin.php:1595 includes/system/InlineHelp.php:919
+#: admin/SystemPluginAdmin.php:1618 includes/system/InlineHelp.php:919
 #: includes/system/InlineHelp.php:932 includes/system/InlineHelp.php:949
 #: includes/system/InlineHelp.php:969 includes/system/InlineHelp.php:983
 #: includes/system/InlineHelp.php:1003 includes/system/InlineHelp.php:1027
@@ -1864,9 +1868,9 @@ msgid ""
 msgstr "Cochez cette case pour importer ces réglages dans %s. Notez qu’ils remplaceront tous les réglages actuels."
 
 #: admin/partials/FormImportConfiguration.php:42
-#: admin/partials/ListTableStations.php:20 admin/SystemPluginAdmin.php:1573
+#: admin/partials/ListTableStations.php:20 admin/SystemPluginAdmin.php:1596
 #: includes/classes/ListTableMaps.php:165 includes/classes/MapHelper.php:422
-#: includes/classes/SystemSiteHealth.php:117
+#: includes/classes/SystemSiteHealth.php:195
 msgid "Stations"
 msgstr "Stations"
 
@@ -1879,7 +1883,7 @@ msgid ""
 msgstr "Cochez cette case pour importer ces stations dans %s. Notez qu’elles remplaceront toutes les stations actuelles."
 
 #: admin/partials/FormImportConfiguration.php:53
-#: admin/partials/ListTableMaps.php:20 admin/SystemPluginAdmin.php:1576
+#: admin/partials/ListTableMaps.php:20 admin/SystemPluginAdmin.php:1599
 #: includes/system/InlineHelp.php:495
 msgid "Maps"
 msgstr "Cartes"
@@ -2016,8 +2020,8 @@ msgstr "Code d’erreur"
 msgid "Full message"
 msgstr "Message complet"
 
-#: admin/partials/Requirements.php:13 admin/SystemPluginAdmin.php:1610
-#: admin/SystemPluginAdmin.php:1611
+#: admin/partials/Requirements.php:13 admin/SystemPluginAdmin.php:1633
+#: admin/SystemPluginAdmin.php:1634
 msgid "Requirements"
 msgstr "Prérequis"
 
@@ -3002,14 +3006,25 @@ msgid ""
 msgstr "Nombre maximal de nouvelles entrées écrites par heure dans les caches de vos pages, pour garder la base de données légère lorsqu’un robot demande des variations sans fin (par défaut 6000 pour les widgets, les contrôles et les graphiques, et 300 pour le code court de climat textuel). Au-delà, les données sont recalculées au lieu d’être mises en cache. 0 supprime la limite."
 
 #: admin/SystemPluginAdmin.php:398
+msgid "Late data warning"
+msgstr "Avertissement de données en retard"
+
+#: admin/SystemPluginAdmin.php:400
+msgid ""
+"The Site Health screen of WordPress warns when a station has not been "
+"refreshed for more than this number of minutes (the default is 60). 0 turns "
+"the warning off."
+msgstr "L’écran Santé du site de WordPress avertit quand une station n’a pas été actualisée depuis plus de ce nombre de minutes (60 par défaut). 0 désactive l’avertissement."
+
+#: admin/SystemPluginAdmin.php:402
 msgid "Logging policy"
 msgstr "Politique de journalisation"
 
-#: admin/SystemPluginAdmin.php:400
+#: admin/SystemPluginAdmin.php:404
 msgid "Minimum level of severity that will be recorded in the events log."
 msgstr "Niveau minimum de gravité qui sera enregistrée dans le journal des événements."
 
-#: admin/SystemPluginAdmin.php:404
+#: admin/SystemPluginAdmin.php:408
 msgid ""
 "When the \"debug\" level is recorded, the answers of the services are "
 "written in the events log. Hiding the position, the altitude, the address "
@@ -3018,377 +3033,386 @@ msgid ""
 "you need the raw values to diagnose a problem."
 msgstr "Lorsque le niveau « debug » est enregistré, les réponses des services sont écrites dans le journal des évènements. Masquer la position, l’altitude, l’adresse et les identifiants des stations dans ces entrées permet de partager un journal (par exemple dans une demande de support) sans les publier. Décochez cette option si vous avez besoin des valeurs brutes pour diagnostiquer un problème."
 
-#: admin/SystemPluginAdmin.php:408
+#: admin/SystemPluginAdmin.php:412
 msgid "Maximum number and maximum age of events stored in the events log."
 msgstr "Nombre maximal et âge maximal des évènements conservés dans le journal des évènements."
 
-#: admin/SystemPluginAdmin.php:412
+#: admin/SystemPluginAdmin.php:416
 msgid "Maximum age of notifications before deletion."
 msgstr "Âge maximum des notifications avant suppression."
 
-#: admin/SystemPluginAdmin.php:416 admin/SystemPluginAdmin.php:1579
+#: admin/SystemPluginAdmin.php:420 admin/SystemPluginAdmin.php:1602
 msgid "Files"
 msgstr "Fichiers"
 
-#: admin/SystemPluginAdmin.php:418
+#: admin/SystemPluginAdmin.php:422
 msgid ""
 "Check this to allow adding files, right in the file manager. As a best-"
 "practice, it is recommended to activate it before adding a file, and to "
 "disable it just after."
 msgstr "Cochez cette case pour autoriser l’ajout de fichiers, directement dans le gestionnaire de fichiers. Les bonnes pratiques consistent à activer ce réglage avant d’ajouter un fichier, et à le désactiver juste après."
 
-#: admin/SystemPluginAdmin.php:423
+#: admin/SystemPluginAdmin.php:427
 msgid "Maximum age of files kept in the file manager."
 msgstr "Âge maximal des fichiers conservés dans le gestionnaire de fichiers."
 
-#: admin/SystemPluginAdmin.php:428
+#: admin/SystemPluginAdmin.php:432
 msgid "Task scheduler activity"
 msgstr "Activité du planificateur de tâches"
 
 #. translators: %s: name of the fastest scheduler option
-#: admin/SystemPluginAdmin.php:430
+#: admin/SystemPluginAdmin.php:434
 #, php-format
 msgid ""
 "Speed of the task scheduler. Selecting \"%s\" requires you to have "
 "configured an efficient cron."
 msgstr "Vitesse du planificateur de tâches. Sélectionner « %s » nécessite que vous ayez configuré un cron efficace."
 
-#: admin/SystemPluginAdmin.php:432
+#: admin/SystemPluginAdmin.php:436
 msgid "Automatic management"
 msgstr "Gestion automatique"
 
-#: admin/SystemPluginAdmin.php:436 includes/traits/DataTypeDescription.php:258
+#: admin/SystemPluginAdmin.php:440 includes/traits/DataTypeDescription.php:258
 #: public/partials/WidgetIndoorDisplay.php:17
 msgid "Health index"
 msgstr "Indice de salubrité"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:438
+#: admin/SystemPluginAdmin.php:442
 #, php-format
 msgid ""
 "If you check this, %s will override the Healthy Home Coach health index with "
 "its own computed value."
 msgstr "Si vous cochez ceci, %s va surcharger l’indice de salubrité Healthy Home Coach par sa propre valeur."
 
-#: admin/SystemPluginAdmin.php:440
+#: admin/SystemPluginAdmin.php:444
 msgid "Servers time shift"
 msgstr "Décalage de temps du serveur"
 
-#: admin/SystemPluginAdmin.php:442
+#: admin/SystemPluginAdmin.php:446
 msgid ""
 "Maximum allowed servers time shift before warning (useful for Netatmo "
 "accuracy)."
 msgstr "Décalage de temps du serveur maximal avant avertissement (peut être utile pour la précision Netatmo)."
 
-#: admin/SystemPluginAdmin.php:444
+#: admin/SystemPluginAdmin.php:448
 msgid "Medias retention"
 msgstr "Conservation des médias"
 
-#: admin/SystemPluginAdmin.php:448
+#: admin/SystemPluginAdmin.php:452
 msgid "Stations views"
 msgstr "Vues des stations"
 
-#: admin/SystemPluginAdmin.php:450
+#: admin/SystemPluginAdmin.php:454
 msgid ""
 "If you check this, stations views will display detailed technical "
 "information for each module."
 msgstr "Si vous cochez ceci, les vues des stations afficheront des informations techniques détaillées pour chaque module."
 
-#: admin/SystemPluginAdmin.php:452
+#: admin/SystemPluginAdmin.php:456
 msgid "Font Awesome"
 msgstr "Font Awesome"
 
-#: admin/SystemPluginAdmin.php:454
+#: admin/SystemPluginAdmin.php:458
 msgid ""
 "How Font Awesome (used by Weather Station) is enqueued, and which version."
 msgstr "Comment Font Awesome (utilisé par Weather Station) est délivré, et dans quelle version."
 
-#: admin/SystemPluginAdmin.php:456
+#: admin/SystemPluginAdmin.php:460
 msgid "Compatibility modes"
 msgstr "Modes de compatibilité"
 
-#: admin/SystemPluginAdmin.php:460
+#: admin/SystemPluginAdmin.php:464
 msgid "Links"
 msgstr "Liens"
 
-#: admin/SystemPluginAdmin.php:464
+#: admin/SystemPluginAdmin.php:468
 msgid "HTTP timeout"
 msgstr "Délai d’attente HTTP"
 
-#: admin/SystemPluginAdmin.php:466
+#: admin/SystemPluginAdmin.php:470
 msgid "Maximum time to wait for a server response."
 msgstr "Temps maximum d’attente pour une réponse du serveur."
 
-#: admin/SystemPluginAdmin.php:468
+#: admin/SystemPluginAdmin.php:472
 msgid "Special"
 msgstr "Spécial"
 
-#: admin/SystemPluginAdmin.php:472
+#: admin/SystemPluginAdmin.php:476
 msgid "Performance data cutoff"
 msgstr "Limite des données de performance"
 
-#: admin/SystemPluginAdmin.php:474
+#: admin/SystemPluginAdmin.php:478
 msgid "Maximum age of performance data displayed in statistical reports."
 msgstr "Âge maximum des données de performance affichées dans les rapports statistiques."
 
-#: admin/SystemPluginAdmin.php:484
+#: admin/SystemPluginAdmin.php:488
 msgid "Temperature unit"
 msgstr "Unité de température"
 
-#: admin/SystemPluginAdmin.php:486
+#: admin/SystemPluginAdmin.php:490
 msgid "Unit of measurement in which temperatures are expressed."
 msgstr "Unité de mesure dans laquelle les températures sont exprimées."
 
-#: admin/SystemPluginAdmin.php:488
+#: admin/SystemPluginAdmin.php:492
 msgid "Pressure unit"
 msgstr "Unité de pression"
 
-#: admin/SystemPluginAdmin.php:490
+#: admin/SystemPluginAdmin.php:494
 msgid "Unit of measurement in which pressures are expressed."
 msgstr "Unité de mesure dans laquelle les pressions sont exprimées."
 
-#: admin/SystemPluginAdmin.php:492
+#: admin/SystemPluginAdmin.php:496
 msgid "Wind speed unit"
 msgstr "Unité de vitesse du vent"
 
-#: admin/SystemPluginAdmin.php:494
+#: admin/SystemPluginAdmin.php:498
 msgid "Unit of measurement in which wind speeds are expressed."
 msgstr "Unité de mesure dans laquelle les vitesses du vent sont exprimées."
 
-#: admin/SystemPluginAdmin.php:496
+#: admin/SystemPluginAdmin.php:500
 msgid "Gases"
 msgstr "Gaz"
 
-#: admin/SystemPluginAdmin.php:498
+#: admin/SystemPluginAdmin.php:502
 msgid "Way to express the concentrations of gases."
 msgstr "Mode d’expression des concentrations gazeuses."
 
-#: admin/SystemPluginAdmin.php:500
+#: admin/SystemPluginAdmin.php:504
 msgid "Distances"
 msgstr "Distances"
 
-#: admin/SystemPluginAdmin.php:502
+#: admin/SystemPluginAdmin.php:506
 msgid "Units system in which distances are expressed."
 msgstr "Système d’unités dans lequel sont exprimées les distances."
 
-#: admin/SystemPluginAdmin.php:504
+#: admin/SystemPluginAdmin.php:508
 msgid "Altitudes"
 msgstr "Altitudes"
 
-#: admin/SystemPluginAdmin.php:506
+#: admin/SystemPluginAdmin.php:510
 msgid "Units system in which altitudes are expressed."
 msgstr "Système d’unités dans lequel sont exprimées les altitudes."
 
-#: admin/SystemPluginAdmin.php:508
+#: admin/SystemPluginAdmin.php:512
 msgid "Rain & snow"
 msgstr "Pluie & neige"
 
-#: admin/SystemPluginAdmin.php:510
+#: admin/SystemPluginAdmin.php:514
 msgid "Units system in which rain and snow quantities are expressed."
 msgstr "Système d’unités dans lequel sont exprimées les quantités de pluie et de neige."
 
-#: admin/SystemPluginAdmin.php:512 includes/classes/WidgetPsychrometry.php:40
+#: admin/SystemPluginAdmin.php:516 includes/classes/WidgetPsychrometry.php:40
 msgid "Psychrometry"
 msgstr "Psychrométrie"
 
-#: admin/SystemPluginAdmin.php:514
+#: admin/SystemPluginAdmin.php:518
 msgid "Units system in which density, energy, etc. are expressed."
 msgstr "Système d’unités dans lesquelles densité, énergie, etc. sont exprimés."
 
-#: admin/SystemPluginAdmin.php:516
+#: admin/SystemPluginAdmin.php:520
 msgid "Computed values"
 msgstr "Valeurs calculées"
 
-#: admin/SystemPluginAdmin.php:518
+#: admin/SystemPluginAdmin.php:522
 msgid ""
 "Check this if you want the controls and widgets display the computed values "
 "in addition to the measured data."
 msgstr "Cochez cette case si vous souhaitez que les contrôles et les widgets affichent les valeurs calculées en plus des données mesurées."
 
-#: admin/SystemPluginAdmin.php:520
+#: admin/SystemPluginAdmin.php:524
 msgid "Gauges boundaries"
 msgstr "Limites des jauges"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:522
+#: admin/SystemPluginAdmin.php:526
 #, php-format
 msgid ""
 "By default, min/max boundaries in controls are fixed. If you check this, %s "
 "will try to adapt it to the amplitude of the measures."
 msgstr "Par défaut, les limites min/max dans les contrôles sont fixes. Si vous cochez ceci, %s va essayer de les adapter à l’amplitude des mesures."
 
-#: admin/SystemPluginAdmin.php:524
+#: admin/SystemPluginAdmin.php:528
 msgid "Data obsolescence"
 msgstr "Péremption des données"
 
-#: admin/SystemPluginAdmin.php:526
+#: admin/SystemPluginAdmin.php:530
 msgid ""
 "Duration beyond which a data is considered stale (and will therefore neither "
 "be shown nor used in computations)."
 msgstr "Durée au-delà de laquelle une donnée est considérée comme périmée (et par conséquent ne sera ni affichée, ni utilisées dans les calculs)."
 
-#: admin/SystemPluginAdmin.php:528
+#: admin/SystemPluginAdmin.php:532
 msgid "Wind icon"
 msgstr "Icône de vent"
 
-#: admin/SystemPluginAdmin.php:530
+#: admin/SystemPluginAdmin.php:534
 msgid "Semantics of the icon representing the wind direction in widgets."
 msgstr "Sémantique de l’icône représentant la direction du vent dans les widgets."
 
-#: admin/SystemPluginAdmin.php:536
+#: admin/SystemPluginAdmin.php:540
 msgid "Moon icon set"
 msgstr "Jeu d’icônes pour la lune"
 
-#: admin/SystemPluginAdmin.php:538
+#: admin/SystemPluginAdmin.php:542
 msgid "Type of icons to illustrate moon age and phase in widgets."
 msgstr "Type d’icônes pour illustrer l’âge et phase de la lune dans les widgets."
 
-#: admin/SystemPluginAdmin.php:540
+#: admin/SystemPluginAdmin.php:544
 msgid "Interface style"
 msgstr "Style d’interface"
 
-#: admin/SystemPluginAdmin.php:585
+#: admin/SystemPluginAdmin.php:589
 msgid "Data category"
 msgstr "Catégorie de données"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:587
+#: admin/SystemPluginAdmin.php:591
 #, php-format
 msgid "Category of data compiled by %s."
 msgstr "Catégorie de données compilées par %s."
 
-#: admin/SystemPluginAdmin.php:589
+#: admin/SystemPluginAdmin.php:593
 msgid "Compilation mode"
 msgstr "Mode de compilation"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:591
+#: admin/SystemPluginAdmin.php:595
 #, php-format
 msgid "Types of compiled data and operations computed by %s."
 msgstr "Types de données compilées et opérations effectuées par %s."
 
-#: admin/SystemPluginAdmin.php:593
+#: admin/SystemPluginAdmin.php:597
 msgid "Retention period"
 msgstr "Période de conservation"
 
-#: admin/SystemPluginAdmin.php:595
+#: admin/SystemPluginAdmin.php:599
 msgid ""
 "Duration for which historical data should be retained. Set to 0 for "
 "unlimited duration."
 msgstr "Durée pendant laquelle les données d’historiques doivent être conservées. Mettre à 0 pour une durée illimitée."
 
-#: admin/SystemPluginAdmin.php:633
+#: admin/SystemPluginAdmin.php:637
 msgid "weeks"
 msgstr "semaines"
 
-#: admin/SystemPluginAdmin.php:654
+#: admin/SystemPluginAdmin.php:658
 msgid "Scripts in footer"
 msgstr "Script dans le pied de page"
 
-#: admin/SystemPluginAdmin.php:657
+#: admin/SystemPluginAdmin.php:661
 msgid "Accelerate render time for pages with controls or graphs."
 msgstr "Accélère la restitution des pages contenant des contrôles ou des graphiques."
 
-#: admin/SystemPluginAdmin.php:658
+#: admin/SystemPluginAdmin.php:662
 msgid "Wait for DOM"
 msgstr "Attendre le DOM"
 
-#: admin/SystemPluginAdmin.php:661
+#: admin/SystemPluginAdmin.php:665
 msgid "Force script loader to wait the DOM is fully loaded before activating."
 msgstr "Forcer le chargeur de script à attendre que le DOM soit complètement chargé avant de l’activer."
 
-#: admin/SystemPluginAdmin.php:683
+#: admin/SystemPluginAdmin.php:687
 msgid "Widgets, controls and charts"
 msgstr "Widgets, contrôles et graphiques"
 
-#: admin/SystemPluginAdmin.php:689 admin/SystemPluginAdmin.php:696
+#: admin/SystemPluginAdmin.php:693 admin/SystemPluginAdmin.php:700
 msgid "entries per hour"
 msgstr "entrées par heure"
 
-#: admin/SystemPluginAdmin.php:690
+#: admin/SystemPluginAdmin.php:694
 msgid "Textual climate"
 msgstr "Climat textuel"
 
-#: admin/SystemPluginAdmin.php:708
+#: admin/SystemPluginAdmin.php:712
+msgid "Station not refreshed for"
+msgstr "Station non actualisée depuis"
+
+#: admin/SystemPluginAdmin.php:718
+#: includes/traits/DataDateTimeConversion.php:823
+msgid "minutes"
+msgstr "minutes"
+
+#: admin/SystemPluginAdmin.php:730
 msgid "Live controls and charts"
 msgstr "Contrôles en direct et graphiques"
 
-#: admin/SystemPluginAdmin.php:714 admin/SystemPluginAdmin.php:721
+#: admin/SystemPluginAdmin.php:736 admin/SystemPluginAdmin.php:743
 msgid "requests per minute"
 msgstr "requêtes par minute"
 
-#: admin/SystemPluginAdmin.php:715
+#: admin/SystemPluginAdmin.php:737
 msgid "Feeds"
 msgstr "Flux"
 
-#: admin/SystemPluginAdmin.php:742
+#: admin/SystemPluginAdmin.php:764
 msgid ""
 "Hide the personal data of the stations in the debug entries of the events log"
 msgstr "Masquer les données personnelles des stations dans les entrées de débogage du journal des évènements"
 
-#: admin/SystemPluginAdmin.php:758
+#: admin/SystemPluginAdmin.php:780
 msgid "events"
 msgstr "évènements"
 
-#: admin/SystemPluginAdmin.php:764 admin/SystemPluginAdmin.php:775
-#: admin/SystemPluginAdmin.php:836 admin/SystemPluginAdmin.php:1005
-#: includes/traits/DataDateTimeConversion.php:805
+#: admin/SystemPluginAdmin.php:786 admin/SystemPluginAdmin.php:797
+#: admin/SystemPluginAdmin.php:858 admin/SystemPluginAdmin.php:1027
+#: includes/traits/DataDateTimeConversion.php:808
 msgid "days"
 msgstr "jours"
 
-#: admin/SystemPluginAdmin.php:786
+#: admin/SystemPluginAdmin.php:808
 msgid "Pictures"
 msgstr "Images"
 
-#: admin/SystemPluginAdmin.php:790
+#: admin/SystemPluginAdmin.php:812
 msgid "Time during which pictures and snapshots should be kept."
 msgstr "Temps pendant lequel les images et les instantanés doivent être conservés."
 
-#: admin/SystemPluginAdmin.php:791
+#: admin/SystemPluginAdmin.php:813
 msgid "Videos"
 msgstr "Vidéos"
 
-#: admin/SystemPluginAdmin.php:795
+#: admin/SystemPluginAdmin.php:817
 msgid "Time during which videos and timelapses should be kept."
 msgstr "Temps pendant lequel les vidéos et les timelapses doivent être conservés."
 
-#: admin/SystemPluginAdmin.php:816
+#: admin/SystemPluginAdmin.php:838
 msgid "Override Healthy Home Coach values"
 msgstr "Surcharger les valeurs Healthy Home Coach"
 
-#: admin/SystemPluginAdmin.php:826
+#: admin/SystemPluginAdmin.php:848
 msgid "Enable \"add file\" in the file manager"
 msgstr "Activer \"ajouter un fichier\" dans le gestionnaire de fichiers"
 
-#: admin/SystemPluginAdmin.php:847
+#: admin/SystemPluginAdmin.php:869
 msgid "Netatmo provisioning"
 msgstr "Allocation Netatmo"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:850
+#: admin/SystemPluginAdmin.php:872
 #, php-format
 msgid ""
 "Check this to let %s manage Netatmo stations for you (add, remove, etc.)."
 msgstr "Cochez cette case pour laisser %s gérer les stations Netatmo à votre place (ajout, suppression, etc.)."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:851
+#: admin/SystemPluginAdmin.php:873
 msgid "BloomSky provisioning"
 msgstr "Allocation BloomSky"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:854
+#: admin/SystemPluginAdmin.php:876
 #, php-format
 msgid ""
 "Check this to let %s manage BloomSky stations for you (add, remove, etc.)."
 msgstr "Cochez cette case pour laisser %s gérer les stations BloomSky à votre place (ajout, suppression, etc.)."
 
-#: admin/SystemPluginAdmin.php:866
+#: admin/SystemPluginAdmin.php:888
 msgid "Cache controls"
 msgstr "Mettre en cache les contrôles"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:869
+#: admin/SystemPluginAdmin.php:891
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for the controls rendering "
@@ -3396,24 +3420,24 @@ msgid ""
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour la restitution des contrôles (jauges, compteurs, etc.)."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:870
+#: admin/SystemPluginAdmin.php:892
 msgid "Cache widgets"
 msgstr "Mettre en cache les widgets"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:873
+#: admin/SystemPluginAdmin.php:895
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for the widgets rendering."
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour la restitution des widgets."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:874
+#: admin/SystemPluginAdmin.php:896
 msgid "Cache daily graphs"
 msgstr "Mettre en cache les graphiques quotidiens"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:877
+#: admin/SystemPluginAdmin.php:899
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for all daily graphs "
@@ -3421,12 +3445,12 @@ msgid ""
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour le rendu des graphiques quotidiens."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:878
+#: admin/SystemPluginAdmin.php:900
 msgid "Cache historical graphs"
 msgstr "Mettre en cache les graphiques d’historiques"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:881
+#: admin/SystemPluginAdmin.php:903
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for all historical graphs "
@@ -3434,12 +3458,12 @@ msgid ""
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour le rendu des graphiques d’historiques."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:882
+#: admin/SystemPluginAdmin.php:904
 msgid "Cache climatological data"
 msgstr "Mettre en cache les données climatologiques"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:885
+#: admin/SystemPluginAdmin.php:907
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for all climatological (long-"
@@ -3447,12 +3471,12 @@ msgid ""
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour toutes les données climatologiques (données de long terme)."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:886
+#: admin/SystemPluginAdmin.php:908
 msgid "Cache backend features"
 msgstr "Mettre en cache les fonctionnalités des zones d’administration"
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:889
+#: admin/SystemPluginAdmin.php:911
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for backend rendering (admin "
@@ -3460,24 +3484,24 @@ msgid ""
 msgstr "Cochez cette case pour activer le gestionnaire de cache de %s pour la restitution du backend (panneau d’administration, tableau de bord, vue de la station, etc.)."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:890
+#: admin/SystemPluginAdmin.php:912
 msgid "Do not cache generated text files"
 msgstr "Ne pas mettre en cache les fichiers textes générés"
 
-#: admin/SystemPluginAdmin.php:893
+#: admin/SystemPluginAdmin.php:915
 msgid ""
 "Check this to prevent caching of the generated text files. Required on some "
 "server configurations, particularly when using Varnish."
 msgstr "Cochez cette case pour empêcher la mise en cache des fichiers textes générés. Obligatoire sur certaines configurations de serveur, notamment lorsque vous utilisez Varnish."
 
 #. translators: %s: name of the installed cache plugin
-#: admin/SystemPluginAdmin.php:895
+#: admin/SystemPluginAdmin.php:917
 #, php-format
 msgid "Follow cache purges initiated by %s "
 msgstr "Se caler sur les purges de cache lancées par %s "
 
 #. translators: 1: name of the installed cache plugin, 2: name of the plugin
-#: admin/SystemPluginAdmin.php:898
+#: admin/SystemPluginAdmin.php:920
 #, php-format
 msgid ""
 "As %1$s is installed, you can ask %2$s to flush its own cache when %1$s does."
@@ -3485,170 +3509,170 @@ msgstr "Comme %1$s est installé, vous pouvez demander à %2$s de vidanger son p
 
 #. translators: %s: name of a pool of background tasks
 #. translators: %s: name of the pool of tasks
-#: admin/SystemPluginAdmin.php:913 admin/SystemPluginAdmin.php:920
-#: admin/SystemPluginAdmin.php:927 includes/classes/ListTableTasks.php:62
+#: admin/SystemPluginAdmin.php:935 admin/SystemPluginAdmin.php:942
+#: admin/SystemPluginAdmin.php:949 includes/classes/ListTableTasks.php:62
 #, php-format
 msgid "%s pool"
 msgstr "groupe %s"
 
-#: admin/SystemPluginAdmin.php:917 admin/SystemPluginAdmin.php:924
-#: admin/SystemPluginAdmin.php:931 admin/SystemPluginAdmin.php:995
-#: includes/traits/DataDateTimeConversion.php:819
+#: admin/SystemPluginAdmin.php:939 admin/SystemPluginAdmin.php:946
+#: admin/SystemPluginAdmin.php:953 admin/SystemPluginAdmin.php:1017
+#: includes/traits/DataDateTimeConversion.php:822
 msgid "seconds"
 msgstr "secondes"
 
-#: admin/SystemPluginAdmin.php:943
+#: admin/SystemPluginAdmin.php:965
 msgid "I love data analytics"
 msgstr "J’aime l’analyse de données"
 
-#: admin/SystemPluginAdmin.php:946
+#: admin/SystemPluginAdmin.php:968
 msgid "Check this only if you really love data analytics and visualization."
 msgstr "Cochez cette case seulement si vous aimez vraiment les analyses et visualisations de données."
 
-#: admin/SystemPluginAdmin.php:947
+#: admin/SystemPluginAdmin.php:969
 msgid "I want to be a time sorcerer"
 msgstr "Je veux être un sorcier du temps"
 
-#: admin/SystemPluginAdmin.php:950
+#: admin/SystemPluginAdmin.php:972
 msgid "Check this to get access to the scheduled tasks tab."
 msgstr "Cochez cette case pour accéder à l’onglet des tâches planifiées."
 
-#: admin/SystemPluginAdmin.php:951
+#: admin/SystemPluginAdmin.php:973
 msgid "Display plugin statistics"
 msgstr "Afficher les statistiques de l’extension"
 
-#: admin/SystemPluginAdmin.php:954
+#: admin/SystemPluginAdmin.php:976
 msgid ""
 "Check this you want to display statistics about the plugin in your dashboard."
 msgstr "Cochez ceci si vous souhaitez afficher des statistiques sur l’extension dans votre tableau de bord."
 
-#: admin/SystemPluginAdmin.php:955
+#: admin/SystemPluginAdmin.php:977
 msgid "Keep historical tables"
 msgstr "Conserver les tables d’historiques"
 
-#: admin/SystemPluginAdmin.php:958
+#: admin/SystemPluginAdmin.php:980
 msgid "Check this if you want to keep historical tables after plugin deletion."
 msgstr "Cochez cette case si vous souhaitez conserver les tables d’historiques après la suppression de l’extension."
 
-#: admin/SystemPluginAdmin.php:971
+#: admin/SystemPluginAdmin.php:993
 msgid "Check this to prevent your cache manager to cache widgets."
 msgstr "Cochez cette case pour empêcher votre gestionnaire de cache de mettre en cache les widgets."
 
 #. translators: %s: name of the installed cache plugin
-#: admin/SystemPluginAdmin.php:974
+#: admin/SystemPluginAdmin.php:996
 #, php-format
 msgid "Check this to prevent your cache manager, %s, to cache widgets."
 msgstr "Cochez cette case pour empêcher votre gestionnaire de cache, %s, de mettre en cache les widgets."
 
-#: admin/SystemPluginAdmin.php:977
+#: admin/SystemPluginAdmin.php:999
 msgid "Tabbed controls"
 msgstr "Contrôles à onglets"
 
-#: admin/SystemPluginAdmin.php:980
+#: admin/SystemPluginAdmin.php:1002
 msgid ""
 "Check this to allow charts to be correctly rendered in tabbed controls (like "
 "in Elementor or Divi)."
 msgstr "Cochez cette case pour autoriser le rendu correct des graphiques dans les contrôles à onglets (par exemple dans Elementor ou Divi)."
 
-#: admin/SystemPluginAdmin.php:981
+#: admin/SystemPluginAdmin.php:1003
 msgid "Deferred widgets"
 msgstr "Widgets différés"
 
-#: admin/SystemPluginAdmin.php:1016
+#: admin/SystemPluginAdmin.php:1038
 msgid "Open internal links in a new window"
 msgstr "Ouvrir les liens internes dans une nouvelle fenêtre"
 
-#: admin/SystemPluginAdmin.php:1019
+#: admin/SystemPluginAdmin.php:1041
 msgid ""
 "Check this to have all auxiliary internal links (like events, etc.) opened "
 "in a new window."
 msgstr "Cochez cette case pour que tous les liens internes auxiliaires (comme ceux des évènements, par exemple) s’ouvrent dans une nouvelle fenêtre."
 
-#: admin/SystemPluginAdmin.php:1020
+#: admin/SystemPluginAdmin.php:1042
 msgid "Open external links in a new window"
 msgstr "Ouvrir les liens externes dans une nouvelle fenêtre"
 
-#: admin/SystemPluginAdmin.php:1023
+#: admin/SystemPluginAdmin.php:1045
 msgid ""
 "Check this to have all external links (like help, etc.) opened in a new "
 "window."
 msgstr "Cochez cette case pour que tous les liens externes (comme ceux de l’aide, par exemple) s’ouvrent dans une nouvelle fenêtre."
 
-#: admin/SystemPluginAdmin.php:1034
+#: admin/SystemPluginAdmin.php:1056
 msgid "Display technical information"
 msgstr "Afficher les informations techniques"
 
-#: admin/SystemPluginAdmin.php:1125
+#: admin/SystemPluginAdmin.php:1147
 msgid "Display it in controls and widgets"
 msgstr "Afficher dans les contrôles et les widgets"
 
-#: admin/SystemPluginAdmin.php:1135
+#: admin/SystemPluginAdmin.php:1157
 msgid "Adjusted whenever possible"
 msgstr "Ajustés si possible"
 
-#: admin/SystemPluginAdmin.php:1186
+#: admin/SystemPluginAdmin.php:1208
 msgid "Force standard buttons"
 msgstr "Forcer les boutons standards"
 
-#: admin/SystemPluginAdmin.php:1189
+#: admin/SystemPluginAdmin.php:1211
 msgid ""
 "Check this to apply the standard WordPress style on buttons. Uncheck to let "
 "the current theme style them."
 msgstr "Cochez cette case pour appliquer le style standard de WordPress sur les boutons. Décochez cette case pour laisser faire le thème actuel."
 
-#: admin/SystemPluginAdmin.php:1232
+#: admin/SystemPluginAdmin.php:1254
 msgid "You do not have sufficient permissions to save options."
 msgstr "Vous n’avez pas les droits suffisants pour enregistrer les options."
 
-#: admin/SystemPluginAdmin.php:1395
+#: admin/SystemPluginAdmin.php:1418
 msgid "You do not have sufficient permissions to reset defaults."
 msgstr "Vous n’avez pas les droits suffisants pour rétablir les valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:1434
+#: admin/SystemPluginAdmin.php:1457
 msgid "You do not have sufficient permissions to access this page."
 msgstr "Vous n’avez pas les droits suffisants pour accéder à cette page."
 
-#: admin/SystemPluginAdmin.php:1471
+#: admin/SystemPluginAdmin.php:1494
 msgid "General settings"
 msgstr "Réglages généraux"
 
-#: admin/SystemPluginAdmin.php:1472
+#: admin/SystemPluginAdmin.php:1495
 msgid "Services settings"
 msgstr "Réglages des services"
 
-#: admin/SystemPluginAdmin.php:1473
+#: admin/SystemPluginAdmin.php:1496
 msgid "Display settings"
 msgstr "Réglages d’affichage"
 
-#: admin/SystemPluginAdmin.php:1474
+#: admin/SystemPluginAdmin.php:1497
 msgid "Thresholds settings"
 msgstr "Réglages de seuils"
 
-#: admin/SystemPluginAdmin.php:1475
+#: admin/SystemPluginAdmin.php:1498
 msgid "History settings"
 msgstr "Réglages des historiques"
 
-#: admin/SystemPluginAdmin.php:1476
+#: admin/SystemPluginAdmin.php:1499
 msgid "System settings"
 msgstr "Réglages systèmes"
 
-#: admin/SystemPluginAdmin.php:1477
+#: admin/SystemPluginAdmin.php:1500
 msgid "Styles settings"
 msgstr "Réglages des styles"
 
-#: admin/SystemPluginAdmin.php:1478
+#: admin/SystemPluginAdmin.php:1501
 msgid "Unknown settings"
 msgstr "Réglage inconnu"
 
 #. translators: %s: name of the settings section, for example "General
 #. settings"
-#: admin/SystemPluginAdmin.php:1483
+#: admin/SystemPluginAdmin.php:1506
 #, php-format
 msgid "%s have been correctly updated."
 msgstr "Les %s ont été correctement mis à jour."
 
 #. translators: %s: URL of the current settings page
-#: admin/SystemPluginAdmin.php:1487
+#: admin/SystemPluginAdmin.php:1510
 #, php-format
 msgid ""
 "In order for the main menu to reflect the updated settings, please <a "
@@ -3657,37 +3681,37 @@ msgstr "Afin que le menu principal puisse refléter les nouveaux réglages, veui
 
 #. translators: %s: name of the settings section, for example "General
 #. settings"
-#: admin/SystemPluginAdmin.php:1495
+#: admin/SystemPluginAdmin.php:1518
 #, php-format
 msgid "%s have not been updated. Please try again."
 msgstr "Les %s n’ont pas été mis à jour. Veuillez réessayer."
 
 #. translators: %s: name of the settings section, for example "General
 #. settings"
-#: admin/SystemPluginAdmin.php:1503
+#: admin/SystemPluginAdmin.php:1526
 #, php-format
 msgid "%s have been correctly reset to defaults."
 msgstr "Les %s ont été correctement réinitialisés à leurs valeurs par défaut."
 
 #. translators: %s: name of the settings section, for example "General
 #. settings"
-#: admin/SystemPluginAdmin.php:1509
+#: admin/SystemPluginAdmin.php:1532
 #, php-format
 msgid "%s have not been reset to defaults. Please try again."
 msgstr "Les %s n’ont pas été réinitialisés à leurs valeurs par défaut. Veuillez réessayer."
 
 #. translators: %s: name of the settings section, for example "General
 #. settings"
-#: admin/SystemPluginAdmin.php:1518
+#: admin/SystemPluginAdmin.php:1541
 #, php-format
 msgid "%s has not been updated. Please try again."
 msgstr "%s n’a pas été mis à jour. Veuillez réessayer."
 
-#: admin/SystemPluginAdmin.php:1546
+#: admin/SystemPluginAdmin.php:1569
 msgid "Weather data and external services"
 msgstr "Données météorologiques et services externes"
 
-#: admin/SystemPluginAdmin.php:1547
+#: admin/SystemPluginAdmin.php:1570
 msgid ""
 "Weather Station does not collect, store or share personal data about "
 "visitors of your site, and does not store personal data tied to WordPress "
@@ -3698,7 +3722,7 @@ msgid ""
 "period set in the plugin settings (14 days by default)."
 msgstr "Weather Station ne collecte, ne stocke et ne partage aucune donnée personnelle sur les visiteurs de votre site, et ne stocke aucune donnée personnelle liée aux comptes utilisateurs de WordPress. Seule exception : lorsqu’une requête vers l’une des adresses de flux publics (par exemple le flux YoWindow) est refusée ou échoue, le journal des évènements conserve l’adresse demandée et l’adresse IP du visiteur dont la dernière partie est effacée (anonymisée). Les entrées du journal des évènements sont supprimées après la durée de conservation définie dans les réglages de l’extension (14 jours par défaut)."
 
-#: admin/SystemPluginAdmin.php:1548
+#: admin/SystemPluginAdmin.php:1571
 msgid ""
 "The plugin stores in your database the station settings you enter (names, "
 "locations and coordinates of stations, and the credentials needed to query "
@@ -3707,7 +3731,7 @@ msgid ""
 "displayed on the public pages."
 msgstr "L’extension stocke dans votre base de données les réglages des stations que vous saisissez (noms, emplacements et coordonnées des stations, et identifiants nécessaires pour interroger ou alimenter les services météo que vous connectez) ainsi que les mesures collectées. Les identifiants des stations ne sont utilisés que côté serveur et ne sont jamais affichés sur les pages publiques."
 
-#: admin/SystemPluginAdmin.php:1549
+#: admin/SystemPluginAdmin.php:1572
 msgid ""
 "Depending on the stations you configure, your server sends requests (and, "
 "for the publishing features, station measurements) to third-party services "
@@ -3716,7 +3740,7 @@ msgid ""
 "server address is visible to these services."
 msgstr "Selon les stations que vous configurez, votre serveur envoie des requêtes (et, pour les fonctions de publication, des mesures de station) à des services tiers tels que Netatmo, WeatherFlow, WeatherLink, Ambient Weather, BloomSky, Pioupiou, Weather Underground, OpenWeatherMap ou des services de type PWS/WOW. L’adresse de votre serveur est visible de ces services."
 
-#: admin/SystemPluginAdmin.php:1550
+#: admin/SystemPluginAdmin.php:1573
 msgid ""
 "Maps displayed on your pages load tiles and scripts from the tile provider "
 "you select (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Stadia Maps, "
@@ -3725,431 +3749,431 @@ msgid ""
 "policies."
 msgstr "Les cartes affichées sur vos pages chargent des tuiles et des scripts depuis le fournisseur de tuiles que vous sélectionnez (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Stadia Maps, Windy, OpenWeatherMap…). Le navigateur de vos visiteurs envoie donc son adresse IP et son agent utilisateur à ce fournisseur. Veuillez consulter leurs politiques de confidentialité."
 
-#: admin/SystemPluginAdmin.php:1570 admin/SystemPluginAdmin.php:1571
+#: admin/SystemPluginAdmin.php:1593 admin/SystemPluginAdmin.php:1594
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: admin/SystemPluginAdmin.php:1585
+#: admin/SystemPluginAdmin.php:1608
 msgid "Scheduler"
 msgstr "Planificateur de tâches"
 
-#: admin/SystemPluginAdmin.php:1853 admin/SystemPluginAdmin.php:1868
-#: admin/SystemPluginAdmin.php:1884 includes/classes/StationHelper.php:841
+#: admin/SystemPluginAdmin.php:1876 admin/SystemPluginAdmin.php:1891
+#: admin/SystemPluginAdmin.php:1907 includes/classes/StationHelper.php:841
 msgid "Oldest data from"
 msgstr "Données les plus anciennes au"
 
-#: admin/SystemPluginAdmin.php:2240
+#: admin/SystemPluginAdmin.php:2263
 msgid "This station does not exist."
 msgstr "Cette station n’existe pas."
 
-#: admin/SystemPluginAdmin.php:2241
+#: admin/SystemPluginAdmin.php:2264
 msgid "Back to the stations list"
 msgstr "Retour à la liste des stations"
 
-#: admin/SystemPluginAdmin.php:2299 admin/SystemPluginAdmin.php:2319
-#: admin/SystemPluginAdmin.php:2339 admin/SystemPluginAdmin.php:2359
+#: admin/SystemPluginAdmin.php:2322 admin/SystemPluginAdmin.php:2342
+#: admin/SystemPluginAdmin.php:2362 admin/SystemPluginAdmin.php:2382
 msgid "You do not have sufficient permissions to switch mode."
 msgstr "Vous n’avez pas les droits suffisants pour changer de mode."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2304
+#: admin/SystemPluginAdmin.php:2327
 #, php-format
 msgid "%s now runs in simplified mode."
 msgstr "%s fonctionne maintenant en mode simplifié."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2324
+#: admin/SystemPluginAdmin.php:2347
 #, php-format
 msgid "%s now runs in extended mode."
 msgstr "%s fonctionne maintenant en mode étendu."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2344
+#: admin/SystemPluginAdmin.php:2367
 #, php-format
 msgid "%s now displays its data in the metric system."
 msgstr "%s affiche maintenant ses données en utilisant le système métrique."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2364
+#: admin/SystemPluginAdmin.php:2387
 #, php-format
 msgid "%s now displays its data in the imperial system."
 msgstr "%s affiche maintenant ses données en utilisant le système impérial."
 
-#: admin/SystemPluginAdmin.php:2379 admin/SystemPluginAdmin.php:2401
+#: admin/SystemPluginAdmin.php:2402 admin/SystemPluginAdmin.php:2424
 msgid "You do not have sufficient permissions to switch translation mode."
 msgstr "Vous n’avez pas les droits suffisants pour changer de mode de traduction."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2386
+#: admin/SystemPluginAdmin.php:2409
 #, php-format
 msgid "%s no longer uses partial translations."
 msgstr "%s n’utilise plus les traductions partielles."
 
 #. translators: %s: name of the plugin
-#: admin/SystemPluginAdmin.php:2408
+#: admin/SystemPluginAdmin.php:2431
 #, php-format
 msgid "%s now uses a partial translation."
 msgstr "%s utilise maintenant une traduction partielle."
 
-#: admin/SystemPluginAdmin.php:2423
+#: admin/SystemPluginAdmin.php:2446
 msgid "You do not have sufficient permissions to reset dashboard."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser le tableau de bord."
 
-#: admin/SystemPluginAdmin.php:2434
+#: admin/SystemPluginAdmin.php:2457
 msgid "Unable to reset dashboard. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser le tableau de bord. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2442
+#: admin/SystemPluginAdmin.php:2465
 msgid "Dashboard view has been reset to defaults."
 msgstr "La vue du Tableau de bord à été réinitialisée à ses valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:2454
+#: admin/SystemPluginAdmin.php:2477
 msgid "You do not have sufficient permissions to reset analytics."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser les statistiques."
 
-#: admin/SystemPluginAdmin.php:2465
+#: admin/SystemPluginAdmin.php:2488
 msgid "Unable to reset analytics. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser les statistiques. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2472
+#: admin/SystemPluginAdmin.php:2495
 msgid "Analytics view has been reset to defaults."
 msgstr "La vue « Analyses de données » à été réinitialisée à ses valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:2484
+#: admin/SystemPluginAdmin.php:2507
 msgid "You do not have sufficient permissions to reset services."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser les services."
 
-#: admin/SystemPluginAdmin.php:2495
+#: admin/SystemPluginAdmin.php:2518
 msgid "Unable to reset services. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser les services. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2502
+#: admin/SystemPluginAdmin.php:2525
 msgid "Services view has been reset to defaults."
 msgstr "La vue service à été réinitialisée à ses valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:2514
+#: admin/SystemPluginAdmin.php:2537
 msgid "You do not have sufficient permissions to reset stations."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser les stations."
 
-#: admin/SystemPluginAdmin.php:2525
+#: admin/SystemPluginAdmin.php:2548
 msgid "Unable to reset stations. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser les stations. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2532
+#: admin/SystemPluginAdmin.php:2555
 msgid "Stations views have been reset to defaults."
 msgstr "Les vues des stations ont été réinitialisés à leurs valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:2546
+#: admin/SystemPluginAdmin.php:2569
 msgid "You do not have sufficient permissions to purge data."
 msgstr "Vous n’avez pas les droits suffisants pour purger les données."
 
-#: admin/SystemPluginAdmin.php:2558
+#: admin/SystemPluginAdmin.php:2581
 msgid "Unable to purge data. Security token is missing or invalid."
 msgstr "Impossible de purger les données. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2567
+#: admin/SystemPluginAdmin.php:2590
 msgid "All stations data have been purged."
 msgstr "Toutes les données des stations ont été purgées."
 
-#: admin/SystemPluginAdmin.php:2585
+#: admin/SystemPluginAdmin.php:2608
 msgid "You do not have sufficient permissions to sync data."
 msgstr "Vous n’avez pas les droits suffisants pour synchroniser les données."
 
-#: admin/SystemPluginAdmin.php:2597
+#: admin/SystemPluginAdmin.php:2620
 msgid "Unable to sync data. Security token is missing or invalid."
 msgstr "Impossible de synchroniser les données. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2608
+#: admin/SystemPluginAdmin.php:2631
 msgid "All stations have been resynchronized."
 msgstr "Toutes les stations ont été resynchronisées."
 
-#: admin/SystemPluginAdmin.php:2624
+#: admin/SystemPluginAdmin.php:2647
 msgid "You do not have sufficient permissions to reset cache."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser le cache."
 
-#: admin/SystemPluginAdmin.php:2635
+#: admin/SystemPluginAdmin.php:2658
 msgid "Unable to reset cache. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser le cache. Le jeton de sécurité est manquant ou invalide."
 
 #. translators: %s: name of the item that has been reset, for example "Cache"
-#: admin/SystemPluginAdmin.php:2642 admin/SystemPluginAdmin.php:2672
+#: admin/SystemPluginAdmin.php:2665 admin/SystemPluginAdmin.php:2695
 #, php-format
 msgid "%s has been reset."
 msgstr "%s a été réinitialisé."
 
-#: admin/SystemPluginAdmin.php:2653
+#: admin/SystemPluginAdmin.php:2676
 msgid "You do not have sufficient permissions to reset log."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser le journal."
 
-#: admin/SystemPluginAdmin.php:2664
+#: admin/SystemPluginAdmin.php:2687
 msgid "Unable to reset log. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser le journal. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2683
+#: admin/SystemPluginAdmin.php:2706
 msgid "You do not have sufficient permissions to export configuration."
 msgstr "Vous n’avez pas les droits suffisants pour exporter la configuration."
 
-#: admin/SystemPluginAdmin.php:2694
+#: admin/SystemPluginAdmin.php:2717
 msgid "Unable to export configuration. Security token is missing or invalid."
 msgstr "Impossible d’exporter la configuration. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2703
+#: admin/SystemPluginAdmin.php:2726
 msgid ""
 "Configuration export has been launched. You will be notified by email of the "
 "end of treatment."
 msgstr "L’exportation de configuration a été lancé. Vous serez averti par e-mail de la fin du traitement."
 
-#: admin/SystemPluginAdmin.php:2718
+#: admin/SystemPluginAdmin.php:2741
 msgid "You do not have sufficient permissions to reschedule cron tasks."
 msgstr "Vous n’avez pas les droits suffisants pour reprogrammer les tâches planifiées."
 
-#: admin/SystemPluginAdmin.php:2732
+#: admin/SystemPluginAdmin.php:2755
 msgid "This action is not allowed. Security token is missing or invalid."
 msgstr "Cette action n’est pas autorisée. Le jeton de sécurité est manquant ou invalide."
 
 #. translators: %s: name of the scheduled task
-#: admin/SystemPluginAdmin.php:2759
+#: admin/SystemPluginAdmin.php:2782
 #, php-format
 msgid "The task %s has been rescheduled."
 msgstr "La tâche %s a été reportée."
 
 #. translators: %s: name of the scheduled task
-#: admin/SystemPluginAdmin.php:2762
+#: admin/SystemPluginAdmin.php:2785
 #, php-format
 msgid "The task %s has been executed."
 msgstr "La tâche %s a été exécutée."
 
-#: admin/SystemPluginAdmin.php:2767
+#: admin/SystemPluginAdmin.php:2790
 msgid "This action is not allowed."
 msgstr "Cette action n’est pas autorisée."
 
-#: admin/SystemPluginAdmin.php:2780
+#: admin/SystemPluginAdmin.php:2803
 msgid "You do not have sufficient permissions to relaunch watchdog."
 msgstr "Vous n’avez pas les droits suffisants pour relancer le chien de garde."
 
-#: admin/SystemPluginAdmin.php:2791
+#: admin/SystemPluginAdmin.php:2814
 msgid "Unable to relaunch watchdog. Security token is missing or invalid."
 msgstr "Impossible de relancer le chien de garde. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2798
+#: admin/SystemPluginAdmin.php:2821
 msgid "The watchdog was successfully restarted."
 msgstr "Le watchdog a été relancé avec succès."
 
-#: admin/SystemPluginAdmin.php:2798
+#: admin/SystemPluginAdmin.php:2821
 msgid "Please wait a few minutes for all the tasks to be rescheduled."
 msgstr "Merci de patienter quelques minutes afin que toutes les tâches soient reprogrammées."
 
-#: admin/SystemPluginAdmin.php:2810
+#: admin/SystemPluginAdmin.php:2833
 msgid "You do not have sufficient permissions to reset palette."
 msgstr "Vous n’avez pas les droits suffisants pour réinitialiser la palette."
 
-#: admin/SystemPluginAdmin.php:2821
+#: admin/SystemPluginAdmin.php:2844
 msgid "Unable to reset palette. Security token is missing or invalid."
 msgstr "Impossible de réinitialiser la palette. Le jeton de sécurité est manquant ou invalide."
 
-#: admin/SystemPluginAdmin.php:2828
+#: admin/SystemPluginAdmin.php:2851
 msgid "Custom palette has been reset to defaults."
 msgstr "La palette personnalisée à été réinitialisée à ses valeurs par défaut."
 
-#: admin/SystemPluginAdmin.php:2840
+#: admin/SystemPluginAdmin.php:2863
 msgid "You do not have sufficient permissions to save palette."
 msgstr "Vous n’avez pas les droits suffisants pour enregistrer la palette."
 
-#: admin/SystemPluginAdmin.php:2868
+#: admin/SystemPluginAdmin.php:2891
 msgid "Custom palette has been correctly updated."
 msgstr "La palette personnalisée a été correctement mise à jour."
 
-#: admin/SystemPluginAdmin.php:2872
+#: admin/SystemPluginAdmin.php:2895
 msgid "Custom palette has not been updated. Please try again."
 msgstr "La palette personnalisée n’a pas été mise à jour. Veuillez réessayer."
 
-#: admin/SystemPluginAdmin.php:2886 admin/SystemPluginAdmin.php:3654
-#: admin/SystemPluginAdmin.php:3728
+#: admin/SystemPluginAdmin.php:2909 admin/SystemPluginAdmin.php:3677
+#: admin/SystemPluginAdmin.php:3751
 msgid "You do not have sufficient permissions to manage connections."
 msgstr "Vous n’avez pas les droits suffisants pour gérer les connexions."
 
-#: admin/SystemPluginAdmin.php:2934 admin/SystemPluginAdmin.php:3705
-#: admin/SystemPluginAdmin.php:3768
+#: admin/SystemPluginAdmin.php:2957 admin/SystemPluginAdmin.php:3728
+#: admin/SystemPluginAdmin.php:3791
 msgid "Unknown service."
 msgstr "Service inconnu."
 
-#: admin/SystemPluginAdmin.php:2937 admin/SystemPluginAdmin.php:2945
-#: admin/SystemPluginAdmin.php:2953 admin/SystemPluginAdmin.php:2961
-#: admin/SystemPluginAdmin.php:2969 admin/SystemPluginAdmin.php:2977
-#: admin/SystemPluginAdmin.php:2985 admin/SystemPluginAdmin.php:2993
+#: admin/SystemPluginAdmin.php:2960 admin/SystemPluginAdmin.php:2968
+#: admin/SystemPluginAdmin.php:2976 admin/SystemPluginAdmin.php:2984
+#: admin/SystemPluginAdmin.php:2992 admin/SystemPluginAdmin.php:3000
+#: admin/SystemPluginAdmin.php:3008 admin/SystemPluginAdmin.php:3016
 msgid "the API key can not be empty"
 msgstr "la clé d’API ne peut pas être vide"
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3000 admin/SystemPluginAdmin.php:3801
+#: admin/SystemPluginAdmin.php:3023 admin/SystemPluginAdmin.php:3824
 #, php-format
 msgid "%1$s is now connected to %2$s."
 msgstr "%1$s est maintenant connecté à %2$s."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3006 admin/SystemPluginAdmin.php:3806
+#: admin/SystemPluginAdmin.php:3029 admin/SystemPluginAdmin.php:3829
 #, php-format
 msgid "Unable to connect %1$s to %2$s. Please try again."
 msgstr "Impossible de connecter %1$s à %2$s. Veuillez réessayer."
 
 #. translators: %s: error message returned by the service
-#: admin/SystemPluginAdmin.php:3008 admin/SystemPluginAdmin.php:3808
+#: admin/SystemPluginAdmin.php:3031 admin/SystemPluginAdmin.php:3831
 #, php-format
 msgid "The error message is \"%s\"."
 msgstr "Le message d’erreur est « %s »."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3060 admin/SystemPluginAdmin.php:3118
+#: admin/SystemPluginAdmin.php:3083 admin/SystemPluginAdmin.php:3141
 #, php-format
 msgid "%1$s is now disconnected from %2$s."
 msgstr "%1$s est maintenant déconnecté de %2$s."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3066 admin/SystemPluginAdmin.php:3125
+#: admin/SystemPluginAdmin.php:3089 admin/SystemPluginAdmin.php:3148
 #, php-format
 msgid "Unable to disconnect %1$s from %2$s. Please try again."
 msgstr "Impossible de déconnecter %1$s de %2$s. Veuillez réessayer."
 
 #. translators: 1: name of the plugin, 2: name of the service
-#: admin/SystemPluginAdmin.php:3119
+#: admin/SystemPluginAdmin.php:3142
 msgid "You can set your new credentials."
 msgstr "Vous pouvez saisir vos nouveaux identifiants."
 
 #. translators: %s: name of the service
-#: admin/SystemPluginAdmin.php:3133
+#: admin/SystemPluginAdmin.php:3156
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr "La connexion à %s n’a pas été mise à jour. Veuillez réessayer."
 
-#: admin/SystemPluginAdmin.php:3150
+#: admin/SystemPluginAdmin.php:3173
 msgid "You do not have sufficient permissions to subscribe."
 msgstr "Vous n’avez pas les droits suffisants pour vous abonner."
 
 #. translators: 1: email address, 2: name of the plugin
-#: admin/SystemPluginAdmin.php:3158
+#: admin/SystemPluginAdmin.php:3181
 #, php-format
 msgid "An email has been sent to %1$s to confirm subscription to %2$s news."
 msgstr "Un e-mail a été envoyé à %1$s pour confirmer l’inscription aux actualités de %2$s."
 
 #. translators: 1: email address, 2: name of the plugin
-#: admin/SystemPluginAdmin.php:3163 admin/SystemPluginAdmin.php:3169
+#: admin/SystemPluginAdmin.php:3186 admin/SystemPluginAdmin.php:3192
 #, php-format
 msgid "Unable to subscribe the email %1$s to %2$s news."
 msgstr "Impossible d’inscrire l’adresse %1$s aux actualités de %2$s."
 
-#: admin/SystemPluginAdmin.php:3185
+#: admin/SystemPluginAdmin.php:3208
 msgid "You do not have sufficient permissions to delete stations."
 msgstr "Vous n’avez pas les droits suffisants pour supprimer des stations."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:3203
+#: admin/SystemPluginAdmin.php:3226
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr "La station %s a été correctement retirée."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:3209 admin/SystemPluginAdmin.php:3216
+#: admin/SystemPluginAdmin.php:3232 admin/SystemPluginAdmin.php:3239
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr "Impossible de retirer la station %s."
 
-#: admin/SystemPluginAdmin.php:3238
+#: admin/SystemPluginAdmin.php:3261
 msgid "You do not have sufficient permissions to import configuration."
 msgstr "Vous n’avez pas les droits suffisants pour importer la configuration."
 
-#: admin/SystemPluginAdmin.php:3282
+#: admin/SystemPluginAdmin.php:3305
 msgid "The configuration has been correctly imported."
 msgstr "La configuration a été correctement importée."
 
-#: admin/SystemPluginAdmin.php:3287 admin/SystemPluginAdmin.php:3293
+#: admin/SystemPluginAdmin.php:3310 admin/SystemPluginAdmin.php:3316
 msgid "Unable to import the configuration."
 msgstr "Impossible d’importer la configuration."
 
-#: admin/SystemPluginAdmin.php:3313 includes/system/Storage.php:780
+#: admin/SystemPluginAdmin.php:3336 includes/system/Storage.php:780
 msgid "You do not have sufficient permissions to add files."
 msgstr "Vous n’avez pas les droits suffisants pour ajouter des fichiers."
 
-#: admin/SystemPluginAdmin.php:3325
+#: admin/SystemPluginAdmin.php:3348
 msgid "The file has been correctly added."
 msgstr "Le fichier a été correctement ajouté."
 
-#: admin/SystemPluginAdmin.php:3330
+#: admin/SystemPluginAdmin.php:3353
 msgid "Unable to add this file: "
 msgstr "Impossible d’ajouter ce fichier :"
 
-#: admin/SystemPluginAdmin.php:3336 admin/SystemPluginAdmin.php:3343
+#: admin/SystemPluginAdmin.php:3359 admin/SystemPluginAdmin.php:3366
 msgid "Unable to add this file."
 msgstr "Impossible d’ajouter ce fichier."
 
-#: admin/SystemPluginAdmin.php:3359
+#: admin/SystemPluginAdmin.php:3382
 msgid "You do not have sufficient permissions to delete maps."
 msgstr "Vous n’avez pas les droits suffisants pour supprimer des cartes."
 
 #. translators: %s: name of the map
-#: admin/SystemPluginAdmin.php:3375
+#: admin/SystemPluginAdmin.php:3398
 #, php-format
 msgid "The map %s has been correctly removed."
 msgstr "La carte %s a été correctement retirée."
 
 #. translators: %s: name of the map
-#: admin/SystemPluginAdmin.php:3381 admin/SystemPluginAdmin.php:3388
+#: admin/SystemPluginAdmin.php:3404 admin/SystemPluginAdmin.php:3411
 #, php-format
 msgid "Unable to remove the map %s."
 msgstr "Impossible de retirer la carte %s."
 
-#: admin/SystemPluginAdmin.php:3711
+#: admin/SystemPluginAdmin.php:3734
 msgid ""
 "The client id and the client secret of your Netatmo application are required."
 msgstr "L’identifiant client et le secret client de votre application Netatmo sont obligatoires."
 
-#: admin/SystemPluginAdmin.php:3742
+#: admin/SystemPluginAdmin.php:3765
 msgid "The authorization is not valid or has expired. Please, start again."
 msgstr "L’autorisation n’est pas valide ou a expiré. Veuillez recommencer."
 
-#: admin/SystemPluginAdmin.php:3747
+#: admin/SystemPluginAdmin.php:3770
 msgid "Netatmo did not grant the access."
 msgstr "Netatmo n’a pas accordé l’accès."
 
-#: admin/SystemPluginAdmin.php:4030 admin/SystemPluginAdmin.php:4100
-#: admin/SystemPluginAdmin.php:4158 admin/SystemPluginAdmin.php:4335
-#: admin/SystemPluginAdmin.php:4499 admin/SystemPluginAdmin.php:4642
-#: admin/SystemPluginAdmin.php:4776 admin/SystemPluginAdmin.php:4927
-#: admin/SystemPluginAdmin.php:5078 admin/SystemPluginAdmin.php:5221
+#: admin/SystemPluginAdmin.php:4053 admin/SystemPluginAdmin.php:4123
+#: admin/SystemPluginAdmin.php:4181 admin/SystemPluginAdmin.php:4358
+#: admin/SystemPluginAdmin.php:4522 admin/SystemPluginAdmin.php:4665
+#: admin/SystemPluginAdmin.php:4799 admin/SystemPluginAdmin.php:4950
+#: admin/SystemPluginAdmin.php:5101 admin/SystemPluginAdmin.php:5244
 msgid "You do not have sufficient permissions to add stations."
 msgstr "Vous n’avez pas les droits suffisants pour ajouter des stations."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:4059 admin/SystemPluginAdmin.php:4122
-#: admin/SystemPluginAdmin.php:4232 admin/SystemPluginAdmin.php:4436
-#: admin/SystemPluginAdmin.php:4578 admin/SystemPluginAdmin.php:4712
-#: admin/SystemPluginAdmin.php:4863 admin/SystemPluginAdmin.php:5014
-#: admin/SystemPluginAdmin.php:5157 admin/SystemPluginAdmin.php:5318
+#: admin/SystemPluginAdmin.php:4082 admin/SystemPluginAdmin.php:4145
+#: admin/SystemPluginAdmin.php:4255 admin/SystemPluginAdmin.php:4459
+#: admin/SystemPluginAdmin.php:4601 admin/SystemPluginAdmin.php:4735
+#: admin/SystemPluginAdmin.php:4886 admin/SystemPluginAdmin.php:5037
+#: admin/SystemPluginAdmin.php:5180 admin/SystemPluginAdmin.php:5341
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr "La station %s a été correctement ajoutée."
 
 #. translators: %s: name of the station
-#: admin/SystemPluginAdmin.php:4071 admin/SystemPluginAdmin.php:4078
-#: admin/SystemPluginAdmin.php:4129 admin/SystemPluginAdmin.php:4136
-#: admin/SystemPluginAdmin.php:4248 admin/SystemPluginAdmin.php:4266
-#: admin/SystemPluginAdmin.php:4306 admin/SystemPluginAdmin.php:4454
-#: admin/SystemPluginAdmin.php:4471 admin/SystemPluginAdmin.php:4596
-#: admin/SystemPluginAdmin.php:4613 admin/SystemPluginAdmin.php:4730
-#: admin/SystemPluginAdmin.php:4747 admin/SystemPluginAdmin.php:4881
-#: admin/SystemPluginAdmin.php:4898 admin/SystemPluginAdmin.php:5032
-#: admin/SystemPluginAdmin.php:5049 admin/SystemPluginAdmin.php:5175
-#: admin/SystemPluginAdmin.php:5192 admin/SystemPluginAdmin.php:5336
-#: admin/SystemPluginAdmin.php:5353
+#: admin/SystemPluginAdmin.php:4094 admin/SystemPluginAdmin.php:4101
+#: admin/SystemPluginAdmin.php:4152 admin/SystemPluginAdmin.php:4159
+#: admin/SystemPluginAdmin.php:4271 admin/SystemPluginAdmin.php:4289
+#: admin/SystemPluginAdmin.php:4329 admin/SystemPluginAdmin.php:4477
+#: admin/SystemPluginAdmin.php:4494 admin/SystemPluginAdmin.php:4619
+#: admin/SystemPluginAdmin.php:4636 admin/SystemPluginAdmin.php:4753
+#: admin/SystemPluginAdmin.php:4770 admin/SystemPluginAdmin.php:4904
+#: admin/SystemPluginAdmin.php:4921 admin/SystemPluginAdmin.php:5055
+#: admin/SystemPluginAdmin.php:5072 admin/SystemPluginAdmin.php:5198
+#: admin/SystemPluginAdmin.php:5215 admin/SystemPluginAdmin.php:5359
+#: admin/SystemPluginAdmin.php:5376
 #, php-format
 msgid "Unable to add the station %s."
 msgstr "Impossible d’ajouter la station %s."
 
 #. translators: %s: name of the station
 #. translators: %s: station name
-#: admin/SystemPluginAdmin.php:4228 admin/SystemPluginAdmin.php:4432
-#: admin/SystemPluginAdmin.php:4574 admin/SystemPluginAdmin.php:4708
-#: admin/SystemPluginAdmin.php:4859 admin/SystemPluginAdmin.php:5010
-#: admin/SystemPluginAdmin.php:5153 admin/SystemPluginAdmin.php:5314
+#: admin/SystemPluginAdmin.php:4251 admin/SystemPluginAdmin.php:4455
+#: admin/SystemPluginAdmin.php:4597 admin/SystemPluginAdmin.php:4731
+#: admin/SystemPluginAdmin.php:4882 admin/SystemPluginAdmin.php:5033
+#: admin/SystemPluginAdmin.php:5176 admin/SystemPluginAdmin.php:5337
 #: includes/classes/StationHelper.php:559
 #, php-format
 msgid "The station %s has been correctly updated."
@@ -4157,21 +4181,21 @@ msgstr "La station %s a été correctement mise à jour."
 
 #. translators: %s: name of the station
 #. translators: %s: station name
-#: admin/SystemPluginAdmin.php:4242 admin/SystemPluginAdmin.php:4261
-#: admin/SystemPluginAdmin.php:4311 admin/SystemPluginAdmin.php:4448
-#: admin/SystemPluginAdmin.php:4466 admin/SystemPluginAdmin.php:4590
-#: admin/SystemPluginAdmin.php:4608 admin/SystemPluginAdmin.php:4724
-#: admin/SystemPluginAdmin.php:4742 admin/SystemPluginAdmin.php:4875
-#: admin/SystemPluginAdmin.php:4893 admin/SystemPluginAdmin.php:5026
-#: admin/SystemPluginAdmin.php:5044 admin/SystemPluginAdmin.php:5169
-#: admin/SystemPluginAdmin.php:5187 admin/SystemPluginAdmin.php:5330
-#: admin/SystemPluginAdmin.php:5348 includes/classes/StationHelper.php:566
+#: admin/SystemPluginAdmin.php:4265 admin/SystemPluginAdmin.php:4284
+#: admin/SystemPluginAdmin.php:4334 admin/SystemPluginAdmin.php:4471
+#: admin/SystemPluginAdmin.php:4489 admin/SystemPluginAdmin.php:4613
+#: admin/SystemPluginAdmin.php:4631 admin/SystemPluginAdmin.php:4747
+#: admin/SystemPluginAdmin.php:4765 admin/SystemPluginAdmin.php:4898
+#: admin/SystemPluginAdmin.php:4916 admin/SystemPluginAdmin.php:5049
+#: admin/SystemPluginAdmin.php:5067 admin/SystemPluginAdmin.php:5192
+#: admin/SystemPluginAdmin.php:5210 admin/SystemPluginAdmin.php:5353
+#: admin/SystemPluginAdmin.php:5371 includes/classes/StationHelper.php:566
 #: includes/classes/StationHelper.php:573
 #, php-format
 msgid "Unable to update the station %s."
 msgstr "Impossible de mettre à jour la station %s."
 
-#: admin/SystemPluginAdmin.php:5131 admin/SystemPluginAdmin.php:5275
+#: admin/SystemPluginAdmin.php:5154 admin/SystemPluginAdmin.php:5298
 msgid "no name"
 msgstr "sans nom"
 
@@ -5988,92 +6012,130 @@ msgid ""
 msgstr "Informations sur l’extension pour une demande de support : uniquement des nombres, des dates et des réglages, aucun nom, identifiant, adresse ni identifiant de connexion."
 
 #: includes/classes/SystemSiteHealth.php:60
-#: includes/classes/SystemSiteHealth.php:179
+#: includes/classes/SystemSiteHealth.php:80
+msgid "Weather Station data are up to date"
+msgstr "Les données de Weather Station sont à jour"
+
+#: includes/classes/SystemSiteHealth.php:83
+msgid "Every station has been refreshed recently."
+msgstr "Toutes les stations ont été actualisées récemment."
+
+#: includes/classes/SystemSiteHealth.php:88
+msgid ""
+"The warning about late data is turned off in the settings of the plugin."
+msgstr "L’avertissement de données en retard est désactivé dans les réglages de l’extension."
+
+#: includes/classes/SystemSiteHealth.php:114
+msgid "Weather Station data are late"
+msgstr "Les données de Weather Station sont en retard"
+
+#. translators: 1: number of stations, 2: number of minutes, 3: names of the
+#. stations
+#: includes/classes/SystemSiteHealth.php:118
+#, php-format
+msgid "%1$d station has not been refreshed for more than %2$d minutes: %3$s."
+msgid_plural ""
+"%1$d stations have not been refreshed for more than %2$d minutes: %3$s."
+msgstr[0] "%1$d station n’a pas été actualisée depuis plus de %2$d minutes : %3$s."
+msgstr[1] "%1$d stations n’ont pas été actualisées depuis plus de %2$d minutes : %3$s."
+
+#: includes/classes/SystemSiteHealth.php:121
+msgid ""
+"WP-Cron is disabled by the configuration of this site: a task of your server "
+"must call wp-cron.php regularly, otherwise the plugin cannot collect data."
+msgstr "WP-Cron est désactivé par la configuration de ce site : une tâche de votre serveur doit appeler wp-cron.php régulièrement, sinon l’extension ne peut pas collecter de données."
+
+#: includes/classes/SystemSiteHealth.php:124
+msgid "Open the scheduled tasks of Weather Station"
+msgstr "Ouvrir les tâches planifiées de Weather Station"
+
+#: includes/classes/SystemSiteHealth.php:138
+#: includes/classes/SystemSiteHealth.php:257
 msgid "Yes"
 msgstr "Oui"
 
-#: includes/classes/SystemSiteHealth.php:60
-#: includes/classes/SystemSiteHealth.php:179
+#: includes/classes/SystemSiteHealth.php:138
+#: includes/classes/SystemSiteHealth.php:257
 msgid "No"
 msgstr "Non"
 
-#: includes/classes/SystemSiteHealth.php:86
+#: includes/classes/SystemSiteHealth.php:164
 msgid "Version"
 msgstr "Version"
 
-#: includes/classes/SystemSiteHealth.php:87
+#: includes/classes/SystemSiteHealth.php:165
 msgid "Advanced mode"
 msgstr "Mode avancé"
 
-#: includes/classes/SystemSiteHealth.php:88
+#: includes/classes/SystemSiteHealth.php:166
 msgid "Multisite"
 msgstr "Multisite"
 
-#: includes/classes/SystemSiteHealth.php:103
+#: includes/classes/SystemSiteHealth.php:181
 msgid "Unknown type"
 msgstr "Type inconnu"
 
-#: includes/classes/SystemSiteHealth.php:122
+#: includes/classes/SystemSiteHealth.php:200
 msgid "Stations by type"
 msgstr "Stations par type"
 
-#: includes/classes/SystemSiteHealth.php:123
+#: includes/classes/SystemSiteHealth.php:201
 msgid "Public stations"
 msgstr "Stations publiques"
 
-#: includes/classes/SystemSiteHealth.php:124
+#: includes/classes/SystemSiteHealth.php:202
 msgid "Stations which share their data (feeds, services)"
 msgstr "Stations qui partagent leurs données (flux, services)"
 
-#: includes/classes/SystemSiteHealth.php:125
+#: includes/classes/SystemSiteHealth.php:203
 msgid "Most recent refresh of a station (UTC)"
 msgstr "Actualisation la plus récente d’une station (UTC)"
 
-#: includes/classes/SystemSiteHealth.php:126
+#: includes/classes/SystemSiteHealth.php:204
 msgid "Oldest last refresh of a station (UTC)"
 msgstr "Dernière actualisation la plus ancienne d’une station (UTC)"
 
-#: includes/classes/SystemSiteHealth.php:143
+#: includes/classes/SystemSiteHealth.php:221
 msgid "Connected services and keys set"
 msgstr "Services connectés et clés renseignées"
 
-#: includes/classes/SystemSiteHealth.php:147
+#: includes/classes/SystemSiteHealth.php:225
 msgid "WP-Cron disabled by the configuration"
 msgstr "WP-Cron désactivé par la configuration"
 
-#: includes/classes/SystemSiteHealth.php:163
+#: includes/classes/SystemSiteHealth.php:241
 msgid "Scheduled jobs of the plugin"
 msgstr "Tâches planifiées de l’extension"
 
-#: includes/classes/SystemSiteHealth.php:164
+#: includes/classes/SystemSiteHealth.php:242
 msgid "Jobs more than 15 minutes late"
 msgstr "Tâches en retard de plus de 15 minutes"
 
-#: includes/classes/SystemSiteHealth.php:174
+#: includes/classes/SystemSiteHealth.php:252
 msgid "Last 200 entries of the events log, by level"
 msgstr "200 dernières entrées du journal des évènements, par niveau"
 
-#: includes/classes/SystemSiteHealth.php:175
+#: includes/classes/SystemSiteHealth.php:253
 msgid "Level of the events log"
 msgstr "Niveau du journal des évènements"
 
-#: includes/classes/SystemSiteHealth.php:178
+#: includes/classes/SystemSiteHealth.php:256
 msgid "Retention of the history (weeks, 0 = unlimited)"
 msgstr "Conservation de l’historique (semaines, 0 = illimitée)"
 
-#: includes/classes/SystemSiteHealth.php:179
+#: includes/classes/SystemSiteHealth.php:257
 msgid "Caches: frontend, backend"
 msgstr "Caches : public, administration"
 
-#: includes/classes/SystemSiteHealth.php:180
+#: includes/classes/SystemSiteHealth.php:258
 msgid "Limits (requests per minute: controls, feeds; cache entries per hour)"
 msgstr "Limites (requêtes par minute : contrôles, flux ; entrées de cache par heure)"
 
-#: includes/classes/SystemSiteHealth.php:181
+#: includes/classes/SystemSiteHealth.php:259
 msgid "Partial translation"
 msgstr "Traduction partielle"
 
-#: includes/classes/SystemSiteHealth.php:182
+#: includes/classes/SystemSiteHealth.php:260
 msgid "Personal data masked in the events log"
 msgstr "Données personnelles masquées dans le journal des évènements"
 
@@ -6193,6 +6255,50 @@ msgstr "/ 3 h."
 #: includes/traits/DataOutput.php:11462
 msgid "now"
 msgstr "maint."
+
+#: includes/libraries/misc/SeasonCalculator.php:83
+#: includes/libraries/misc/SeasonCalculator.php:117
+msgid "winter"
+msgstr "hiver"
+
+#: includes/libraries/misc/SeasonCalculator.php:88
+#: includes/libraries/misc/SeasonCalculator.php:122
+msgid "spring"
+msgstr "printemps"
+
+#: includes/libraries/misc/SeasonCalculator.php:93
+#: includes/libraries/misc/SeasonCalculator.php:107
+msgid "summer"
+msgstr "été"
+
+#: includes/libraries/misc/SeasonCalculator.php:98
+#: includes/libraries/misc/SeasonCalculator.php:112
+msgid "autumn"
+msgstr "automne"
+
+#: includes/libraries/misc/SeasonCalculator.php:185
+#: includes/libraries/misc/SeasonCalculator.php:200
+msgid "meteorological"
+msgstr "météorologique"
+
+#. translators: 1: name of a field (Device ID, API Token or Password). 2:
+#. maximum number of characters.
+#: includes/libraries/wlink/WLINKApiClient.php:70
+#, php-format
+msgid "%1$s is too long (%2$d characters maximum)."
+msgstr "%1$s est trop long (%2$d caractères au maximum)."
+
+#. translators: %s: name of a field (Device ID, API Token or Password).
+#: includes/libraries/wlink/WLINKApiClient.php:74
+#, php-format
+msgid "%s contains a forbidden character sequence."
+msgstr "%s contient une suite de caractères interdite."
+
+#: includes/libraries/wlink/WLINKApiClient.php:80
+msgid ""
+"Unable to save these WeatherLink credentials: they contain a forbidden "
+"character sequence."
+msgstr "Impossible d’enregistrer ces identifiants WeatherLink : ils contiennent une suite de caractères interdite."
 
 #: includes/process/ConfigurationExporter.php:69
 msgid "Configuration exporter"
@@ -8004,7 +8110,7 @@ msgid "The source you specified is not in the correct format or is corrupted."
 msgstr "La source spécifiée n’est pas au bon format ou a été corrompue."
 
 #: includes/traits/ClientrawPluginStationClient.php:554
-#: includes/traits/RealtimePluginStationClient.php:401
+#: includes/traits/RealtimePluginStationClient.php:427
 #: includes/traits/StickertagsPluginStationClient.php:302
 msgid ""
 "Unable to read this file. This may mean that the file is inaccessible, "
@@ -10453,31 +10559,27 @@ msgstr "Année en cours"
 msgid "currently"
 msgstr "actuellement"
 
-#: includes/traits/DataDateTimeConversion.php:805
-#: includes/traits/DataDateTimeConversion.php:821
+#: includes/traits/DataDateTimeConversion.php:808
+#: includes/traits/DataDateTimeConversion.php:824
 msgid "hours"
 msgstr "heures"
 
-#: includes/traits/DataDateTimeConversion.php:819
+#: includes/traits/DataDateTimeConversion.php:822
 #: includes/traits/DataUnitDescription.php:690
 #: includes/traits/DataUnitDescription.php:712
 #: includes/traits/DataUnitDescription.php:778
 msgid "second"
 msgstr "seconde"
 
-#: includes/traits/DataDateTimeConversion.php:820
+#: includes/traits/DataDateTimeConversion.php:823
 msgid "minute"
 msgstr "minute"
 
-#: includes/traits/DataDateTimeConversion.php:820
-msgid "minutes"
-msgstr "minutes"
-
-#: includes/traits/DataDateTimeConversion.php:821
+#: includes/traits/DataDateTimeConversion.php:824
 msgid "hour"
 msgstr "heure"
 
-#: includes/traits/DataDateTimeConversion.php:865
+#: includes/traits/DataDateTimeConversion.php:868
 msgid "less than 1 second"
 msgstr "moins de 1 seconde"
 
@@ -12763,19 +12865,19 @@ msgstr "Configuration de Weather Station"
 msgid "Unknown format"
 msgstr "Format inconnu"
 
-#: includes/traits/DataUnitConversion.php:1132
+#: includes/traits/DataUnitConversion.php:1135
 msgid "Small craft"
 msgstr "Grand frais"
 
-#: includes/traits/DataUnitConversion.php:1140
+#: includes/traits/DataUnitConversion.php:1143
 msgid "Gale"
 msgstr "Coup de vent"
 
-#: includes/traits/DataUnitConversion.php:1148
+#: includes/traits/DataUnitConversion.php:1151
 msgid "Storm"
 msgstr "Tempête"
 
-#: includes/traits/DataUnitConversion.php:1156
+#: includes/traits/DataUnitConversion.php:1159
 msgid "Hurricane"
 msgstr "Ouragan"
 
@@ -13422,12 +13524,12 @@ msgstr "Clé API OpenWeatherMap erronée."
 msgid "OpenWeatherMap servers have returned empty response. Please retry."
 msgstr "Les serveurs OpenWeatherMap ont renvoyé une réponse vide. Merci de réessayer."
 
-#: includes/traits/SystemOptionsHandling.php:413
-#: includes/traits/SystemOptionsHandling.php:414
-#: includes/traits/SystemOptionsHandling.php:415
-#: includes/traits/SystemOptionsHandling.php:416
 #: includes/traits/SystemOptionsHandling.php:417
 #: includes/traits/SystemOptionsHandling.php:418
+#: includes/traits/SystemOptionsHandling.php:419
+#: includes/traits/SystemOptionsHandling.php:420
+#: includes/traits/SystemOptionsHandling.php:421
+#: includes/traits/SystemOptionsHandling.php:422
 msgid "Customized palette"
 msgstr "Palette personnalisée"
 
