@@ -48,6 +48,84 @@ class SiteHealth {
     }
 
     /**
+     * Add the test of the late collection to the Site Health tests.
+     *
+     * @param array $tests The tests of Site Health.
+     * @return array The tests with the one of the plugin.
+     * @since 3.9.0
+     */
+    public static function add_test($tests) {
+        if (is_array($tests)) {
+            $tests['direct']['lws_collection'] = array(
+                'label' => __('Weather Station data are up to date', 'live-weather-station'),
+                'test' => array(__CLASS__, 'test_collection'),
+            );
+        }
+        return $tests;
+    }
+
+    /**
+     * Test of Site Health: has a station been refreshed recently?
+     *
+     * A station is late when it has not been refreshed for more than the number of minutes set in the settings (0 turns the test off).
+     * Stations of a service which is no longer available, and stations which have never been refreshed, are not counted.
+     *
+     * @return array The result of the test.
+     * @since 3.9.0
+     */
+    public static function test_collection() {
+        global $wpdb;
+        $limit = (int)get_option('live_weather_station_late_collection_minutes', 60);
+        $result = array(
+            'label' => __('Weather Station data are up to date', 'live-weather-station'),
+            'status' => 'good',
+            'badge' => array('label' => LIVE_WEATHER_STATION_PLUGIN_NAME, 'color' => 'blue'),
+            'description' => '<p>' . esc_html__('Every station has been refreshed recently.', 'live-weather-station') . '</p>',
+            'actions' => '',
+            'test' => 'lws_collection',
+        );
+        if ($limit < 1) {
+            $result['description'] = '<p>' . esc_html__('The warning about late data is turned off in the settings of the plugin.', 'live-weather-station') . '</p>';
+            return $result;
+        }
+        $table = $wpdb->prefix . 'live_weather_station_stations';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, the name comes from the plugin itself.
+        $rows = $wpdb->get_results("SELECT station_name, station_type, last_refresh FROM " . $table, ARRAY_A);
+        $late = array();
+        foreach ((array)$rows as $row) {
+            if (in_array((int)$row['station_type'], array(2, 3, 10), true)) {
+                continue;
+            }
+            $refresh = (string)$row['last_refresh'];
+            if ($refresh === '' || strpos($refresh, '0000') === 0) {
+                continue;
+            }
+            $time = strtotime($refresh . ' UTC');
+            if ($time !== false && $time < time() - $limit * MINUTE_IN_SECONDS) {
+                $late[] = (string)$row['station_name'];
+            }
+        }
+        if (count($late) === 0) {
+            return $result;
+        }
+        $shown = array_map('esc_html', array_slice($late, 0, 5));
+        $names = implode(', ', $shown) . (count($late) > 5 ? '…' : '');
+        $result['status'] = 'recommended';
+        $result['label'] = __('Weather Station data are late', 'live-weather-station');
+        $result['badge']['color'] = 'orange';
+        $description = '<p>' . sprintf(
+            /* translators: 1: number of stations, 2: number of minutes, 3: names of the stations */
+            _n('%1$d station has not been refreshed for more than %2$d minutes: %3$s.', '%1$d stations have not been refreshed for more than %2$d minutes: %3$s.', count($late), 'live-weather-station'),
+            count($late), $limit, $names) . '</p>';
+        if (defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
+            $description .= '<p>' . esc_html__('WP-Cron is disabled by the configuration of this site: a task of your server must call wp-cron.php regularly, otherwise the plugin cannot collect data.', 'live-weather-station') . '</p>';
+        }
+        $result['description'] = $description;
+        $result['actions'] = '<p><a href="' . esc_url(admin_url('admin.php?page=lws-scheduler&tab=tasks')) . '">' . esc_html__('Open the scheduled tasks of Weather Station', 'live-weather-station') . '</a></p>';
+        return $result;
+    }
+
+    /**
      * Build a field of the section.
      *
      * @param string $label The label.
@@ -175,7 +253,7 @@ class SiteHealth {
         $fields['log_level'] = self::field(__('Level of the events log', 'live-weather-station'), (int)get_option('live_weather_station_logger_level', 6));
 
         // Settings which change the behaviour.
-        $fields['history'] = self::field(__('Retention of the history (weeks, 0 = unlimited)', 'live-weather-station'), (int)get_option('live_weather_station_history_retention'));
+        $fields['history'] = self::field(__('Retention of the history (weeks, 0 = unlimited)', 'live-weather-station'), (int)get_option('live_weather_station_retention_history'));
         $fields['caches'] = self::field(__('Caches: frontend, backend', 'live-weather-station'), (get_option('live_weather_station_frontend_cache') ? __('Yes', 'live-weather-station') : __('No', 'live-weather-station')) . ', ' . (get_option('live_weather_station_backend_cache') ? __('Yes', 'live-weather-station') : __('No', 'live-weather-station')));
         $fields['limits'] = self::field(__('Limits (requests per minute: controls, feeds; cache entries per hour)', 'live-weather-station'), (int)get_option('live_weather_station_rate_limit_public', 120) . ', ' . (int)get_option('live_weather_station_rate_limit_feed', 0) . '; ' . (int)get_option('live_weather_station_cache_budget', 6000));
         $fields['partial_translation'] = self::field(__('Partial translation', 'live-weather-station'), (bool)get_option('live_weather_station_partial_translation'));

@@ -96,6 +96,8 @@
 * Bug fix: a gauge, meter or LCD control set on a measure which has no min and max boundaries (for example the altitude of a station) no longer ends with a fatal error on PHP 8.
 * Bug fix: Ambient stations: the extra temperature and humidity sensors (pool, attic...) no longer replace the outdoor temperature; each one is now stored in its own module (Extra #1 to #9).
 * Bug fix: realtime.txt stations: the time of the lowest and of the highest temperature of the day is now the time written in the file, not the time of the last measure.
+* New: the Site Health screen of WordPress now warns when a station has not been refreshed for a while (60 minutes by default, 0 turns it off); the delay is a setting ("Late data warning") and the warning says when WP-Cron is disabled by the configuration.
+* Bug fix: the Site Health report showed 0 as the retention of the history whatever the setting.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
