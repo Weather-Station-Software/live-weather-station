@@ -1,0 +1,11 @@
+# Reporters of the problems fixed in 3.9.0, for the release notes (see .github/scripts/build-credits.sh).
+# One line per reporter: source|name|link|issue
+# source: github, wordpress.org, forum, blog or other. The name is the one the person shows publicly.
+# To leave someone out on request, delete the line. Add the reports of wordpress.org, of the forum and of the blog here.
+github|dougboss|https://github.com/Weather-Station-Software/live-weather-station/issues/47|#47
+github|Duhlin12|https://github.com/Weather-Station-Software/live-weather-station/issues/24|#24
+github|BlackBlue1908|https://github.com/Weather-Station-Software/live-weather-station/issues/43|#43
+github|einari22|https://github.com/Weather-Station-Software/live-weather-station/issues/41|#41
+github|lahyenne|https://github.com/Weather-Station-Software/live-weather-station/issues/33|#33
+github|HenrikBoChristoffersen|https://github.com/Weather-Station-Software/live-weather-station/issues/17|#17
+github|jkclose|https://github.com/Weather-Station-Software/live-weather-station/issues/23|#23
