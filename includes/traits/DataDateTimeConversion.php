@@ -739,6 +739,9 @@ trait Conversion {
      * @since    2.0.0
      */
     public static function get_rise_set_short_from_utc($ts, $tz='', $comp=false) {
+        if ($ts !== null && !is_numeric($ts)) {
+            return '';
+        }
         $mod = $ts % 60;
         if ($mod > 29) {
             $ts = $ts + 60 - $mod;

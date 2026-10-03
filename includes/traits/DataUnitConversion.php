@@ -1067,6 +1067,9 @@ trait Conversion {
      */
     protected function get_wind_speed($value, $id = 0)
     {
+        if ($value !== null && !is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         $format = '%d';
         $prec = 0;
