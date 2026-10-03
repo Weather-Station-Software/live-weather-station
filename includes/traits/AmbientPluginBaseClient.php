@@ -148,29 +148,27 @@ trait BaseClient {
                     Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
                 }
 
-                // NAModule9 - max 9 extra modules
-                for ($i = 0; $i < 9; $i++) {
-                    if (array_key_exists('temp' . $i . 'f', $device) || array_key_exists('humidity' . $i, $device)) {
-                        if (array_key_exists('temp' . $i . 'f', $device)) {
-                            $device['temperature'] = $device['temp' . $i . 'f'];
-                        }
-                        else {
-                            unset($device['temperature']);
-                        }
-                        if (array_key_exists('humidity' . $i, $device)) {
-                            $device['humidity'] = $device['humidity' . $i];
-                        }
-                        else {
-                            unset($device['humidity']);
-                        }
+                // NAModule9 - max 9 extra modules, each one with its own temperature and humidity
+                for ($i = 1; $i < 10; $i++) {
+                    $extra_types = array();
+                    $extra = $device;
+                    unset($extra['temperature'], $extra['humidity']);
+                    if (array_key_exists('temp' . $i . 'f', $device)) {
+                        $extra['temperature'] = $device['temp' . $i . 'f'];
+                        $extra_types[] = 'temperature';
+                    }
+                    if (array_key_exists('humidity' . $i, $device)) {
+                        $extra['humidity'] = $device['humidity' . $i];
+                        $extra_types[] = 'humidity';
+                    }
+                    if (count($extra_types) > 0) {
                         $module_type = 'NAModule9';
-                        $module_id = self::get_fake_modulex_id($guid, 9);
-                        $module_name = $this->get_fake_module_name($module_type);
-                        $this->get_dashboard(LIVE_WEATHER_STATION_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                        $module_id = self::get_fake_modulex_id($guid, 9, $i);
+                        $module_name = $this->get_fake_module_name($module_type) . ' #' . $i;
+                        $this->get_dashboard(LIVE_WEATHER_STATION_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $extra_types, $extra, $place);
                         Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
                     }
                 }
-
 
                 // Station full
                 $this->update_stations_table($s);
@@ -256,7 +254,8 @@ trait BaseClient {
                     }
                     for ($i=1; $i<10; $i++) {
                         if (array_key_exists('temp' . $i . 'f', $data)) {
-                            $dat['temperature'] = $this->get_reverse_temperature($data['temp' . $i . 'f'], 1);
+                            // The extra sensors keep their own key: they must never replace the outdoor temperature.
+                            $dat['temp' . $i . 'f'] = $this->get_reverse_temperature($data['temp' . $i . 'f'], 1);
                         }
                     }
                     if (array_key_exists('hourlyrainin', $data)) {

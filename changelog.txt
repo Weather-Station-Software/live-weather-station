@@ -94,6 +94,7 @@
 * Bug fix: the flags of the languages shortcode (icon styles) are shipped with the plugin (flag-icon-css, MIT licence) instead of being loaded from weather.station.software, where they no longer existed: they display again and no request leaves your site.
 * New: the limit of requests per minute and per visitor on the public endpoints is now a setting of the system options, for the live controls and charts (120 by default, as before) and for the /get-weather/ feeds (no limit by default); 0 means no limit, and a visitor over the limit receives a 429 answer with a Retry-After header.
 * Bug fix: a gauge, meter or LCD control set on a measure which has no min and max boundaries (for example the altitude of a station) no longer ends with a fatal error on PHP 8.
+* Bug fix: Ambient stations: the extra temperature and humidity sensors (pool, attic...) no longer replace the outdoor temperature; each one is now stored in its own module (Extra #1 to #9).
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
