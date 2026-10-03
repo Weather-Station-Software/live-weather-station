@@ -204,6 +204,14 @@ No. The Windy library looks for one element with the identifier `windy` and refu
 = Why do my visitors see nothing of a station? =
 Each station has a "Public" box in the Visibility box of its screen. When it is not ticked, the visitors of the site see nothing of this station: its shortcodes, widgets, charts, controls, maps and public feeds stay empty, and an unknown station and a private one cannot be told apart. You, as an administrator, always see everything, so the previews keep working. The stations which existed when you updated to 3.9.0 are public; a station added afterwards is private until you tick the box. If your site uses a full-page cache, do not let it keep pages rendered while an administrator is logged in: such a page would show the station to everyone.
 
+= Can I show a station only to some people, with private pages? =
+Yes, you can combine the "Public" box with the private pages of WordPress, but they do not protect the same thing:
+
+* A **private page** (or a password protected page) of WordPress hides the page itself, with the shortcodes and widgets it contains, from the people who are not allowed to read it. It is the right tool to show a page of weather data only to the members of your site, to the editors, or to the people who know a password.
+* The **"Public" box** of the station decides if the data of the station can be read by the visitors at all. Tick it off and only the administrators see the station, on any page.
+
+A private page does not hide the data requests made by the browser: someone who knows the identifier of a public station could still ask them directly. So use a private page to choose who sees a page, and untick "Public" when the data itself must stay private. Note that a station which is not public is shown to the administrators only: a member who is not an administrator sees nothing of it, even on a private page.
+
 = Are the exports of the plugin protected? =
 The exports (configuration, data) are stored in the folder `wp-content/uploads/live-weather-station/`. Their names contain a random identifier, the plugin never shows their address, and an administrator downloads them through a protected link. In addition the plugin protects the folder for Apache (`.htaccess`) and IIS (`web.config`). nginx ignores these files: if your site runs on nginx, add this to its configuration and reload it:
 
