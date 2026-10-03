@@ -168,6 +168,7 @@ spl_autoload_register(
         case 'WeatherStation\System\Plugin\Core': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemPluginCore.php'; break;
         case 'WeatherStation\System\Plugin\Deactivator': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemPluginDeactivator.php'; break;
         case 'WeatherStation\System\Plugin\Frontend': $file = LIVE_WEATHER_STATION_PUBLIC_DIR.'SystemPluginFrontend.php'; break;
+        case 'WeatherStation\System\Plugin\SiteHealth': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemSiteHealth.php'; break;
         case 'WeatherStation\System\Plugin\I18n': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemPluginI18n.php'; break;
         case 'WeatherStation\System\Plugin\Loader': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemPluginLoader.php'; break;
         case 'WeatherStation\System\Plugin\Stats': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/SystemPluginStats.php'; break;
