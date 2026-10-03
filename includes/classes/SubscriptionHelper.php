@@ -11,7 +11,7 @@ use WeatherStation\System\Logs\Logger;
  * This class add subscription management.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.0
  */
@@ -34,7 +34,10 @@ class Handling {
     public function __construct($email) {
         $this->list_url = '47e5f06905b5efac6d5e76057';
         $this->list_id = '94aea1c726';
-        $this->subscribe_done = $this->_subscribe($email);
+        // The caller is responsible for having collected an explicit consent from the person: the address is sent
+        // to a third party (MailChimp, hosted in the US).
+        $email = sanitize_email((string)$email);
+        $this->subscribe_done = (is_email($email) ? $this->_subscribe($email) : false);
     }
 
     /**
@@ -59,7 +62,7 @@ class Handling {
             if ($code != '200') {
                 $error = true;
                 if (array_key_exists('message', $response)) {
-                    $message = $response['message'];
+                    $message = substr(sanitize_text_field((string)$response['message']), 0, 200);
                 }
             }
         }
@@ -67,7 +70,8 @@ class Handling {
             $error = true;
         }
         if ($error) {
-            throw new \Exception($message, $code);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message comes from sanitize_text_field() output (line 65) and is only caught at line 107 of this class and written to the Logger, it is never printed
+            throw new \Exception($message, (int)$code);
         }
     }
 
@@ -80,19 +84,20 @@ class Handling {
      */
     private function _subscribe($email) {
         $result = false;
-        $url = 'https://software.us14.list-manage.com/subscribe/post?u=' . $this->list_url . '&amp;id=' . $this->list_id;
+        $url = 'https://software.us14.list-manage.com/subscribe/post?u=' . $this->list_url . '&id=' . $this->list_id;
         try {
             $args = array();
             $args['body'] = array( 'EMAIL' => $email);
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
+            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
+            $args['redirection'] = 2;
             if (Quota::verify($this->service, 'POST')) {
                 $content = wp_remote_post($url, $args);
                 if (is_wp_error($content)) {
-                    throw new \Exception($content->get_error_message());
+                    throw new \Exception(substr(sanitize_text_field($content->get_error_message()), 0, 200));
                 }
                 $this->_process_result($content);
-                Logger::notice($this->facility, $this->service, null, null, null, null, null, sprintf('The email %s has been successfully subscribed.', $email));
+                Logger::notice($this->facility, $this->service, null, null, null, null, null, 'The newsletter subscription request has been successfully sent (the email address is deliberately not logged).');
                 $result = true;
             }
             else {
@@ -101,7 +106,7 @@ class Handling {
 
         }
         catch (\Exception $ex) {
-            Logger::error($this->facility, $this->service, null, null, null, null, $ex->getCode(), $ex->getMessage());
+            Logger::error($this->facility, $this->service, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         return $result;
     }

@@ -22,9 +22,6 @@ use WeatherStation\SDK\Pioupiou\Plugin\StationUpdater as PIOU_Updater;
 use WeatherStation\SDK\BloomSky\Plugin\StationUpdater as BSKY_Updater;
 use WeatherStation\SDK\Ambient\Plugin\StationUpdater as AMBT_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
-use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_Updater;
 use WeatherStation\System\I18N\Handling as i18n;
 use WeatherStation\System\Plugin\Stats;
 use WeatherStation\Data\History\Builder as HistoryBuilder;
@@ -37,7 +34,7 @@ use WeatherStation\System\Storage\Manager as FS;
  * Functionalities for schedules & cron handling.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -74,8 +71,6 @@ trait Handling {
     public static $netatmo_update_schedule_name = 'lws_netatmo_update';
     public static $netatmo_hc_update_schedule_name = 'lws_netatmo_hc_update';
     public static $owm_update_current_schedule_name = 'lws_owm_current_update';
-    public static $owm_update_station_schedule_name = 'lws_owm_station_update';
-    public static $wug_update_station_schedule_name = 'lws_wug_station_update';
     public static $wflw_update_station_schedule_name = 'lws_wflw_station_update';
     public static $wlink_update_station_schedule_name = 'lws_wlink_station_update';
     public static $piou_update_station_schedule_name = 'lws_piou_station_update';
@@ -84,10 +79,9 @@ trait Handling {
     public static $raw_update_station_schedule_name = 'lws_raw_station_update';
     public static $real_update_station_schedule_name = 'lws_real_station_update';
     public static $txt_update_station_schedule_name = 'lws_txt_station_update';
-    public static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     public static $cron_pull = array('lws_netatmo_update', 'lws_netatmo_hc_update', 'lws_owm_current_update', 
-                                    /*'lws_owm_station_update', 'lws_wug_station_update',*/ 'lws_raw_station_update',
-                                    'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update',
+                                    'lws_raw_station_update',
+                                    'lws_real_station_update', 'lws_txt_station_update',
                                     'lws_wflw_station_update', 'lws_piou_station_update', 'lws_bsky_station_update', 
                                     'lws_ambt_station_update', 'lws_wlink_station_update');
 
@@ -102,7 +96,10 @@ trait Handling {
     public static $netatmo_push_schedule_name = 'lws_netatmo_push';
     public static $owm_update_schedule_name = 'lws_owm_update';
     public static $push_schedule_name = 'lws_current_push';
-    public static $cron_old = array('lws_netatmo_push', 'lws_owm_update', 'lws_current_push');
+    // Crons of removed features (OpenWeatherMap station, Weather Underground collection, OpenWeatherMap pollution).
+    // They are only cleared from the WP cron schedule, see delete_schedules() (called on every plugin update).
+    public static $cron_old = array('lws_netatmo_push', 'lws_owm_update', 'lws_current_push',
+                                    'lws_owm_station_update', 'lws_wug_station_update', 'lws_owm_pollution_update');
 
 
     /**
@@ -116,10 +113,40 @@ trait Handling {
     private static function force_cron($cron_id) {
         $result = false;
         if (self::is_legitimate_cron($cron_id)) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- $cron_id is one of the plugin's own lws_* cron hooks, checked by self::is_legitimate_cron() just above
             do_action($cron_id);
             $result = true;
         }
         return $result;
+    }
+
+    /**
+     * Take the (re)scheduling lock of a cron. add_option() is atomic (the option name is unique): only one request wins.
+     * A lock older than one minute is considered stale (crashed request) and is taken over.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return boolean True if the lock has been acquired.
+     *
+     * @since 3.9.0
+     */
+    private static function acquire_cron_lock($cron_id) {
+        $key = 'lws_cron_lock_' . $cron_id;
+        if (add_option($key, time(), '', 'no')) {
+            return true;
+        }
+        $since = (int)get_option($key);
+        if ($since > 0 && (time() - $since) > 60) {
+            // Compare-and-swap: only the request which still sees the stale value takes the lock over.
+            global $wpdb;
+            $taken = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- atomic compare-and-swap on the lock option
+                $wpdb->prepare("UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s AND option_value = %s", (string)time(), $key, (string)$since));
+            if ($taken === 1) {
+                wp_cache_delete($key, 'options');
+                wp_cache_delete('alloptions', 'options');
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -151,28 +178,41 @@ trait Handling {
                 $scheduled = 0;
             }
             if (method_exists(get_called_class(), $launcher)) {
-                if (($d = wp_next_scheduled($cron_id)) && ($system != 'Watchdog')) {
-                    wp_clear_scheduled_hook($cron_id);
+                // Clearing then re-adding the hook is not atomic: concurrent requests (WP-Cron can be triggered by anybody)
+                // must not do it at the same time, or the task would be scheduled twice.
+                // A held lock means another request is rescheduling this very task right now: the reschedule is
+                // already pending, so report success instead of a spurious failure.
+                if (!self::acquire_cron_lock($cron_id)) {
+                    Logger::debug('Core', null, null, null, null, null, null, 'Reschedule of ' . $cron_id . ' skipped: already in progress.');
+                    return true;
                 }
-                $now = time();
-                if (($d > $now) && !$beforeforce){
-                    $dts = $d - $now;
+                try {
+                    if (($d = wp_next_scheduled($cron_id)) && ($system != 'Watchdog')) {
+                        wp_clear_scheduled_hook($cron_id);
+                    }
+                    $now = time();
+                    if (($d > $now) && !$beforeforce){
+                        $dts = $d - $now;
+                    }
+                    else {
+                        $dts = 0;
+                    }
+                    if ($dts < $scheduled) {
+                        $dts += $scheduled;
+                    }
+                    if ($random) {
+                        $dts = random_int(1,180);
+                    }
+                    call_user_func(array(get_called_class(), $launcher), $dts, $system);
+                    $result = true;
                 }
-                else {
-                    $dts = 0;
+                finally {
+                    delete_option('lws_cron_lock_' . $cron_id);
                 }
-                if ($dts < $scheduled) {
-                    $dts += $scheduled;
-                }
-                if ($random) {
-                    $dts = random_int(1,180);
-                }
-                call_user_func(array(get_called_class(), $launcher), $dts, $system);
-                $result = true;
             }
         }
         else {
-            Logger::alert('Core', null, null, null, null, null, null, 'Trying to (re)schedule an unknown task: '.$cron_id);
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to (re)schedule an unknown task: ' . substr(sanitize_text_field($cron_id), 0, 100));
         }
         return $result;
     }
@@ -196,7 +236,7 @@ trait Handling {
             }
         }
         else {
-            Logger::alert('Core', null, null, null, null, null, null, 'Trying to define an unknown task: '.$cron_id);
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to define an unknown task: ' . substr(sanitize_text_field($cron_id), 0, 100));
         }
         return $result;
     }
@@ -383,12 +423,6 @@ trait Handling {
             case 'lws_owm_current_update':
                 return __('OpenWeatherMap - Current observations', 'live-weather-station');
                 break;
-            case 'lws_owm_station_update':
-                return __('OpenWeatherMap - Weather station', 'live-weather-station');
-                break;
-            case 'lws_wug_station_update':
-                return __('Weather Underground - Weather station', 'live-weather-station');
-                break;
             case 'lws_wflw_station_update':
                 return __('WeatherFlow - Weather station', 'live-weather-station');
                 break;
@@ -413,11 +447,8 @@ trait Handling {
             case 'lws_txt_station_update':
                 return __('Stickertags - Weather station', 'live-weather-station');
                 break;
-            case 'lws_owm_pollution_update':
-                return __('OpenWeatherMap - Pollution', 'live-weather-station');
-                break;
             case 'lws_wow_current_push':
-                return __('Met Office - Outdoor data', 'live-weather-station');
+                return __('WOW-BE - Outdoor data', 'live-weather-station');
                 break;
             case 'lws_owm_current_push':
                 return __('OpenWeatherMap - Outdoor data', 'live-weather-station');
@@ -442,7 +473,7 @@ trait Handling {
      * @since 2.7.0
      */
     protected static function define_netatmo_update_cron() {
-        $plugin_netatmo_update_cron = new Netatmo_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_netatmo_update_cron = new Netatmo_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$netatmo_update_schedule_name, array($plugin_netatmo_update_cron, 'cron_run'));
     }
 
@@ -467,7 +498,7 @@ trait Handling {
      * @since 3.1.0
      */
     protected static function define_netatmo_hc_update_cron() {
-        $plugin_netatmo_hc_update_cron = new Netatmo_HCUpdater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_netatmo_hc_update_cron = new Netatmo_HCUpdater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$netatmo_hc_update_schedule_name, array($plugin_netatmo_hc_update_cron, 'cron_run'));
     }
 
@@ -492,7 +523,7 @@ trait Handling {
      * @since 3.0.0
      */
     protected static function define_raw_station_update_cron() {
-        $plugin_raw_update_cron = new Clientraw_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_raw_update_cron = new Clientraw_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$raw_update_station_schedule_name, array($plugin_raw_update_cron, 'cron_run'));
     }
 
@@ -523,7 +554,7 @@ trait Handling {
      * @since 3.0.0
      */
     protected static function define_real_station_update_cron() {
-        $plugin_real_update_cron = new Realtime_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_real_update_cron = new Realtime_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$real_update_station_schedule_name, array($plugin_real_update_cron, 'cron_run'));
     }
 
@@ -554,7 +585,7 @@ trait Handling {
      * @since 3.3.0
      */
     protected static function define_txt_station_update_cron() {
-        $plugin_txt_update_cron = new Stickertags_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_txt_update_cron = new Stickertags_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$txt_update_station_schedule_name, array($plugin_txt_update_cron, 'cron_run'));
     }
 
@@ -585,7 +616,7 @@ trait Handling {
      * @since 3.3.0
      */
     protected static function define_wflw_station_update_cron() {
-        $plugin_wflw_update_cron = new WFLW_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_wflw_update_cron = new WFLW_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$wflw_update_station_schedule_name, array($plugin_wflw_update_cron, 'cron_run'));
     }
 
@@ -616,7 +647,7 @@ trait Handling {
      * @since 3.8.0
      */
     protected static function define_wlink_station_update_cron() {
-        $plugin_wlink_update_cron = new WLINK_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_wlink_update_cron = new WLINK_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$wlink_update_station_schedule_name, array($plugin_wlink_update_cron, 'cron_run'));
     }
 
@@ -647,7 +678,7 @@ trait Handling {
      * @since 3.5.0
      */
     protected static function define_piou_station_update_cron() {
-        $plugin_piou_update_cron = new PIOU_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_piou_update_cron = new PIOU_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$piou_update_station_schedule_name, array($plugin_piou_update_cron, 'cron_run'));
     }
 
@@ -678,7 +709,7 @@ trait Handling {
      * @since 3.6.0
      */
     protected static function define_bsky_station_update_cron() {
-        $plugin_bsky_update_cron = new BSKY_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_bsky_update_cron = new BSKY_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$bsky_update_station_schedule_name, array($plugin_bsky_update_cron, 'cron_run'));
     }
 
@@ -703,7 +734,7 @@ trait Handling {
      * @since 3.6.0
      */
     protected static function define_ambt_station_update_cron() {
-        $plugin_ambt_update_cron = new AMBT_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_ambt_update_cron = new AMBT_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$ambt_update_station_schedule_name, array($plugin_ambt_update_cron, 'cron_run'));
     }
 
@@ -728,7 +759,7 @@ trait Handling {
      * @since 2.7.0
      */
     protected static function define_owm_current_update_cron() {
-        $plugin_owm_current_cron = new Owm_Current_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_owm_current_cron = new Owm_Current_Updater(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$owm_update_current_schedule_name, array($plugin_owm_current_cron, 'cron_run'));
     }
 
@@ -748,87 +779,12 @@ trait Handling {
     }
 
     /**
-     * Define OWM Station Updater cron job.
-     *
-     * @since 3.0.0
-     */
-    /*protected static function define_owm_station_update_cron() {
-        $plugin_owm_station_cron = new Owm_Station_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
-        add_action(self::$owm_update_station_schedule_name, array($plugin_owm_station_cron, 'cron_run'));
-    }*/
-
-    /**
-     * Launch the OWM Station Updater cron job if needed.
-     *
-     * @param integer $timeshift Optional. The first start for the cron from now on.
-     * @param string $system Optional. The system which have initiated the launch.
-     *
-     * @since 3.0.0
-     */
-    /*protected static function launch_owm_station_update_cron($timeshift=0, $system='Watchdog') {
-        if (!wp_next_scheduled(self::$owm_update_station_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_station_schedule_name).'" (re)scheduled.');
-        }
-    }*/
-
-    /**
-     * Define WUG Station Updater cron job.
-     *
-     * @since 3.0.0
-     */
-    /*protected static function define_wug_station_update_cron() {
-        $plugin_wug_station_cron = new Wug_Station_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
-        add_action(self::$wug_update_station_schedule_name, array($plugin_wug_station_cron, 'cron_run'));
-    }*/
-
-    /**
-     * Launch the WUG Station Updater cron job if needed.
-     *
-     * @param integer $timeshift Optional. The first start for the cron from now on.
-     * @param string $system Optional. The system which have initiated the launch.
-     *
-     * @since 3.0.0
-     */
-    /*protected static function launch_wug_station_update_cron($timeshift=0, $system='Watchdog') {
-        if (!wp_next_scheduled(self::$wug_update_station_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_update_station_schedule_name).'" (re)scheduled.');
-        }
-    }*/
-
-    /**
-     * Define OWM Pollution Updater cron job.
-     *
-     * @since    2.7.0
-     */
-    protected static function define_owm_pollution_update_cron() {
-        //$plugin_owm_pollution_cron = new Owm_Pollution_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
-        //add_action(self::$owm_update_pollution_schedule_name, array($plugin_owm_pollution_cron, 'cron_run'));
-    }
-
-    /**
-     * Launch the OWM Pollution Updater cron job if needed.
-     *
-     * @param integer $timeshift Optional. The first start for the cron from now on.
-     * @param string $system Optional. The system which have initiated the launch.
-     *
-     * @since    2.7.0
-     */
-    protected static function launch_owm_pollution_update_cron($timeshift=0, $system='Watchdog') {
-        /*if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_pollution_schedule_name).'" (re)scheduled.');
-        }*/
-    }
-
-    /**
      * Define log rotate cron job.
      *
      * @since 2.8.0
      */
     protected static function define_log_rotate_cron() {
-        $logger = new Logger(LWS_PLUGIN_NAME, LWS_VERSION);
+        $logger = new Logger(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$log_rotate_name, array($logger, 'rotate'));
     }
 
@@ -853,7 +809,7 @@ trait Handling {
      * @since 3.8.0
      */
     protected static function define_notif_rotate_cron() {
-        $notifier = new Notifier(LWS_PLUGIN_NAME, LWS_VERSION);
+        $notifier = new Notifier(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$notif_rotate_name, array($notifier, 'rotate'));
     }
 
@@ -878,7 +834,7 @@ trait Handling {
      * @since 3.8.0
      */
     protected static function define_file_rotate_cron() {
-        $filer = new FS(LWS_PLUGIN_NAME, LWS_VERSION);
+        $filer = new FS(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$file_rotate_name, array($filer, 'rotate'));
     }
 
@@ -903,7 +859,7 @@ trait Handling {
      * @since 3.6.0
      */
     protected static function define_background_process_cron() {
-        $process = new ProcessManager(LWS_PLUGIN_NAME, LWS_VERSION);
+        $process = new ProcessManager(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$background_process_name, array($process, 'run'));
     }
 
@@ -928,7 +884,7 @@ trait Handling {
      * @since 3.3.2
      */
     protected static function define_history_build_cron() {
-        $builder = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
+        $builder = new HistoryBuilder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$history_build_name, array($builder, 'cron'));
     }
 
@@ -953,7 +909,7 @@ trait Handling {
      * @since 3.4.0
      */
     protected static function define_plugin_stat_cron() {
-        $stats = new Stats(LWS_PLUGIN_NAME, LWS_VERSION);
+        $stats = new Stats(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$plugin_stat_name, array($stats, 'cron'));
     }
 
@@ -978,7 +934,7 @@ trait Handling {
      * @since 3.4.0
      */
     protected static function define_device_management_cron() {
-        $dm = new DeviceManager(LWS_PLUGIN_NAME, LWS_VERSION);
+        $dm = new DeviceManager(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$device_management_name, array($dm, 'cron'));
     }
 
@@ -1003,7 +959,7 @@ trait Handling {
      * @since 3.4.0
      */
     protected static function define_history_clean_cron() {
-        $cleaner = new Historycleaner(LWS_PLUGIN_NAME, LWS_VERSION);
+        $cleaner = new Historycleaner(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$history_clean_name, array($cleaner, 'cron'));
     }
 
@@ -1028,7 +984,7 @@ trait Handling {
      * @since 3.1.0
      */
     protected static function define_cache_flush_cron() {
-        $cache = new Cache(LWS_PLUGIN_NAME, LWS_VERSION);
+        $cache = new Cache(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$cache_flush_name, array($cache, 'flush'));
     }
 
@@ -1053,7 +1009,7 @@ trait Handling {
      * @since 3.1.0
      */
     protected static function define_stats_clean_cron() {
-        $perf = new Performance(LWS_PLUGIN_NAME, LWS_VERSION);
+        $perf = new Performance(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$stats_clean_name, array($perf, 'rotate'));
     }
 
@@ -1078,7 +1034,7 @@ trait Handling {
      * @since 3.1.0
      */
     protected static function define_integrity_check_cron() {
-        $data = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
+        $data = new Data(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$integrity_check_name, array($data, 'full_check'));
     }
 
@@ -1128,7 +1084,7 @@ trait Handling {
      * @since 3.2.0
      */
     protected static function define_wow_current_push_cron() {
-        $plugin_wow_push_cron = new Wow_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_wow_push_cron = new Wow_Pusher(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$wow_push_schedule_name, array($plugin_wow_push_cron, 'cron_run'));
     }
 
@@ -1153,7 +1109,7 @@ trait Handling {
      * @since 3.2.0
      */
     /*protected static function define_owm_current_push_cron() {
-        $plugin_owm_push_cron = new Owm_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_owm_push_cron = new Owm_Pusher(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$owm_push_schedule_name, array($plugin_owm_push_cron, 'cron_run'));
     }*/
 
@@ -1203,7 +1159,7 @@ trait Handling {
      * @since 3.2.0
      */
     /*protected static function define_wug_current_push_cron() {
-        $plugin_wug_push_cron = new Wug_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        $plugin_wug_push_cron = new Wug_Pusher(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         add_action(self::$wug_push_schedule_name, array($plugin_wug_push_cron, 'cron_run'));
     }*/
 

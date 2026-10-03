@@ -3,13 +3,14 @@
 namespace WeatherStation\Engine\Module;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
  * Abstract class to maintains each module.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -31,13 +32,13 @@ abstract class Maintainer {
     protected $module_id = '';
     protected $module_name = '';
     protected $module_hint = '';
-    protected $module_icon = LWS_FAR . (LWS_FA5?' fa-question-circle':' fa-fa-question-circle-o') . ' fa-fw';
+    protected $module_icon = LIVE_WEATHER_STATION_FAR . (LIVE_WEATHER_STATION_FA5?' fa-question-circle':' fa-question-circle-o') . ' fa-fw';
     protected $module_icon_color = '#777777';
     protected $module_icon_index = '';
     protected $selected = false;
     protected $station_guid = 0;
     protected $station_id = '';
-    protected $station_name = 0;
+    protected $station_name = '';
     protected $station_information;
     protected $data = null;
     protected $period = null;
@@ -258,7 +259,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_parent_url() {
-        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
+        return live_weather_station_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
     }
 
     /**
@@ -268,7 +269,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_module_url() {
-        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
+        return live_weather_station_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
     }
 
     /**
@@ -303,7 +304,7 @@ abstract class Maintainer {
         $result = '';
         $result .= '<tr' . $visibility .'>';
         if ($label) {
-            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . wp_kses_post($title) . '</th>';
             $result .= '<td width="2%"/>';
         }
         if (self::$module_mode == 'current') {
@@ -313,7 +314,7 @@ abstract class Maintainer {
             $result .= '<td align="left">';
         }
         $result .= '<span class="select-option">';
-        $result .= '<select class="option-select" id="' . $id .'">';
+        $result .= '<select class="option-select" id="' . esc_attr($id) .'">';
         if ($options != '') {
             $result .= $options;
         }
@@ -358,7 +359,7 @@ abstract class Maintainer {
         $result = '';
         $result .= '<tr' . $visibility .'>';
         if ($label) {
-            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . wp_kses_post($title) . '</th>';
             $result .= '<td width="2%"/>';
         }
         if (self::$module_mode == 'current') {
@@ -368,10 +369,10 @@ abstract class Maintainer {
             $result .= '<td align="left">';
         }
         $result .= '<span class="lws-input-field">';
-        $result .= '<input style="width: 70%" type="' . $type . '" id="' . $id .'"' . $options . '>';
+        $result .= '<input style="width: 70%" type="' . esc_attr($type) . '" id="' . esc_attr($id) .'"' . $options . '>';
         $result .= '</span>';
-        $result .= '<span class="lws-input-unit" id="' . $id .'-unit">';
-        $result .= $unit;
+        $result .= '<span class="lws-input-unit" id="' . esc_attr($id) .'-unit">';
+        $result .= wp_kses_post($unit);
         $result .= '</span>';
         $result .= '</td>';
         $result .= '</tr>';
@@ -410,12 +411,12 @@ abstract class Maintainer {
         $result = '';
         $result .= '<tr' . $visibility .'>';
         if ($label) {
-            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . wp_kses_post($title) . '</th>';
             $result .= '<td width="2%"/>';
         }
         $result .= '<td align="left">';
         $result .= '<span class="color-picker">';
-        $result .= '<input class="widefat wp-color-picker" id="' . $id .'" type="text" value="' . $value .'" />';
+        $result .= '<input class="widefat wp-color-picker" id="' . esc_attr($id) .'" type="text" value="' . esc_attr($value) .'" />';
         $result .= '</span>';
         $result .= '</td>';
         $result .= '</tr>';
@@ -443,13 +444,13 @@ abstract class Maintainer {
         $i = 1;
         foreach ($args as $arg) {
             if ($show) {
-                $class = 'class="' . $tab_id . $i . ' lws-group-selected"';
+                $class = 'class="' . esc_attr($tab_id) . $i . ' lws-group-selected"';
                 $show = false;
             }
             else {
-                $class = 'class="' . $tab_id . $i . ' lws-group-unselected"';
+                $class = 'class="' . esc_attr($tab_id) . $i . ' lws-group-unselected"';
             }
-            $result .= '<span ' . $class . '>' . $arg['name'] . '</span>';
+            $result .= '<span ' . $class . '>' . wp_kses_post($arg['name']) . '</span>';
             $i++;
         }
         $result .= '</th>';
@@ -459,11 +460,11 @@ abstract class Maintainer {
         $i = 1;
         foreach ($args as $arg) {
             if ($show) {
-                $class = 'class="' . $item_id . $i . ' lws-group-option-selected"';
+                $class = 'class="' . esc_attr($item_id) . $i . ' lws-group-option-selected"';
                 $show = false;
             }
             else {
-                $class = 'class="' . $item_id . $i . ' lws-group-option-unselected"';
+                $class = 'class="' . esc_attr($item_id) . $i . ' lws-group-option-unselected"';
             }
             $result .= '<span ' . $class . '><table cellspacing="0"><tbody>';
             $result .= $arg['content'];
@@ -473,7 +474,7 @@ abstract class Maintainer {
         $result .= '</td>';
         $result .= '</tr>';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         for ($i=1 ; $i<=count($args) ; $i++) {
             $result .= '$(".' . $tab_id . $i . '").click(function() {';
@@ -484,7 +485,7 @@ abstract class Maintainer {
             $result .= '});';
         }
         $result .= '});' . PHP_EOL;
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -541,10 +542,10 @@ abstract class Maintainer {
         $result = '';
         foreach ($items as $key=>$item) {
             if (is_null($field)) {
-                $result .= '<option value="' . $key . '">' . $item . '</option>;';
+                $result .= '<option value="' . esc_attr($key) . '">' . esc_html($item) . '</option>;';
             }
             elseif (array_key_exists($field, $item)) {
-                $result .= '<option value="' . $key . '">' . $item[$field] . '</option>;';
+                $result .= '<option value="' . esc_attr($key) . '">' . esc_html($item[$field]) . '</option>;';
             }
         }
         return $this->get_option_select($id, $title, $result);
@@ -587,7 +588,7 @@ abstract class Maintainer {
                 $item[1] = str_replace('//->', '', $item[1]);
                 $item[1] = $b . ' ' . $item[1];
             }
-            $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>;';
+            $result .= '<option value="' . esc_attr($item[0]) . '"' . $sel . '>' . esc_html($item[1]) . '</option>;';
         }
         return $this->get_option_select($id, $title, $result, $label, $hidden, $displayed);
     }
@@ -606,9 +607,9 @@ abstract class Maintainer {
     protected function get_box($id, $title, $content, $footer='', $special_footer='') {
         $result = '';
         $result .= '<div class="meta-box-sortables" style="width:100%;">';
-        $result .= '<div class="postbox" id="' . $id . '" style="min-width:300px;">';
-        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . __('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
-        $result .= '<h3 class="hndle" style="cursor:default"><span>' . $title . '</span><span class="' . $id . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
+        $result .= '<div class="postbox" id="' . esc_attr($id) . '" style="min-width:300px;">';
+        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . esc_html__('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
+        $result .= '<h3 class="hndle" style="cursor:default"><span>' . wp_kses_post($title) . '</span><span class="' . esc_attr($id) . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
         $result .= '<div class="inside" style="text-align:center;">';
         $result .= $content;
         $result .= '</div>';
@@ -637,15 +638,17 @@ abstract class Maintainer {
     protected function get_script_box($content) {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         // copy button attach action
-        $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
+        $result .= 'new ClipboardJS(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
         // wrapping control
         $result .= '$(window).resize(function() {';
+        $result .= '    var containers = $(".item-boxes-container");';
+        $result .= '    if (containers.length === 0) {return;}';
         $result .= '    var wrapped = true;';
-        $result .= '    var left = $(".item-boxes-container").position().left;';
-        $result .= '    $(".item-boxes-container").each(function() {if ($(this).position().left != left) {wrapped = false;}});';
+        $result .= '    var left = containers.first().position().left;';
+        $result .= '    containers.each(function() {if ($(this).position().left != left) {wrapped = false;}});';
         if ($this->preview_min_height){
             $result .= '    if (wrapped) {$("#lws-preview-id").css("min-height", 0)}';
             $result .= '    if (!wrapped) {$("#lws-preview-id").css("min-height", $("#lws-parameter-id").height());}';
@@ -653,18 +656,18 @@ abstract class Maintainer {
         $result .= '    $.each($(".lws-placeholder"), function() {$(this).toggle(!wrapped);});';
         $result .= '}).resize();';
         // data
-        $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
+        $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . Guard::js($this->data) . ';';
         // period
         if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
-            $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
+            $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . Guard::js($this->period) . ';';
             if (isset($this->computation) && is_array($this->computation)) {
-                $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_computation_' . $this->station_guid . ' = ' . json_encode($this->computation) . ';';
+                $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_computation_' . $this->station_guid . ' = ' . Guard::js($this->computation) . ';';
             }
         }
         // content
         $result .= $content;
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -677,8 +680,8 @@ abstract class Maintainer {
     protected function get_shortcode_box() {
         $id = $this->module_id . '-measurements-shortcode-' . $this->station_guid;
         $title = __('4. Copy the following shortcode', 'live-weather-station');
-        $content = '<textarea readonly rows="3" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '"></textarea>';
-        $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary ' . $this->module_id . '-cpy-' . $this->station_guid . '">' . __('Copy', 'live-weather-station'). '</button>';
+        $content = '<textarea readonly rows="3" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . esc_attr($id) . '"></textarea>';
+        $footer = '<button data-clipboard-target="#' . esc_attr($id) . '" class="button button-primary ' . esc_attr($this->module_id . '-cpy-' . $this->station_guid) . '">' . esc_html__('Copy', 'live-weather-station'). '</button>';
         return $this->get_box('lws-shortcode-id', $title, $content, $footer);
     }
 
@@ -702,9 +705,10 @@ abstract class Maintainer {
      */
     private function get_no_collect_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = lws_get_admin_page_url('lws-settings', null, 'history');
-        $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
+        $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
+        /* translators: 1: name of this plugin, 2: link to the history settings */
+        $content = sprintf(__('%1$s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %2$s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -716,9 +720,10 @@ abstract class Maintainer {
      */
     private function get_no_build_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = lws_get_admin_page_url('lws-settings', null, 'history');
-        $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
+        $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
+        /* translators: 1: name of this plugin, 2: link to the history settings */
+        $content = sprintf(__('%1$s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %2$s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -730,7 +735,8 @@ abstract class Maintainer {
      */
     private function get_no_history_box() {
         $title = __('No data yet', 'live-weather-station');
-        $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LWS_PLUGIN_NAME);
+        /* translators: %s: name of this plugin */
+        $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -761,7 +767,7 @@ abstract class Maintainer {
         $result .= '</div>';
         $result .= '</div>';
         $result .= '</div>';
-        echo $result;
+        echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup built by get_box() (id, title, text escaped there) around translated texts whose dynamic parts (plugin name, link) are escaped above; not run through kses because get_box() contains a button
     }
 
     /**
@@ -840,7 +846,7 @@ abstract class Maintainer {
                 $result .= '</div>';
         }
         $result .= '</div>';
-        echo $result;
+        echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- layout markup around the abstract get_datasource()/get_parameters()/get_script()/get_preview() builders of the Module* subclasses, which escape their own parts and print inline script and form controls, so kses cannot be used here
     }
 
     /**
@@ -862,7 +868,7 @@ abstract class Maintainer {
         elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && !(bool)get_option('live_weather_station_build_history')) {
             $this->print_error(2);
         }
-        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && $this->station_information['oldest_data'] == '0000-00-00') {
+        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && (empty($this->station_information['oldest_data']) || $this->station_information['oldest_data'] == '0000-00-00')) {
             $this->print_error(3);
         }
         else {
@@ -890,7 +896,7 @@ abstract class Maintainer {
             $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
             $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").html("");';
             $content .= '$(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]));});';
             $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '" ).change();});';
@@ -908,16 +914,16 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").html("");';
             $content .= '$(js_array_' . $js_name . '_measurement_' . $this->station_guid . ').each(function (i) {';
             if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
-                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-measurements-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", i).prop("disabled", (js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-measurements-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none")).text(js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]));});';
             }
             elseif (($this->module_type === 'windrose' && $i == 1) || ($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
-                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", i).prop("disabled", (js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none")).text(js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]));});';
             }
             elseif (($this->module_type === 'windrose' && $i != 1) || ($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
-                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+(((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] == "angle" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "rain_day_aggregated" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "strike_count") && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", i).prop("disabled", ((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] == "angle" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "rain_day_aggregated" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "strike_count") && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none")).text(js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]));});';
             }
             else {
-                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+                $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]));});';
             }
             $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").change(function() {';
@@ -940,7 +946,7 @@ abstract class Maintainer {
                     $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
                     $content .= '$("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").html("");';
                     $content .= '$(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
-                    $content .= '$("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
+                    $content .= '$("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]));});';
                     $content .= '$("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
                 }
                 $content .= '$("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '" ).change();});';
@@ -991,7 +997,7 @@ abstract class Maintainer {
 
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= 'if (typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $i . '-' . $this->station_guid . '").val()] !== "undefined" && typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").val()] !== "undefined") {';
-            $content .= 'var sc_device_' . $i . ' = "' . $this->station_id . '";';
+            $content .= 'var sc_device_' . $i . ' = ' . Guard::js($this->station_id) . ';';
             $content .= 'var sc_module_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $i . '-' . $this->station_guid . '").val()][1];';
             $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-measurements-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
             if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
@@ -1054,10 +1060,10 @@ abstract class Maintainer {
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         if ($this->module_type === 'timelapse') {
-            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+            $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         }
         else {
-            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
+            $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
             $t = array();
             for ($i=1; $i<=$this->series_number; $i++) {
                 $u = array();
@@ -1069,7 +1075,7 @@ abstract class Maintainer {
             $content .= implode(', ', $t);
             $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         }
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
         // INIT
         if (self::$module_mode === 'yearly' || self::$module_mode == 'climat') {
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
@@ -1077,7 +1083,7 @@ abstract class Maintainer {
             $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
             $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").html("");';
             $content .= '$(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]));});';
         }
 
         for ($i=1; $i<=$this->series_number; $i++) {

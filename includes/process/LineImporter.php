@@ -12,7 +12,7 @@ use WeatherStation\System\Logs\Logger;
  * A process to import old data from a line file.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -25,7 +25,7 @@ abstract class LineImporter extends Process {
     protected $batchsize = 1000;
     protected $set = array('avg', 'min', 'max', 'med', 'dev', 'agg', 'maxhr', 'dom');
     protected $auto = array('NAMain', 'NAModule1', 'NAModule2', 'NAModule3', 'NAModule5', 'NAModule6', 'NAModule7', 'NAComputed', 'NACurrent', 'NAPollution');
-    protected $white = array(LWS_NETATMO_SID, LWS_NETATMOHC_SID, LWS_BSKY_SID, LWS_AMBT_SID);
+    protected $white = array(LIVE_WEATHER_STATION_NETATMO_SID, LIVE_WEATHER_STATION_NETATMOHC_SID, LIVE_WEATHER_STATION_BSKY_SID, LIVE_WEATHER_STATION_AMBT_SID);
 
     /**
      * Get the UUID of the process.
@@ -98,11 +98,11 @@ abstract class LineImporter extends Process {
      */
     protected function message() {
         if ($this->is_in_error()) {
-            $result = sprintf(__('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
-            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
+            $result = sprintf(/* translators: %s: Name of the station. */ __('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+            $result .= "\r\n" . sprintf(/* translators: %s: Address (URL) of the events log page. */ __('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $result = sprintf(__('Historical data has been correctly imported in "%s" for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
+            $result = sprintf(/* translators: 1: Name of the station, 2: Start date, 3: End date. */ __('Historical data has been correctly imported in "%1$s" for the period from %2$s to %3$s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
         }
         return $result;
     }
@@ -132,7 +132,9 @@ abstract class LineImporter extends Process {
         $args['end_date'] = $this->params['init']['end_date'];
         $args['module'] = array();
         $args['types'] = array();
+        $args['module_types'] = array();
         foreach (DeviceManager::get_modules_details($this->params['init']['station_id']) as $module) {
+            $args['module_types'][] = $module['module_type'];
             if (in_array($module['module_type'], $this->auto)) {
                 $args['module'][$module['module_type']] = $module['module_id'];
             }
@@ -141,11 +143,16 @@ abstract class LineImporter extends Process {
             }
         }
 
+        $max_line = max(1024, (int)apply_filters('live_weather_station_import_max_line_length', MB_IN_BYTES));
         try {
             $file = new \SplFileObject(FS::construct_full_file_name($this->params['file']));
             $file->seek($this->params['current']);
-            for ($i=1; $i < $this->batchsize; $i++) {
+            for ($i=1; $i <= $this->batchsize; $i++) {
                 $args['values'] = $file->current();
+                // A real line is about 150 bytes: a huge line is skipped, since decoding it could exhaust the memory.
+                if (is_string($args['values']) && strlen($args['values']) > $max_line) {
+                    $args['values'] = '';
+                }
                 $values = $this->transform($args, $this->params['init']['start_date'], $this->params['init']['end_date']);
                 foreach ($values as $v) {
                     if (array_key_exists('timestamp', $v) &&
@@ -163,7 +170,7 @@ abstract class LineImporter extends Process {
                     break;
                 }
             }
-            $this->params['current'] = $this->params['current'] + $i;
+            $this->params['current'] = $this->params['current'] + min($i, $this->batchsize);
         }
         catch (\Exception $ex) {
             $this->params['error'] = true;
@@ -181,7 +188,7 @@ abstract class LineImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<20; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*15)) {
+            if ((int)ini_get('max_execution_time') > $i*15) {
                 $max += 1;
             }
         }

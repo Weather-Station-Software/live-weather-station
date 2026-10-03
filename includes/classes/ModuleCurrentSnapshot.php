@@ -3,13 +3,14 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
  * Class to generate snapshot parameter form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -38,7 +39,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'snapshot';
         $this->module_name = ucfirst(__('snapshot', 'live-weather-station'));
         $this->module_hint = __('Display current snapshot from the station.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-image':' fa-image') . ' fa-fw';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-image':' fa-image') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }
@@ -113,7 +114,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_snapshot_measurement_' . $this->station_guid . ' = js_array_current_snapshot_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_snapshot_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_snapshot_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_snapshot_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-snapshot-measurements-size-' . $this->station_guid . '" ).change();});';
@@ -132,7 +133,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#current-snapshot-measurements-speed-' . $this->station_guid . '").change(function() {';
         $content .= 'var sc_sc = "live-weather-station-snapshot";';
         $content .= 'if ($("#current-snapshot-measurements-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-livesnapshot";}';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_animation = $("#current-snapshot-measurements-animation-' . $this->station_guid . '").val();';
         $content .= 'var sc_speed = $("#current-snapshot-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var sc_module = js_array_current_snapshot_' . $this->station_guid . '[$("#current-snapshot-measurements-module-' . $this->station_guid . '").val()][1];';
@@ -142,8 +143,8 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var shortcode_init = "[live-weather-station-snapshot device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' size=\'"+sc_size+"\' fx=\'"+sc_animation+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
-        $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
         $content .= '$("#current-snapshot-measurements-module-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);
     }
@@ -156,7 +157,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_preview() {
         $content = '<div id="lws-graph-preview"></div>';
-        $content .= '<div id="' . $this->fingerprint . '" style="padding:0px;"></div>';
+        $content .= '<div id="' . esc_attr($this->fingerprint) . '" style="padding:0px;"></div>';
         $special_footer  = '<span id="current-snapshot-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';
         $special_footer .= __('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );

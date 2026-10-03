@@ -59,8 +59,8 @@ var lws_lcd = (function() {
     var size                    = param.size || 'small';
     var animated                = param.animated === undefined ? true : param.animated;
     var duration                = clamp(0, 10, param.duration) || 0.4;
-    var cycleSpeed              = param.cycleSpeed || 2000;
-    var refreshSpeed            = param.refreshSpeed || 120000;
+    var cycleSpeed              = Math.max(1000, Number(param.cycleSpeed) || 2000);
+    var refreshSpeed            = Math.max(10000, Number(param.refreshSpeed) || 120000);
     var autoRefresh             = param.autoRefresh === undefined ? true : param.autoRefresh;
     var qDevice                 = param.qDevice || '';
     var qModule                 = param.qModule || '*';
@@ -98,7 +98,7 @@ var lws_lcd = (function() {
     var textBuffer    = doc.createElement('canvas');
     var iconsBuffer   = doc.createElement('canvas');
 
-    var postAction = "lws_query_lcd_datas";
+    var postAction = "lws_query_lcd_measurements";
     var odatas;
     var cycleCounter = 0;
     var maxCycleCounter = -1;
@@ -107,6 +107,8 @@ var lws_lcd = (function() {
     var alarmInterval;
     var cycleInterval;
     var refreshInterval;
+    var currentRequest = null;
+    var currentTween = null;
 
 
       // ******************** private methods ************************************
@@ -406,7 +408,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(153, 229, 255)';
         backgroundColor = 'rgba(153,229,255, 0.1)';
       } else if (design === 'flat-turqoise') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 31, 188, 156)');
         main.addColorStop(0.005, 'rgb( 31, 188, 156)');
         main.addColorStop(0.5, 'rgb( 31, 188, 156)');
@@ -415,7 +416,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-green-sea') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 26, 188, 156)');
         main.addColorStop(0.005, 'rgb( 26, 188, 156)');
         main.addColorStop(0.5, 'rgb( 26, 188, 156)');
@@ -424,7 +424,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-emerland') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 46, 204, 113)');
         main.addColorStop(0.005, 'rgb( 46, 204, 113)');
         main.addColorStop(0.5, 'rgb( 46, 204, 113)');
@@ -433,7 +432,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-nephritis') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 39, 174,  96)');
         main.addColorStop(0.005, 'rgb( 39, 174,  96)');
         main.addColorStop(0.5, 'rgb( 39, 174,  96)');
@@ -442,7 +440,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-peter-river') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 52, 152, 219)');
         main.addColorStop(0.005, 'rgb( 52, 152, 219)');
         main.addColorStop(0.5, 'rgb( 52, 152, 219)');
@@ -451,7 +448,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-belize-hole') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 41, 128, 185)');
         main.addColorStop(0.005, 'rgb( 41, 128, 185)');
         main.addColorStop(0.5, 'rgb( 41, 128, 185)');
@@ -460,7 +456,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-amythyst') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(155,  89, 182)');
         main.addColorStop(0.005, 'rgb(155,  89, 182)');
         main.addColorStop(0.5, 'rgb(155,  89, 182)');
@@ -469,7 +464,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-wisteria') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(142,  68, 173)');
         main.addColorStop(0.005, 'rgb(142,  68, 173)');
         main.addColorStop(0.5, 'rgb(142,  68, 173)');
@@ -478,7 +472,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-sunflower') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(241, 196,  15)');
         main.addColorStop(0.005, 'rgb(241, 196,  15)');
         main.addColorStop(0.5, 'rgb(241, 196,  15)');
@@ -487,7 +480,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-orange') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(243, 156,  18)');
         main.addColorStop(0.005, 'rgb(243, 156,  18)');
         main.addColorStop(0.5, 'rgb(243, 156,  18)');
@@ -496,7 +488,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-carrot') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(230, 126,  34)');
         main.addColorStop(0.005, 'rgb(230, 126,  34)');
         main.addColorStop(0.5, 'rgb(230, 126,  34)');
@@ -505,7 +496,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-pumpkin') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(211,  84,   0)');
         main.addColorStop(0.005, 'rgb(211,  84,   0)');
         main.addColorStop(0.5, 'rgb(211,  84,   0)');
@@ -514,7 +504,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-alizarin') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(231,  76,  60)');
         main.addColorStop(0.005, 'rgb(231,  76,  60)');
         main.addColorStop(0.5, 'rgb(231,  76,  60)');
@@ -523,7 +512,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-pomegranate') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(192,  57,  43)');
         main.addColorStop(0.005, 'rgb(192,  57,  43)');
         main.addColorStop(0.5, 'rgb(192,  57,  43)');
@@ -532,7 +520,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-clouds') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(236, 240, 241)');
         main.addColorStop(0.005, 'rgb(236, 240, 241)');
         main.addColorStop(0.5, 'rgb(236, 240, 241)');
@@ -541,7 +528,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(  0,   0,   0)';
         backgroundColor = 'rgba(  0,   0,   0, 0.1)';
       } else if (design === 'flat-silver') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(189, 195, 199)');
         main.addColorStop(0.005, 'rgb(189, 195, 199)');
         main.addColorStop(0.5, 'rgb(189, 195, 199)');
@@ -550,7 +536,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(  0,   0,   0)';
         backgroundColor = 'rgba(  0,   0,   0, 0.1)';
       } else if (design === 'flat-concrete') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(149, 165, 166)');
         main.addColorStop(0.005, 'rgb(149, 165, 166)');
         main.addColorStop(0.5, 'rgb(149, 165, 166)');
@@ -559,7 +544,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(  0,   0,   0)';
         backgroundColor = 'rgba(  0,   0,   0, 0.1)';
       } else if (design === 'flat-asbestos') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb(127, 140, 141)');
         main.addColorStop(0.005, 'rgb(127, 140, 141)');
         main.addColorStop(0.5, 'rgb(127, 140, 141)');
@@ -568,7 +552,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-wet-asphalt') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 52,  73,  94)');
         main.addColorStop(0.005, 'rgb( 52,  73,  94)');
         main.addColorStop(0.5, 'rgb( 52,  73,  94)');
@@ -577,7 +560,6 @@ var lws_lcd = (function() {
         foregroundColor = 'rgb(255, 255, 255)';
         backgroundColor = 'rgba(255, 255, 255, 0.1)';
       } else if (design === 'flat-midnight-blue') {
-        frame = 'rgb(255, 255, 255)';
         main.addColorStop(0.0, 'rgb( 44,  62,  80)');
         main.addColorStop(0.005, 'rgb( 44,  62,  80)');
         main.addColorStop(0.5, 'rgb( 44,  62,  80)');
@@ -689,7 +671,7 @@ var lws_lcd = (function() {
       //lowerCenterText
       if (formerValueVisible) { lowerCenterText = Number(formerValue).toFixed(decimals); }
       if (lowerCenterTextVisible) {
-        var text = lowerCenterText.substring(0,lowerCenterTextBackground.length);
+        var text = String(lowerCenterText).substring(0,lowerCenterTextBackground.length);
         var sl = lowerCenterTextBackground.length - ((lowerCenterTextBackground.length-text.length)/2)-(((lowerCenterTextBackground.length-text.length)%2));
         while (text.length < sl) {
           text = ' '+text;
@@ -1155,10 +1137,9 @@ var lws_lcd = (function() {
     }
 
     function _setBattery(nBattery) {
-      if (battery == 'empty') {
-        if ( batteryInterval != null ) {
-          clearInterval(batteryInterval);
-        }
+      if ( batteryInterval != null ) {
+        clearInterval(batteryInterval);
+        batteryInterval = null;
       }
       battery = nBattery;
       if (battery == 'empty') {
@@ -1169,10 +1150,9 @@ var lws_lcd = (function() {
     }
 
     function _setAlarmVisible(nAlarmVisible) {
-      if (alarmVisible) {
-        if ( alarmInterval != null ) {
-          clearInterval(alarmInterval);
-        }
+      if ( alarmInterval != null ) {
+        clearInterval(alarmInterval);
+        alarmInterval = null;
       }
       alarmVisible = nAlarmVisible;
       if (alarmVisible) {
@@ -1189,6 +1169,7 @@ var lws_lcd = (function() {
     }
 
     function _setCycleSpeed(nCycleSpeed) {
+      nCycleSpeed = Math.max(1000, Number(nCycleSpeed) || 2000);
       if (cycleSpeed != nCycleSpeed) {
         if ( cycleInterval != null ) {
           clearInterval(cycleInterval);
@@ -1217,7 +1198,7 @@ var lws_lcd = (function() {
           _setTrendVisible(odatas[cycleCounter]['show_trend']);
           _setAlarmVisible(odatas[cycleCounter]['show_alarm']);
           signalStrength = odatas[cycleCounter]['signal'];
-          decimals = odatas[cycleCounter]['decimals'];
+          decimals = clamp(0, 6, parseInt(odatas[cycleCounter]['decimals'], 10) || 0);
           batteryVisible = true;
           lowerCenterTextVisible = true;
           drawIcons();
@@ -1253,16 +1234,26 @@ var lws_lcd = (function() {
 
     function getDatas() {
       if (qDevice!='') {
+        if (currentRequest !== null) {
+          currentRequest.abort();
+        }
         var http = new XMLHttpRequest();
+        currentRequest = http;
         var params = 'action=' + postAction;
-        params = params+'&device_id='+qDevice;
-        params = params+'&module_id='+qModule;
-        params = params+'&measure_type='+qMeasure;
+        params = params+'&device_id='+encodeURIComponent(qDevice);
+        params = params+'&module_id='+encodeURIComponent(qModule);
+        params = params+'&measure_type='+encodeURIComponent(qMeasure);
         http.open('POST', postUrl, true);
         http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         http.onreadystatechange = function () {
           if (http.readyState == 4 && http.status == 200) {
-            odatas = JSON.parse(http.responseText);
+            try {
+              odatas = JSON.parse(http.responseText);
+            }
+            catch (e) {
+              // Malformed response: keep the current display
+              return;
+            }
             if ( typeof odatas != 'undefined' && odatas instanceof Array ) {
               maxCycleCounter = odatas.length-1;
               refreshDatas();
@@ -1313,7 +1304,7 @@ var lws_lcd = (function() {
 
     this.getLowerRightText = function() { return lowerRightText; };
     this.setLowerRightText = function(nLowerRightText) {
-      lowerRightText = text;
+      lowerRightText = nLowerRightText;
       drawText();
       repaint();
     };
@@ -1353,7 +1344,11 @@ var lws_lcd = (function() {
       formerValue = value;
       value = parseFloat(nValue);
       if (animated) {
+        if (currentTween !== null) {
+          currentTween.stop();
+        }
         var tween = new Tween(new Object(), '', Tween.regularEaseInOut, formerValue, value, duration);
+        currentTween = tween;
         tween.onMotionChanged = function(event) {
           value = event.target._pos;
           drawText();
@@ -1582,255 +1577,6 @@ var lws_lcd = (function() {
     return this;
   };
 
-  // Tools
-  var point = function(parameters) {
-    var param  = parameters || {};
-    this.start = param.x || 0;
-    this.stop  = param.y || 0;
-  };
-  point.prototype = {
-    getX       : function() { return this.x; },
-    setX       : function(x) { this.x = x; },
-    getY       : function() { return this.y; },
-    setY       : function(y) { this.y = y; },
-    distanceTo : function(point) {
-      return Math.sqrt(((this.x - point.getX()) * (this.x - point.getX())) + ((this.y - point.getY()) * (this.y - point.getY())));
-    }
-  };
-
-  var section = function(parameters) {
-    var param  = parameters || {};
-    this.start = param.start || 0;
-    this.stop  = param.stop || 0;
-    this.text  = param.text || '';
-    this.color = param.color || 'rgb(200, 100, 0)';
-    this.image = param.image || '';
-  };
-  section.prototype = {
-    getStart : function() {
-      return this.start;
-    },
-    setStart : function(start) {
-      this.start = start;
-    },
-    getStop  : function() {
-      return this.stop;
-    },
-    setStop  : function(stop) {
-      this.stop = stop;
-    },
-    getColor : function() {
-      return this.color;
-    },
-    setColor : function(color) {
-      this.color = color;
-    },
-    getImage : function() {
-      return this.image;
-    },
-    setImage : function(image) {
-      this.image = image;
-    },
-    contains : function(value) {
-      return (value >= this.start && value <= this.stop);
-    }
-  };
-
-  var marker = function(parameters) {
-    var param = parameters || {};
-    this.value = param.value || 0;
-    this.text = param.text || '';
-    this.color = param.color || 'rgb(255, 0, 0)';
-    this.exceeded = false;
-  };
-  marker.prototype = {
-    getValue: function() {
-      return this.value;
-    },
-    setValue: function(value) {
-      this.value = value;
-    },
-    getText: function() {
-      return this.text;
-    },
-    setText: function(text) {
-      this.text = text;
-    },
-    getColor: function() {
-      return this.color;
-    },
-    setColor: function(color) {
-      this.color = color;
-    }
-  };
-
-  var color = function(parameters) {
-    var param = parameters || {};
-    this.red = param.red || 0;
-    this.green = param.green || 0;
-    this.blue = param.blue || 0;
-    this.opacity = param.opacity || 1;
-  };
-  color.prototype = {
-    getRed: function() {
-      return this.red;
-    },
-    setRed: function(red) {
-      this.red = red;
-    },
-    getGreen: function() {
-      return this.green;
-    },
-    setGreen: function(green) {
-      this.green = green;
-    },
-    getBlue: function() {
-      return this.blue;
-    },
-    setBlue: function(blue) {
-      this.blue = blue;
-    },
-    getOpacity: function() {
-      return this.opacity;
-    },
-    setOpacity: function(opacity) {
-      this.opacity = opacity;
-    },
-    get: function() {
-      return this;
-    },
-    getRgb: function() {
-      return 'rgb(' + this.red + ',' + this.green + ',' + this.blue + ')'
-    },
-    getArgb: function() {
-      return 'argb(' + this.opacity + ',' + this.red + ',' + this.green + ',' + this.blue + ')'
-    }
-  };
-
-  var stop = function(parameters) {
-    var param = parameters || {};
-    this.offset = param.offset || 0;
-    this.color = param.color || new enzo.Color();
-  };
-  stop.prototype = {
-    getOffset: function() {
-      return this.offset;
-    },
-    setOffset: function(offset) {
-      this.offset = offset;
-    },
-    getColor: function() {
-      return this.color;
-    },
-    setColor: function(color) {
-      this.color = color;
-    }
-  };
-
-  var gradientLookup = function(stops) {
-    this.stops = stops;
-  };
-  gradientLookup.prototype = {
-    getColorAt: function(positionOfColor) {
-      var position = positionOfColor < 0 ? 0 : (positionOfColor > 1 ? 1 : positionOfColor);
-      var color;
-      if (this.stops.length === 1) {
-        if (this.stops[0].stop === undefined)
-          return new enzo.Color();
-        color = this.stops[0].stop.getColor().get();
-      } else {
-        var lowerBound = this.stops[0].stop;
-        var upperBound = this.stops[this.stops.length - 1].stop;
-        for (var i = 0; i < this.stops.length; i++) {
-          var offset = this.stops[i].stop.getOffset();
-          if (offset < position) {
-            lowerBound = this.stops[i].stop;
-          }
-          if (offset > position) {
-            upperBound = this.stops[i].stop;
-            break;
-          }
-        }
-        color = this.interpolateColor(lowerBound, upperBound, position);
-      }
-      return color;
-    },
-    interpolateColor: function(lowerBound, upperBound, position) {
-      var pos = (position - lowerBound.getOffset()) / (upperBound.getOffset() - lowerBound.getOffset());
-
-      var deltaRed = (upperBound.getColor().getRed() - lowerBound.getColor().getRed()) * 0.00392 * pos;
-      var deltaGreen = (upperBound.getColor().getGreen() - lowerBound.getColor().getGreen()) * 0.00392 * pos;
-      var deltaBlue = (upperBound.getColor().getBlue() - lowerBound.getColor().getBlue()) * 0.00392 * pos;
-      var deltaOpacity = (upperBound.getColor().getOpacity() - lowerBound.getColor().getOpacity()) * pos;
-
-      var red = parseInt((lowerBound.getColor().getRed() * 0.00392 + deltaRed) * 255);
-      var green = parseInt((lowerBound.getColor().getGreen() * 0.00392 + deltaGreen) * 255);
-      var blue = parseInt((lowerBound.getColor().getBlue() * 0.00392 + deltaBlue) * 255);
-      var opacity = lowerBound.getColor().getOpacity() + deltaOpacity;
-
-      red = red < 0 ? 0 : (red > 255 ? 255 : red);
-      green = green < 0 ? 0 : (green > 255 ? 255 : green);
-      blue = blue < 0 ? 0 : (blue > 255 ? 255 : blue);
-      opacity = opacity < 0 ? 0 : (opacity > 255 ? 255 : opacity);
-
-      return new enzo.Color({red: red, green: green, blue: blue, opacity: opacity});
-    }
-  };
-
-  function deriveColor(color, offset) {
-    if (offset < 0)
-      offset = 0;
-    if (offset > 100)
-      offset = 100;
-  }
-
-  function deriveColor(color, percent) {
-    var num;
-    if (color.indexOf('#') > -1) {
-      num = parseInt(color.slice(1), 16);
-    } else {
-      num = parseInt(color, 16);
-    }
-    var amt = Math.round(2.55 * percent);
-    var R = (num >> 16) + amt;
-    var G = (num >> 8 & 0x00FF) + amt;
-    var B = (num & 0x0000FF) + amt;
-
-    return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
-  }
-
-  function deriveHexColor(hex, percent) {
-    // validate hex string
-    hex = String(hex).replace(/[^0-9a-f]/gi, '');
-    if (hex.length < 6) {
-      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    }
-    percent = percent || 0;
-
-    // convert to decimal and change luminosity
-    var rgb = "#", c, i;
-    for (i = 0; i < 3; i++) {
-      c = parseInt(hex.substr(i * 2, 2), 16);
-      c = Math.round(Math.min(Math.max(0, c + (c * percent)), 255)).toString(16);
-      rgb += ("00" + c).substr(c.length);
-    }
-    return rgb;
-  }
-
-  function getSmoothingOffset(calculatedLineWidth) {
-    var translate = (size * 0.0055 % 2) / 2;
-    // To get crisp drawings do
-    // ctx.translate(translate, translate);
-    // before drawing lines
-    // and
-    // ctx.translate(-translate, -translate);
-    // when finished drawing
-    return translate;
-  }
-
-  Math.radians = function(degrees) { return degrees * Math.PI / 180; };
-  Math.degrees = function(radians) { return radians * 180 / Math.PI; };
-
   // Tweening functionality
   function Delegate() {}
   Delegate.create = function(o, f) {
@@ -1977,7 +1723,7 @@ var lws_lcd = (function() {
   };
 
   t.playing = function() {
-    return isPlaying();
+    return this.isPlaying;
   };
 
   t.continueTo = function(finish, duration) {

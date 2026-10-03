@@ -1,7 +1,13 @@
-# A set of files and folders I don't want in my WordPress.org SVN repo:
+# Files which are not part of the plugin: left out of the archives made by git (GitHub "Download ZIP", Git Updater).
+# Keep this list in step with .distignore, which does the same for the WordPress.org package and the release zip.
 /.github export-ignore
 /.wordpress-org export-ignore
-/.eslintrc.js export-ignore
+/.claude export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
+/.distignore export-ignore
+/CONTRIBUTING.md export-ignore
+/SPONSORS.md export-ignore
 /readme.md export-ignore
+/phpdoc.dist.xml export-ignore
+/usedby.json export-ignore

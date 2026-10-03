@@ -19,7 +19,7 @@ How this repository is laid out and why. For day-to-day commands see
 ├── live-weather-station.php     # Plugin bootstrap: header, activation/
 │                                 # deactivation/uninstall hook registration
 ├── init.php                     # Loads functions.php + autoload.php, defines
-│                                 # run_Live_Weather_Station()
+│                                 # live_weather_station_run()
 ├── autoload.php                 # Hand-rolled spl_autoload_register for the
 │                                 # WeatherStation\ namespace (no Composer)
 ├── functions.php                # Global helper functions used before the

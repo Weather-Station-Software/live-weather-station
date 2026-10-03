@@ -10,7 +10,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationCollector;
  * The public front functionality of the plugin.
  *
  * @package Public
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -44,18 +44,17 @@ class Frontend {
      * @since 3.2.0
      */
     public function register_styles() {
-        lws_register_style('lws-public', LWS_PUBLIC_URL, 'css/live-weather-station-public.min.css');
-        lws_register_style('lws-font-chart-icons', LWS_PUBLIC_URL, 'css/font-chart-icons.min.css');
-        lws_register_style('lws-lcd', LWS_PUBLIC_URL, 'css/lws-lcd.min.css');
-        lws_register_style('lws-table', LWS_PUBLIC_URL, 'css/live-weather-station-table.min.css');
-        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/fontawesome-4.min.css');
-        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/fontawesome-5.min.css');
-        lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
-        lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
-        lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
-        lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
-        lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
-        wp_register_style('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.css');
+        live_weather_station_register_style('lws-public', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/live-weather-station-public.min.css');
+        live_weather_station_register_style('lws-font-chart-icons', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/font-chart-icons.min.css');
+        live_weather_station_register_style('lws-lcd', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/lws-lcd.min.css');
+        live_weather_station_register_style('lws-table', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/live-weather-station-table.min.css');
+        live_weather_station_register_style('lws-font-awesome-4', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/fontawesome-4.min.css');
+        live_weather_station_register_style('lws-font-awesome-5', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/fontawesome-5.min.css');
+        live_weather_station_register_style('lws-weather-icons', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/weather-icons.min.css');
+        live_weather_station_register_style('lws-weather-icons-wind', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/weather-icons-wind.min.css');
+        live_weather_station_register_style('lws-nvd3', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
+        live_weather_station_register_style('lws-cal-heatmap', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/cal-heatmap.min.css');
+        live_weather_station_register_style('lws-leaflet', LIVE_WEATHER_STATION_PUBLIC_URL, 'css/leaflet.min.css');
     }
 
 	/**
@@ -101,32 +100,31 @@ class Frontend {
      * @since 1.0.0
      */
     public function register_scripts() {
-        lws_register_script('lws-public', LWS_PUBLIC_URL, 'js/live-weather-station-public.min.js');
-        lws_register_script('lws-lcd', LWS_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
-        lws_register_script('lws-tween', LWS_PUBLIC_URL, 'js/tween.min.js');
-        lws_register_script('lws-steelseries', LWS_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
-        lws_register_script('lws-radarchart', LWS_PUBLIC_URL, 'js/radarchart.min.js', array('lws-d3'));
-        lws_register_script('lws-bilinechart', LWS_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
-        lws_register_script('lws-scale-radial', LWS_PUBLIC_URL, 'js/d3-scale-radial.min.js', array('lws-d3'));
-        lws_register_script('lws-windrose', LWS_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
-        lws_register_script('lws-clipboard', LWS_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
-        lws_register_script('lws-raphael', LWS_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
-        lws_register_script('lws-justgage', LWS_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
-        lws_register_script('lws-d3', LWS_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
-        lws_register_script('lws-d4', LWS_PUBLIC_URL , 'js/d3.v4.min.js', array('jquery'));
-        lws_register_script('lws-nvd3', LWS_PUBLIC_URL , 'js/nv.d3.v3.min.js', array('lws-d3'));
-        lws_register_script('lws-cal-heatmap', LWS_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
-        lws_register_script('lws-colorbrewer', LWS_PUBLIC_URL , 'js/colorbrewer.min.js');
-        lws_register_script('lws-spin', LWS_PUBLIC_URL , 'js/spin.min.js');
-        lws_register_script('lws-fa-loader', LWS_PUBLIC_URL , 'js/fontawesome.min.js');
-        lws_register_script('lws-fa-all', LWS_PUBLIC_URL , 'js/fontawesome-all.min.js');
-        lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
-        lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet-140.min.js');
-        lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
-        wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
-        wp_register_script('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.no-dep.js');
+        live_weather_station_register_script('lws-public', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/live-weather-station-public.min.js');
+        live_weather_station_register_script('lws-lcd', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
+        live_weather_station_register_script('lws-tween', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/tween.min.js');
+        live_weather_station_register_script('lws-steelseries', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
+        live_weather_station_register_script('lws-radarchart', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/radarchart.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-bilinechart', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
+        live_weather_station_register_script('lws-scale-radial', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/d3-scale-radial.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-windrose', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
+        wp_register_script('lws-clipboard', false, array('clipboard', 'jquery'), LIVE_WEATHER_STATION_VERSION, false); // the copy of clipboard.js shipped with WordPress is used (the plugin no longer bundles its own)
+        live_weather_station_register_script('lws-raphael', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
+        live_weather_station_register_script('lws-justgage', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
+        live_weather_station_register_script('lws-d3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
+        live_weather_station_register_script('lws-d4', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v4.min.js', array('jquery'));
+        live_weather_station_register_script('lws-nvd3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/nv.d3.v3.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-cal-heatmap', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
+        live_weather_station_register_script('lws-colorbrewer', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/colorbrewer.min.js');
+        live_weather_station_register_script('lws-spin', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/spin.min.js');
+        live_weather_station_register_script('lws-fa-loader', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fontawesome.min.js');
+        live_weather_station_register_script('lws-fa-all', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fontawesome-all.min.js');
+        live_weather_station_register_script('lws-fa-brands', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-fa-regular', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-fa-solid', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
+        live_weather_station_register_script('lws-leaflet', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/leaflet-140.min.js');
+        live_weather_station_register_script('lws-stamen-boot', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/stamen.min.js');
+        wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js', array(), LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
 
     }
 
@@ -136,27 +134,34 @@ class Frontend {
 	 * @since 3.4.0
 	 */
 	public function lws_graph_data_callback() {
+        $this->lws_rate_limit('lws_graph_data_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists('device_id_'.$i, $_POST)) {
-                $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
+                $attributes['device_id_'.$i] = $this->lws_post_value('device_id_'.$i);
                 foreach ($this->graph_allowed_series as $param) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                     if (array_key_exists($param.'_'.$i, $_POST)) {
-                        $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                        $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                     }
                 }
             }
         }
-        $result = $this->graph_query($this->graph_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->graph_prepare($attributes), true);
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
         }
-        exit ($result['values']);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -165,24 +170,30 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_ltgraph_data_callback() {
+        $this->lws_rate_limit('lws_ltgraph_data_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
             foreach ($this->ltgraph_allowed_series as $param) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                 if (array_key_exists($param.'_'.$i, $_POST)) {
-                    $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                    $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                 }
             }
         }
-        $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->ltgraph_prepare($attributes), true);
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
         }
-        exit ($result['values']);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -191,17 +202,22 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_radial_data_callback() {
+        $this->lws_rate_limit('lws_radial_data_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        $result = $this->graph_query($this->radial_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
+        $result = !live_weather_station_visitor_may_see($attributes) ? array() : $this->graph_query($this->radial_prepare($attributes), true);
+        // The script reads this answer with JSON.parse(): plain text, so a browser never renders it as a page (application/json would be decoded by jQuery before, and break the script).
+        if (!headers_sent()) {
+            header('Content-Type: text/plain; charset=' . get_option('blog_charset'));
         }
-        exit ($result['values']);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -210,23 +226,29 @@ class Frontend {
      * @since 3.4.0
      */
     public function lws_graph_code_callback() {
+        $this->lws_rate_limit('lws_graph_code_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists('device_id_'.$i, $_POST)) {
-                $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
+                $attributes['device_id_'.$i] = $this->lws_post_value('device_id_'.$i);
                 foreach ($this->graph_allowed_series as $param) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                     if (array_key_exists($param.'_'.$i, $_POST)) {
-                        $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                        $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                     }
                 }
             }
         }
-        exit ($this->graph_shortcodes($attributes));
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::graph_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
+        echo $this->graph_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -235,20 +257,25 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_ltgraph_code_callback() {
+        $this->lws_rate_limit('lws_ltgraph_code_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
             foreach ($this->ltgraph_allowed_series as $param) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                 if (array_key_exists($param.'_'.$i, $_POST)) {
-                    $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                    $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                 }
             }
         }
-        exit ($this->ltgraph_shortcodes($attributes));
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::ltgraph_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
+        echo $this->ltgraph_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -257,13 +284,17 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_lttextual_code_callback() {
+        $this->lws_rate_limit('lws_lttextual_code_callback');
         $attributes = array();
         foreach ($this->lttextual_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        exit ($this->lttextual_shortcodes($attributes));
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::lttextual_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
+        echo $this->lttextual_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -272,13 +303,17 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_radial_code_callback() {
+        $this->lws_rate_limit('lws_radial_code_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
-                $attributes[$param] = wp_kses($_POST[$param], array());
+                $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        exit ($this->radial_shortcodes($attributes));
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::radial_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
+        echo $this->radial_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -287,12 +322,13 @@ class Frontend {
      * @since 1.0.0
      */
     public function lws_query_lcd_measurements_callback() {
+        $this->lws_rate_limit('lws_query_lcd_measurements_callback');
         $_attributes = array();
-        $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
-        $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
-        $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
+        $_attributes['device_id'] = $this->lws_post_value('device_id');
+        $_attributes['module_id'] = $this->lws_post_value('module_id');
+        $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->lcd_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -301,23 +337,25 @@ class Frontend {
      * @since 2.1.0
      */
     public function lws_query_justgage_config_callback() {
+        $this->lws_rate_limit('lws_query_justgage_config_callback');
         $_attributes = array();
-        $_attributes['id'] = wp_kses($_POST['id'], array());
-        $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
-        $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
-        $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
-        $_attributes['design'] = wp_kses($_POST['design'], array());
-        $_attributes['color'] = wp_kses($_POST['color'], array());
-        $_attributes['pointer'] = wp_kses($_POST['pointer'], array());
-        $_attributes['title'] = wp_kses($_POST['title'], array());
-        $_attributes['subtitle'] = wp_kses($_POST['subtitle'], array());
-        $_attributes['unit'] = wp_kses($_POST['unit'], array());
-        $_attributes['size'] = wp_kses($_POST['size'], array());
+        $_attributes['id'] = $this->lws_post_value('id');
+        $_attributes['device_id'] = $this->lws_post_value('device_id');
+        $_attributes['module_id'] = $this->lws_post_value('module_id');
+        $_attributes['measure_type'] = $this->lws_post_value('measure_type');
+        $_attributes['design'] = $this->lws_post_value('design');
+        $_attributes['color'] = $this->lws_post_value('color');
+        $_attributes['pointer'] = $this->lws_post_value('pointer');
+        $_attributes['title'] = $this->lws_post_value('title');
+        $_attributes['subtitle'] = $this->lws_post_value('subtitle');
+        $_attributes['unit'] = $this->lws_post_value('unit');
+        $_attributes['size'] = $this->lws_post_value('size');
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
         if (array_key_exists('force', $_POST)) {
-            $_attributes['force'] = wp_kses($_POST['force'], array());
+            $_attributes['force'] = $this->lws_post_value('force');
         }
         $response = $this->justgage_attributes($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -326,12 +364,13 @@ class Frontend {
      * @since 2.1.0
      */
     public function lws_query_justgage_measurements_callback() {
+        $this->lws_rate_limit('lws_query_justgage_measurements_callback');
         $_attributes = array();
-        $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
-        $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
-        $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
+        $_attributes['device_id'] = $this->lws_post_value('device_id');
+        $_attributes['module_id'] = $this->lws_post_value('module_id');
+        $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->justgage_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -340,29 +379,30 @@ class Frontend {
      * @since 2.2.0
      */
     public function lws_query_steelmeter_config_callback() {
+        $this->lws_rate_limit('lws_query_steelmeter_config_callback');
         $_attributes = array();
-        $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
-        $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
-        $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
-        $_attributes['design'] = wp_kses($_POST['design'], array());
-        $_attributes['frame'] = strtoupper(wp_kses($_POST['frame'], array()));
-        $_attributes['background'] = strtoupper(wp_kses($_POST['background'], array()));
-        $_attributes['orientation'] = strtoupper(wp_kses($_POST['orientation'], array()));
-        $_attributes['main_pointer_type'] = strtoupper(wp_kses($_POST['main_pointer_type'], array()));
-        $_attributes['main_pointer_color'] = strtoupper(wp_kses($_POST['main_pointer_color'], array()));
-        $_attributes['aux_pointer_type'] = strtoupper(wp_kses($_POST['aux_pointer_type'], array()));
-        $_attributes['aux_pointer_color'] = strtoupper(wp_kses($_POST['aux_pointer_color'], array()));
-        $_attributes['knob'] = strtoupper(wp_kses($_POST['knob'], array()));
-        $_attributes['lcd'] = strtoupper(wp_kses($_POST['lcd'], array()));
-        $_attributes['alarm'] = strtoupper(wp_kses($_POST['alarm'], array()));
-        $_attributes['trend'] = strtoupper(wp_kses($_POST['trend'], array()));
-        $_attributes['minmax'] = wp_kses($_POST['minmax'], array());
-        $_attributes['index_style'] = strtoupper(wp_kses($_POST['index_style'], array()));
-        $_attributes['index_color'] = strtoupper(wp_kses($_POST['index_color'], array()));
-        $_attributes['glass'] = strtoupper(wp_kses($_POST['glass'], array()));
-        $_attributes['size'] = wp_kses($_POST['size'], array());
+        $_attributes['device_id'] = $this->lws_post_value('device_id');
+        $_attributes['module_id'] = $this->lws_post_value('module_id');
+        $_attributes['measure_type'] = $this->lws_post_value('measure_type');
+        $_attributes['design'] = $this->lws_post_value('design');
+        $_attributes['frame'] = strtoupper($this->lws_post_value('frame'));
+        $_attributes['background'] = strtoupper($this->lws_post_value('background'));
+        $_attributes['orientation'] = strtoupper($this->lws_post_value('orientation'));
+        $_attributes['main_pointer_type'] = strtoupper($this->lws_post_value('main_pointer_type'));
+        $_attributes['main_pointer_color'] = strtoupper($this->lws_post_value('main_pointer_color'));
+        $_attributes['aux_pointer_type'] = strtoupper($this->lws_post_value('aux_pointer_type'));
+        $_attributes['aux_pointer_color'] = strtoupper($this->lws_post_value('aux_pointer_color'));
+        $_attributes['knob'] = strtoupper($this->lws_post_value('knob'));
+        $_attributes['lcd'] = strtoupper($this->lws_post_value('lcd'));
+        $_attributes['alarm'] = strtoupper($this->lws_post_value('alarm'));
+        $_attributes['trend'] = strtoupper($this->lws_post_value('trend'));
+        $_attributes['minmax'] = $this->lws_post_value('minmax');
+        $_attributes['index_style'] = strtoupper($this->lws_post_value('index_style'));
+        $_attributes['index_color'] = strtoupper($this->lws_post_value('index_color'));
+        $_attributes['glass'] = strtoupper($this->lws_post_value('glass'));
+        $_attributes['size'] = $this->lws_post_value('size');
         $response = $this->steelmeter_attributes($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
@@ -371,29 +411,37 @@ class Frontend {
      * @since 2.2.0
      */
     public function lws_query_steelmeter_measurements_callback() {
+        $this->lws_rate_limit('lws_query_steelmeter_measurements_callback');
         $_attributes = array();
-        $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
-        $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
-        $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
+        $_attributes['device_id'] = $this->lws_post_value('device_id');
+        $_attributes['module_id'] = $this->lws_post_value('module_id');
+        $_attributes['measure_type'] = $this->lws_post_value('measure_type');
         $response = $this->steelmeter_value($_attributes);
-        exit (json_encode ($response));
+        wp_send_json($response);
     }
 
     /**
      * Callback method for testing clientraw.txt validity.
      *
+     * Registered only for logged-in users (wp_ajax_lws_clientraw_test, no nopriv) and restricted to administrators: it
+     * performs an outbound connection / file access on a user-supplied resource.
+     *
      * @since 3.0.0
      */
     public function lws_clientraw_test_callback() {
+        if (!current_user_can(live_weather_station_manage_capability())) {
+            wp_send_json(array('result' => __('You are not allowed to do this.', 'live-weather-station')), 403);
+        }
+        check_ajax_referer('lws_clientraw_test', 'nonce');
         $_attributes = array();
-        $_attributes['connection_type'] = wp_kses($_POST['connection_type'], array());
-        $_attributes['resource'] = wp_kses($_POST['resource'], array());
+        $_attributes['connection_type'] = $this->lws_post_value('connection_type');
+        $_attributes['resource'] = $this->lws_post_value('resource');
         $collector = new StationCollector();
         $s = $collector->test($_attributes['connection_type'], $_attributes['resource']);
         if ($s == '') {
             $s = __('File is accessible and its format seems good.', 'live-weather-station');
         }
-        exit (json_encode(array('result' => $s)));
+        wp_send_json(array('result' => $s));
     }
 
 
@@ -403,8 +451,10 @@ class Frontend {
      * @since 3.6.0
      */
     public function lws_shortcode_callback() {
-        $shortcode = wp_kses($_POST['sc'], array());
-        $shortcode = str_replace('\\', '', $shortcode);
+        $this->lws_rate_limit('lws_shortcode_callback');
+        $shortcode = $this->lws_post_value('sc');
+        // Magic quotes add backslashes before quotes: remove them so the shortcode parser works. Values are never trusted by the SQL layer.
+        $shortcode = wp_unslash($shortcode);
         if (strpos($shortcode, '[') === false) {
             $shortcode = '[' . $shortcode . ']';
         }
@@ -413,11 +463,57 @@ class Frontend {
             $allowed = in_array($tag_match[1], $this->allowed_shortcodes, true);
         }
         if ($allowed) {
-            exit(do_shortcode($shortcode));
+            echo do_shortcode($shortcode);
+            exit;
         }
         else {
             exit('<p>' . esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>');
         }
+    }
+
+    /**
+     * Get a sanitized value from $_POST.
+     *
+     * @param string $key The key of the value.
+     * @return string The sanitized value, empty string if missing or not a scalar.
+     * @since 3.8.15
+     */
+    private function lws_post_value($key) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
+        if (isset($_POST[$key]) && is_scalar($_POST[$key])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching; unslash: kept as received on purpose, callers that need unslashed text (lws_shortcode_callback) unslash it themselves, so unslashing here would unslash twice
+            $value = wp_kses($_POST[$key], array());
+            // Anonymous visitors must not bypass the cache: only administrators may force a fresh computation.
+            if ($key === 'cache' && $value === 'no_cache' && !current_user_can(live_weather_station_manage_capability())) {
+                return 'cache';
+            }
+            return $value;
+        }
+        return '';
+    }
+
+    /**
+     * Get the 'values' part of a graph query result as a JSON string, whatever the result is.
+     *
+     * @param mixed $result The result of graph_query().
+     * @return string A JSON string (an empty series if the result is unusable).
+     * @since 3.8.15
+     */
+    private function lws_result_values($result) {
+        if (is_array($result) && isset($result['values']) && is_scalar($result['values']) && (string)$result['values'] !== '') {
+            return (string)$result['values'];
+        }
+        return '[]';
+    }
+
+    /**
+     * Rate limit wrapper (see live_weather_station_public_rate_limit() in functions.php).
+     *
+     * @param string $action The endpoint identifier.
+     * @since 3.8.15
+     */
+    private function lws_rate_limit($action) {
+        live_weather_station_public_rate_limit($action);
     }
 
     public static function lws_widget_callback() {

@@ -13,7 +13,7 @@ use WeatherStation\Data\ID\Handling as Id_Manipulation;
  * Ephemeris client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */
@@ -45,7 +45,19 @@ trait Client {
                 Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station without coordinates.');
                 continue;
             }
-            $tz = $station['loc_timezone'];
+            $tz = isset($station['loc_timezone']) ? $station['loc_timezone'] : '';
+            // The coordinates and the timezone come from the station (vendor data): an invalid one must skip this station only.
+            if (!is_numeric($lat) || !is_numeric($lon) || abs($lat) > 90 || abs($lon) > 180) {
+                Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station with invalid coordinates.');
+                continue;
+            }
+            try {
+                new \DateTimeZone((string)$tz);
+            }
+            catch (\Exception $ex) {
+                Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station with an invalid timezone.');
+                continue;
+            }
             $place = array();
             $place['country'] = $station['loc_country'];
             $place['city'] = $station['loc_city'];
@@ -61,7 +73,7 @@ trait Client {
             $nm['module_name'] = __('[Ephemeris]', 'live-weather-station');
             $nm['battery_vp'] = 6000;
             $nm['rf_status'] = 0;
-            $nm['firmware'] = LWS_VERSION;
+            $nm['firmware'] = LIVE_WEATHER_STATION_VERSION;
             $dashboard = array() ;
             $dashboard['time_utc'] = time();
             // sunrise & sunset
@@ -73,7 +85,7 @@ trait Client {
             $month = $datetime->format('m');
             $day = $datetime->format('d');
             for ($fact = -1; $fact <= 2; $fact++) {
-                $sunrise = date_sunrise(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+                $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
                 $verif = new \DateTime();
                 $verif->setTimestamp($sunrise);
                 $verif->setTimezone(new \DateTimeZone($tz));
@@ -83,7 +95,7 @@ trait Client {
                 }
             }
             for ($fact = -1; $fact <= 2; $fact++) {
-                $sunset = date_sunset(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+                $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
                 $verif = new \DateTime();
                 $verif->setTimestamp($sunset);
                 $verif->setTimezone(new \DateTimeZone($tz));
@@ -92,14 +104,14 @@ trait Client {
                     break;
                 }
             }
-            $dashboard['sunrise'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
-            $dashboard['sunrise_c'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
-            $dashboard['sunrise_n'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
-            $dashboard['sunrise_a'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
-            $dashboard['sunset'] = date_sunset($time_set,  SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
-            $dashboard['sunset_c'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
-            $dashboard['sunset_n'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
-            $dashboard['sunset_a'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
+            $dashboard['sunrise'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+            $dashboard['sunrise_c'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 96);
+            $dashboard['sunrise_n'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 102);
+            $dashboard['sunrise_a'] = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 108);
+            $dashboard['sunset'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
+            $dashboard['sunset_c'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 96, true);
+            $dashboard['sunset_n'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 102, true);
+            $dashboard['sunset_a'] = live_weather_station_sun_timestamp($time_set, $lat, $lon, 108, true);
             // lengths of day
             if ($dashboard['sunset'] && $dashboard['sunrise']) {
                 $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];
@@ -152,39 +164,39 @@ trait Client {
                 $dashboard['dusk_length_c'] = $dashboard['sunset_c'] - $dashboard['sunset'];
             }
             try {
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $month = $datetime->format('m');
                 $day = $datetime->format('d');
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise = $moon->moonrise;
                 $moonset = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()-86400), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()-86400), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise_yesterday = $moon->moonrise;
                 $moonset_yesterday = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()+86400), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()+86400), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise_tomorrow = $moon->moonrise;
                 $moonset_tomorrow = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonrise_yesterday), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonrise_yesterday), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonrise = $moonrise_yesterday;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonset_yesterday), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonset_yesterday), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonset = $moonset_yesterday;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonrise_tomorrow), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonrise_tomorrow), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonrise = $moonrise_tomorrow;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonset_tomorrow), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonset_tomorrow), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonset = $moonset_tomorrow;

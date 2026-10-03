@@ -13,7 +13,7 @@ use WeatherStation\Data\History\Builder;
  * A process to import old data from a Netatmo station.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -192,7 +192,9 @@ abstract class NetatmoImporter extends Process {
         $old_dates = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "' ORDER BY module_type ASC";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix, station id bound by prepare()
+        $sql = $wpdb->prepare("SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = %s ORDER BY module_type ASC", $this->params['init']['station_id']);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements, SQL prepared above; uncached because the import must list the current modules
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();
         $this->params['todo_int'] = array();
@@ -650,7 +652,7 @@ abstract class NetatmoImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             if ($this->has_computer()) {
                 $history->import_data($nacomputed, $query_start, $query_end + 1, $force);
             }
@@ -724,7 +726,7 @@ abstract class NetatmoImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($namodules as $namodule) {
                 $l = $history->import_data($namodule, $query_start, $query_end + 1, $force);
                 $this->params['summary'][$namodule['meta']['module_id']]['measurements'] += $l[0];
@@ -744,7 +746,7 @@ abstract class NetatmoImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<8; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*40)) {
+            if ((int)ini_get('max_execution_time') > $i*40) {
                 $max += 1;
             }
         }

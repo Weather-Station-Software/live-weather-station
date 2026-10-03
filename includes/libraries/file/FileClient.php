@@ -13,7 +13,7 @@ use WeatherStation\SDK\Generic\Fetcher\FileGetContentsFetcher;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  * @license MIT
  */
@@ -106,6 +106,16 @@ class FileClient
             default:
                 $proto = '';
         }
+        // Whatever the type, the locator must not carry its own scheme (except a local path, which is validated by
+        // the fetcher): it prevents stream wrappers like php://, phar://, data: or file:// from being smuggled in.
+        $url = trim((string)$url);
+        if ($proto === '' && stripos($url, 'file://') === 0) {
+            $url = substr($url, 7); // A user typing a file:// local path is tolerated.
+        }
+        if ($proto !== '' && preg_match('#^[a-z][a-z0-9+.\-]*://#i', $url)) {
+            throw new FileException('Invalid resource', 12);
+        }
+        FileGetContentsFetcher::validate($proto.$url);
         return $this->cacheOrFetchResult($proto.$url);
     }
 

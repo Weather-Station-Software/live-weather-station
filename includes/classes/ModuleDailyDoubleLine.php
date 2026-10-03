@@ -6,7 +6,7 @@ namespace WeatherStation\Engine\Module\Daily;
  * Class to generate parameter daily bi-line form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */
@@ -70,15 +70,13 @@ class DoubleLine extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $a_group = array();
         for ($i=1; $i<=$this->series_number; $i++) {
-            for ($i=1; $i<=$this->series_number; $i++) {
-                $group = $this->get_assoc_option_select('daily-doubleline-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-                $group .= $this->get_neutral_option_select('daily-doubleline-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
-                $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
-                $group .= $this->get_key_value_option_select('daily-doubleline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
-                $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
-                $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-                $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement %s', 'live-weather-station'), $i));
-            }
+            $group = $this->get_assoc_option_select('daily-doubleline-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+            $group .= $this->get_neutral_option_select('daily-doubleline-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
+            $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
+            $group .= $this->get_key_value_option_select('daily-doubleline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
+            $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
+            $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: number of the measurement */ __('Measurement %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('daily-doubleline-measurements-measure-group-', $a_group);
         $content .= $this->get_placeholder_option_select();

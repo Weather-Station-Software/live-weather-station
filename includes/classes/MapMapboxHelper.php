@@ -5,12 +5,13 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Mapbox maps.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -51,6 +52,7 @@ class MapboxHandling extends BaseHandling {
      * @return array The specific parameters.
      * @since 3.7.0
      */
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself reached from MapHelper::edit_map() after wp_verify_nonce() on the map form nonce.
     public function get_specific_post_values() {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
@@ -60,11 +62,12 @@ class MapboxHandling extends BaseHandling {
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('streets', 'light', 'dark', 'satellite', 'streets-satellite', 'wheatpaste', 'streets-basic', 'comic', 'outdoors', 'run-bike-hike', 'pencil', 'pirates', 'emerald', 'high-contrast', 'terrain-rgb'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         return $result;
     }
+// phpcs:enable WordPress.Security.NonceVerification.Missing
 
     /**
      * Output the specific resources.
@@ -114,15 +117,15 @@ class MapboxHandling extends BaseHandling {
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.mapbox.com/\">Mapbox</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
-        $result .= '  id: "mapbox.' . $this->map_params['specific']['options']['overlay'] . '",' . PHP_EOL;
-        $result .= '  accessToken: "' . get_option('live_weather_station_mapbox_apikey') . '"' . PHP_EOL;
+        $result .= '  id: ' . Guard::js('mapbox.' . $this->map_params['specific']['options']['overlay']) . ',' . PHP_EOL;
+        $result .= '  accessToken: ' . Guard::js(get_option('live_weather_station_mapbox_apikey')) . PHP_EOL;
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('mapbox-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;

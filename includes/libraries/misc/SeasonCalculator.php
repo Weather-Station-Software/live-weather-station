@@ -6,7 +6,7 @@ namespace WeatherStation\SDK\Generic\Plugin\Season;
  * A Season utility that helps calculate seasons dates.
  *
  * @package Includes\Libraries
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @since 3.4.0
  * @license GPL
  */
@@ -190,7 +190,7 @@ class Calculator {
             $end = self::getMeteorologicalSeasonEndDate($e[0], $e[1], $tz);
             $seasons[] = array($start.':'.$end, $e[0] . ', ' . self::meteorologicalSeasonName($e[1], $north_hemisphere).$suf);
         }
-        return array_reverse(lws_array_super_unique($seasons, 0));
+        return array_reverse(live_weather_station_array_super_unique($seasons, 0));
     }
 
     /**
@@ -222,7 +222,7 @@ class Calculator {
                 }
             }
         }
-        return array_reverse(lws_array_super_unique($seasons, 0));
+        return array_reverse(live_weather_station_array_super_unique($seasons, 0));
     }
 
     /**

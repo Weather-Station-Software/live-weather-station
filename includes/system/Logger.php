@@ -8,10 +8,13 @@ use WeatherStation\System\Schedules\Watchdog;
  * This class add log capacity to the plugin.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.8.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 class Logger {
 
     use \WeatherStation\DB\Query;
@@ -21,6 +24,31 @@ class Logger {
     public static $ordered_severity = array('debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency');
     private $Live_Weather_Station;
     private $version;
+
+    // Per-request flood protection: maximum number of rows a single request can write, and the last written event.
+    // Filterable with 'live_weather_station_log_max_rows'; much higher for CLI/cron/background contexts.
+    private static $max_rows_per_request = 500;
+    private static $max_rows_long_running = 50000;
+    private static $rows_written = 0;
+    private static $last_event = '';
+    private static $suppressed = 0;
+    private static $suppressed_level = 'debug';
+    private static $marker_written = false;
+
+    /**
+     * Get the maximum number of rows for this request.
+     *
+     * @return int The cap.
+     * @since 3.9.0
+     */
+    private static function max_rows() {
+        $long = (defined('WP_CLI') && WP_CLI) || (defined('DOING_CRON') && DOING_CRON) || (function_exists('wp_doing_cron') && wp_doing_cron()) || PHP_SAPI === 'cli';
+        $max = $long ? self::$max_rows_long_running : self::$max_rows_per_request;
+        if (function_exists('apply_filters')) {
+            $max = (int)apply_filters('live_weather_station_log_max_rows', $max, $long);
+        }
+        return $max;
+    }
 
 
     /**
@@ -57,7 +85,7 @@ class Logger {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_log_table();
         $sql = 'TRUNCATE TABLE '.$table_name;
-        $wpdb->query($sql);
+        $wpdb->query($sql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TRUNCATE of the plugin log table (name built from $wpdb->prefix and a constant), no variable value, purge must act on the live table
         self::notice('Logger',null,null,null,null,null,null,'Events log has been purged.');
     }
 
@@ -107,37 +135,82 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
+        if (!is_string($level) || !array_key_exists($level, self::$severity)) {
+            $level = 'unknown';
+        }
         if (get_option('live_weather_station_logger_level', 6) >= self::$severity[$level]) {
+            // Do not let one request (e.g. an anonymous one triggering an error path in a loop) flood the log table.
+            $event = $level . '|' . $system . '|' . $service . '|' . $device_id . '|' . $module_id . '|' . $code . '|' . (is_scalar($message) ? substr((string)$message, 0, 14999) : '');
+            $important = (self::$severity[$level] <= self::$severity['error']);
+            // Consecutive identical events are collapsed, but never the important ones.
+            if (!$important && $event === self::$last_event) {
+                return;
+            }
+            // Flood cap: important rows (error and above) are never suppressed.
+            if (!$important && self::$rows_written >= self::max_rows()) {
+                self::$suppressed++;
+                if (self::$severity[$level] < self::$severity[self::$suppressed_level]) {
+                    self::$suppressed_level = $level;
+                }
+                if (!self::$marker_written) {
+                    self::$marker_written = true;
+                    // Register the final summary row once; it is written with the highest suppressed severity.
+                    register_shutdown_function(array(__CLASS__, 'flush_suppressed'));
+                }
+                return;
+            }
+            self::$last_event = $event;
+            self::$rows_written++;
             $values = array();
             $values['level'] = $level;
-            $values['timestamp'] = date('Y-m-d H:i:s');
-            $values['plugin'] = LWS_PLUGIN_NAME;
+            $values['timestamp'] = gmdate('Y-m-d H:i:s');
+            $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
             $values['version'] = substr($version, 0, 11);
             if (!is_null($system)) {
-                $values['system'] = substr($system, 0, 49);
+                $values['system'] = mb_substr(sanitize_text_field($system), 0, 49);
             }
             if (!is_null($service)) {
-                $values['service'] = substr($service, 0, 49);
+                $values['service'] = mb_substr(sanitize_text_field($service), 0, 49);
             }
             if (!is_null($device_id)) {
                 $values['device_id'] = substr($device_id, 0, 17);
             }
             if (!is_null($device_name)) {
-                $values['device_name'] = substr($device_name, 0, 59);
+                $values['device_name'] = mb_substr(sanitize_text_field($device_name), 0, 59);
             }
             if (!is_null($module_id)) {
                 $values['module_id'] = substr($module_id, 0, 17);
             }
             if (!is_null($module_name)) {
-                $values['module_name'] = substr($module_name, 0, 59);
+                $values['module_name'] = mb_substr(sanitize_text_field($module_name), 0, 59);
             }
             if (!is_null($code)) {
                 $values['code'] = $code;
             }
             if (!is_null($message)) {
-                $values['message'] = substr($message, 0, 14999);
+                $values['message'] = mb_substr(sanitize_text_field(is_scalar($message) ? (string)$message : ''), 0, 14999);
             }
+            self::insert_table(self::live_weather_station_log_table(), $values);
+        }
+    }
+
+    /**
+     * Write the single marker row summarizing suppressed messages (called on shutdown).
+     *
+     * @since 3.9.0
+     */
+    public static function flush_suppressed() {
+        if (self::$suppressed > 0) {
+            $n = self::$suppressed;
+            self::$suppressed = 0;
+            $values = array();
+            $values['level'] = self::$suppressed_level;
+            $values['timestamp'] = gmdate('Y-m-d H:i:s');
+            $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
+            $values['version'] = substr(LIVE_WEATHER_STATION_VERSION, 0, 11);
+            $values['system'] = 'Logger';
+            $values['message'] = $n . ' further messages suppressed in this request';
             self::insert_table(self::live_weather_station_log_table(), $values);
         }
     }
@@ -167,7 +240,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function emergency($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function emergency($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('emergency', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
     
@@ -185,7 +258,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function alert($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function alert($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('alert', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -203,7 +276,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function critical($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function critical($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('critical', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -221,7 +294,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function error($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function error($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('error', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -239,7 +312,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function warning($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function warning($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('warning', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -257,7 +330,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function notice($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function notice($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('notice', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -275,7 +348,7 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function info($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function info($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('info', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
     }
 
@@ -293,8 +366,70 @@ class Logger {
      * @param   $version        string      Optional. Plugin version override.
      * @since    2.8.0
      */
-    public static function debug($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+    public static function debug($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LIVE_WEATHER_STATION_VERSION) {
         self::_log('debug', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
+    }
+
+    /**
+     * The normalized names (lower case letters only) of the keys whose value is the position or the identity of a station.
+     */
+    private static $sensitive_keys = array('mac', 'macaddress', 'lat', 'lon', 'lng', 'latitude', 'longitude', 'alt', 'altitude', 'elevation', 'location',
+        'coord', 'coords', 'coordinates', 'address', 'fulladdress', 'street', 'streetname', 'city', 'cityname', 'zip', 'zipcode', 'postcode', 'postalcode');
+
+    /**
+     * Get the text of a value for a debug entry (an answer of a service, for example).
+     *
+     * Nothing is built when the "debug" level is not recorded. By default the position, the altitude, the address and the MAC addresses
+     * are hidden, so that a log can be shared in a support request: the option 'live_weather_station_logger_mask_sensitive' turns this off.
+     *
+     * @param mixed $value The value to dump.
+     * @param integer $max Optional. The maximum length of the text.
+     * @return string The text, empty if the debug level is not recorded.
+     * @since 3.9.0
+     */
+    public static function dump($value, $max = 4000) {
+        if ((int)get_option('live_weather_station_logger_level', 5) < self::$severity['debug']) {
+            return '';
+        }
+        if ((bool)get_option('live_weather_station_logger_mask_sensitive', 1)) {
+            $value = self::mask_sensitive($value);
+        }
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds a text for the events log, nothing is printed.
+        return substr(print_r($value, true), 0, $max);
+    }
+
+    /**
+     * Hide the position and the identity of a station in a value.
+     *
+     * @param mixed $value The value.
+     * @param integer $depth Optional. The current depth.
+     * @return mixed The value without the sensitive parts.
+     * @since 3.9.0
+     */
+    private static function mask_sensitive($value, $depth = 0) {
+        if ($depth > 12) {
+            return '[...]';
+        }
+        if (is_object($value)) {
+            $value = get_object_vars($value);
+        }
+        if (is_array($value)) {
+            $result = array();
+            foreach ($value as $key => $item) {
+                if (is_string($key) && in_array(strtolower(preg_replace('/[^A-Za-z]/', '', $key)), self::$sensitive_keys, true)) {
+                    $result[$key] = '[hidden]';
+                }
+                else {
+                    $result[$key] = self::mask_sensitive($item, $depth + 1);
+                }
+            }
+            return $result;
+        }
+        if (is_string($value)) {
+            // A MAC address: only the first three bytes (the manufacturer) are kept.
+            return preg_replace('/\b([0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2})([:-][0-9A-Fa-f]{2}){3}\b/', '$1:xx:xx:xx', $value);
+        }
+        return $value;
     }
 
     /**
@@ -337,7 +472,7 @@ class Logger {
             case 'info':
                 $result = 'fa-info-circle';
                 break;
-            case 'debug';
+            case 'debug':
                 $result = 'fa-info';
                 break;
             default:
@@ -376,7 +511,7 @@ class Logger {
             case 'info':
                 $result = '#86B4D5';
                 break;
-            case 'debug';
+            case 'debug':
                 $result = '#B8D0D0';
                 break;
             default:
@@ -416,7 +551,7 @@ class Logger {
             case 'info':
                 $result = __('Information', 'live-weather-station');
                 break;
-            case 'debug';
+            case 'debug':
                 $result = __('Debug information', 'live-weather-station');
                 break;
             default:
@@ -456,7 +591,7 @@ class Logger {
             case 'info':
                 $result = 0.01;
                 break;
-            case 'debug';
+            case 'debug':
                 $result = 0;
                 break;
             default:
@@ -496,7 +631,7 @@ class Logger {
             case 6:
                 $result = __('Information', 'live-weather-station');
                 break;
-            case 7;
+            case 7:
                 $result = __('Debug information', 'live-weather-station');
                 break;
             default:

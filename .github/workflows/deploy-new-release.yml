@@ -1,8 +1,14 @@
 name: New WordPress.org release
 
+# A published release deploys to wordpress.org. Any other run (a pull request changing this file, or a manual run) is a dry run:
+# every step is executed except the final commit to the wordpress.org repository.
 on:
   release:
     types: [published]
+  pull_request:
+    paths:
+      - '.github/workflows/deploy-new-release.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,10 +18,23 @@ jobs:
     name: New release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Remove the Git Updater headers from the wordpress.org package
+        # Those headers let a site install the plugin from GitHub; the wordpress.org package is updated by wordpress.org itself.
+        run: |
+          sed -i -E '/^ \* (GitHub Plugin URI|Primary Branch):/d' live-weather-station.php
+          if grep -n -E 'GitHub Plugin URI|Primary Branch' live-weather-station.php; then echo 'Git Updater headers still present'; exit 1; fi
+          php -l live-weather-station.php
       - name: WordPress Plugin Deploy
         uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
+        # Outside of a published release this is a dry run: the input below skips the final commit, and the real wordpress.org
+        # credentials are not even passed to the action, so such a run cannot publish anything.
+        with:
+          dry-run: ${{ github.event_name != 'release' }}
         env:
           SLUG: live-weather-station
-          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
-          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || 'dry-run' }}
+          SVN_PASSWORD: ${{ github.event_name == 'release' && secrets.SVN_PASSWORD || 'unused-in-dry-run' }}
+          SVN_USERNAME: ${{ github.event_name == 'release' && secrets.SVN_USERNAME || 'unused-in-dry-run' }}

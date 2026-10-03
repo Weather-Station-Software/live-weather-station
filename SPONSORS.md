@@ -19,7 +19,7 @@ Any questions? Contact: bonjour@jasonrouet.com
 
 *This list will be updated as we receive sponsorships and donations.*
 
-*Your name could be here! Support Weather Station development through [GitHub Sponsors](https://github.com/sponsors/jaz_on) or [Ko-fi](https://ko-fi.com/jasonrouet).*
+*Your name could be here! Support Weather Station development through [Buy Me a Coffee](https://buymeacoffee.com/jasonrouet).*
 
 ---
 

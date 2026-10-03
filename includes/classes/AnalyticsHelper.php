@@ -8,7 +8,7 @@ use WeatherStation\System\Analytics\Performance;
  * This class builds elements of general tab for analytics page.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
@@ -52,13 +52,14 @@ class Handling {
     public function analytics_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-analytics');";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result is built by live_weather_station_print_begin_script()/print_end_script() (literal script wrapper, id reduced to [A-Za-z0-9_] by preg_replace) and literal JavaScript; it is an inline script block that must not go through kses
         echo $result;
     }
 
@@ -140,7 +141,7 @@ class Handling {
     public function perf_quota_widget_24() {
         $val = Performance::get_quota_values()['agr24'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
     }
 
     /**
@@ -151,7 +152,7 @@ class Handling {
     public function perf_quota_widget_30() {
         $val = Performance::get_quota_values()['agr30'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
     }
 
     /**
@@ -162,7 +163,7 @@ class Handling {
     public function perf_cache_widget_24() {
         $val = Performance::get_cache_values()['agr24'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
     }
 
     /**
@@ -173,7 +174,7 @@ class Handling {
     public function perf_cache_widget_30() {
         $val = Performance::get_cache_values()['agr30'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
     }
 
     /**
@@ -184,7 +185,7 @@ class Handling {
     public function perf_cron_widget_24() {
         $val = Performance::get_cron_values()['agr24'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
     }
 
     /**
@@ -195,7 +196,7 @@ class Handling {
     public function perf_cron_widget_30() {
         $val = Performance::get_cron_values()['agr30'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
     }
 
     /**
@@ -206,7 +207,7 @@ class Handling {
     public function perf_event_widget_24() {
         $val = Performance::get_event_values()['agr24'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
     }
 
     /**
@@ -217,6 +218,6 @@ class Handling {
     public function perf_event_widget_30() {
         $val = Performance::get_event_values()['agr30'];
         $show_link = false;
-        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
     }
 }

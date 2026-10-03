@@ -5,12 +5,13 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Windy maps.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -62,6 +63,7 @@ class WindyHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself called by MapHelper::edit_map() after wp_verify_nonce() and the capability check.
         if (array_key_exists('controls-zoom', $_POST)) {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
@@ -73,17 +75,17 @@ class WindyHandling extends BaseHandling {
         }
         if (array_key_exists('controls-footer', $_POST)) {
             if (in_array($_POST['controls-footer'], array('none', 'legend', 'calendar', 'both'))) {
-                $result['controls']['footer'] = $_POST['controls-footer'];
+                $result['controls']['footer'] = sanitize_text_field(wp_unslash($_POST['controls-footer']));
             }
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('wind', 'temp', 'rain', 'clouds', 'pressure', 'currents', 'waves'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         if (array_key_exists('options-isolines', $_POST)) {
             if (in_array($_POST['options-isolines'], array('none', 'pressure', 'temp', 'deg0', 'gh'))) {
-                $result['options']['isolines'] = $_POST['options-isolines'];
+                $result['options']['isolines'] = sanitize_text_field(wp_unslash($_POST['options-isolines']));
             }
         }
         if (array_key_exists('options-animation', $_POST)) {
@@ -92,6 +94,7 @@ class WindyHandling extends BaseHandling {
         if (array_key_exists('options-graticule', $_POST)) {
             $result['options']['graticule'] = ($_POST['options-graticule'] == 'on');
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 
@@ -160,30 +163,30 @@ class WindyHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $result .= "const options = {" . PHP_EOL;
-        $result .= "  key: '" . get_option('live_weather_station_windy_apikey') . "'," . PHP_EOL;
+        $result .= "  key: " . Guard::js(get_option('live_weather_station_windy_apikey')) . "," . PHP_EOL;
         $result .= "  verbose: false," . PHP_EOL;
-        $result .= "  lat: " . $this->map_params['common']['loc_latitude'] . "," . PHP_EOL;
-        $result .= "  lon: " . $this->map_params['common']['loc_longitude'] . "," . PHP_EOL;
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . "," . PHP_EOL;
+        $result .= "  lat: " . (float)$this->map_params['common']['loc_latitude'] . "," . PHP_EOL;
+        $result .= "  lon: " . (float)$this->map_params['common']['loc_longitude'] . "," . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . "," . PHP_EOL;
         $result .= "  hourFormat: '24h'," . PHP_EOL;
         $result .= "  latlon: true," . PHP_EOL;
 
-        $result .= "  overlay: '" . $this->map_params['specific']['options']['overlay'] . "'," . PHP_EOL;
+        $result .= "  overlay: " . Guard::js($this->map_params['specific']['options']['overlay']) . "," . PHP_EOL;
         if ($this->map_params['specific']['options']['isolines'] !== 'none') {
-            $result .= "  isolines: '" . $this->map_params['specific']['options']['isolines'] . "'," . PHP_EOL;
+            $result .= "  isolines: " . Guard::js($this->map_params['specific']['options']['isolines']) . "," . PHP_EOL;
         }
         $result .= "  particlesAnim: '" . ($this->map_params['specific']['options']['animation'] ? 'on' : 'off') . "'," . PHP_EOL;
         $result .= "  graticule: " . ($this->map_params['specific']['options']['graticule'] ? 'true' : 'false') . "," . PHP_EOL;
         $result .= "}" . PHP_EOL;
         $result .= "windyInit(options, windyAPI => {" . PHP_EOL;
         $result .= "  var {map, overlays, picker} = windyAPI" . PHP_EOL;
-        $result .= "  overlays.wind.setMetric('" . $this->get_wind_speed_unit(get_option('live_weather_station_unit_wind_strength')) ."')" . PHP_EOL;
-        $result .= "  overlays.temp.setMetric('" . $this->get_temperature_unit(get_option('live_weather_station_unit_temperature')) ."')" . PHP_EOL;
-        $result .= "  overlays.rain.setMetric('" . $this->get_rain_unit(get_option('live_weather_station_unit_rain_snow')) ."')" . PHP_EOL;
-        //$result .= "  overlays.snow.setMetric('" . $this->get_snow_unit(get_option('live_weather_station_unit_rain_snow')) ."')" . PHP_EOL;
-        $result .= "  overlays.waves.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
-        $result .= "  overlays.pressure.setMetric('" . $this->get_pressure_unit(get_option('live_weather_station_unit_pressure')) ."')" . PHP_EOL;
-        //$result .= "  overlays.altitude.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
+        $result .= "  overlays.wind.setMetric(" . Guard::js($this->get_wind_speed_unit(get_option('live_weather_station_unit_wind_strength'))) . ")" . PHP_EOL;
+        $result .= "  overlays.temp.setMetric(" . Guard::js($this->get_temperature_unit(get_option('live_weather_station_unit_temperature'))) . ")" . PHP_EOL;
+        $result .= "  overlays.rain.setMetric(" . Guard::js($this->get_rain_unit(get_option('live_weather_station_unit_rain_snow'))) . ")" . PHP_EOL;
+        //$result .= "  overlays.snow.setMetric(" . Guard::js($this->get_snow_unit(get_option('live_weather_station_unit_rain_snow'))) . ")" . PHP_EOL;
+        $result .= "  overlays.waves.setMetric(" . Guard::js($this->get_altitude_unit(get_option('live_weather_station_unit_altitude'))) . ")" . PHP_EOL;
+        $result .= "  overlays.pressure.setMetric(" . Guard::js($this->get_pressure_unit(get_option('live_weather_station_unit_pressure'))) . ")" . PHP_EOL;
+        //$result .= "  overlays.altitude.setMetric(" . Guard::js($this->get_altitude_unit(get_option('live_weather_station_unit_altitude'))) . ")" . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  map.scrollWheelZoom.disable()" . PHP_EOL;
         }

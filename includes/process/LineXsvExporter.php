@@ -8,7 +8,7 @@ use WeatherStation\Data\Output ;
  * A process to export old data as xSV file.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -59,23 +59,41 @@ abstract class LineXsvExporter extends LineExporter {
     protected function do_job($line) {
         $set = array('avg', 'min', 'max', 'med', 'dev', 'agg', 'maxhr', 'dom');
         $v = array();
-        $v[] = str_replace($this->delimiter, '', $line['timestamp']);
-        $v[] = str_replace($this->delimiter, '', $line['module_name']);
-        $v[] = str_replace($this->delimiter, '', $this->get_measurement_type($line['measure_type'], false, $line['module_type']));
+        $v[] = $this->cell($line['timestamp']);
+        $v[] = $this->cell($line['module_name']);
+        $v[] = $this->cell($this->get_measurement_type($line['measure_type'], false, $line['module_type']));
         $unit = $this->output_unit($line['measure_type'], $line['module_type'])['unit'];
-        if ($unit === '') {
-            $unit = '';
-        }
-        $v[] = str_replace($this->delimiter, '', $unit);
+        $v[] = $this->cell($unit);
         foreach ($set as $s) {
             if (array_key_exists($s, $line)) {
-                $v[] = str_replace($this->delimiter, '_', $this->output_value($line[$s], $line['measure_type'], false, false, $line['module_type']));
+                $v[] = $this->cell($this->output_value($line[$s], $line['measure_type'], false, false, $line['module_type']), '_');
             }
             else {
                 $v[] = '';
             }
         }
         FS::add_file_line($this->fullfilename, implode($this->delimiter, $v));
+    }
+
+    /**
+     * Clean a cell: remove the delimiter and line breaks, and neutralize spreadsheet formulas
+     * (cells beginning with =, +, -, @, tab or CR get a leading single quote, except plain numbers).
+     *
+     * @param mixed $value The raw value.
+     * @param string $replacement Optional. The replacement of the delimiter.
+     * @return string The clean cell.
+     * @since 3.8.0
+     */
+    private function cell($value, $replacement='') {
+        $raw = trim((string)$value);
+        $value = str_replace($this->delimiter, $replacement, (string)$value);
+        $value = trim(str_replace(array("\r", "\n", "\0"), ' ', $value));
+        // Numbers (including negative ones, with a comma as decimal separator) and the bare '-' marker are safe.
+        $numeric = is_numeric(str_replace(',', '.', $raw)) || $raw === '-';
+        if ($value !== '' && strpos("=+-@\t", $value[0]) !== false && !$numeric) {
+            $value = "'" . $value;
+        }
+        return $value;
     }
 
     /**

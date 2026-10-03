@@ -6,7 +6,7 @@ namespace WeatherStation\Engine\Module\Yearly;
  * Class to generate parameter yearly bars form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */
@@ -79,7 +79,7 @@ class Bars extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('yearly-bars-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', true, false);
             $group .= $this->get_key_value_option_select('yearly-bars-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('yearly-bars-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
-            $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement %s', 'live-weather-station'), $i));
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: sequence number of the measurement */ __('Measurement %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('yearly-bars-measurements-measure-group-', $a_group);
         $content .= '</tbody></table>';

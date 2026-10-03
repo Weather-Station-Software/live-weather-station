@@ -6,7 +6,7 @@ namespace WeatherStation\Engine\Module\Yearly;
  * Class to generate parameter yearly bi-line form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */
@@ -72,16 +72,14 @@ class DoubleLine extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_neutral_option_select('yearly-doubleline-measurements-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
         $a_group = array();
         for ($i=1; $i<=$this->series_number; $i++) {
-            for ($i=1; $i<=$this->series_number; $i++) {
-                $group = $this->get_assoc_option_select('yearly-doubleline-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-                $group .= $this->get_neutral_option_select('yearly-doubleline-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
-                $group .= $this->get_neutral_option_select('yearly-doubleline-measurements-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
-                $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
-                $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
-                $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
-                $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-                $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement %s', 'live-weather-station'), $i));
-            }
+            $group = $this->get_assoc_option_select('yearly-doubleline-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+            $group .= $this->get_neutral_option_select('yearly-doubleline-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
+            $group .= $this->get_neutral_option_select('yearly-doubleline-measurements-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
+            $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
+            $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
+            $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
+            $group .= $this->get_key_value_option_select('yearly-doubleline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: sequence number of the measurement */ __('Measurement %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('yearly-doubleline-measurements-measure-group-', $a_group);
         $content .= '</tbody></table>';

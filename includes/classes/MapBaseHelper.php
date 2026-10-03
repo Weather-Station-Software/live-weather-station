@@ -6,12 +6,13 @@ use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\Utilities\ColorBrewer;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class is the base class for all map handler.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -65,10 +66,23 @@ abstract class BaseHandling {
             $this->map_information = $map;
             $this->map_id = $map['id'];
             $this->map_name = $map['name'];
-            $this->map_params = unserialize($map['params']);
+            $this->map_params = unserialize($map['params'], array('allowed_classes' => false));
+            if (!is_array($this->map_params)) {
+                $this->map_params = array();
+            }
+            if (!isset($this->map_params['marker']) || !is_array($this->map_params['marker'])) {
+                $this->map_params['marker'] = array();
+            }
             if (!array_key_exists('page', $this->map_params['marker'])) {
                 $this->map_params['marker']['page'] = 'none';
             }
+            // Stored values are re-validated before being used to build markup, CSS or JS.
+            $this->map_params['marker']['type'] = Guard::enum(isset($this->map_params['marker']['type']) ? $this->map_params['marker']['type'] : null, array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'), 'pin');
+            $this->map_params['marker']['data'] = Guard::enum(isset($this->map_params['marker']['data']) ? $this->map_params['marker']['data'] : null, array('current', 'calendar', 'station'), 'current');
+            $this->map_params['marker']['style'] = Guard::enum(isset($this->map_params['marker']['style']) ? $this->map_params['marker']['style'] : null, array('minimalist', 'standard', 'extended'), 'standard');
+            $this->map_params['marker']['contrast'] = Guard::enum(isset($this->map_params['marker']['contrast']) ? $this->map_params['marker']['contrast'] : null, array('light', 'medium', 'dark'), 'medium');
+            $this->map_params['marker']['shadow'] = Guard::enum(isset($this->map_params['marker']['shadow']) ? $this->map_params['marker']['shadow'] : null, array('none', 'medium', 'dark'), 'medium');
+            $this->map_params['marker']['page'] = Guard::enum(isset($this->map_params['marker']['page']) ? $this->map_params['marker']['page'] : null, array('none', 'link1', 'link2', 'link3'), 'none');
             $this->set = true;
         }
         $fingerprint = uniqid('', true);
@@ -110,7 +124,7 @@ abstract class BaseHandling {
         $params['marker']['shadow'] = 'medium';
         $params['marker']['page'] = 'none';
         $params['specific'] = $this->specific_params();
-        return $this->add_new_map($this->type, sprintf(__('New %s map', 'live-weather-station'), $this->service), $params);
+        return $this->add_new_map($this->type, sprintf(/* translators: %s: map service name, like Maptiler */ __('New %s map', 'live-weather-station'), $this->service), $params);
     }
 
     /**
@@ -119,18 +133,19 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     public function save_map() {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- the 'lws-map-<id>' nonce and the manage capability are verified by MapHelper::edit_map() before it calls save_map()
         $params = $this->map_params;
         if (array_key_exists('common-name', $_POST)) {
-            $this->map_name = sanitize_text_field($_POST['common-name']);
+            $this->map_name = sanitize_text_field(wp_unslash($_POST['common-name']));
         }
         if (array_key_exists('common-width', $_POST)) {
-            $params['common']['width'] = lws_sanitize_width_field($_POST['common-width']);
+            $params['common']['width'] = live_weather_station_sanitize_width_field(sanitize_text_field(wp_unslash($_POST['common-width'])));
         }
         if (array_key_exists('common-height', $_POST)) {
-            $params['common']['height'] = lws_sanitize_height_field($_POST['common-height']);
+            $params['common']['height'] = live_weather_station_sanitize_height_field(sanitize_text_field(wp_unslash($_POST['common-height'])));
         }
         if (array_key_exists('common-loc_zoom', $_POST)) {
-            $i = (int)sanitize_text_field($_POST['common-loc_zoom']);
+            $i = (int)sanitize_text_field(wp_unslash($_POST['common-loc_zoom']));
             if ($i < $this->minzoom) {
                 $i = $this->minzoom;
             }
@@ -140,14 +155,14 @@ abstract class BaseHandling {
             $params['common']['loc_zoom'] = $i;
         }
         if (array_key_exists('common-station-selector', $_POST)) {
-            if (in_array($_POST['common-station-selector'], array('all', 'select'))) {
-                $params['common']['all'] = $_POST['common-station-selector'] == 'all';
+            if (in_array(sanitize_text_field(wp_unslash($_POST['common-station-selector'])), array('all', 'select'))) {
+                $params['common']['all'] = sanitize_text_field(wp_unslash($_POST['common-station-selector'])) == 'all';
             }
         }
-        if (array_key_exists('stations-selector', $_POST)) {
+        if (array_key_exists('stations-selector', $_POST) && is_array($_POST['stations-selector'])) {
             try {
                 $tab = array();
-                foreach ($_POST['stations-selector'] as $sid) {
+                foreach (array_map('sanitize_text_field', wp_unslash($_POST['stations-selector'])) as $sid) {
                     if (is_numeric($sid)) {
                         $tab[] = (int)round($sid);
                     }
@@ -159,36 +174,37 @@ abstract class BaseHandling {
             }
         }
         if (array_key_exists('marker-type', $_POST)) {
-            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'))) {
-                $params['marker']['type'] = $_POST['marker-type'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-type'])), array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'))) {
+                $params['marker']['type'] = sanitize_text_field(wp_unslash($_POST['marker-type']));
             }
         }
         if (array_key_exists('marker-data', $_POST)) {
-            if (in_array($_POST['marker-data'], array('current', 'calendar', 'station'))) {
-                $params['marker']['data'] = $_POST['marker-data'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-data'])), array('current', 'calendar', 'station'))) {
+                $params['marker']['data'] = sanitize_text_field(wp_unslash($_POST['marker-data']));
             }
         }
         if (array_key_exists('marker-style', $_POST)) {
-            if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
-                $params['marker']['style'] = $_POST['marker-style'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-style'])), array('minimalist', 'standard', 'extended'))) {
+                $params['marker']['style'] = sanitize_text_field(wp_unslash($_POST['marker-style']));
             }
         }
         if (array_key_exists('marker-contrast', $_POST)) {
-            if (in_array($_POST['marker-contrast'], array('light', 'medium', 'dark'))) {
-                $params['marker']['contrast'] = $_POST['marker-contrast'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-contrast'])), array('light', 'medium', 'dark'))) {
+                $params['marker']['contrast'] = sanitize_text_field(wp_unslash($_POST['marker-contrast']));
             }
         }
         if (array_key_exists('marker-shadow', $_POST)) {
-            if (in_array($_POST['marker-shadow'], array('none', 'medium', 'dark'))) {
-                $params['marker']['shadow'] = $_POST['marker-shadow'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-shadow'])), array('none', 'medium', 'dark'))) {
+                $params['marker']['shadow'] = sanitize_text_field(wp_unslash($_POST['marker-shadow']));
             }
         }
         if (array_key_exists('marker-page', $_POST)) {
-            if (in_array($_POST['marker-page'], array('none', 'link1', 'link2', 'link3'))) {
-                $params['marker']['page'] = $_POST['marker-page'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-page'])), array('none', 'link1', 'link2', 'link3'))) {
+                $params['marker']['page'] = sanitize_text_field(wp_unslash($_POST['marker-page']));
             }
         }
         $params['specific'] = $this->get_specific_post_values();
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $this->update_map($this->map_id, $this->type, $this->map_name, $params);
     }
 
@@ -214,7 +230,7 @@ abstract class BaseHandling {
         if ($this->map_params['marker']['type'] != 'none') {
             wp_enqueue_style('lws-weather-icons');
             wp_enqueue_style('lws-weather-icons-wind');
-            lws_font_awesome();
+            live_weather_station_font_awesome();
         }
         $result .= $this->specific_resources();
         return $result;
@@ -403,9 +419,9 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_container() {
-        $height = ($this->size === 'auto' ? $this->map_params['common']['height'] : $this->size);
-        $width = ($this->size === 'auto' ? $this->map_params['common']['width'] : '100%');
-        $result = '<div id="' . $this->uniq . '" class="lws-map" style="width:' . $width . ';height:' . $height . ';">' . PHP_EOL;
+        $height = ($this->size === 'auto' ? live_weather_station_sanitize_height_field($this->map_params['common']['height']) : Guard::css_size($this->size, '100px'));
+        $width = ($this->size === 'auto' ? live_weather_station_sanitize_width_field($this->map_params['common']['width']) : '100%');
+        $result = '<div id="' . esc_attr($this->uniq) . '" class="lws-map" style="width:' . esc_attr($width) . ';height:' . esc_attr($height) . ';">' . PHP_EOL;
         $result .= $this->specific_container() . PHP_EOL;
         $result .= '</div>';
         return $result;
@@ -427,11 +443,11 @@ abstract class BaseHandling {
      */
     protected function output_script() {
         $jsInitId = md5(random_bytes(18));
-        $result = lws_print_begin_script($jsInitId);
+        $result = live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         $result .= $this->specific_script();
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         return $result;
     }
 
@@ -454,6 +470,10 @@ abstract class BaseHandling {
             $stations = $this->get_ordered_stations_list($this->map_params['stations']);
         }
         foreach ($stations as $station) {
+            // The visitors do not see the markers of the stations which are not public.
+            if (!live_weather_station_visitor_may_see(array('device_id' => isset($station['station_id']) ? $station['station_id'] : ''))) {
+                continue;
+            }
             $s = array();
             $s['id'] = $station['guid'];
             $s['lat'] = $station['loc_latitude'];
@@ -473,6 +493,7 @@ abstract class BaseHandling {
                 $day = null;
                 $weather = null;
                 $wind_angle = null;
+                $rain = null;
                 $wind_force = null;
                 $wind_strength = null;
                 $temperature = null;
@@ -633,20 +654,20 @@ abstract class BaseHandling {
                 }
             }
             if (isset($day) && isset($weather)) {
-                $s['weatherDiv'] = '<i class=\'wi wi-owm-' . $day .'-' . $weather . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
+                $s['weatherDiv'] = '<i class=\'wi wi-owm-' . ($day === 'night' ? 'night' : 'day') .'-' . (int)$weather . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
             }
             else {
                 $s['weatherDiv'] = '';
             }
             if (isset($wind_force)) {
-                $s['windDiv'] = '<i class=\'wi wi-wind-beaufort-' . $wind_force . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
+                $s['windDiv'] = '<i class=\'wi wi-wind-beaufort-' . (int)$wind_force . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
             }
             else {
                 $s['windDiv'] = '';
             }
             if (isset($temperature)) {
                 $ref = get_option('live_weather_station_unit_temperature') ;
-                $t = (integer)round($this->get_temperature($temperature_ref, $ref), 0);
+                $t = (int)round($this->get_temperature($temperature_ref, $ref), 0);
                 $temp = $t . str_replace('&nbsp;', '', $this->unit_nbspace.$this->get_temperature_unit($ref));
                 $colors = ColorBrewer::getGradient('RdYlBu', 8, 56, true);
                 if ($t < -15) {
@@ -656,8 +677,8 @@ abstract class BaseHandling {
                     $t = 40;
                 }
                 $color = $colors[$t+15];
-                $s['tempDiv'] = '<span style=\'color:' . $this->color(3) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . $temp . '</span>';
-                $s['tempColDiv'] = '<span style=\'display:block;width:100%;height:100%;border-radius: 50%;background-color:' . $color . ';\'><span style=\'color:' . $this->color(4) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . $temp . '</span></span>';
+                $s['tempDiv'] = '<span style=\'color:' . $this->color(3) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . esc_html($temp) . '</span>';
+                $s['tempColDiv'] = '<span style=\'display:block;width:100%;height:100%;border-radius: 50%;background-color:' . $color . ';\'><span style=\'color:' . $this->color(4) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . esc_html($temp) . '</span></span>';
             }
             else {
                 $s['tempDiv'] = '';
@@ -665,7 +686,7 @@ abstract class BaseHandling {
             }
             switch ($this->map_params['marker']['style']) {
                 case 'minimalist':
-                    $content = '<div class="title">' . $station['station_name'] . '</div>';
+                    $content = '<div class="title">' . esc_html($station['station_name']) . '</div>';
                     $minwidth = '';
                     switch ($this->map_params['marker']['data']) {
                         case 'current':
@@ -685,7 +706,7 @@ abstract class BaseHandling {
                     break;
                 case 'extended':
                     $minwidth = 'minWidth: 200, ';
-                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
+                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', esc_html($station['station_name'])) . '</div></div>';
                     switch ($this->map_params['marker']['data']) {
                         case 'current':
                             $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>&nbsp;' . $temperature . '&nbsp; &nbsp;<i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>&nbsp;' . $humidity . '&nbsp;</div>';
@@ -700,17 +721,17 @@ abstract class BaseHandling {
                             $content .= '<div class="values"><i class="wi fa-fw wi-moonset" style="font-size: 16px;"></i>&nbsp;' . $moonset . '&nbsp;</div>';
                             break;
                         case 'station':
-                            $content .= '<div class="subsubtitle">' . $station['station_model'] . '</div>';
-                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . $timezone . '</div>';
+                            $content .= '<div class="subsubtitle">' . esc_html($station['station_model']) . '</div>';
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAR . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
                             break;
                     }
 
                     break;
                 default:
                     $minwidth = 'minWidth: 180, ';
-                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
+                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', esc_html($station['station_name'])) . '</div></div>';
                     switch ($this->map_params['marker']['data']) {
                         case 'current':
                             $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>&nbsp;' . $temperature . '&nbsp;</div>';
@@ -722,9 +743,9 @@ abstract class BaseHandling {
                             $content .= '<div class="values">' . $moonrise . '&nbsp;<i class="wi fa-fw wi-night-clear" style="font-size: 16px;"></i>&nbsp;' . $moonset . '</div>';
                             break;
                         case 'station':
-                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
-                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . $timezone . '</div>';
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LIVE_WEATHER_STATION_FAR . ' fa-fw ' . (LIVE_WEATHER_STATION_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . esc_html($timezone) . '</div>';
                             break;
                     }
                     break;
@@ -736,39 +757,40 @@ abstract class BaseHandling {
             else {
                 $date = new \DateTime($station['last_refresh']);
             }
-            $date->setTimezone(new \DateTimeZone($station['loc_timezone']));
+            try {
+                $date->setTimezone(new \DateTimeZone((string)$station['loc_timezone']));
+            }
+            catch (\Exception $ex) {
+                // Invalid timezone stored for this station: keep the date as is.
+            }
             $lr = $lr . '&nbsp;' . $date->format('H:i');
+            $s['url'] = esc_url($s['url'], array('http', 'https'));
             if ($s['url'] != '') {
                 $ic = '&nbsp;' . $this->output_iconic_value(0, 'external_link');
-                $url = '<a href="' . $s['url'] . '">' . __('station', 'live-weather-station') . $ic . '</a>';
+                $url = '<a href="' . $s['url'] . '">' . esc_html__('station', 'live-weather-station') . $ic . '</a>';
             }
             else {
                 $url = '&nbsp;';
             }
             $content .= '<div class="update">' . $lr . '</div><div class="page">' . $url . '</div>';
-            if (array_key_exists('marker-style', $_POST)) {
-                if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
-                    $params['marker']['style'] = $_POST['marker-style'];
-                }
-            }
             $s['content'] = str_replace('"', '\'', $content);
             $st[] = $s;
         }
         if (count($st) > 0) {
             $result = 'var stations = {';
             foreach ($st as $s) {
-                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ', "lon":' . $s['lon'] . ', "icn":"' . $s['iconUrl'] . '", "tmp":"' . $s['tempDiv'] . '", "tmpcol":"' . $s['tempColDiv'] . '", "wtr":"' . $s['weatherDiv'] . '","wnd":"' . $s['windDiv'] . '","cnt":"' . $s['content'] . '"},';
+                $result .= Guard::js((string)$s['id']) . ':{"lat":' . (float)$s['lat'] . ', "lon":' . (float)$s['lon'] . ', "icn":' . Guard::js($s['iconUrl']) . ', "tmp":' . Guard::js($s['tempDiv']) . ', "tmpcol":' . Guard::js($s['tempColDiv']) . ', "wtr":' . Guard::js($s['weatherDiv']) . ',"wnd":' . Guard::js($s['windDiv']) . ',"cnt":' . Guard::js($s['content']) . '},';
             }
             $result .= "};";
             if ($this->map_params['marker']['type'] == 'pin') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($this->color(1)) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: " . Guard::js(SVG::get_base64_pin_icon($this->color(1))) .", iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             if ($this->map_params['marker']['type'] == 'logo') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($this->color(1), $this->color(2)) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: " . Guard::js(SVG::get_base64_menu_icon($this->color(1), $this->color(2))) .", iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             $result .= "for (id in stations) {";
             if ($this->map_params['marker']['type'] == 'brand') {
-                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 52], shadowSize: [56, 56], shadowAnchor: [28, 56], popupAnchor:  [0, -58], shadowUrl: '" . SVG::get_base64_marker_icon($this->color(1)) ."',});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 52], shadowSize: [56, 56], shadowAnchor: [28, 56], popupAnchor:  [0, -58], shadowUrl: " . Guard::js(SVG::get_base64_marker_icon($this->color(1))) .",});" . PHP_EOL;
             }
             if ($this->map_params['marker']['type'] == 'weather:current') {
                 $result .= "  var stationIcon = L.divIcon({html: stations[id].wtr, iconSize: [44, 44]});" . PHP_EOL;
@@ -782,7 +804,7 @@ abstract class BaseHandling {
             if ($this->map_params['marker']['type'] == 'weather:wind') {
                 $result .= "  var stationIcon = L.divIcon({html: stations[id].wnd, iconSize: [44, 44]});" . PHP_EOL;
             }
-            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {" . $minwidth . "keepInView: true, closeButton: false, autoClose: true, className:'" . $classname . "'});" . PHP_EOL;
+            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {" . $minwidth . "keepInView: true, closeButton: false, autoClose: true, className:" . Guard::js($classname) . "});" . PHP_EOL;
             $result .= "}";
         }
         $result .= '';
@@ -848,16 +870,16 @@ abstract class BaseHandling {
         $result = '';
         $result .= '<tr' . $visibility .'>';
         if ($label) {
-            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . wp_kses_post($title) . '</th>';
             $result .= '<td width="2%"></td>';
         }
         $result .= '<td align="left" class="lws-option-setting">';
         $result .= '<span class="select-option">';
         if ($multiple) {
-            $result .= '<select multiple class="option-select" id="' . $id .'" name="' . $id .'">';
+            $result .= '<select multiple class="option-select" id="' . esc_attr($id) .'" name="' . esc_attr($id) .'">';
         }
         else {
-            $result .= '<select class="option-select" id="' . $id .'" name="' . $id .'">';
+            $result .= '<select class="option-select" id="' . esc_attr($id) .'" name="' . esc_attr($id) .'">';
         }
         if ($options != '') {
             $result .= $options;
@@ -901,12 +923,12 @@ abstract class BaseHandling {
         $result = '';
         $result .= '<tr' . $visibility .'>';
         if ($label) {
-            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . wp_kses_post($title) . '</th>';
             $result .= '<td width="2%"></td>';
         }
         $result .= '<td align="left" class="lws-option-setting">';
         $result .= '<span class="select-option">';
-        $result .= '<input id="' . $id . '" name="' . $id . '" type="text" size="60" value="' . $value . '" class="regular-text" />';
+        $result .= '<input id="' . esc_attr($id) . '" name="' . esc_attr($id) . '" type="text" size="60" value="' . esc_attr($value) . '" class="regular-text" />';
         $result .= '</span>';
         $result .= '</td>';
         $result .= '</tr>';
@@ -950,7 +972,7 @@ abstract class BaseHandling {
                 $item[1] = str_replace('//->', '', $item[1]);
                 $item[1] = $b . ' ' . $item[1];
             }
-            $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>';
+            $result .= '<option value="' . esc_attr($item[0]) . '"' . $sel . '>' . esc_html($item[1]) . '</option>';
         }
         return $this->get_option_select($id, $title, $result, $label, $hidden, $displayed);
     }
@@ -992,7 +1014,7 @@ abstract class BaseHandling {
                 $item[1] = str_replace('//->', '', $item[1]);
                 $item[1] = $b . ' ' . $item[1];
             }
-            $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>';
+            $result .= '<option value="' . esc_attr($item[0]) . '"' . $sel . '>' . esc_html($item[1]) . '</option>';
         }
         return $this->get_option_select($id, $title, $result, $label, $hidden, $displayed, true);
     }

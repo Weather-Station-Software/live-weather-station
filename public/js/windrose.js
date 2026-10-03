@@ -25,8 +25,6 @@ function Windrose() {
         'line': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'legend': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'axisLegend': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
-        //'pieArea': { 'mouseover': areaMouseover, 'mouseout': areaMouseout, 'mouseclick': null },
-        //'radarInvisibleCircle': { 'mouseover': tooltip_show, 'mouseout': tooltip_hide, 'mouseclick': null }
         'pieArea': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'radarInvisibleCircle': { 'mouseover': null, 'mouseout': null, 'mouseclick': null }
     };
@@ -70,6 +68,9 @@ function Windrose() {
             // update
             update = function() {
 
+                if (!data || !data.series || !data.series.length || !data.series[0].values) {
+                    return;
+                }
                 series = data.series;
                 legend = data.legend;
                 showLegend = options.legend;
@@ -99,9 +100,9 @@ function Windrose() {
                     y.domain([0, 0.5]);
                 }
                 else {
-                    max=0;
+                    var max = 0;
                     series.forEach(function(serie) {
-                        m = 0;
+                        var m = 0;
                         serie.values.forEach(function(value) {
                             m += value;
                         });
@@ -114,7 +115,7 @@ function Windrose() {
 
                 angle.domain([0, d4.max(series, function(d,i) { return i + 1; })]);
                 radius.domain([0, d4.max(series, function(d) { return d.y0 + d.y; })]);
-                angleOffset = -360.0/series.length/2.0;
+                var angleOffset = -360.0/series.length/2.0;
 
                 var masterRoot = dom_parent.append('svg')
                     .attr('overflow', 'visible')
@@ -210,6 +211,7 @@ function Windrose() {
                     var pie = root.append('g')
                         .attr('class', options.classed + 'Pie');
 
+                    var innerY, outerY;
                     for (var ang = 0; ang < series.length; ang++) {
                         if (index === 0) {
                             innerY = y(0);
@@ -241,56 +243,6 @@ function Windrose() {
                     }
                 }
 
-
-                /*
-
-                var pieLine = d4.svg.line.radial()
-                    .interpolate( options.areas.rounded ?
-                        "cardinal-closed" :
-                        "linear-closed" )
-                    .radius(function(d) { return radial_calcs.rScale(d.value); })
-                    .angle(function(d,i) { return i * radial_calcs.angleSlice; });
-
-                var update_blobWrapper = chart_node.selectAll("." + options.classed + "PieWrapper")
-                    .data(_data, get_key)
-
-                update_blobWrapper.enter()
-                    .append("g")
-                    .attr("class", options.classed + "PieWrapper")
-                    .attr("key", function(d) { return d.key; });
-
-                update_blobWrapper.exit()
-                    .transition().duration(duration)
-                    .style('opacity', 0)
-                    .remove()
-
-                update_blobWrapper
-                    .style("fill-opacity", function(d, i) {
-                        return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
-                    })
-
-                var update_pieArea = update_blobWrapper.selectAll('.' + options.classed + 'PieArea')
-                    .data(function(d) { return [d]; }, get_key);
-
-                update_pieArea.enter()
-                    .append("path")
-                    .attr("class", function(d) { return options.classed + "PieArea " + d.key.replace(/\s+/g, '') })
-                    .attr("d", function(d, i) { return pieLine(d.values); })
-                    .style("fill", function(d, i, j) { return setColor(d); })
-                    .style("fill-opacity", 0)
-                    .on('mouseover', function(d, i) { if (events.pieArea.mouseover) events.pieArea.mouseover(d, i, this); })
-                    .on('mouseout', function(d, i) { if (events.pieArea.mouseout) events.pieArea.mouseout(d, i, this); })
-
-                update_pieArea.exit().remove()
-
-                update_pieArea
-                    .transition().duration(duration)
-                    .style("fill", function(d, i, j) { return setColor(d); })
-                    .attr("d", function(d, i) { return pieLine(d.values); })
-                    .style("fill-opacity", function(d, i) {
-                        return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
-                    })
-                */
 
 
             }
@@ -340,66 +292,6 @@ function Windrose() {
             }
         }
         return chart;
-    }
-
-    // DEFAULT EVENTS
-    // --------------
-    function areaMouseover(d, i, self) {
-        //console.log('areaMouseover');
-        if (legend_toggles[d._i]) return;
-        //Dim all blobs
-        chart_node.selectAll("." + options.classed + "PieArea")
-            .transition().duration(200)
-            .style("fill-opacity", function(d, i, j) {
-                return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.1;
-            })
-        //Bring back the hovered over blob
-        d4.select(self)
-            .transition().duration(200)
-            .style("fill-opacity", function(d, i, j) {
-                return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.7;
-            });
-        tooltip_show(d, i, self);
-    }
-
-    function areaMouseout(d, i, self) {
-        //console.log('areaMouseout');
-        //Bring back all blobs
-        chart_node.selectAll("." + options.classed + "PieArea")
-            .transition().duration(200)
-            .style("fill-opacity", function(d, i, j) {
-                return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
-            });
-        tooltip_hide(d, i, self);
-    }
-
-    function tooltip_show(d, i, self) {
-        //console.log('tooltip_show');
-        if (legend_toggles[d._i]) return;
-        if (options.width > 200) {
-            var labels = getAxisLabels(_data);
-            chart_node.select('[key="'+d.axis+'"]').select('foreignObject').style('opacity', 1);
-
-            newX =  - ((options.width-250) / 10) - 40 - (options.width / 2);
-            newY =  ((options.height-250) / 20) - (options.height / 10) - (options.height / 2);
-            var val = d.key.replace(/ - /gi, '<br/>');
-
-            tooltip
-                .attr('x', newX)
-                .attr('y', newY)
-                .html('<span style="float:left;text-align:left;">' + val + '</span>')
-                .transition().duration(200)
-                .style('opacity', 1);
-        }
-    }
-
-    function tooltip_hide(d, i, self) {
-        //console.log('tooltip_hide');
-        chart_node.select('[key="'+d.axis+'"]').select('foreignObject')
-            .style('opacity', options.axes.display && radial_calcs.radius > options.axes.threshold ? 1 : 0);
-        tooltip
-            .transition().duration(200)
-            .style('opacity', 0);
     }
 
     return chart;

@@ -1,8 +1,8 @@
 <?php
 
 namespace WeatherStation\Process;
-use WeatherStation\DB\Query as DB;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Background\ProcessManager as DB;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\DateTime\Handling as DateTimeHandling;
@@ -11,7 +11,7 @@ use WeatherStation\Data\DateTime\Handling as DateTimeHandling;
  * A process to export data line after line.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
@@ -121,13 +121,14 @@ class ConfigurationExporter extends Process {
      */
     protected function message() {
         if ($this->is_in_error()) {
-            $result = sprintf(__('Unable to create the file named %s in the directory "%s".', 'live-weather-station'), FS::get_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension), FS::get_root_name()) . "\r\n";
-            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
+            $result = sprintf(/* translators: 1: file name, 2: directory name */ __('Unable to create the file named %1$s in the directory "%2$s".', 'live-weather-station'), FS::get_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension), FS::get_root_name()) . "\r\n";
+            $result .= "\r\n" . sprintf(/* translators: %s: URL of the events log page */ __('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
-            $result = sprintf(__('Configuration from "%s" has been successfully exported.', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
-            $result .= sprintf(__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
+            // The file is not directly reachable from the web: download it from the files page.
+            $fileurl = live_weather_station_get_admin_page_url('lws-files');
+            $result = sprintf(/* translators: %s: station name */ __('Configuration from "%s" has been successfully exported.', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+            $result .= sprintf(/* translators: %s: number of days */ __('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";
         }
         return $result;
@@ -156,9 +157,11 @@ class ConfigurationExporter extends Process {
      * @since 3.8.0
      */
     protected function do_job() {
+        // Credentials (API keys, tokens, passwords) are only exported if explicitly requested.
+        $credentials = !empty($this->params['include_credentials']);
         $conf = array();
-        $conf['settings'] = Options::get_all_options();
-        $conf['stations'] = DB::get_stations_table();
+        $conf['settings'] = Options::get_all_options($credentials);
+        $conf['stations'] = DB::get_stations_table($credentials);
         $conf['modules'] = DB::get_modules_table();
         $conf['maps'] = DB::get_maps_table();
         FS::write_file($this->fullfilename, wp_json_encode($conf));

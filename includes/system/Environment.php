@@ -9,7 +9,7 @@ use WeatherStation\System\Logs\Logger;
  * The class to manage and detect environment.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -34,23 +34,26 @@ class Manager {
     }
 
     /**
-     * Check if the server config allows shell_exec().
+     * Read /proc/cpuinfo (no shell involved).
+     *
+     * @return string|false The content or false if not readable.
+     * @since 3.1.0
+     */
+    private static function read_cpuinfo() {
+        if (!@is_readable('/proc/cpuinfo')) {
+            return false;
+        }
+        $return = @file_get_contents('/proc/cpuinfo', false, null, 0, 1048576);
+        return (empty($return) ? false : $return);
+    }
+
+    /**
+     * Check if the CPU information is available.
      *
      * @since 3.1.0
      */
     private static function isShellEnabled() {
-        if (function_exists('shell_exec') && !in_array('shell_exec', array_map('trim', explode(', ', ini_get('disable_functions')))) && strtolower(ini_get('safe_mode')) != 1 ) {
-            $return = shell_exec('cat /proc/cpuinfo');
-            if (!empty($return)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
+        return (self::read_cpuinfo() !== false);
     }
 
     /**
@@ -81,7 +84,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_software_name() {
-        return $_SERVER['SERVER_SOFTWARE'];
+        return (isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '');
     }
 
     /**
@@ -90,7 +93,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_api() {
-        return $_SERVER['GATEWAY_INTERFACE'];
+        return (isset($_SERVER['GATEWAY_INTERFACE']) ? sanitize_text_field(wp_unslash($_SERVER['GATEWAY_INTERFACE'])) : '');
     }
 
     /**
@@ -99,7 +102,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_protocol() {
-        return $_SERVER['SERVER_PROTOCOL'];
+        return (isset($_SERVER['SERVER_PROTOCOL']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_PROTOCOL'])) : '');
     }
 
     /**
@@ -108,7 +111,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_port() {
-        return $_SERVER['SERVER_PORT'];
+        return (isset($_SERVER['SERVER_PORT']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_PORT'])) : '');
     }
 
     /**
@@ -117,7 +120,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_document_root() {
-        return $_SERVER['DOCUMENT_ROOT'];
+        return (isset($_SERVER['DOCUMENT_ROOT']) ? sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT'])) : '');
     }
 
     /**
@@ -175,6 +178,28 @@ class Manager {
     }
 
     /**
+     * Get all the values of a /proc/cpuinfo key.
+     *
+     * @param string $key The key.
+     * @return array The values, as strings.
+     * @since 3.8.9
+     */
+    private static function cpuinfo_values($key) {
+        $result = array();
+        $content = self::read_cpuinfo();
+        if ($content === false) {
+            return $result;
+        }
+        foreach (preg_split('/\R/', $content) as $line) {
+            $parts = explode(':', $line, 2);
+            if (count($parts) === 2 && trim($parts[0]) === $key) {
+                $result[] = trim($parts[1]);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get CPU count of the server.
      *
      * @since 3.1.0
@@ -182,16 +207,12 @@ class Manager {
     public static function server_cpu() {
         $cpu_count = get_transient('lws_cpu_count');
         if ($cpu_count === false) {
-            if (self::isShellEnabled()) {
-                $cpu_count = shell_exec('cat /proc/cpuinfo |grep "physical id" | sort | uniq | wc -l');
-                set_transient ('lws_cpu_count', $cpu_count, HOUR_IN_SECONDS);
-            } else {
-                return false;
-            }
+            $cpu_count = self::cpu_topology()['cpu'];
+            set_transient('lws_cpu_count', $cpu_count, HOUR_IN_SECONDS);
         }
         return $cpu_count;
     }
-    
+
     /**
      * Get core count of the server.
      *
@@ -200,121 +221,56 @@ class Manager {
     public static function server_core() {
         $core_count = get_transient('lws_core_count');
         if ($core_count === false) {
-            if (self::isShellEnabled()) {
-                $core_count = shell_exec("echo \"$((`cat /proc/cpuinfo | grep cores | grep -o '[0-9]' | uniq` * `cat /proc/cpuinfo |grep 'physical id' | sort | uniq | wc -l`))\"");
-                set_transient ('lws_core_count', $core_count, HOUR_IN_SECONDS);
-            } else {
-                return false;
-            }
+            $core_count = self::cpu_topology()['core'];
+            set_transient('lws_core_count', $core_count, HOUR_IN_SECONDS);
         }
         return $core_count;
     }
 
     /**
-     * Get the full information for the ip of the server.
+     * Compute the CPU (socket) and core counts from /proc/cpuinfo. ARM and VMs have no 'physical id' / 'cpu cores'
+     * lines: fall back to the number of 'processor' lines, and to 'unknown' if nothing can be read.
      *
-     * @since 3.1.0
+     * @return array array('cpu' => string, 'core' => string), never empty.
+     * @since 3.8.9
      */
-    public static function server_full_information() {
-        if ($result = get_transient('lws_server_location')) {
-            return $result;
+    public static function cpu_topology($content = null) {
+        $result = array('cpu' => 'unknown', 'core' => 'unknown');
+        if ($content === null) {
+            $processors = count(self::cpuinfo_values('processor'));
+            $physical = array_unique(self::cpuinfo_values('physical id'));
+            $cores = self::cpuinfo_values('cpu cores');
         }
-        try {
-            Quota::verify('ip-API', 'GET');
-            $query = 'http://ip-api.com/json/'.self::server_ip();
-            $args = array();
-            $args['user-agent'] = LWS_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
-            $content = wp_remote_get($query, $args);
-            if (is_wp_error($content)) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,$content->get_error_code(),$content->get_error_message() );
-                return false;
-            }
-            $error = false;
-            $code = 0;
-            $message = 'Unknown error.';
-            if (array_key_exists('response', $content)) {
-                $response = $content['response'];
-            }
-            else {
-                $response = array();
-            }
-            if (array_key_exists('code', $response)) {
-                $code = $response['code'];
-                if ($code != '200') {
-                    $error = true;
-                    if (array_key_exists('message', $response)) {
-                        $message = $response['message'];
+        else {
+            $processors = 0;
+            $physical = $cores = array();
+            foreach (preg_split('/\R/', (string)$content) as $line) {
+                $parts = explode(':', $line, 2);
+                if (count($parts) === 2) {
+                    $k = trim($parts[0]);
+                    if ($k === 'processor') {
+                        $processors++;
+                    }
+                    elseif ($k === 'physical id') {
+                        $physical[] = trim($parts[1]);
+                    }
+                    elseif ($k === 'cpu cores') {
+                        $cores[] = trim($parts[1]);
                     }
                 }
             }
-            else {
-                $error = true;
-            }
-            if ($error) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,$code,$message);
-                return false;
-            }
-            if (!array_key_exists('body', $content)) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,null,'The server sent an empty response.');
-                return false;
-            }
-            $result = json_decode($content['body'], true);
+            $physical = array_unique($physical);
         }
-        catch (Exception $e) {
-            Logger::error('API / SDK','ip-API',null,null,null,null,$e->getCode(),$e->getMessage() );
-            return false;
+        if ($processors > 0 || count($physical) > 0) {
+            $sockets = max(1, count($physical));
+            $per_socket = (count($cores) > 0 ? (int)reset($cores) : 0);
+            $total = ($per_socket > 0 ? $per_socket * $sockets : $processors);
+            $result['cpu'] = (string)$sockets;
+            if ($total > 0) {
+                $result['core'] = (string)$total;
+            }
         }
-        set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
         return $result;
-    }
-
-    /**
-     * Get the hoster detail.
-     *
-     * @since 3.1.0
-     */
-    public static function hoster_name() {
-        $s = self::server_full_information();
-        if (is_array($s)) {
-            if (array_key_exists('org', $s)) {
-                return $s['org'];
-            }
-            elseif (array_key_exists('status', $s) && $s['status'] == 'fail') {
-                if (array_key_exists('message', $s)) {
-                    return ucfirst($s['message']);
-                }
-                else {
-                    return __('unknown', 'live-weather-station');
-                }
-            }
-            else {
-                return __('unknown', 'live-weather-station');
-            }
-        }
-        else {
-            return __('unknown', 'live-weather-station');
-        }
-    }
-
-    /**
-     * Get the hoster location.
-     *
-     * @since 3.1.0
-     */
-    public static function hoster_location() {
-        $s = self::server_full_information();
-        if (is_array($s)) {
-            if (array_key_exists('city', $s) && array_key_exists('country', $s)) {
-                return $s['city'] . ', ' . $s['country'];
-            }
-            else {
-                return __('unknown location', 'live-weather-station');
-            }
-        }
-        else {
-            return __('unknown location', 'live-weather-station');
-        }
     }
 
     /**
@@ -350,7 +306,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function is_plugin_in_dev_mode() {
-        return (strpos(LWS_VERSION, 'dev') > 0);
+        return (strpos(LIVE_WEATHER_STATION_VERSION, 'dev') > 0);
     }
 
     /**
@@ -359,7 +315,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function is_plugin_in_rc_mode() {
-        return (strpos(LWS_VERSION, 'rc') > 0);
+        return (strpos(LIVE_WEATHER_STATION_VERSION, 'rc') > 0);
     }
 
     /**
@@ -378,7 +334,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function major_version($version = LWS_VERSION) {
+    public static function major_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, 0, strpos($version, '.'));
         } catch (\Exception $ex) {
@@ -394,7 +350,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function minor_version($version = LWS_VERSION) {
+    public static function minor_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, 0, strpos($result, '.'));
@@ -411,7 +367,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    public static function patch_version($version = LWS_VERSION) {
+    public static function patch_version($version = LIVE_WEATHER_STATION_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, strpos($result, '.') + 1, 1000);
@@ -562,7 +518,7 @@ class Manager {
             case 'rhg': $result = 'Rohingya' ; break;
             case 'szl': $result = 'Silesian' ; break;
             case 'twd': $result = 'Twents' ; break;
-            default: $result = lws_get_locale_name($id, lws_get_display_locale());
+            default: $result = live_weather_station_get_locale_name($id, live_weather_station_get_display_locale());
 
         }
         return $result;
@@ -642,7 +598,7 @@ class Manager {
             $result = '-';
         }
         else {
-            $result = lws_get_region_name('-'.$id, lws_get_display_locale());
+            $result = live_weather_station_get_region_name('-'.$id, live_weather_station_get_display_locale());
         }
         return $result;
     }
@@ -653,7 +609,7 @@ class Manager {
      * @since 3.5.3
      */
     public static function is_locale_operational() {
-        $t = lws_get_region_name('-FR', lws_get_display_locale());
+        $t = live_weather_station_get_region_name('-FR', live_weather_station_get_display_locale());
         return $t != 'FR';
     }
 
@@ -674,14 +630,13 @@ class Manager {
             $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
             if ($translation['slug'] != 'default') {
                 $slug = $translation['slug'];
-                $name = '%s ' . $name;
                 $slug = ucfirst($slug);
-                $name = sprintf($name, $slug);
+                $name = $slug . ' ' . $name;
             }
             $set[$id] = $name;
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(lws_get_display_locale());
+            $collator = new \Collator(live_weather_station_get_display_locale());
             $collator->asort($set);
         }
         else {
@@ -717,35 +672,61 @@ class Manager {
             $result = ((self::major_version() != self::major_version($old)) || (self::minor_version() != self::minor_version($old)));
         }
         else {
-            $result = ($old != LWS_VERSION);
+            $result = ($old != LIVE_WEATHER_STATION_VERSION);
         }
         return $result;
     }
 
     /**
-     * Checks if the plugin's auto-update is enabled.
+     * Is the WP update system enabled?
+     *
+     * @return boolean True if the WP update system is enabled, false otherwise.
+     * @since 3.1.3
+     */
+    public static function is_updatable() {
+        $result = true;
+        if (defined('AUTOMATIC_UPDATER_DISABLED')) {
+            $result = !AUTOMATIC_UPDATER_DISABLED;
+        }
+        return $result;
+    }
+
+    /**
+     * Checks if the automatic update of the plugin is enabled in WordPress (the native per-plugin setting).
      *
      * @since 3.1.3
      * @return bool Returns true if auto-update is enabled, false otherwise.
      */
     public static function is_autoupdatable() {
-        $is_updatable = self::is_updatable();
-        $auto_update_option = get_option('live_weather_station_auto_update');
-        return ($is_updatable && $auto_update_option);
+        if (!self::is_updatable()) {
+            return false;
+        }
+        $enabled = (array)get_site_option('auto_update_plugins', array());
+        return in_array(plugin_basename(LIVE_WEATHER_STATION_PLUGIN_DIR . 'live-weather-station.php'), $enabled, true);
     }
 
     /**
-     * Choose if the plugin must be auto-updated or not.
-     * Concerned hook: auto_update_plugin
+     * Run a callback on the current site or, on a multisite, on other sites.
      *
-     * @since 3.1.3
+     * @param callable $callback The callback to run (no argument).
+     * @param string|int|null $sites Optional. Null for the current site, 'all' for every site of the network, a site id for this site.
+     *                               Outside a multisite, the callback always runs on the current (only) site.
+     * @since 3.9.0
      */
-    public static function lws_auto_update($update, $item) {
-        if (($item->slug == LWS_PLUGIN_SLUG) && self::is_autoupdatable()){
-            return true;
+    public static function run_on_sites($callback, $sites=null) {
+        if ($sites === null || !is_multisite()) {
+            call_user_func($callback);
+            return;
         }
-        else {
-            return $update;
+        $ids = ($sites === 'all') ? get_sites(array('fields' => 'ids', 'number' => 0)) : array((int)$sites);
+        foreach ($ids as $id) {
+            switch_to_blog($id);
+            try {
+                call_user_func($callback);
+            }
+            finally {
+                restore_current_blog();
+            }
         }
     }
 
@@ -777,7 +758,7 @@ class Manager {
      * @since 3.5.4
      */
     public static function is_php_version_uptodate() {
-        return (version_compare(PHP_VERSION, LWS_MINIMUM_PHP_VERSION, '>='));
+        return (version_compare(PHP_VERSION, LIVE_WEATHER_STATION_MINIMUM_PHP_VERSION, '>='));
     }
 
     /**
@@ -797,7 +778,7 @@ class Manager {
      */
     public static function mysql_total_size() {
         global $wpdb;
-        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query without any parameter: live database size for the system information screen, must not be cached
         $result = 0;
         if ($wpdb->num_rows > 0) {
             foreach ($query as $row) {
@@ -814,7 +795,7 @@ class Manager {
      */
     public static function mysql_lws_size() {
         global $wpdb;
-        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query without any parameter: live database size for the system information screen, must not be cached
         $result = 0;
         if ($wpdb->num_rows > 0) {
             foreach ($query as $row) {
@@ -939,7 +920,7 @@ class Manager {
      */
     public static function is_wp_version_uptodate() {
         global $wp_version;
-        return (version_compare($wp_version, LWS_MINIMUM_WP_VERSION) >= 0);
+        return (version_compare($wp_version, LIVE_WEATHER_STATION_MINIMUM_WP_VERSION) >= 0);
     }
 
     /**
@@ -951,14 +932,14 @@ class Manager {
         global $_wp_admin_css_colors;
         $key = get_user_meta(get_current_user_id(), 'admin_color', true);
         if (array_key_exists($key, $_wp_admin_css_colors)) {
-            $c = lws_object_to_array($_wp_admin_css_colors[$key]);
+            $c = live_weather_station_object_to_array($_wp_admin_css_colors[$key]);
             $c['key'] = $key;
             return $c;
         }
         else {
             return array(
                 'key' => 'default',
-                'name' =>  _x( 'Default', 'admin color scheme' ),
+                'name' =>  _x( 'Default', 'admin color scheme' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- deliberately the WordPress core string (default text domain) to label the core admin color scheme
                 'url' => false,
                 'colors' => array( '#222', '#333', '#0073aa', '#00a0d2' ),
                 'icon_colors' => array( 'base' => '#82878c', 'focus' => '#00a0d2', 'current' => '#fff' ));
@@ -997,9 +978,9 @@ class Manager {
      * @since 3.0.0
      */
     public static function weatherstation_version_text() {
-        $s = LWS_PLUGIN_NAME . ' ' . LWS_VERSION;
-        if (defined('LWS_CODENAME')) {
-            $s .= ' ' . LWS_CODENAME;
+        $s = LIVE_WEATHER_STATION_PLUGIN_NAME . ' ' . LIVE_WEATHER_STATION_VERSION;
+        if (defined('LIVE_WEATHER_STATION_CODENAME')) {
+            $s .= ' ' . LIVE_WEATHER_STATION_CODENAME;
         }
         return $s;
     }
@@ -1010,7 +991,7 @@ class Manager {
      * @since 3.0.0
      */
     public static function weatherstation_version_id() {
-        return 'WeatherStation/' . LWS_VERSION;
+        return 'WeatherStation/' . LIVE_WEATHER_STATION_VERSION;
     }
 
     /**
@@ -1065,7 +1046,8 @@ class Manager {
      */
     public static function is_opcache_installed() {
         if (function_exists('opcache_get_status') && version_compare(PHP_VERSION, '5.6.0') >= 0) {
-            return opcache_get_status()['opcache_enabled'];
+            $status = @opcache_get_status(false);
+            return (is_array($status) && !empty($status['opcache_enabled']));
 
         }
         else return false;
@@ -1217,7 +1199,7 @@ class Manager {
      * @since 3.4.1
      */
     public static function get_multilang_language_id() {
-        $result = lws_get_display_locale();
+        $result = live_weather_station_get_display_locale();
         if (self::is_polylang_installed()) {
             $result = pll_current_language();
         }
@@ -1228,7 +1210,7 @@ class Manager {
             $result = bbl_get_current_content_lang_code();
         }
         if (self::is_weglot_installed()) {
-            $result = Weglot::Instance()->getCurrentLang();
+            $result = \Weglot::Instance()->getCurrentLang();
         }
         return strtolower($result);
     }

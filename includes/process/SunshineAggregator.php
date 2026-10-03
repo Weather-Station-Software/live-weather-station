@@ -8,7 +8,7 @@ use WeatherStation\System\Logs\Logger;
  * A process to expand wind measurements for existing stations.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
@@ -63,7 +63,8 @@ class SunshineAggregator extends Process {
      * @since 3.8.0
      */
     protected function description() {
-        return sprintf(__('This fix modifies the way %s handle and store historical sunshine durations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        /* translators: %s: name of this plugin */
+        return sprintf(__('This fix modifies the way %s handle and store historical sunshine durations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -134,9 +135,9 @@ class SunshineAggregator extends Process {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "UPDATE " . $table_name . " SET `measure_set`='agg' WHERE `measure_type`='sunshine' AND `measure_set`='max'";
-        $wpdb->query($sql);
+        $wpdb->query($sql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off data fix on the plugin table live_weather_station_measurements_year (name built from $wpdb->prefix and a constant), the statement has no variable value
         $sql = "DELETE FROM " . $table_name . " WHERE `measure_type`='sunshine' AND `measure_set`<>'agg'";
-        $wpdb->query($sql);
+        $wpdb->query($sql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off data fix on the plugin table live_weather_station_measurements_year (name built from $wpdb->prefix and a constant), the statement has no variable value
         $this->set_progress(100);
     }
 

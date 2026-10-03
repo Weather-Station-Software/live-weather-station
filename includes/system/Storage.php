@@ -10,18 +10,24 @@ use WeatherStation\System\Logs\Logger;
  * This class add storage management capacity to the plugin.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
 class Manager {
 
+    protected $Live_Weather_Station;
+    protected $version;
 
     private static $dir = '';
     private static $url = '';
     private static $service = 'Storage Manager';
     private static $file_name_separator = '_';
     private static $allowed_extension = array('ndjson' => 'text/plain', 'json' => 'text/plain');
+    // Every extension created by the exporters (json, ndjson, csv, dsv, tsv, txt, wsconf.json) can be listed, viewed,
+    // downloaded and purged. Only json/ndjson can be uploaded ($allowed_extension).
+    private static $managed_extension = array('ndjson' => 'text/plain', 'json' => 'application/json', 'csv' => 'text/csv', 'dsv' => 'text/plain', 'tsv' => 'text/plain', 'txt' => 'text/plain');
+    private static $max_upload_size = 52428800; // 50 MB
 
     /**
      * Initialize the class and set its properties.
@@ -43,8 +49,117 @@ class Manager {
      */
     public static function init() {
         $upload_dir = wp_upload_dir();
-        self::$dir = $upload_dir['basedir'] . '/' . LWS_PLUGIN_SLUG . '/';
-        self::$url = $upload_dir['baseurl'] . '/' . LWS_PLUGIN_SLUG . '/';
+        self::$dir = $upload_dir['basedir'] . '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
+        self::$url = $upload_dir['baseurl'] . '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
+        if (!has_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'))) {
+            add_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'));
+        }
+        if (!has_filter('site_status_tests', array(__CLASS__, 'site_health_tests'))) {
+            add_filter('site_status_tests', array(__CLASS__, 'site_health_tests'));
+            add_action('wp_ajax_health-check-lwsstorage', array(__CLASS__, 'site_health_ajax'));
+        }
+    }
+
+    /**
+     * Protect the storage root against direct web access (index.php and deny rules).
+     *
+     * @since 3.8.0
+     */
+    private static function protect_dir() {
+        if (!file_exists(self::$dir . 'index.php')) {
+            @file_put_contents(self::$dir . 'index.php', "<?php\n// Silence is golden.\n");
+        }
+        if (!file_exists(self::$dir . '.htaccess')) {
+            @file_put_contents(self::$dir . '.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n");
+        }
+        // Same rule for IIS (Windows servers).
+        if (!file_exists(self::$dir . 'web.config')) {
+            @file_put_contents(self::$dir . 'web.config', "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n");
+        }
+    }
+
+    /**
+     * Add the test of the exposure of the storage dir to the Site Health screen of WordPress.
+     *
+     * @param array $tests The tests of the Site Health screen.
+     * @return array The tests.
+     * @since 3.9.0
+     */
+    public static function site_health_tests($tests) {
+        $tests['async']['lwsstorage'] = array(
+            'label' => __('Files of Weather Station are not reachable from the web', 'live-weather-station'),
+            'test' => 'lwsstorage',
+        );
+        return $tests;
+    }
+
+    /**
+     * Answer the AJAX call of the Site Health test: try to read a small file of the storage dir from the outside.
+     *
+     * @since 3.9.0
+     */
+    public static function site_health_ajax() {
+        check_ajax_referer('health-check-site-status');
+        if (!current_user_can('view_site_health_checks')) {
+            wp_send_json_error();
+        }
+        $badge = array('label' => LIVE_WEATHER_STATION_PLUGIN_NAME, 'color' => 'blue');
+        $result = array(
+            'label' => __('Files of Weather Station are not reachable from the web', 'live-weather-station'),
+            'status' => 'good',
+            'badge' => $badge,
+            'description' => '<p>' . esc_html__('The exports of Weather Station can only be downloaded by an administrator.', 'live-weather-station') . '</p>',
+            'actions' => '',
+            'test' => 'lwsstorage',
+        );
+        $exposed = self::probe_exposure();
+        if ($exposed === true) {
+            $result['status'] = 'recommended';
+            $result['label'] = __('Files of Weather Station can be read from the web', 'live-weather-station');
+            $result['description'] = '<p>' . esc_html__('The folder where Weather Station stores its exports can be read by anyone who knows the address of a file. The plugin protects it for Apache and IIS servers, but your server seems to ignore these rules (this is usual with nginx).', 'live-weather-station') . '</p>'
+                . '<p>' . esc_html__('With nginx, add this to the configuration of your site, then reload nginx:', 'live-weather-station') . '</p>'
+                . '<pre><code>location ^~ /wp-content/uploads/' . esc_html(LIVE_WEATHER_STATION_PLUGIN_SLUG) . '/ { deny all; }</code></pre>';
+        }
+        elseif ($exposed === null) {
+            $result['description'] = '<p>' . esc_html__('The exports of Weather Station can only be downloaded by an administrator. The protection of their folder could not be checked from this site.', 'live-weather-station') . '</p>';
+        }
+        wp_send_json_success($result);
+    }
+
+    /**
+     * Try to read a small file of the storage dir through the web, then remove it.
+     *
+     * @return boolean|null True if the file was served, false if it was refused, null if the check could not be done.
+     * @since 3.9.0
+     */
+    private static function probe_exposure() {
+        self::init();
+        if (!wp_mkdir_p(self::$dir)) {
+            return null;
+        }
+        self::protect_dir();
+        $marker = wp_generate_password(24, false);
+        $name = 'lws-probe-' . wp_generate_password(12, false) . '.txt';
+        if (@file_put_contents(self::$dir . $name, $marker) === false) {
+            return null;
+        }
+        $result = null;
+        try {
+            $response = wp_remote_get(self::$url . $name, array('timeout' => 8, 'redirection' => 0, 'sslverify' => (bool)apply_filters('https_local_ssl_verify', false))); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- core filter of the loopback requests
+            if (!is_wp_error($response)) {
+                $code = (int)wp_remote_retrieve_response_code($response);
+                if ($code === 200) {
+                    $result = (strpos((string)wp_remote_retrieve_body($response), $marker) !== false) ? true : false;
+                }
+                elseif ($code === 401 || $code === 403 || $code === 404) {
+                    $result = false;
+                }
+            }
+        }
+        finally {
+            wp_delete_file(self::$dir . $name);
+        }
+        return $result;
     }
 
     /**
@@ -53,6 +168,22 @@ class Manager {
      * @return string The allowed extensions. Comma separated list.
      * @since 3.8.0
      */
+    public static function get_managed_extensions() {
+        return array_keys(self::$managed_extension);
+    }
+
+    /**
+     * Is this file name one of the files managed (created/purged/served) by the plugin?
+     *
+     * @param string $file A file name (no path).
+     * @return string The lowercase extension if managed, empty string otherwise.
+     * @since 3.8.0
+     */
+    public static function managed_extension($file) {
+        $ext = strtolower((string)pathinfo((string)$file, PATHINFO_EXTENSION));
+        return array_key_exists($ext, self::$managed_extension) ? $ext : '';
+    }
+
     public static function get_allowed_extension() {
         $tab = array();
         foreach (self::$allowed_extension as $key => $val) {
@@ -70,15 +201,16 @@ class Manager {
     private static function check_for_write() {
         if (!file_exists(self::$dir)) {
             try {
-                mkdir(self::$dir, 0755);
+                wp_mkdir_p(self::$dir);
             }
             catch (\Exception $ex) {
                 Logger::alert(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create persistent storage root: ' . $ex->getMessage());
                 return false;
             }
         }
-        if (!is_writable(self::$dir)) {
+        if (!wp_is_writable(self::$dir)) {
             try {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- single chmod of the plugin storage directory, WP_Filesystem has no credentials here (also called outside admin screens) and the path is the plugin own storage root
                 chmod(self::$dir, 0755);
             }
             catch (\Exception $ex) {
@@ -86,18 +218,21 @@ class Manager {
                 return false;
             }
         }
-        return is_writable(self::$dir);
+        if (wp_is_writable(self::$dir)) {
+            self::protect_dir();
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Get a pseudo uid.
+     * Get a random uid (unguessable).
      *
-     * @return string The pseudo uid.
+     * @return string The random uid.
      * @since 3.7.0
      */
     private static function uid() {
-        $fingerprint = uniqid('', true);
-        return substr ($fingerprint, strlen($fingerprint)-10, 80);
+        return bin2hex(random_bytes(16));
     }
 
     /**
@@ -112,7 +247,66 @@ class Manager {
      * @since 3.7.0
      */
     public static function get_full_file_url($station_name, $start, $end, $uid, $ext) {
-        return self::$url . self::get_file_name($station_name, $start, $end, $uid, $ext);
+        return self::get_download_url(self::get_file_name($station_name, $start, $end, $uid, $ext));
+    }
+
+    /**
+     * Get the url to download a file. The storage root is not directly accessible from the web:
+     * files are served by a handler which checks the capability and a nonce bound to the file.
+     *
+     * @param string $file The name of the file (w/o path).
+     * @param boolean $inline Optional. View the file in the browser instead of downloading it.
+     * @return string The url.
+     * @since 3.8.0
+     */
+    public static function get_download_url($file, $inline=false) {
+        $file = basename($file);
+        $args = array('action' => 'lws_download_file', 'file' => rawurlencode($file), '_wpnonce' => wp_create_nonce('lws-download-' . $file));
+        if ($inline) {
+            $args['inline'] = 1;
+        }
+        return add_query_arg($args, admin_url('admin-post.php'));
+    }
+
+    /**
+     * Serve a file of the storage root (admin-post handler).
+     * Checks the capability and the nonce bound to the file before anything else.
+     *
+     * @since 3.8.0
+     */
+    public static function download_file() {
+        // The nonce is bound to the raw name given in the listing: verify it on the raw requested name.
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the nonce is bound to the raw name so it cannot be altered by sanitize_text_field(); the name is then validated strictly below (basename, no control character or slash, 255 characters max)
+        $file = isset($_GET['file']) ? rawurldecode(wp_unslash((string)$_GET['file'])) : '';
+        if ($file !== basename(str_replace('\\', '/', $file)) || preg_match('/[\x00-\x1f\x7f\/\\\\]/', $file) === 1 || strlen($file) > 255) {
+            $file = '';
+        }
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- this line only reads the nonce, wp_verify_nonce() checks it on the next statement
+        $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash((string)$_GET['_wpnonce'])) : '';
+        if (!current_user_can(live_weather_station_manage_capability()) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
+            // One row per minute and per user at most: a logged-in user without the right must not be able to fill the log.
+            $flag = 'lws_dl_denied_' . get_current_user_id();
+            if (!get_transient($flag)) {
+                set_transient($flag, 1, MINUTE_IN_SECONDS);
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
+            }
+            wp_die(esc_html__('You do not have sufficient permissions to download this file.', 'live-weather-station'), '', array('response' => 403));
+        }
+        $ext = self::managed_extension($file);
+        $path = self::$dir . $file;
+        $real = realpath($path);
+        $root = realpath(self::$dir);
+        if ($ext === '' || $real === false || $root === false || dirname($real) !== $root || !is_file($real)) {
+            wp_die(esc_html__('File not found.', 'live-weather-station'), '', array('response' => 404));
+        }
+        nocache_headers();
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Type: ' . self::$managed_extension[$ext] . '; charset=utf-8');
+        header('Content-Disposition: ' . (isset($_GET['inline']) ? 'inline' : 'attachment') . '; filename="' . str_replace(array('"', "\r", "\n"), '', $file) . '"');
+        header('Content-Length: ' . filesize($real));
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streams a file to the browser, WP_Filesystem cannot stream; $real is a file of the plugin storage root checked just above (realpath, same directory, managed extension)
+        readfile($real);
+        exit;
     }
 
     /**
@@ -154,15 +348,20 @@ class Manager {
      * @since 3.7.0
      */
     public static function construct_full_file_name($file) {
-        $file = trim($file);
-        $file = str_replace('/../', '', $file);
-        $file = str_replace('../', '', $file);
-        $file = str_replace('/..', '', $file);
-        $file = str_replace('/./', '', $file);
-        $file = str_replace('./', '', $file);
-        $file = str_replace('/.', '', $file);
-        $file = str_replace('/', '', $file);
-        return self::$dir . $file;
+        $file = basename(wp_normalize_path(trim((string)$file)));
+        if ($file === '' || $file === '.' || $file === '..') {
+            return self::$dir;
+        }
+        $full = self::$dir . $file;
+        $real = realpath($full);
+        if ($real !== false) {
+            // Must stay inside the storage root (no symlink outside).
+            $root = realpath(self::$dir);
+            if ($root === false || dirname($real) !== $root) {
+                return self::$dir;
+            }
+        }
+        return $full;
     }
 
     /**
@@ -188,6 +387,11 @@ class Manager {
      */
     public static function file_for_write($station_name, $start, $end, $uid, $ext) {
         $filename = '';
+        // Only the extensions managed by the plugin can be created (the last segment counts: 'wsconf.json' is 'json').
+        if (!is_string($ext) || self::managed_extension('x.' . $ext) === '') {
+            Logger::critical(self::$service,null, null, null, null, null, 1, 'Unable to write a file with an unmanaged extension.');
+            return false;
+        }
         if (self::check_for_write()) {
             return self::get_file_name($station_name, $start, $end, $uid, $ext);
         }
@@ -212,7 +416,12 @@ class Manager {
         $filename = self::file_for_write($station_name, $start, $end, $uid, $ext);
         if ($filename !== false) {
             try {
-                return false !== file_put_contents(self::$dir . $filename, '');
+                $created = (false !== file_put_contents(self::$dir . $filename, ''));
+                if ($created) {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- restricts a file just created by the plugin in its own storage root, WP_Filesystem has no credentials here (also called outside admin screens)
+                    @chmod(self::$dir . $filename, 0600);
+                }
+                return $created;
             }
             catch (\Exception $ex) {
                 Logger::critical(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create a file in persistent storage root: ' . $ex->getMessage());
@@ -268,7 +477,7 @@ class Manager {
         $result = array();
         if (self::check_for_write()) {
             foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
-                if (!is_dir(self::$dir . $item)) {
+                if (!is_dir(self::$dir . $item) && $item !== 'index.php' && $item !== '.htaccess' && $item !== 'web.config') {
                     $result[] = $item;
                 }
             }
@@ -301,12 +510,12 @@ class Manager {
                 }
                 if (count($d) === 2) {
                     $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-                    if (preg_match($UUIDv4, $d[0]) !== false) {
-                        $station = ucwords(str_replace('-', ' ', $e[0]));
-                        $uuid = $d[0];
-                        $from = $e[1];
-                        $to = $e[2];
-                        $ext = $d[1];
+                    if (preg_match($UUIDv4, $d[0]) === 1) {
+                        $station = sanitize_text_field(ucwords(str_replace('-', ' ', $e[0])));
+                        $uuid = sanitize_text_field($d[0]);
+                        $from = sanitize_text_field($e[1]);
+                        $to = sanitize_text_field($e[2]);
+                        $ext = sanitize_text_field($d[1]);
                         $valid = true;
                     }
                 }
@@ -343,7 +552,7 @@ class Manager {
                 $f['progress'] = '100';
                 $f['std_size'] = size_format($f['size'], $decimal);
                 $f['date'] = $time;
-                $f['url'] = self::get_full_file_url($station, $from, $to, $uuid, $ext);
+                $f['url'] = self::get_download_url($file);
                 $result[] = $f;
             }
         }
@@ -360,7 +569,8 @@ class Manager {
         if ((int)get_option('live_weather_station_file_retention', 7) > 0) {
             $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
             foreach (self::extended_list_dir(false) as $file) {
-                if ($file['date'] < $time) {
+                // Only delete files managed by the plugin.
+                if ($file['date'] < $time && self::managed_extension($file['file']) !== '') {
                     try {
                         wp_delete_file(self::$dir . $file['file']);
                         $count += 1;
@@ -456,17 +666,12 @@ class Manager {
     public static function check_configuration($uuid) {
         $result = false;
         $content = self::get_configuration($uuid);
-        if ($content) {
-            try {
-                $result = array();
-                foreach (array('settings', 'stations', 'modules', 'maps') as $item) {
-                    if (array_key_exists($item, $content)) {
-                        $result[$item] = count($content[$item]);
-                    }
+        if (is_array($content)) {
+            $result = array();
+            foreach (array('settings', 'stations', 'modules', 'maps') as $item) {
+                if (array_key_exists($item, $content) && is_array($content[$item])) {
+                    $result[$item] = count($content[$item]);
                 }
-            }
-            catch (\Exception $ex) {
-                $result = false;
             }
         }
         return $result;
@@ -481,13 +686,21 @@ class Manager {
      */
     public static function get_configuration($uuid) {
         $file = self::find_valid($uuid, array('wsconf.json'));
-        try {
-            $result = json_decode(file_get_contents(self::get_root_name() . '/' . $file['file']), true);
+        if (!is_array($file) || !array_key_exists('file', $file)) {
+            return false;
         }
-        catch (\Exception $ex) {
-            $result = false;
+        $path = self::construct_full_file_name($file['file']);
+        // A real configuration export is a few tens of KB: the decoded array of a large file could exhaust the memory.
+        $max = min(self::$max_upload_size, max(1024, (int)apply_filters('live_weather_station_import_max_configuration_size', 10 * MB_IN_BYTES)));
+        if (!is_file($path) || filesize($path) > $max) {
+            return false;
         }
-        return $result;
+        $content = file_get_contents($path);
+        if ($content === false) {
+            return false;
+        }
+        $result = json_decode($content, true);
+        return is_array($result) ? $result : false;
     }
 
     /**
@@ -497,7 +710,7 @@ class Manager {
      * @since 3.8.0
      */
     public static function change_upload_dir($dirs) {
-        $dirs['subdir'] = '/' . LWS_PLUGIN_SLUG . '/';
+        $dirs['subdir'] = '/' . LIVE_WEATHER_STATION_PLUGIN_SLUG . '/';
         $dirs['path'] = self::$dir;
         $dirs['url'] = self::$url;
         return $dirs;
@@ -510,32 +723,45 @@ class Manager {
      * @since 3.8.0
      */
     public static function change_upload_mimes($mimes) {
+        // Restrict (not merge) to the file types managed by the plugin.
+        $result = array();
         foreach (self::$allowed_extension as $key => $val) {
-            $mimes[$key] = $val;
+            $result[$key] = $val;
         }
-        return $mimes;
+        return $result;
     }
 
     /**
-     * Change the allowed mime types.
+     * Accept .json and .ndjson files whatever the mime type reported by libmagic (text/plain, application/json,
+     * application/x-ndjson...). Only hooked during the plugin's own upload; the content is checked afterwards.
      *
-     * @return array The allowed mime types.
+     * @param array $data The file data (ext, type, proper_filename).
+     * @param string $file The full path of the file.
+     * @param string $filename The name of the file.
+     * @param array $mimes The allowed mime types.
+     * @param string|false $real_mime Optional. The real mime type detected by WordPress.
+     * @return array The file data.
      * @since 3.8.0
      */
-    public static function recheck_filetype_and_ext($data=null, $file=null, $filename=null, $mimes=null) {
-        $ext = isset($data['ext'])?$data['ext']:'';
-        if (strlen($ext) < 1) {
-            $exploded = explode('.', $filename);
-            $ext = strtolower(end($exploded));
+    public static function recheck_filetype_and_ext($data=null, $file=null, $filename=null, $mimes=null, $real_mime=false) {
+        if (!is_array($data)) {
+            return $data;
         }
-        if ($ext === 'json') {
-            $values['ext'] = 'json';
-            $values['type'] = 'application/json';
+        if (!empty($data['ext']) && !empty($data['type'])) {
+            return $data;
         }
-        if ($ext === 'ndjson') {
-            $values['ext'] = 'ndjson';
-            $values['type'] = 'application/json';
+        $exploded = explode('.', (string)$filename);
+        $ext = strtolower(end($exploded));
+        if (!array_key_exists($ext, self::$allowed_extension)) {
+            return $data;
         }
+        $accepted = array('text/plain', 'application/json', 'application/x-ndjson', 'application/ndjson', 'application/jsonl', 'application/x-jsonlines', 'text/json', 'application/octet-stream');
+        if (is_string($real_mime) && $real_mime !== '' && !in_array(strtolower($real_mime), $accepted, true)) {
+            return $data;
+        }
+        $data['ext'] = $ext;
+        $data['type'] = self::$allowed_extension[$ext];
+        $data['proper_filename'] = false;
         return $data;
     }
 
@@ -550,22 +776,92 @@ class Manager {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
         }
         $result = array('done' => false, 'error' => __('Unknown error', 'live-weather-station'));
+        if (!current_user_can(live_weather_station_manage_capability())) {
+            $result['error'] = __('You do not have sufficient permissions to add files.', 'live-weather-station');
+            return $result;
+        }
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- the 'add-file' nonce is verified by SystemPluginAdmin::add_file() before it calls upload_file(), which also checks the manage capability
         if(!empty($_FILES['file-to-upload'])) {
-            //add_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
+            if (!isset($_FILES['file-to-upload']['size']) || !is_scalar($_FILES['file-to-upload']['size']) || !isset($_FILES['file-to-upload']['name']) || !is_string($_FILES['file-to-upload']['name']) || (int)$_FILES['file-to-upload']['size'] > self::$max_upload_size || (int)$_FILES['file-to-upload']['size'] <= 0) {
+                $result['error'] = __('invalid file size', 'live-weather-station');
+                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: invalid file size.');
+                return $result;
+            }
+            if (!self::check_for_write()) {
+                return $result;
+            }
             add_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
+            add_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'), 10, 5);
             add_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             $file = wp_handle_upload($_FILES['file-to-upload'], array('test_form' => false));
-            if ($file && !isset($file['error'])) {
-                $result['done'] = true;
+            if (is_array($file) && !isset($file['error'])) {
+                if (isset($file['file']) && self::check_uploaded_content($file['file'])) {
+                    $result['done'] = true;
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- restricts a file just added by the plugin in its own storage root (the plugin serves it itself through download_file()), WP_Filesystem has no credentials here
+                    @chmod($file['file'], 0600);
+                }
+                else {
+                    if (isset($file['file'])) {
+                        wp_delete_file($file['file']);
+                    }
+                    $result['error'] = __('invalid file content', 'live-weather-station');
+                    Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: invalid JSON/NDJSON content.');
+                }
             } else {
-                $result['error'] = lws_lcfirst($file['error']);
-                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $file['error']);
+                $error = (is_array($file) && isset($file['error'])) ? (string)$file['error'] : 'unknown error';
+                $result['error'] = live_weather_station_lcfirst($error);
+                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $error);
             }
             remove_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             remove_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
-            //remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
+            remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'), 10);
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
+    }
+
+    /**
+     * Check the content of an uploaded file: valid JSON (.json) or valid ND-JSON (.ndjson).
+     *
+     * @param string $path The full path of the file.
+     * @return boolean True if the content is valid.
+     * @since 3.8.0
+     */
+    private static function check_uploaded_content($path) {
+        $real = realpath($path);
+        $root = realpath(self::$dir);
+        if ($real === false || $root === false || dirname($real) !== $root || !is_file($real) || filesize($real) > self::$max_upload_size) {
+            return false;
+        }
+        $ext = strtolower((string)pathinfo($real, PATHINFO_EXTENSION));
+        if ($ext === 'json') {
+            $content = json_decode((string)file_get_contents($real), true);
+            return is_array($content);
+        }
+        if ($ext === 'ndjson') {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the file line by line to validate ND-JSON without loading it all, WP_Filesystem cannot stream; $real is a file of the plugin storage root checked at the top of this method
+            $handle = fopen($real, 'r');
+            if ($handle === false) {
+                return false;
+            }
+            $count = 0;
+            $valid = true;
+            while (($line = fgets($handle)) !== false) {
+                $line = trim($line);
+                if ($line === '') {
+                    continue;
+                }
+                if (!is_array(json_decode($line, true))) {
+                    $valid = false;
+                    break;
+                }
+                $count++;
+            }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the handle opened with fopen() above
+            fclose($handle);
+            return $valid && $count > 0;
+        }
+        return false;
     }
 
 }

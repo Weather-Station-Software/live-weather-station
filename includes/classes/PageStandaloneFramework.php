@@ -3,209 +3,205 @@
 namespace WeatherStation\Engine\Page\Standalone;
 
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Logs\LoggableException;
 use WeatherStation\System\HTTP\Client as HTTP;
 use WeatherStation\System\URL\Handling as URL;
 
 /**
- * Abstract class to interpret standalone pages in the wordpress context.
+ * Serves the public feeds (/get-weather/[station]/[format]/) from inside WordPress.
+ *
+ * The request is recognized through the query variables filled by the rewrite rules (or by the plain query string
+ * fallback) and answered on the `template_redirect` action: no standalone PHP file that has to load WordPress by itself.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
-abstract class Framework {
+class Framework {
 
-    protected $type = 'unknown';
-    protected $subformat = 'standard';
-    protected $params = array();
+    use URL;
 
     /**
-     * Apply configuration.
+     * The query variable carrying the station id.
+     *
+     * @since 3.9.0
+     */
+    const QUERY_VAR_STATION = 'live_weather_station_station';
+
+    /**
+     * The query variable carrying the feed type.
+     *
+     * @since 3.9.0
+     */
+    const QUERY_VAR_TYPE = 'live_weather_station_type';
+
+    /**
+     * The query variable carrying the feed subformat.
+     *
+     * @since 3.9.0
+     */
+    const QUERY_VAR_SUBFORMAT = 'live_weather_station_subformat';
+
+    /**
+     * The formats served by a feed class.
+     *
+     * @since 3.9.0
+     */
+    const SERVED_TYPES = array('stickertags', 'yowindow');
+
+    /**
+     * The formats that have a public address but no feed class: they answer 501.
+     *
+     * @since 3.9.0
+     */
+    const NOT_IMPLEMENTED_TYPES = array('clientraw', 'realtime');
+
+    /**
+     * The HTTP codes the feeds may answer; any other code becomes a 500.
+     *
+     * @since 3.9.0
+     */
+    const ERROR_CODES = array(400, 404, 405, 501);
+
+    /**
+     * Apply configuration (flush the rewrite rules).
      *
      * @since 3.0.0
      */
     public static function apply_configuration() {
-        URL::apply();
+        self::apply();
     }
 
     /**
-     * Get the back path.
+     * Get the value of a query variable as a string.
      *
-     * @param string $path The current path.
-     * @return string The back path.
-     * @since 3.0.0
+     * @param string $name The query variable name.
+     * @return string The value, or an empty string if it is missing or not a string.
+     * @since 3.9.0
      */
-    private function back_path($path) {
-        if (strlen($path) > 0) {
-            $path = substr($path, 0, strlen($path) - 1);
-            while (substr($path, -1) != '/' && substr($path, -1) != '\\' && strlen($path) > 0) {
-                $path = substr($path, 0, strlen($path) - 1);
-            }
-        }
-        return $path;
+    private static function query_value($name) {
+        $value = get_query_var($name, '');
+        return is_string($value) ? $value : '';
     }
 
     /**
-     * Try to include /wp-load.php.
+     * Rate limit the logging of this anonymous endpoint (max 60 log rows per minute) to avoid log flooding.
      *
-     * @return boolean True if wp-load.php is loaded, false otherwise.
-     * @since 3.0.0
+     * @param boolean $critical Optional. The row is a critical one.
+     * @return boolean True if a log row may be written now.
+     * @since 3.9.0
      */
-    private function load_wp() {
-        $path = dirname(__FILE__);
-        $file = 'wp-load.php';
-        while (strlen($path) > 0) {
-            if (file_exists($path . $file)) {
-                break;
-            }
-            else {
-                $path = $this->back_path($path);
-            }
+    private static function may_log($critical=false) {
+        // Fixed window (start timestamp stored, never slid) so sustained traffic cannot mute logging forever.
+        // Critical rows have their own counter and are never muted by informational ones.
+        $key = $critical ? 'lws_standalone_log_rate_c' : 'lws_standalone_log_rate';
+        $now = time();
+        $state = get_transient($key);
+        if (!is_array($state) || !isset($state['s'], $state['c']) || ($now - (int)$state['s']) >= 60) {
+            $state = array('s' => $now, 'c' => 0);
         }
-        return include($path . $file);
+        if ((int)$state['c'] >= 60) {
+            return false;
+        }
+        $state['c'] = (int)$state['c'] + 1;
+        set_transient($key, $state, 120);
+        return true;
     }
 
     /**
-     * Load query string elements properties.
+     * Answer 404 with an empty body.
      *
-     * @since 3.0.0
+     * @since 3.9.0
      */
-    protected function load($available) {
-        $args = preg_replace('/no_cache=([A-F0-9])+/', '', add_query_arg(null, null));
-        if (strpos($args, '?') == strlen($args)-1) {
-            $args = substr($args, 0, strlen($args)-1);
-        }
-        if (strpos($args, '?') > 0) {
-            $args = substr($args, strpos($args, '?') + 1, 2500);
-        }
-        $query = new \WP_Query($args);
-        if (sizeof($query->query_vars) > 0) {
-            foreach ($query->query_vars as $key => $val) {
-                switch ($key) {
-                    case 'type':
-                        $this->type = $val;
-                        break;
-                    case 'subformat':
-                        $this->subformat = $val;
-                        break;
-                    default:
-                        if (!is_array($val) && !empty($val)) {
-                            $this->params[$key] = $val;
-                        }
-                }
-            }
-        }
-        $filled = false;
-        foreach ($available['fields'] as $field) {
-            if (array_key_exists($field, $this->params)) {
-                $filled = true;
-                break;
-            }
-        }
-        if ($this->type == 'unknown' || !$filled) {
-            foreach ($available['type'] as $fulltype) {
-                $type = strtolower(substr($fulltype, 0, strpos($fulltype, '.')));
-                if (strpos($args, '/'.$type.'/') !== false) {
-                    $this->type = $type;
-                    break;
-                }
-                if (strpos($args, $fulltype) !== false) {
-                    $this->type = $type;
-                    $s = $args;
-                    while (strpos($s, '/') !== false) {
-                        $s = substr($s, strpos($s, '/') + 1, 2500);
-                    }
-                    if (strpos($s, '_'.$fulltype) !== false) {
-                        $s = substr($s, 0, strpos($s, '_'.$fulltype));
-                    }
-                    if ($s != '') {
-                        $this->subformat = strtolower($s);
-                    }
-                    break;
-                }
-            }
-            foreach ($available['fields'] as $field) {
-                if (preg_match($available['variables'][$field], $args, $matches) ==1 ) {
-                    if (sizeof($matches) > 1) {
-                        $this->params[$field] = $matches[1];
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Try to initialize this standalone page in the wordpress context.
-     *
-     * @return boolean True if context loading is done, false otherwise.
-     * @since 3.0.0
-     */
-    private function init() {
-        $result = $this->load_wp();
-        return $result;
-    }
-
-    /**
-     * Run the logic of the standalone page.
-     *
-     * @since 3.0.0
-     */
-    public function run() {
-        if($this->init()) {
-            run_Live_Weather_Station();
-            $this->load($this->available_args());
-            $this->generate();
-
-            // For analytics
-            //' . ($subformat != 'standard' ? ' for '.$subformat.'_stickertags.txt' : '') . '
-
-            Logger::info('Page Generator', null, null, null, null, null , 0, 'Success while rendering file.' . HTTP::get_request_detail_as_text());
-            exit();
-        }
-        else {
-            $this->error(503);
-            exit();
-        }
-    }
-
-    /**
-     * Get available args.
-     *
-     * @since 3.0.0
-     */
-    abstract protected function available_args();
-
-    /**
-     * Use the generator to render the file.
-     *
-     * @since 3.0.0
-     */
-    abstract protected function generate();
-
-    /**
-     * Renders error in output.
-     *
-     * @param integer $code Optional. An error code.
-     * @param string $message Optional. An error message.
-     * @param string $header Optional. An additional header.
-     * @since 3.0.0
-     */
-    protected function error($code = 501, $message = '', $header = '') {
-        http_response_code($code);
-        if ($header == '') {
-            $header = 'Content-type: text/plain; charset=utf-8';
-        }
-        header($header);
-        if ($code != 0) {
-            $message = HTTP::get_http_status($code);
-        }
-        if ($message == '') {
-            $message = 'Error Code ' . $code;
-        }
-        echo LWS_PLUGIN_NAME . ' / ' . $message;
-        Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
+    private static function not_found() {
+        status_header(404);
+        header('X-Content-Type-Options: nosniff');
         exit();
     }
-    
+
+    /**
+     * Handle a feed request: the entry point of the `template_redirect` action.
+     *
+     * Does nothing if the current request is not a feed request.
+     *
+     * @since 3.9.0
+     */
+    public static function handle_request() {
+        $station = self::query_value(self::QUERY_VAR_STATION);
+        $type = self::query_value(self::QUERY_VAR_TYPE);
+        if ($station === '' && $type === '') {
+            return;
+        }
+        // The rewrite rules capture the station id as it appears in the path (the colons may be percent-encoded).
+        $station = rawurldecode($station);
+        $type = strtolower($type);
+        $subformat = 'standard';
+        $raw_subformat = self::query_value(self::QUERY_VAR_SUBFORMAT);
+        if ($raw_subformat !== '' && preg_match('/^[A-Za-z0-9_-]{1,40}$/D', $raw_subformat) === 1) {
+            $subformat = strtolower($raw_subformat);
+        }
+        if (preg_match('/^[A-Z0-9]{2}(?::[A-F0-9]{2}){5}$/iD', $station) !== 1 || preg_match('/^[a-z0-9_]{1,40}$/D', $type) !== 1) {
+            self::not_found();
+        }
+        if (in_array($type, self::NOT_IMPLEMENTED_TYPES, true)) {
+            self::error(501);
+        }
+        if (!in_array($type, self::SERVED_TYPES, true)) {
+            self::not_found();
+        }
+        // The limit per visitor is a setting of the plugin (system options), off by default for the feeds.
+        live_weather_station_public_rate_limit('feed');
+        try {
+            $classname = '\WeatherStation\Engine\Page\Standalone\\' . ucfirst($type);
+            $generator = new $classname();
+            status_header(200);
+            $generator->send(array('station' => $station), $subformat);
+        }
+        catch (LoggableException $ex) {
+            Logger::exception($ex);
+            self::error(self::error_code($ex));
+        }
+        catch (\Throwable $ex) {
+            self::error(self::error_code($ex));
+        }
+        if (self::may_log()) {
+            Logger::info('Page Generator', null, null, null, null, null , 0, 'Success while rendering file.' . HTTP::get_request_detail_as_text());
+        }
+        exit();
+    }
+
+    /**
+     * Map an exception to the HTTP code to send.
+     *
+     * @param \Throwable $ex The exception.
+     * @return int The HTTP code: one of the allowed codes, 500 otherwise.
+     * @since 3.9.0
+     */
+    private static function error_code($ex) {
+        $code = (int)$ex->getCode();
+        return in_array($code, self::ERROR_CODES, true) ? $code : 500;
+    }
+
+    /**
+     * Renders error in output, and stops.
+     *
+     * @param integer $code Optional. An HTTP error code.
+     * @since 3.0.0
+     */
+    private static function error($code = 501) {
+        // The feed classes send their headers only once the content is built: a failure leaves them unsent.
+        if (!headers_sent()) {
+            status_header($code);
+            header('Content-type: text/plain; charset=utf-8');
+            header('X-Content-Type-Options: nosniff');
+        }
+        $message = HTTP::get_http_status($code);
+        echo esc_html(LIVE_WEATHER_STATION_PLUGIN_NAME . ' / ' . $message);
+        if (self::may_log(true)) {
+            Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
+        }
+        exit();
+    }
+
 }

@@ -3,12 +3,13 @@
 namespace WeatherStation\Engine\Module\Climat;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 
 /**
  * Class to generate parameter climat radial form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
@@ -110,7 +111,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '    if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]};});';
         $content .= '  $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").html("");';
         $content .= '  $(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+        $content .= '    $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]));});';
         $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '" ).change();';
         $content .= '});';
         $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").change(function() {';
@@ -124,7 +125,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#' . $name . '-measurements-valuescale-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '").change(function() {';
-        $content .= '  var sc_device = "' . $this->station_id . '";';
+        $content .= '  var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= '  var sc_period_type = $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val();';
         $content .= '  var sc_period = $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").val();';
         $content .= '  var sc_values = $("#' . $name . '-measurements-values-' . $this->station_guid . '").val();';
@@ -135,8 +136,8 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  var shortcode = "[live-weather-station-radial mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' device_id=\'"+sc_device+"\' periodtype=\'"+sc_period_type+"\' period=\'"+sc_period+"\' values=\'"+sc_values+"\' template=\'"+sc_template+"\' valuescale=\'"+sc_valuescale+"\' data=\'"+sc_data+"\' height=\'"+sc_height+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_radial_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, periodtype:sc_period_type, period:sc_period, template:sc_template, values:sc_values, valuescale:sc_valuescale, height:sc_height ';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_radial_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, periodtype:sc_period_type, period:sc_period, template:sc_template, values:sc_values, valuescale:sc_valuescale, height:sc_height ';
         $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
         $content .= '$("#' . $name . '-measurements-period-type-' . $this->station_guid . '").change();';

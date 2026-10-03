@@ -8,7 +8,7 @@ use WeatherStation\Data\Output;
  * Abstract class to generate text files.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -34,8 +34,9 @@ abstract class TXTGenerator {
             header('ETag: "{' . $etag . '}"');
         }
         header($this->content_type);
+        header('X-Content-Type-Options: nosniff');
         if ($filename) {
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Content-Disposition: attachment; filename="' . preg_replace('/[^A-Za-z0-9._-]/', '_', (string)$filename) . '"');
         }
     }
 
@@ -46,6 +47,7 @@ abstract class TXTGenerator {
      * @since   3.0.0
      */
     private function send_content($content) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- standalone plain text/XML/JSON feed (Content-type header sent by the generator, never HTML): HTML escaping would corrupt the feed.
         echo $content;
     }
 

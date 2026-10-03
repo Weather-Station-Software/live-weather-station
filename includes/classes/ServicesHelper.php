@@ -6,7 +6,7 @@ namespace WeatherStation\UI\Services;
  * This class builds elements of services tab for settings page.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -50,13 +50,14 @@ class Handling {
     public function settings_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-settings');";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static JavaScript written in this method plus the script tags of live_weather_station_print_begin_script() and live_weather_station_print_end_script(), which sanitise the init id; no dynamic value
         echo $result;
     }
 
@@ -95,17 +96,19 @@ class Handling {
      */
     public function add_metaboxes() {
         // Left column
-        add_meta_box('lws-connect-bloomsky', 'Bloomsky', array($this, 'bloomsky_box'), 'lws-settings', 'normal');
+        // BloomSky stopped its service in 2022: its box is only shown to disconnect an account which is still stored.
+        if (get_option('live_weather_station_bloomsky_connected')) {
+            add_meta_box('lws-connect-bloomsky', 'Bloomsky', array($this, 'bloomsky_box'), 'lws-settings', 'normal');
+        }
         add_meta_box('lws-connect-netatmo', 'Netatmo', array($this, 'netatmo_box'), 'lws-settings', 'normal');
         add_meta_box('lws-connect-netatmohc', 'Netatmo (Healthy Home Coach)', array($this, 'netatmohc_box'), 'lws-settings', 'normal');
 
         // Right column
         add_meta_box('lws-connect-ambient', 'Ambient Weather Network', array($this, 'ambient_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
-        //add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-mapbox', 'Mapbox', array($this, 'mapbox_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-maptiler', 'MapTiler', array($this, 'maptiler_box'), 'lws-settings', 'column3');
-        add_meta_box('lws-connect-navionics', 'Navionics', array($this, 'navionics_box'), 'lws-settings', 'column3');
+        add_meta_box('lws-connect-stadia', 'Stadia Maps (Stamen)', array($this, 'stadia_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-thunderforest', 'Thunderforest', array($this, 'thunderforest_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'column3');
     }
@@ -116,7 +119,7 @@ class Handling {
      * @since 3.0.0
      */
     public function netatmo_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNetatmo.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectNetatmo.php');
     }
 
     /**
@@ -125,7 +128,7 @@ class Handling {
      * @since 3.6.0
      */
     public function bloomsky_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectBloomsky.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectBloomsky.php');
     }
 
     /**
@@ -134,7 +137,7 @@ class Handling {
      * @since 3.6.0
      */
     public function ambient_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectAmbient.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectAmbient.php');
     }
 
     /**
@@ -143,7 +146,7 @@ class Handling {
      * @since 3.1.0
      */
     public function netatmohc_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNetatmoHC.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectNetatmoHC.php');
     }
 
     /**
@@ -152,16 +155,7 @@ class Handling {
      * @since 3.0.0
      */
     public function owm_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectOpenWeatherMap.php');
-    }
-
-    /**
-     * Get content of the WeatherUnderground box.
-     *
-     * @since 3.0.0
-     */
-    public function wug_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectWeatherUnderground.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectOpenWeatherMap.php');
     }
 
     /**
@@ -170,7 +164,7 @@ class Handling {
      * @since 3.7.0
      */
     public function mapbox_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectMapbox.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectMapbox.php');
     }
 
     /**
@@ -179,16 +173,16 @@ class Handling {
      * @since 3.8.0
      */
     public function maptiler_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectMaptiler.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectMaptiler.php');
     }
 
     /**
-     * Get content of the Navionics box.
+     * Get content of the Stadia Maps box.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    public function navionics_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNavionics.php');
+    public function stadia_box() {
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectStadia.php');
     }
 
     /**
@@ -197,7 +191,7 @@ class Handling {
      * @since 3.7.0
      */
     public function thunderforest_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectThunderforest.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectThunderforest.php');
     }
 
     /**
@@ -206,6 +200,6 @@ class Handling {
      * @since 3.7.0
      */
     public function windy_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectWindy.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ConnectWindy.php');
     }
 }

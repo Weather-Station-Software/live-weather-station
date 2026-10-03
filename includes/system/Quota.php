@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Quota;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Cache\Cache;
 
@@ -9,7 +10,7 @@ use WeatherStation\System\Cache\Cache;
  * The class to manage API and files quotas.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.2.0
  */
@@ -63,14 +64,16 @@ class Quota {
             foreach ($verbs as $v) {
                     $fields[] = 'sum(`' . $v . '`) as ' . 'sum_' . $v;
             }
-            $cutoff['rolling'] = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
-            $cutoff['strict'] = date('Y-m-d',time()) . ' 00:00:00';
+            $cutoff['rolling'] = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+            $cutoff['strict'] = gmdate('Y-m-d',time()) . ' 00:00:00';
             foreach ($modes as $mode) {
                 $select = "service, " . implode(', ', $fields);
-                $where = "timestamp>='" . $cutoff[$mode] . "'";
+                $where = "timestamp>=%s";
                 $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-                $sql .= $where . " GROUP BY service;";
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $where is a literal template holding only %s placeholders, the values are passed to prepare(); the table name is the prefix plus a constant name.
+                $sql .= $wpdb->prepare($where, $cutoff[$mode]) . " GROUP BY service;";
                 try {
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_day: the table and column names are built from the prefix, constants and a fixed list of verbs, the values were prepared above. The result is kept by the plugin Cache class (Cache::$db_stat_quota).
                     $query = (array)$wpdb->get_results($sql);
                     $query_a = (array)$query;
                     foreach ($query_a as $val) {
@@ -132,8 +135,8 @@ class Quota {
             $actual_rolling = round($values['rolling'] + $max_potential_consumption + $delta, 0) + $count;
             $warning = ($actual_rolling > $quota);
             $error = ($actual_rolling > $quota);
-            $d1 = new \DateTime(date('Y-m-d H:i:s',time()));
-            $d2 = new \DateTime(date('Y-m-d',time()) . ' 00:00:00');
+            $d1 = new \DateTime(gmdate('Y-m-d H:i:s',time()));
+            $d2 = new \DateTime(gmdate('Y-m-d',time()) . ' 00:00:00');
             $t = $d2->diff($d1, true);
             $diff = $t->s + MINUTE_IN_SECONDS * $t->i + HOUR_IN_SECONDS * $t->h;
             $ratio = $diff / DAY_IN_SECONDS;
@@ -147,7 +150,7 @@ class Quota {
                 if ($full_strict > $quota) {
                     $remaining = $quota - $actual_strict;
                     $projected = $full_strict - $actual_strict;
-                    $admitted = 100 * $remaining / $projected;
+                    $admitted = ($projected > 0 ? 100 * $remaining / $projected : 0);
                     $s = 'diff='.$diff.' / ';
                     $s .= 'ratio='.$ratio.' / ';
                     $s .= 'actual_strict='.$actual_strict.' / ';
@@ -173,7 +176,7 @@ class Quota {
                     $verified = ($actual_rolling < $quota);
                     break;
                 case 3:
-                    $verified = (rand(0, 100) <= $admitted);
+                    $verified = (wp_rand(0, 100) <= $admitted);
                     break;
                 default:
             }
@@ -430,27 +433,34 @@ class Quota {
      * @since 3.2.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H:i');
+        $now = gmdate('Y-m-d H:i');
         $now = substr($now, 0, strlen($now)-1);
         $now .= '0:00';
         global $wpdb;
         $err_bup = $wpdb->show_errors(false);
         foreach (self::$stats as $key => $values) {
             $field_insert = array('timestamp', 'service');
-            $value_insert = array();
+            $value_insert = array('%s', '%s');
             $value_update = array();
-            $value_insert[] = "'".$now."'";
-            $value_insert[] = "'".$key."'";
+            $args_insert = array($now, $key);
+            $args_update = array();
             foreach ($values as $k => $v) {
-                $field_insert[] = '`'.$k.'`';
-                $value_insert[] = $v;
-                $value_update[] = '`'.$k.'`=`'.$k.'`+'.$v;
+                $column = Guard::ident($k);
+                if ($column === null) {
+                    continue;
+                }
+                $field_insert[] = '`'.$column.'`';
+                $value_insert[] = '%d';
+                $args_insert[] = $v;
+                $value_update[] = '`'.$column.'`=`'.$column.'`+%d';
+                $args_update[] = $v;
             }
             $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_day: table name is the prefix plus a constant, column names are validated by Guard::ident(), every value goes through the %s/%d placeholders of prepare(); quota counters are written live and must never be cached.
+            $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
         $wpdb->show_errors($err_bup);
     }
@@ -473,31 +483,37 @@ class Quota {
         global $wpdb;
         $time = time();
         for ($i=0; $i<3; $i++) {
-            $time_min = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 00:00:00';
-            $time_max = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 23:59:59';
-            $where = "timestamp>='" . $time_min . "' AND timestamp<='" . $time_max . "'";
+            $time_min = gmdate('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 00:00:00';
+            $time_max = gmdate('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 23:59:59';
+            $where = "timestamp>=%s AND timestamp<=%s";
             $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-            $sql .= $where . " GROUP BY service;";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $where is a literal template holding only %s placeholders, the values are passed to prepare(); the table name is the prefix plus a constant name.
+            $sql .= $wpdb->prepare($where, $time_min, $time_max) . " GROUP BY service;";
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_day: the table and column names are built from the prefix, constants and a fixed list of verbs, the values were prepared above. Daily compilation run by the scheduler, it needs the live rows.
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
                     $detail = (array)$val;
-                    $replace = array();
-                    $replace[] = "'" . $time_min . "'";
-                    $replace[] = "'" . $detail['service'] . "'";
+                    $replace = array('%s', '%s');
+                    $args = array($time_min, $detail['service']);
                     foreach ($verbs as $verb) {
-                        $replace[] = $detail['sum_'.$verb];
+                        $replace[] = '%d';
+                        $args[] = $detail['sum_'.$verb];
                         $rate = $detail['max_'.$verb] / 10;
                         if ($detail['max_'.$verb] % 10 > 0) {
                             $rate += 1;
                         }
-                        $replace[] = $rate;
-                        $replace[] = self::get_count_quota($detail['service'], $verb);
-                        $replace[] = self::get_rate_quota($detail['service'], $verb);
+                        $replace[] = '%f';
+                        $args[] = $rate;
+                        $replace[] = '%d';
+                        $args[] = self::get_count_quota($detail['service'], $verb);
+                        $replace[] = '%d';
+                        $args[] = self::get_rate_quota($detail['service'], $verb);
                     }
                     $req = "REPLACE INTO " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " VALUES (" . implode(',', $replace) . ");";
-                    $wpdb->query($req);
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_year: the table name is the prefix plus a constant, $req only holds %s/%d/%f placeholders (one per value, built above) filled by prepare(); written live by the scheduler.
+                    $wpdb->query($wpdb->prepare($req, $args));
                 }
             } catch (\Exception $ex) {
                 //
@@ -513,13 +529,15 @@ class Quota {
     public static function rotate() {
         self::compile();
         global $wpdb;
-        $now = date('Y-m-d', time() - 4 * DAY_IN_SECONDS) . ' 00:00:00';
+        $now = gmdate('Y-m-d', time() - 4 * DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
-        $now = date('Y-m-d', time() - YEAR_IN_SECONDS - DAY_IN_SECONDS) . ' 00:00:00';
+        $sql .= "timestamp<%s;";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_day: the table name is the prefix plus a constant, the date is bound with %s; purge of old rows, never cached.
+        $wpdb->query($wpdb->prepare($sql, $now));
+        $now = gmdate('Y-m-d', time() - YEAR_IN_SECONDS - DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_quota_year: the table name is the prefix plus a constant, the date is bound with %s; purge of old rows, never cached.
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 }

@@ -1,0 +1,74 @@
+<?php
+/**
+ * @package Admin\Partials
+ * @author Jason Rouet <https://jasonrouet.com/>.
+ * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
+ * @since 3.9.0
+ */
+
+use WeatherStation\System\Output\Guard;
+
+use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\Utilities\Settings;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+$settings = new Settings();
+$warning = __('All the maps associated to this service will no longer be displayed.', 'live-weather-station');
+$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
+?>
+
+<form action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
+    <input type="hidden" name="action" value="manage-connection" />
+    <input type="hidden" name="service" value="Stadia" />
+    <input type="hidden" name="option_page" value="services" />
+    <?php wp_nonce_field('Stadia', '_wpnonce', true ); ?>
+    <div class="inside" style="padding: 11px;">
+        <table cellspacing="0" class="lws-settings">
+            <tbody>
+            <?php if (get_option('live_weather_station_stadia_apikey') == '') { ?>
+                <tr>
+                    <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API key', 'live-weather-station');?></th>
+                    <td width="2%"/>
+                    <td align="left">
+                        <span class="login"><input id="key" name="key" type="text" size="20" value="" class="regular-text"></span>
+                    </td>
+                </tr>
+            <?php } else {?>
+                <tr>
+                    <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
+                    <td width="2%"/>
+                    <td align="left">
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Stadia')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is set at the top of this file from two fixed attribute literals ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                    </td>
+                </tr>
+            <?php } ?>
+            </tbody>
+        </table>
+        <p class="description" style="margin-top:10px;"><?php esc_html_e('A Stadia Maps API key is required to display the Stamen maps (terrain, toner and watercolor). Without it, these maps are displayed with OpenStreetMap.', 'live-weather-station');?></p>
+    </div>
+    <?php if (get_option('live_weather_station_stadia_apikey') == '') { ?>
+        <div id="major-publishing-actions">
+            <div id="publishing-action">
+                <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                </div>
+                <input type="submit" name="connect" id="stadia-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
+            </div>
+            <div class="clear"></div>
+        </div>
+    <?php } else {?>
+        <div id="major-publishing-actions">
+            <div id="publishing-action">
+                <input type="submit" name="reconnect" id="stadia-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
+                <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
+                    <span id="stadia-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                </div>
+                <input type="submit" name="disconnect" id="stadia-disconnect" class="button button-primary" onclick="lws_stadia_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script and in an HTML attribute ?>); return lws_stadia_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+            </div>
+            <div class="clear"></div>
+        </div>
+    <?php } ?>
+</form>

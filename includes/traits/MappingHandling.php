@@ -6,7 +6,7 @@ namespace WeatherStation\UI\Mapping;
  * Mapping handling for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -23,17 +23,20 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_embed($lat, $lon, $height, $marker=true) {
+        $lat = (float)$lat;
+        $lon = (float)$lon;
+        $height = (int)$height;
         $result = '<iframe style="width:100%%;height:' . $height . 'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=%s&amp;layer=mapnik%s"></iframe>';
         /*
          * @fixme what to do in case of bbox has out of range coordinates?
          */
-        $lat_shift = ($lat > 0 ? 0.01 : -0.01);
-        $lon_shift = ($lon > 0 ? 0.01 : -0.01);
+        $lat_shift = ($lat >= 0 ? 0.01 : -0.01);
+        $lon_shift = ($lon >= 0 ? 0.01 : -0.01);
         $loc = array();
-        $loc[] = $lon - $lon_shift;
-        $loc[] = $lat - $lat_shift;
-        $loc[] = $lon + $lon_shift;
-        $loc[] = $lat + $lat_shift;
+        $loc[] = max(-180, min(180, $lon - $lon_shift));
+        $loc[] = max(-90, min(90, $lat - $lat_shift));
+        $loc[] = max(-180, min(180, $lon + $lon_shift));
+        $loc[] = max(-90, min(90, $lat + $lat_shift));
         $result = sprintf($result, implode('%2C', $loc), ($marker ? '&amp;marker=' . $lat . '%2C' . $lon : ''));
         return $result;
     }

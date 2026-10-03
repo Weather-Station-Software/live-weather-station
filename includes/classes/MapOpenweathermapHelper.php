@@ -5,12 +5,13 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Openweathermap maps.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -53,6 +54,7 @@ class OpenweathermapHandling extends BaseHandling {
      * @return array The specific parameters.
      * @since 3.7.0
      */
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself reached from MapHelper::edit_map() after wp_verify_nonce() on the map form nonce.
     public function get_specific_post_values() {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
@@ -62,16 +64,17 @@ class OpenweathermapHandling extends BaseHandling {
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('owm:rain', 'owm:snow', 'owm:clouds_new', 'owm:precipitation_new', 'owm:pressure_new', 'owm:wind_new', 'owm:temp_new', 'vane:rgb', 'vane:nir', 'vane:ndvi', 'vane:ndwi'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         if (array_key_exists('options-basemap', $_POST)) {
             if (in_array($_POST['options-basemap'], array('none', 'carto:light_all', 'carto:light_nolabels', 'carto:light_only_labels', 'carto:dark_all', 'carto:dark_nolabels', 'carto:dark_only_labels'))) {
-                $result['options']['basemap'] = $_POST['options-basemap'];
+                $result['options']['basemap'] = sanitize_text_field(wp_unslash($_POST['options-basemap']));
             }
         }
         return $result;
     }
+// phpcs:enable WordPress.Security.NonceVerification.Missing
 
     /**
      * Output the specific resources.
@@ -118,60 +121,66 @@ class OpenweathermapHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $quota = true;
+        $bg_defined = false;
         if ($this->map_params['specific']['options']['basemap'] != 'none') {
             $m = explode(':', $this->map_params['specific']['options']['basemap']);
             if (count($m) === 2) {
                 if (strtolower($m[0]) === 'carto') {
                     $quota = Quota::verify('Carto', 'GET', 20);
-                    $result .= "var bg = new L.tileLayer('https://{s}.basemaps.cartocdn.com/" . $m[1] . "/{z}/{x}/{y}.png', {" . PHP_EOL;
-                    $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a> &amp; <a href=\"https://carto.com/attributions\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
+                    $bg_defined = true;
+                    $result .= "var bg = new L.tileLayer(" . Guard::js('https://{s}.basemaps.cartocdn.com/' . rawurlencode($m[1]) . '/{z}/{x}/{y}.png') . ", {" . PHP_EOL;
+                    $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a> &amp; <a href=\"https://carto.com/attribution/\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                     $result .= '});' . PHP_EOL;
                 }
             }
             else {
+                $bg_defined = true;
                 $result .= "var bg = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" . PHP_EOL;
                 $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
         }
         $layer = explode(':', $this->map_params['specific']['options']['overlay']);
+        if (!isset($layer[1])) {
+            $layer[1] = '';
+        }
         if ($layer[0] === 'vane' && $this->map_params['common']['loc_zoom'] < 6) {
             $this->map_params['common']['loc_zoom'] = 6;
             $this->minzoom = 6;
         }
         if ($layer[0] === 'owm') {
-            $result .= "var layer = new L.tileLayer('https://tile.openweathermap.org/map/" . $layer[1] . "/{z}/{x}/{y}.png?appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+            $result .= "var layer = new L.tileLayer(" . Guard::js('https://tile.openweathermap.org/map/' . rawurlencode($layer[1]) . '/{z}/{x}/{y}.png?appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
             $result .= '});' . PHP_EOL;
         }
         else {
             if ($layer[1] === 'rgb') {
-                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&overzoom=true&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'nir') {
-                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b3,b2&from=s2&overzoom=true&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b3,b2&from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'ndvi') {
-                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&op=ndvi&overzoom=true&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&op=ndvi&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'ndwi') {
-                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b12&from=s2&overzoom=true&op=ndi&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b12&from=s2&overzoom=true&op=ndi&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
         }
         $result .= "var map = new L.Map('openweathermap-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');";
-        if ($quota && $this->map_params['specific']['options']['basemap'] != 'none') {
+        if ($quota && $bg_defined) {
             $result .= "map.addLayer(bg);" . PHP_EOL;
         }
         $result .= "map.addLayer(layer);" . PHP_EOL;

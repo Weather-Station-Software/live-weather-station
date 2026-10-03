@@ -15,7 +15,7 @@ use WeatherStation\Data\ID\Handling as IDManager;
  * Netatmo client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -23,15 +23,35 @@ trait Client {
 
     use BaseClient, HTTP, IDManager;
 
+    protected $last_bloomsky_warning = null;
+    private $bloomsky_refused = false;
+
 
     /**
-     * Connects to the Netatmo account.
+     * Is the BloomSky collection enabled? Always false by default: the service stopped in 2022.
+     *
+     * @return boolean True if the collection must run.
+     * @since 3.9.0
+     */
+    protected static function bloomsky_enabled() {
+        return (bool)apply_filters('live_weather_station_bloomsky_enabled', false);
+    }
+
+    /**
+     * Connects to the BloomSky account.
      *
      * @since 3.6.0
      */
     public function authentication($apikey) {
+        $apikey = sanitize_text_field((string)$apikey);
         $this->get_measurements(false, $apikey);
-        if ($this->last_bloomsky_error == '') {
+        if ($this->bloomsky_refused) {
+            // The key has not been tested (quota manager refusal): keep the stored settings as they are.
+            $this->last_bloomsky_error = __('the request quota of the service is reached, please try again later', 'live-weather-station');
+            return false;
+        }
+        // An empty key is never a valid connection.
+        if ($apikey !== '' && $this->last_bloomsky_error == '') {
             update_option('live_weather_station_bloomsky_key', $apikey);
             update_option('live_weather_station_bloomsky_connected', 1);
             return true;
@@ -53,9 +73,15 @@ trait Client {
      * @since 3.6.0
      */
     public function get_measurements($store=true, $apikey=false) {
-        $currentkey = get_option('live_weather_station_bloomsky_key');
         $this->last_bloomsky_error = '';
+        $this->bloomsky_refused = false;
         $this->bloomsky_measurements = array();
+        if (!self::bloomsky_enabled()) {
+            // The service stopped in 2022: no request is sent, the stored data are kept.
+            $this->last_bloomsky_error = __('The BloomSky service stopped in 2022.', 'live-weather-station');
+            return array();
+        }
+        $currentkey = get_option('live_weather_station_bloomsky_key');
         if ($currentkey != '' || $apikey) {
             if ($apikey) {
                 $currentkey = $apikey;
@@ -73,11 +99,12 @@ trait Client {
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
                 else {
+                    $this->bloomsky_refused = true;
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                     return array ();
                 }
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 switch ($ex->getCode()) {
                     case 401:
                         $this->last_bloomsky_error = __('Wrong credentials. Please, verify your API key.', 'live-weather-station');
@@ -85,9 +112,9 @@ trait Client {
                         break;
                     default:
                         $this->last_bloomsky_warning = __('Temporary unable to contact BloomSky servers. Retry will be done shortly.', 'live-weather-station');
-                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), self::get_http_status($ex->getCode()) . ' => ' . $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), self::get_http_status($ex->getCode()) . ' => ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 return array();
             }
         }
@@ -112,7 +139,7 @@ trait Client {
             }
             if ($store) {
                 foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_BSKY_SID)) {
+                    if ($this->insert_ignore_stations_table($station['device_id'], LIVE_WEATHER_STATION_BSKY_SID)) {
                         $station['installed'] = true;
                         Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
                     }
@@ -132,8 +159,8 @@ trait Client {
             }
             Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
         }
-        catch (\Exception $ex) {
-            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
             return array();
         }
         return $result;
@@ -146,6 +173,10 @@ trait Client {
      * @since 3.6.0
      */
     protected function __run($system){
+        if (!self::bloomsky_enabled()) {
+            Logger::info($system, $this->service_name, null, null, null, null, 0, 'BloomSky service stopped in 2022: nothing to collect.');
+            return;
+        }
         $cron_id = Watchdog::init_chrono(Watchdog::$bsky_update_station_schedule_name);
         $err = '';
         try {
@@ -153,14 +184,14 @@ trait Client {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_BSKY_SID);
+            $weather->compute(LIVE_WEATHER_STATION_BSKY_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_BSKY_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_BSKY_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

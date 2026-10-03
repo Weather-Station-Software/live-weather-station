@@ -7,7 +7,7 @@ namespace WeatherStation\Data\DateTime;
  * Date/Time handling functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -20,6 +20,9 @@ trait Handling {
      * @since 3.6.0
      */
     protected function get_probable_timezone($country, $utc) {
+        if (!is_string($country) || !preg_match('/^[A-Z]{2}$/D', $country)) {
+            return 'UTC';
+        }
         $timezones = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $country);
         if (count($timezones) == 0) {
             switch ($country) {
@@ -79,16 +82,37 @@ trait Handling {
                     $t = '0' . $t;
                 }
                 $tz = $tz . $t;
-                if ((int)$offset != $offset) {
-                    $tz = $tz . '30';
+                $minutes = (int)round((abs((float)$offset) - abs((int)$offset)) * 60);
+                if ($minutes < 10) {
+                    $minutes = '0' . $minutes;
                 }
-                else {
-                    $tz = $tz . '00';
-                }
+                $tz = $tz . $minutes;
                 return $tz;
             }
         }
         return 'UTC';
+    }
+
+    /**
+     * Verify that coordinates and timezone (stored station data) can be used to compute sunrise and sunset.
+     *
+     * @param mixed $lat The latitude of the station.
+     * @param mixed $lon The longitude of the station.
+     * @param mixed $tz The timezone of the station.
+     * @return boolean True if they are valid.
+     * @since 3.9.0
+     */
+    protected function is_valid_sun_location($lat, $lon, $tz) {
+        if (!is_numeric($lat) || !is_numeric($lon) || abs($lat) > 90 || abs($lon) > 180) {
+            return false;
+        }
+        try {
+            new \DateTimeZone((string)$tz);
+        }
+        catch (\Exception $ex) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -101,6 +125,9 @@ trait Handling {
      * @since 3.8.0
      */
     protected function check_day($lat, $lon, $tz) {
+        if (!$this->is_valid_sun_location($lat, $lon, $tz)) {
+            return true;
+        }
         $time_rise = time()-36000;
         $time_set = time()-36000;
         $datetime = new \DateTime();
@@ -109,7 +136,7 @@ trait Handling {
         $month = $datetime->format('m');
         $day = $datetime->format('d');
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunrise = date_sunrise(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
             $verif = new \DateTime();
             $verif->setTimestamp($sunrise);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -119,7 +146,7 @@ trait Handling {
             }
         }
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunset = date_sunset(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
             $verif = new \DateTime();
             $verif->setTimestamp($sunset);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -128,8 +155,8 @@ trait Handling {
                 break;
             }
         }
-        $sunrise = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
-        $sunset = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+        $sunrise = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+        $sunset = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
         return (time() > $sunrise && time() < $sunset);
     }
 
@@ -143,6 +170,9 @@ trait Handling {
      * @since 3.8.0
      */
     protected function check_mixday($lat, $lon, $tz) {
+        if (!$this->is_valid_sun_location($lat, $lon, $tz)) {
+            return false;
+        }
         $time_rise = time()-36000;
         $time_set = time()-36000;
         $datetime = new \DateTime();
@@ -151,7 +181,7 @@ trait Handling {
         $month = $datetime->format('m');
         $day = $datetime->format('d');
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunrise = date_sunrise(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $sunrise = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60));
             $verif = new \DateTime();
             $verif->setTimestamp($sunrise);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -161,7 +191,7 @@ trait Handling {
             }
         }
         for ($fact = -1; $fact <= 2; $fact++) {
-            $sunset = date_sunset(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $sunset = live_weather_station_sun_timestamp(time()+(86400*$fact), $lat, $lon, 90+(50/60), true);
             $verif = new \DateTime();
             $verif->setTimestamp($sunset);
             $verif->setTimezone(new \DateTimeZone($tz));
@@ -170,8 +200,8 @@ trait Handling {
                 break;
             }
         }
-        $sunrise = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
-        $sunset = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+        $sunrise = live_weather_station_sun_timestamp($time_rise, $lat, $lon, 90+(50/60));
+        $sunset = live_weather_station_sun_timestamp($time_set, $lat, $lon, 90+(50/60), true);
         if (time() > $sunrise && time() < $sunset) { // Currently day
             return ($sunset - time() < 60 * 60 * 4);
         }

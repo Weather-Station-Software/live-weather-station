@@ -15,7 +15,7 @@ use WeatherStation\System\Logs\Logger;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.5.0
  * @license MIT
  */
@@ -30,6 +30,8 @@ class AMBTApiClient
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // these application key is property of Ambient licensed to Jason Rouet, you CAN'T use it for your apps.
     // If you are thinking to develop something, get your application key here: https://dashboard.ambientweather.net
+    // The key can be overridden with the LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY constant or the 'live_weather_station_ambient_application_key'
+    // filter (so it can be rotated without touching the code). The default is kept for backward compatibility.
     private $application_key = 'aa2fe7d796fa4ccfa484c41592fc27044970de1019234d0599e7af14d42797fa';
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -92,8 +94,19 @@ class AMBTApiClient
      */
     private function buildUrl() {
         $result = $this->mainUrl;
-        $result = str_replace('{application}', $this->application_key, $result);
-        $result = str_replace('{key}', $this->key, $result);
+        // The application of the site if it has one, else the shared one shipped with the plugin (a constant of wp-config.php wins over both).
+        $application_key = $this->application_key;
+        $own_key = (string)get_option('live_weather_station_ambient_application_key', '');
+        if ($own_key !== '') {
+            $application_key = $own_key;
+        }
+        if (defined('LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY')) {
+            $application_key = LIVE_WEATHER_STATION_AMBIENT_APPLICATION_KEY;
+        }
+        // Plugin Check: hook renamed from lws_ambient_application_key (new in 3.9.0, never released under the old name).
+        $application_key = apply_filters('live_weather_station_ambient_application_key', $application_key);
+        $result = str_replace('{application}', rawurlencode((string)$application_key), $result);
+        $result = str_replace('{key}', rawurlencode((string)$this->key), $result);
         return $result;
     }
 

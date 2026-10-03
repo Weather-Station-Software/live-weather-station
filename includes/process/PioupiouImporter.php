@@ -11,7 +11,7 @@ use WeatherStation\Data\History\Builder;
  * A process to import old data from a Netatmo station.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -64,17 +64,17 @@ class PioupiouImporter extends Process {
      * @since 3.7.0
      */
     protected function message() {
-        $result = sprintf(__('Here are the details of importing old data from the station "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+        $result = sprintf(/* translators: %s: station name */ __('Here are the details of importing old data from the station "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
         foreach ($this->params['summary'] as $module) {
             if ($module['measurements'] === 0 || $module['days_done'] === 0) {
-                $result .= '     - ' . sprintf(__('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
+                $result .= '     - ' . sprintf(/* translators: %s: module name */ __('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
             }
             else {
-                $result .= '     - ' . sprintf(__('"%s": %s measurements spread over %s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
+                $result .= '     - ' . sprintf(/* translators: 1: module name, 2: number of measurements, 3: number of days */ __('"%1$s": %2$s measurements spread over %3$s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
             }
         }
-        $result .= "\r\n" . sprintf(__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $result .= "\r\n" . sprintf(/* translators: %s: duration (for example 2 hours) */ __('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
+        $result .= "\r\n" . sprintf(/* translators: %s: name of the plugin */ __('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $result;
     }
 
@@ -206,7 +206,9 @@ class PioupiouImporter extends Process {
 
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is $wpdb->prefix plus live_weather_station_measurements_table() and the station id is bound with %s in prepare(), one-shot importer that needs the live rows
+        $sql = $wpdb->prepare("SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = %s", $this->params['init']['station_id']);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_measurements: the table name is $wpdb->prefix plus live_weather_station_measurements_table() and the station id is bound with %s in prepare(), one-shot importer that needs the live rows
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();
         $this->params['done'] = array();
@@ -265,7 +267,7 @@ class PioupiouImporter extends Process {
             if (array_key_exists('force', $this->params['init'])) {
                 $force = $this->params['init']['force'];
             }
-            $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $history = new Builder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($this->params['todo_ext'] as $module) {
                 switch ($module['module_type']) {
                     case 'NAModule2':
@@ -294,7 +296,7 @@ class PioupiouImporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<8; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*40)) {
+            if ((int)ini_get('max_execution_time') > $i*40) {
                 $max += 1;
             }
         }

@@ -18,7 +18,7 @@ use WeatherStation\System\Schedules\Watchdog;
  * Realtime station client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -28,6 +28,28 @@ trait StationClient {
 
     protected $facility = 'Weather Collector';
     protected $service = 'File Handler - Realtime';
+
+    /**
+     * Converts a time of the day of the file (hh:mm, station time) into a UTC date.
+     *
+     * @param string $hhmm The time of the day, as written in the file.
+     * @param integer $locat_ts The time of the file, as a timestamp which reads the local time (see format_and_store()).
+     * @param string $timezone The timezone of the station.
+     * @param string $default UTC date to return when the time is not readable.
+     * @return string The UTC date (Y-m-d H:i:s) of the last occurrence of this time, never later than the time of the file.
+     * @since 3.9.0
+     */
+    private function get_time_of_the_day($hhmm, $locat_ts, $timezone, $default) {
+        if (!preg_match('/^([01]?[0-9]|2[0-3])[:.]([0-5][0-9])/', trim((string)$hhmm), $m)) {
+            return $default;
+        }
+        $day = gmdate('Y-m-d', $locat_ts);
+        $local = gmmktime((int)$m[1], (int)$m[2], 0, (int)substr($day, 5, 2), (int)substr($day, 8, 2), (int)substr($day, 0, 4));
+        if ($local > $locat_ts) {
+            $local -= 86400;
+        }
+        return gmdate('Y-m-d H:i:s', $this->get_date_from_tz($local, $timezone));
+    }
 
     /**
      * Format and store data.
@@ -42,10 +64,10 @@ trait StationClient {
         if ($weather === false) {
             throw new \Exception('Bad file format.');
         }
-        Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service, null, null, null, null, null, Logger::dump($weather));
         $timezone = $station['loc_timezone'];
         $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][strlen($weather[0])-2].$weather[0][strlen($weather[0])-1]);
-        $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+        $timestamp = gmdate('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
         $wind_unit = 0;
         switch (strtolower($weather[13])) {
             case 'm/s':
@@ -88,9 +110,9 @@ trait StationClient {
         $updates['module_id'] = $station['station_id'];
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -130,7 +152,7 @@ trait StationClient {
         $updates['measure_type'] = 'firmware';
         $updates['measure_value'] = $weather[38] . ' / ' . $weather[39];
         $this->update_data_table($updates, $timezone);
-        $station['last_refresh'] = date('Y-m-d H:i:s');
+        $station['last_refresh'] = gmdate('Y-m-d H:i:s');
         $station['last_seen'] = $timestamp;
         $this->update_table(self::live_weather_station_stations_table(), $station);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
@@ -143,9 +165,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -154,12 +176,16 @@ trait StationClient {
         $updates['measure_type'] = 'temperature';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[2], $temperature_unit);
         $this->update_data_table($updates, $timezone);
+        // The minimum and the maximum of the day carry the time of their reading (fields 29 and 27), not the time of the last measure.
         $updates['measure_type'] = 'temperature_min';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[28], $temperature_unit);
+        $updates['measure_timestamp'] = $this->get_time_of_the_day($weather[29], $locat_ts, $timezone, $timestamp);
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature_max';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[26], $temperature_unit);
+        $updates['measure_timestamp'] = $this->get_time_of_the_day($weather[27], $locat_ts, $timezone, $timestamp);
         $this->update_data_table($updates, $timezone);
+        $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[3];
         $this->update_data_table($updates, $timezone);
@@ -186,9 +212,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -221,9 +247,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -256,9 +282,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 4);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -289,9 +315,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -333,9 +359,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -374,7 +400,7 @@ trait StationClient {
                 }
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             return false;
         }
@@ -393,7 +419,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = live_weather_station_clean_text($raw_data, 200);
         }
         else {
             $weather = $this->explode_data($raw_data);
@@ -420,9 +446,9 @@ trait StationClient {
             $result = $collector->getRawStationData($resource);
             Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
-            $msg = $ex->getMessage();
+            $msg = substr(sanitize_text_field($ex->getMessage()), 0, 200);
             if ($msg == '') {
                 $msg = 'Unknown error';
             }
@@ -465,8 +491,8 @@ trait StationClient {
                 $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
                 $this->format_and_store($raw_data, $station);
             }
-            catch (\Exception $ex) {
-                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Realtime file data: ' . $ex->getMessage());
+            catch (\Throwable $ex) {
+                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Realtime file data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 continue;
             }
         }
@@ -486,14 +512,14 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_REAL_SID);
+            $weather->compute(LIVE_WEATHER_STATION_REAL_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_REAL_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_REAL_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);
