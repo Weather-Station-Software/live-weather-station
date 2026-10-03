@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-02T22:14:21+00:00\n"
+"POT-Creation-Date: 2026-10-03T10:42:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: live-weather-station\n"
@@ -1890,6 +1890,7 @@ msgstr ""
 #: admin/SystemPluginAdmin.php:1573
 #: includes/classes/ListTableMaps.php:165
 #: includes/classes/MapHelper.php:422
+#: includes/classes/SystemSiteHealth.php:117
 msgid "Stations"
 msgstr ""
 
@@ -5881,6 +5882,100 @@ msgstr ""
 
 #: includes/classes/StationHelper.php:962
 msgid "This station is currently shared on"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:44
+msgid "Information about the plugin for a support request: counts, dates and settings only, no name, identifier, address or credential."
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:60
+#: includes/classes/SystemSiteHealth.php:179
+msgid "Yes"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:60
+#: includes/classes/SystemSiteHealth.php:179
+msgid "No"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:86
+msgid "Version"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:87
+msgid "Advanced mode"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:88
+msgid "Multisite"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:103
+msgid "Unknown type"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:122
+msgid "Stations by type"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:123
+msgid "Public stations"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:124
+msgid "Stations which share their data (feeds, services)"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:125
+msgid "Most recent refresh of a station (UTC)"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:126
+msgid "Oldest last refresh of a station (UTC)"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:143
+msgid "Connected services and keys set"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:147
+msgid "WP-Cron disabled by the configuration"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:163
+msgid "Scheduled jobs of the plugin"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:164
+msgid "Jobs more than 15 minutes late"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:174
+msgid "Last 200 entries of the events log, by level"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:175
+msgid "Level of the events log"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:178
+msgid "Retention of the history (weeks, 0 = unlimited)"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:179
+msgid "Caches: frontend, backend"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:180
+msgid "Limits (requests per minute: controls, feeds; cache entries per hour)"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:181
+msgid "Partial translation"
+msgstr ""
+
+#: includes/classes/SystemSiteHealth.php:182
+msgid "Personal data masked in the events log"
 msgstr ""
 
 #: includes/classes/WidgetEphemeris.php:40

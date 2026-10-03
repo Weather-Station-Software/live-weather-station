@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Weather Station 3.9.0\n"
 "Report-Msgid-Bugs-To: https://github.com/Weather-Station-Software/live-"
 "weather-station/issues\n"
-"POT-Creation-Date: 2026-10-02T22:14:21+00:00\n"
+"POT-Creation-Date: 2026-10-03T10:42:19+00:00\n"
 "PO-Revision-Date: 2026-10-02 22:00+0200\n"
 "Last-Translator: Jason Rouet <https://jasonrouet.com/>\n"
 "Language-Team: French (France)\n"
@@ -1866,6 +1866,7 @@ msgstr "Cochez cette case pour importer ces réglages dans %s. Notez qu’ils re
 #: admin/partials/FormImportConfiguration.php:42
 #: admin/partials/ListTableStations.php:20 admin/SystemPluginAdmin.php:1573
 #: includes/classes/ListTableMaps.php:165 includes/classes/MapHelper.php:422
+#: includes/classes/SystemSiteHealth.php:117
 msgid "Stations"
 msgstr "Stations"
 
@@ -5979,6 +5980,102 @@ msgstr "Clé d’authentification"
 #: includes/classes/StationHelper.php:962
 msgid "This station is currently shared on"
 msgstr "Cette station est actuellement partagée sur"
+
+#: includes/classes/SystemSiteHealth.php:44
+msgid ""
+"Information about the plugin for a support request: counts, dates and "
+"settings only, no name, identifier, address or credential."
+msgstr "Informations sur l’extension pour une demande de support : uniquement des nombres, des dates et des réglages, aucun nom, identifiant, adresse ni identifiant de connexion."
+
+#: includes/classes/SystemSiteHealth.php:60
+#: includes/classes/SystemSiteHealth.php:179
+msgid "Yes"
+msgstr "Oui"
+
+#: includes/classes/SystemSiteHealth.php:60
+#: includes/classes/SystemSiteHealth.php:179
+msgid "No"
+msgstr "Non"
+
+#: includes/classes/SystemSiteHealth.php:86
+msgid "Version"
+msgstr "Version"
+
+#: includes/classes/SystemSiteHealth.php:87
+msgid "Advanced mode"
+msgstr "Mode avancé"
+
+#: includes/classes/SystemSiteHealth.php:88
+msgid "Multisite"
+msgstr "Multisite"
+
+#: includes/classes/SystemSiteHealth.php:103
+msgid "Unknown type"
+msgstr "Type inconnu"
+
+#: includes/classes/SystemSiteHealth.php:122
+msgid "Stations by type"
+msgstr "Stations par type"
+
+#: includes/classes/SystemSiteHealth.php:123
+msgid "Public stations"
+msgstr "Stations publiques"
+
+#: includes/classes/SystemSiteHealth.php:124
+msgid "Stations which share their data (feeds, services)"
+msgstr "Stations qui partagent leurs données (flux, services)"
+
+#: includes/classes/SystemSiteHealth.php:125
+msgid "Most recent refresh of a station (UTC)"
+msgstr "Actualisation la plus récente d’une station (UTC)"
+
+#: includes/classes/SystemSiteHealth.php:126
+msgid "Oldest last refresh of a station (UTC)"
+msgstr "Dernière actualisation la plus ancienne d’une station (UTC)"
+
+#: includes/classes/SystemSiteHealth.php:143
+msgid "Connected services and keys set"
+msgstr "Services connectés et clés renseignées"
+
+#: includes/classes/SystemSiteHealth.php:147
+msgid "WP-Cron disabled by the configuration"
+msgstr "WP-Cron désactivé par la configuration"
+
+#: includes/classes/SystemSiteHealth.php:163
+msgid "Scheduled jobs of the plugin"
+msgstr "Tâches planifiées de l’extension"
+
+#: includes/classes/SystemSiteHealth.php:164
+msgid "Jobs more than 15 minutes late"
+msgstr "Tâches en retard de plus de 15 minutes"
+
+#: includes/classes/SystemSiteHealth.php:174
+msgid "Last 200 entries of the events log, by level"
+msgstr "200 dernières entrées du journal des évènements, par niveau"
+
+#: includes/classes/SystemSiteHealth.php:175
+msgid "Level of the events log"
+msgstr "Niveau du journal des évènements"
+
+#: includes/classes/SystemSiteHealth.php:178
+msgid "Retention of the history (weeks, 0 = unlimited)"
+msgstr "Conservation de l’historique (semaines, 0 = illimitée)"
+
+#: includes/classes/SystemSiteHealth.php:179
+msgid "Caches: frontend, backend"
+msgstr "Caches : public, administration"
+
+#: includes/classes/SystemSiteHealth.php:180
+msgid "Limits (requests per minute: controls, feeds; cache entries per hour)"
+msgstr "Limites (requêtes par minute : contrôles, flux ; entrées de cache par heure)"
+
+#: includes/classes/SystemSiteHealth.php:181
+msgid "Partial translation"
+msgstr "Traduction partielle"
+
+#: includes/classes/SystemSiteHealth.php:182
+msgid "Personal data masked in the events log"
+msgstr "Données personnelles masquées dans le journal des évènements"
 
 #: includes/classes/WidgetEphemeris.php:40
 #: includes/traits/DataTypeDescription.php:149

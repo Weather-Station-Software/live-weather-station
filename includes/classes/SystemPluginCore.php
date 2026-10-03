@@ -148,6 +148,7 @@ class Core {
         $this->loader->add_action('wp_dashboard_setup', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_dashboard_widget');
         $this->loader->add_action('dashboard_glance_items', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_glance_items');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
+        $this->loader->add_filter('debug_information', '\WeatherStation\System\Plugin\SiteHealth', 'add_section');
         $this->loader->add_action('admin_post_live_weather_station_netatmo_start', $plugin_admin, 'netatmo_oauth_start');
         $this->loader->add_action('admin_post_live_weather_station_netatmo_callback', $plugin_admin, 'netatmo_oauth_callback');
         $this->loader->add_action('admin_post_live_weather_station_netatmo_token', $plugin_admin, 'netatmo_token_connect');
