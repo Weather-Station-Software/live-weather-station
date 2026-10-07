@@ -8,7 +8,7 @@ use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
  * Date/Time conversions functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -33,7 +33,7 @@ trait Conversion {
         if ($rolling) {
             $period = array();
             foreach (array(7, 15, 30, 60, 90) as $i) {
-                $period[] = array('rdays-' . $i, sprintf(__('Last %s days', 'live-weather-station'), $i));
+                $period[] = array('rdays-' . $i, sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $i));
             }
             $result[] = array('rolling-days', $period);
         }
@@ -85,12 +85,18 @@ trait Conversion {
         // Fixed year & month
         $fixed_month = array();
         $fixed_year = array();
-        $start = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
-        $current = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
-        $util = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        try {
+            $start = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        }
+        catch (\Exception $ex) {
+            $oldest_date = 'now';
+            $start = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        }
+        $current = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
+        $util = new \DateTime($oldest_date, self::safe_timezone($station['loc_timezone']));
         $year = $start->format('Y');
         $month = $start->format('m');
-        $end = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+        $end = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
         while ($year != $end->format('Y') || $month != $end->format('m')) {
             $current->setDate($year, $month, 1);
             $util->setDate($year, $month, $current->format('t'));
@@ -166,6 +172,25 @@ trait Conversion {
     }
 
     /**
+     * Get a timezone object from a timezone name, UTC if the name is not a valid timezone.
+     *
+     * @param mixed $tz The timezone name (e.g. Europe/Paris, +02:00).
+     * @return \DateTimeZone The timezone.
+     * @since 3.9.0
+     */
+    public static function safe_timezone($tz) {
+        try {
+            if (is_string($tz) && $tz !== '') {
+                return new \DateTimeZone($tz);
+            }
+        }
+        catch (\Exception $ex) {
+            // Invalid timezone: fall through to UTC.
+        }
+        return new \DateTimeZone('UTC');
+    }
+
+    /**
      * Add months to a date.
      *
      * @param \DateTime $date The date.
@@ -174,6 +199,8 @@ trait Conversion {
      * @since 3.8.0
      */
     public function date_add_month($date,$months){
+        // Bound the shift (200 years) so the recursion and the date modifiers stay sane.
+        $months = max(-2400, min(2400, (int)$months));
         $years = floor(abs($months / 12));
         $leap = 29 <= $date->format('d');
         $m = 12 * (0 <= $months?1:-1);
@@ -206,18 +233,18 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_local_today_midnight($tz) {
-        $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
+        $datetime = new \DateTime('today midnight', self::safe_timezone($tz));
         return $datetime->getTimestamp();
     }
 
     /**
-     * Get the timestamp corresponding to noon of today in a specific timezone.
+     * Get the timestamp corresponding to the end of today (23:59:59) in a specific timezone.
      *
      * @param string  $tz The timezone.
-     * @return integer The timestamp corresponding to noon of today in this timezone.
+     * @return integer The timestamp corresponding to the last second of today in this timezone.
      * @since 3.4.0
      */
-    public static function get_local_today_noon($tz) {
+    public static function get_local_today_end($tz) {
         return self::get_local_today_midnight($tz)+86399;
     }
 
@@ -240,7 +267,7 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_local_yesterday_midnight($tz) {
-        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
+        $datetime = new \DateTime('yesterday midnight', self::safe_timezone($tz));
         return $datetime->getTimestamp();
     }
 
@@ -263,7 +290,7 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_local_date($tz) {
-        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
+        $datetime = new \DateTime('yesterday midnight', self::safe_timezone($tz));
         $datetime->setTime(12, 0, 0);
         return $datetime->format('Y-m-d');
     }
@@ -277,8 +304,8 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_local_n_days_ago_midnight($n, $tz='UTC') {
-        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
-        $datetime->sub(new \DateInterval('P'.$n.'D'));
+        $datetime = new \DateTime('yesterday midnight', self::safe_timezone($tz));
+        $datetime->sub(new \DateInterval('P'.absint($n).'D'));
         return $datetime->getTimestamp();
     }
 
@@ -291,7 +318,7 @@ trait Conversion {
      * @since 3.0.0
      */
     public static function get_date_from_tz($ts, $tz) {
-        $datetime = new \DateTime(date('Y-m-d H:i:s', $ts), new \DateTimeZone($tz));
+        $datetime = new \DateTime(gmdate('Y-m-d H:i:s', $ts), self::safe_timezone($tz));
         $datetime->setTimezone(new \DateTimeZone('UTC'));
         return $datetime->getTimestamp();
     }
@@ -314,12 +341,12 @@ trait Conversion {
             $format = get_option('date_format');
         }
         if ($tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s', $ts), new \DateTimeZone('UTC'));
-            $datetime->setTimezone(new \DateTimeZone($tz));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s', $ts), new \DateTimeZone('UTC'));
+            $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n($format, strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))) );
         }
     }
 
@@ -339,7 +366,7 @@ trait Conversion {
         }
         if ($tz != '') {
             $datetime = new \DateTime($ts, new \DateTimeZone('UTC'));
-            $datetime->setTimezone(new \DateTimeZone($tz));
+            $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
@@ -356,8 +383,11 @@ trait Conversion {
      * @since 3.7.0
      */
     public static function add_days_to_mysql_date($date, $days) {
-        $datetime = \DateTime::createFromFormat('Y-m-d', $date);
-        $datetime->add(new \DateInterval('P' . $days . 'D'));
+        $datetime = \DateTime::createFromFormat('Y-m-d', (string)$date);
+        if ($datetime === false) {
+            return $date;
+        }
+        $datetime->add(new \DateInterval('P' . absint($days) . 'D'));
         return $datetime->format('Y-m-d');
     }
 
@@ -370,8 +400,11 @@ trait Conversion {
      * @since 3.7.0
      */
     public static function sub_days_to_mysql_date($date, $days) {
-        $datetime = \DateTime::createFromFormat('Y-m-d', $date);
-        $datetime->sub(new \DateInterval('P' . $days . 'D'));
+        $datetime = \DateTime::createFromFormat('Y-m-d', (string)$date);
+        if ($datetime === false) {
+            return $date;
+        }
+        $datetime->sub(new \DateInterval('P' . absint($days) . 'D'));
         return $datetime->format('Y-m-d');
     }
 
@@ -384,8 +417,11 @@ trait Conversion {
      * @since 3.7.0
      */
     public static function mysql_is_ordered($date1, $date2) {
-        $datetime1 = \DateTime::createFromFormat('Y-m-d', $date1);
-        $datetime2 = \DateTime::createFromFormat('Y-m-d', $date2);
+        $datetime1 = \DateTime::createFromFormat('Y-m-d', (string)$date1);
+        $datetime2 = \DateTime::createFromFormat('Y-m-d', (string)$date2);
+        if ($datetime1 === false || $datetime2 === false) {
+            return false;
+        }
         return $datetime2->getTimestamp() >= $datetime1->getTimestamp();
     }
 
@@ -398,10 +434,13 @@ trait Conversion {
      */
     public static function verify_mysql_date($date) {
         try {
-            $datetime = \DateTime::createFromFormat('Y-m-d', $date);
+            $datetime = \DateTime::createFromFormat('Y-m-d', (string)$date);
+            if ($datetime === false) {
+                return false;
+            }
             return $datetime->format('Y-m-d') == $date;
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             return false;
         }
     }
@@ -417,8 +456,14 @@ trait Conversion {
      */
     public static function get_js_datetime_from_mysql_utc($ts, $tz, $factor=1000) {
         $utc_tz = new \DateTimeZone('UTC');
-        $target_tz = new \DateTimeZone($tz);
-        $utc_date = new \DateTime($ts, $utc_tz);
+        $target_tz = self::safe_timezone($tz);
+        try {
+            $utc_date = new \DateTime($ts, $utc_tz);
+        }
+        catch (\Exception $ex) {
+            // Not a date: the epoch (the callers validate their periods, this is a last line of defense).
+            return 0;
+        }
         $result = ($utc_date->getTimestamp() + $target_tz->getOffset($utc_date)) * $factor;
         return $result;
     }
@@ -435,8 +480,14 @@ trait Conversion {
     public static function get_js_date_from_mysql_utc($ts, $tz, $factor=1000) {
         $ts .= ' 12:00:00';
         $utc_tz = new \DateTimeZone('UTC');
-        //$target_tz = new \DateTimeZone($tz);
-        $utc_date = new \DateTime($ts, $utc_tz);
+        //$target_tz = self::safe_timezone($tz);
+        try {
+            $utc_date = new \DateTime($ts, $utc_tz);
+        }
+        catch (\Exception $ex) {
+            // Not a date: the epoch (the callers validate their periods, this is a last line of defense).
+            return 0;
+        }
         $result = $utc_date->getTimestamp() * $factor;
         return $result;
     }
@@ -450,8 +501,9 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_rolling_days($value, $tz) {
-        $end = new \DateTime('-1 day', new \DateTimeZone($tz));
-        $start = new \DateTime(sprintf('-%s days', $value), new \DateTimeZone($tz));
+        $end = new \DateTime('-1 day', self::safe_timezone($tz));
+        $value = max(0, min(3660, (int)$value));
+        $start = new \DateTime(sprintf('-%s days', $value), self::safe_timezone($tz));
         return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
     }
 
@@ -464,9 +516,10 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_shifted_month($value, $tz) {
-        $current = new \DateTime('now', new \DateTimeZone($tz));
+        $value = max(-1200, min(1200, (int)$value));
+        $current = new \DateTime('now', self::safe_timezone($tz));
         $year = $current->format('Y');
-        $month = (integer)$current->format('m') + $value;
+        $month = (int)$current->format('m') + $value;
         while ($month > 12) {
             $month -= 12;
             $year += 1;
@@ -475,9 +528,9 @@ trait Conversion {
             $month += 12;
             $year -= 1;
         }
-        $start = new \DateTime('now', new \DateTimeZone($tz));
+        $start = new \DateTime('now', self::safe_timezone($tz));
         $start->setDate($year, $month, 1);
-        $end = new \DateTime('now', new \DateTimeZone($tz));
+        $end = new \DateTime('now', self::safe_timezone($tz));
         $end->setDate($year, $month, $start->format('t'));
         return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
     }
@@ -491,9 +544,10 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_shifted_meteorological_season($value, $tz) {
-        $current = new \DateTime('now', new \DateTimeZone($tz));
+        $value = max(-400, min(400, (int)$value));
+        $current = new \DateTime('now', self::safe_timezone($tz));
         $year = $current->format('Y');
-        $month = (integer)$current->format('m') + ($value * 3);
+        $month = (int)$current->format('m') + ($value * 3);
         while ($month > 12) {
             $month -= 12;
             $year += 1;
@@ -538,14 +592,12 @@ trait Conversion {
      * @since 3.4.0
      */
     public static function get_shifted_year($value, $tz) {
-        $current = new \DateTime('now', new \DateTimeZone($tz));
-        if ($value == '-0') {
-            $value = 0;
-        }
-        $year = (integer)$current->format('Y') + $value;
-        $start = new \DateTime('now', new \DateTimeZone($tz));
+        $current = new \DateTime('now', self::safe_timezone($tz));
+        $value = max(-100, min(100, (int)$value));
+        $year = (int)$current->format('Y') + $value;
+        $start = new \DateTime('now', self::safe_timezone($tz));
         $start->setDate($year, 1, 1);
-        $end = new \DateTime('now', new \DateTimeZone($tz));
+        $end = new \DateTime('now', self::safe_timezone($tz));
         $end->setDate($year, 12, 31);
         return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
     }
@@ -567,12 +619,12 @@ trait Conversion {
             $format = get_option('time_format');
         }
         if ($tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
-            $datetime->setTimezone(new \DateTimeZone($tz));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+            $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
+            return date_i18n($format, strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -591,7 +643,7 @@ trait Conversion {
         }
         if ($tz != '') {
             $datetime = new \DateTime($ts, new \DateTimeZone('UTC'));
-            $datetime->setTimezone(new \DateTimeZone($tz));
+            $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
@@ -614,10 +666,10 @@ trait Conversion {
             return __('N/A', 'live-weather-station');
         }
         if ($from < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff($from));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff($from));
         }
         else {
-            return sprintf( __('in %s', 'live-weather-station'), human_time_diff($from));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('in %s', 'live-weather-station'), human_time_diff($from));
         }
     }
 
@@ -630,7 +682,7 @@ trait Conversion {
      */
     public static function get_positive_time_diff_from_mysql_utc($from) {
         if (strtotime($from) < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
         else {
             return __('currently', 'live-weather-station');
@@ -646,10 +698,10 @@ trait Conversion {
      */
     public static function get_time_diff_from_mysql_utc($from) {
         if (strtotime($from) < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
         else {
-            return sprintf( __('in %s', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('in %s', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
     }
 
@@ -662,7 +714,7 @@ trait Conversion {
      * @access   protected
      */
     public static function get_minute_diff_from_utc($from) {
-        return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - $from ))/60);
+        return round ((abs( strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s'))) - $from ))/60);
     }
 
     /**
@@ -674,7 +726,7 @@ trait Conversion {
      * @access   protected
      */
     public static function get_minute_diff_from_mysql_utc($from) {
-        return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($from))))/60);
+        return round ((abs( strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($from))))/60);
     }
 
     /**
@@ -687,6 +739,9 @@ trait Conversion {
      * @since    2.0.0
      */
     public static function get_rise_set_short_from_utc($ts, $tz='', $comp=false) {
+        if ($ts !== null && !is_numeric($ts)) {
+            return '';
+        }
         $mod = $ts % 60;
         if ($mod > 29) {
             $ts = $ts + 60 - $mod;
@@ -698,23 +753,23 @@ trait Conversion {
         $now = time();
         if ($comp) {
             if ( $tz != '') {
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$now), new \DateTimeZone('UTC'));
-                $datetime->setTimezone(new \DateTimeZone($tz));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$now), new \DateTimeZone('UTC'));
+                $datetime->setTimezone(self::safe_timezone($tz));
                 $today = $datetime->format('Ymd');
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
-                $datetime->setTimezone(new \DateTimeZone($tz));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+                $datetime->setTimezone(self::safe_timezone($tz));
                 $timestamp = $datetime->format('Ymd');
                 if ($timestamp != $today) {
-                    $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
-                    $datetime->setTimezone(new \DateTimeZone($tz));
+                    $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+                    $datetime->setTimezone(self::safe_timezone($tz));
                     $result = $result.' ('.date_i18n('D', strtotime($datetime->format('Y-m-d H:i:s'))).')';
                 }
             }
             else {
-                $today = date('Ymd', strtotime(get_date_from_gmt(date('Y-m-d H:i:s', $now))));
-                $timestamp = date('Ymd', strtotime(get_date_from_gmt(date('Y-m-d H:i:s', $ts))));
+                $today = gmdate('Ymd', strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $now))));
+                $timestamp = gmdate('Ymd', strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $ts))));
                 if ($timestamp != $today) {
-                    $result = $result.' ('.date_i18n( 'D', strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts)))).')';
+                    $result = $result.' ('.date_i18n( 'D', strtotime( get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts)))).')';
                 }
             }
         }
@@ -731,12 +786,12 @@ trait Conversion {
      */
     public static function get_rise_set_long_from_utc($ts, $tz='') {
         if ( $tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
-            $datetime->setTimezone(new \DateTimeZone($tz));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+            $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
+            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -908,7 +963,7 @@ trait Conversion {
         if (!is_numeric($sunrise) || !is_numeric($sunrise_a)) {
             return 0;
         }
-        if ($sunrise_a - $sunrise === 0) {
+        if ($sunrise_a - $sunrise == 0) {
             return 100;
         }
         if (is_null($time)) {
@@ -934,7 +989,7 @@ trait Conversion {
         if (!is_numeric($sunset) || !is_numeric($sunset_a)) {
             return 0;
         }
-        if ($sunset_a - $sunset === 0) {
+        if ($sunset_a - $sunset == 0) {
             return 100;
         }
         if (is_null($time)) {
@@ -963,8 +1018,13 @@ trait Conversion {
             foreach ($list as $d) {
                 $date = $d['val'];
                 if (isset($start)) {
-                    $dlast = new \DateTime($last);
-                    $ddate = new \DateTime($date);
+                    try {
+                        $dlast = new \DateTime($last);
+                        $ddate = new \DateTime($date);
+                    }
+                    catch (\Exception $ex) {
+                        continue;
+                    }
                     if ($ddate->getTimestamp() - $dlast->getTimestamp() == 86400) {
                         $last = $date;
                         $count += 1;

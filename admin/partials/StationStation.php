@@ -1,11 +1,15 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $tech = (bool)get_option('live_weather_station_show_technical');
 $histo = (bool)get_option('live_weather_station_build_history');
 ?>

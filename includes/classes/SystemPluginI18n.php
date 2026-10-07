@@ -8,7 +8,7 @@ namespace WeatherStation\System\Plugin;
  * so that it is ready for translation.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -18,16 +18,6 @@ use WeatherStation\System\I18N\Handling as Intl;
 class I18n {
 
 	private $domain;
-
-	/**
-	 * Load the plugin text domain for translation.
-	 *
-	 * @since    1.0.0
-	 * @access   public
-	 */
-	public function load_plugin_textdomain() {
-		load_plugin_textdomain($this->domain, false, false);
-	}
 
 	/**
 	 * Set the domain equal to that of the specified domain.
@@ -40,6 +30,28 @@ class I18n {
 	}
 
     /**
+     * Complete the translation with the file shipped in the plugin, for the strings the language pack is missing.
+     *
+     * The pack of WordPress.org (or the partial translation) is loaded first, as usual: when a file is loaded for a
+     * domain which already has translations, WordPress keeps the strings of the first and adds the missing ones of
+     * the second. So the strings added by a release are translated before the community has translated them.
+     *
+     * @since 3.9.0
+     */
+    public function load_shipped_translation() {
+        $domain = LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN;
+        // determine_locale() exists since WordPress 5.0, the plugin still runs on 4.9.
+        $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+        $file = LIVE_WEATHER_STATION_PLUGIN_DIR . 'languages/' . $domain . '-' . $locale . '.mo';
+        if (!is_readable($file)) {
+            return;
+        }
+        // Forces the normal loading of the domain (language pack, partial translation) before ours.
+        __('Weather Station', 'live-weather-station');
+        load_textdomain($domain, $file, $locale);
+    }
+
+    /**
      * Override the mo file for the domain.
      *
      * @param string $override The override.
@@ -48,7 +60,7 @@ class I18n {
      * @since 3.0.0
      */
 	public function load_local_textdomain_mofile($override, $domain) {
-        if (LWS_PLUGIN_TEXT_DOMAIN == $domain && (bool)get_option('live_weather_station_partial_translation')) {
+        if (LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN == $domain && (bool)get_option('live_weather_station_partial_translation')) {
             remove_filter('override_load_textdomain', array($this, 'load_local_textdomain_mofile'));
             $file = Intl::get_current_mo_file();
             if (!file_exists($file)) {

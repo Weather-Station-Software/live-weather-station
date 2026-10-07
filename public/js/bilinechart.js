@@ -29,6 +29,19 @@ nv.models.bilineChart = function() {
     // Private Variables
     //------------------------------------------------------------
 
+    // Tooltips are rendered as HTML by nvd3: escape every data-derived string.
+    var escHtml = function(v) {
+        return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    };
+
+    // Colors end up in a style attribute of the tooltip: accept only plain color values.
+    var safeColor = function(c) {
+        if (typeof c !== 'string') {
+            return undefined;
+        }
+        return /^(#[0-9a-f]{3,8}|[a-z]+|(rgb|hsl)a?\([0-9a-z.,%\s\/-]+\))$/i.test(c) ? c : undefined;
+    };
+
     var x = d3.scale.linear(),
         yScale1 = d3.scale.linear(),
         yScale2 = d3.scale.linear(),
@@ -68,6 +81,14 @@ nv.models.bilineChart = function() {
             var availableWidth = nv.utils.availableWidth(width, container, margin),
                 availableHeight = nv.utils.availableHeight(height, container, margin);
 
+            // Display noData message if there's nothing to show.
+            if (!data || !data.length || !data.filter(function(d) { return d.values && d.values.length }).length) {
+                nv.utils.noData(chart, container);
+                return chart;
+            } else {
+                container.selectAll('.nv-noData').remove();
+            }
+
             var dataLines1 = data.filter(function(d) {return d.type == 'line' && d.yAxis == 1});
             var dataLines2 = data.filter(function(d) {return d.type == 'line' && d.yAxis == 2});
             var dataScatters1 = data.filter(function(d) {return d.type == 'scatter' && d.yAxis == 1});
@@ -76,14 +97,6 @@ nv.models.bilineChart = function() {
             var dataBars2 =  data.filter(function(d) {return d.type == 'bar'  && d.yAxis == 2});
             var dataStack1 = data.filter(function(d) {return d.type == 'area' && d.yAxis == 1});
             var dataStack2 = data.filter(function(d) {return d.type == 'area' && d.yAxis == 2});
-
-            // Display noData message if there's nothing to show.
-            if (!data || !data.length || !data.filter(function(d) { return d.values.length }).length) {
-                nv.utils.noData(chart, container);
-                return chart;
-            } else {
-                container.selectAll('.nv-noData').remove();
-            }
 
             var series1 = data.filter(function(d) {return !d.disabled && d.yAxis == 1})
                 .map(function(d) {
@@ -307,16 +320,17 @@ nv.models.bilineChart = function() {
                 evt.value = evt.point.x;
                 evt.series = {
                     value: evt.point.y,
-                    color: evt.point.color,
-                    key: evt.series.key
+                    color: safeColor(evt.point.color),
+                    key: escHtml(evt.series.key)
                 };
+                evt.point = {x: evt.point.x, y: evt.point.y, color: safeColor(evt.point.color)};
                 tooltip
                     .duration(0)
                     .headerFormatter(function(d, i) {
-                        return xAxis.tickFormat()(d, i);
+                        return escHtml(xAxis.tickFormat()(d, i));
                     })
                     .valueFormatter(function(d, i) {
-                        return yaxis.tickFormat()(d, i);
+                        return escHtml(yaxis.tickFormat()(d, i));
                     })
                     .data(evt)
                     .hidden(false);
@@ -327,16 +341,17 @@ nv.models.bilineChart = function() {
                 evt.value = evt.point.x;
                 evt.series = {
                     value: evt.point.y,
-                    color: evt.point.color,
-                    key: evt.series.key
+                    color: safeColor(evt.point.color),
+                    key: escHtml(evt.series.key)
                 };
+                evt.point = {x: evt.point.x, y: evt.point.y, color: safeColor(evt.point.color)};
                 tooltip
                     .duration(100)
                     .headerFormatter(function(d, i) {
-                        return xAxis.tickFormat()(d, i);
+                        return escHtml(xAxis.tickFormat()(d, i));
                     })
                     .valueFormatter(function(d, i) {
-                        return yaxis.tickFormat()(d, i);
+                        return escHtml(yaxis.tickFormat()(d, i));
                     })
                     .data(evt)
                     .hidden(false);
@@ -346,13 +361,18 @@ nv.models.bilineChart = function() {
                 var yaxis = data[evt.seriesIndex].yAxis === 2 ? yAxis2 : yAxis1;
                 evt.point['x'] = stack1.x()(evt.point);
                 evt.point['y'] = stack1.y()(evt.point);
+                evt.series = {
+                    color: safeColor(evt.series.color),
+                    key: escHtml(evt.series.key)
+                };
+                evt.point = {x: evt.point.x, y: evt.point.y, color: safeColor(evt.point.color)};
                 tooltip
                     .duration(0)
                     .headerFormatter(function(d, i) {
-                        return xAxis.tickFormat()(d, i);
+                        return escHtml(xAxis.tickFormat()(d, i));
                     })
                     .valueFormatter(function(d, i) {
-                        return yaxis.tickFormat()(d, i);
+                        return escHtml(yaxis.tickFormat()(d, i));
                     })
                     .data(evt)
                     .hidden(false);
@@ -364,16 +384,16 @@ nv.models.bilineChart = function() {
                 evt.value = bars1.x()(evt.data);
                 evt['series'] = {
                     value: bars1.y()(evt.data),
-                    color: evt.color,
-                    key: evt.data.key
+                    color: safeColor(evt.color),
+                    key: escHtml(evt.data.key)
                 };
                 tooltip
                     .duration(0)
                     .headerFormatter(function(d, i) {
-                        return xAxis.tickFormat()(d, i);
+                        return escHtml(xAxis.tickFormat()(d, i));
                     })
                     .valueFormatter(function(d, i) {
-                        return yaxis.tickFormat()(d, i);
+                        return escHtml(yaxis.tickFormat()(d, i));
                     })
                     .data(evt)
                     .hidden(false);
@@ -424,9 +444,9 @@ nv.models.bilineChart = function() {
                             if (singlePoint === undefined) singlePoint = point;
                             if (pointXLocation === undefined) pointXLocation = x(chart.x()(point,pointIndex));
                             allData.push({
-                                key: series.key,
+                                key: escHtml(series.key),
                                 value: pointYValue,
-                                color: color(series,series.seriesIndex),
+                                color: safeColor(color(series,series.seriesIndex)),
                                 data: point,
                                 yAxis: series.yAxis == 2 ? yAxis2 : yAxis1
                             });
@@ -434,14 +454,14 @@ nv.models.bilineChart = function() {
 
                     var defaultValueFormatter = function(d,i) {
                         var yAxis = allData[i].yAxis;
-                        return d == null ? "N/A" : yAxis.tickFormat()(d);
+                        return d == null ? "N/A" : escHtml(yAxis.tickFormat()(d));
                     };
 
                     interactiveLayer.tooltip
                         .headerFormatter(function(d, i) {
-                            return xAxis.tickFormat()(d, i);
+                            return escHtml(xAxis.tickFormat()(d, i));
                         })
-                        .valueFormatter(interactiveLayer.tooltip.valueFormatter() || defaultValueFormatter)
+                        .valueFormatter(defaultValueFormatter)
                         .data({
                             value: chart.x()( singlePoint,pointIndex ),
                             index: pointIndex,

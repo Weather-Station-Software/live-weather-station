@@ -2,14 +2,14 @@
 
 namespace WeatherStation\UI\ListTable;
 
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 
 /**
  * Color schemes list table for Weather Station plugin.
  *
  * @package Includes\Classes
  * @author WordPress
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -20,21 +20,21 @@ class ColorSchemes extends Base {
     }
 
     protected function column_default($item, $column_name){
-        return $item[$column_name];
+        return esc_html($item[$column_name]);
     }
 
     protected function column_colors($item){
         $s = '';
         foreach ($item['colors'] as $color) {
-            $s .= '<i class="' . LWS_FAS . ' fa-lg fa-fw fa-circle" style="color:#' . $color . '"></i>';
+            $s .= '<i class="' . LIVE_WEATHER_STATION_FAS . ' fa-lg fa-fw fa-circle" style="color:#' . preg_replace('/[^0-9A-Fa-f]/', '', $color) . '"></i>';
         }
         return $s;
     }
 
     protected function column_name($item){
-        $actions['edit'] = sprintf('<a href="?page=lws-settings&action=form&tab=edit&service=palette&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
-        $actions['reset'] = sprintf('<a href="?page=lws-settings&action=reset-cschemes&tab=styles&id=%s">'.__('Reset', 'live-weather-station').'</a>', $item['id']);
-        return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . $item['name'] . $this->row_actions($actions);
+        $actions['edit'] = sprintf('<a href="?page=lws-settings&action=form&tab=edit&service=palette&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['id']));
+        $actions['reset'] = sprintf('<a href="%s">'.esc_html__('Reset', 'live-weather-station').'</a>', esc_url(wp_nonce_url('?page=lws-settings&action=reset-cschemes&tab=styles&id=' . rawurlencode($item['id']), 'reset-cschemes')));
+        return '<i style="color:#999" class="' . LIVE_WEATHER_STATION_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . esc_html($item['name']) . $this->row_actions($actions);
     }
 
     public function get_columns(){

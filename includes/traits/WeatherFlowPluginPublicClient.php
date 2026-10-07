@@ -16,7 +16,7 @@ use WeatherStation\Data\Unit\Conversion;
  * WeatherFlow station client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.0
  */
@@ -24,23 +24,41 @@ trait PublicClient {
 
     use BaseClient, Conversion;
 
+    protected $devices = array();
+
     protected $facility = 'Weather Collector';
     public $detected_station_name = '';
-    private static $dev_key = '42f82f28-44c8-4866-921d-315f53c7bd39';
+
+    /**
+     * Split the service_id of a station: since 3.9.0 it is "station id{LIVE_WEATHER_STATION_SERVICE_SEPARATOR}personal access token".
+     * A station saved before has only the station id, so no token.
+     *
+     * @param string $service_id The service_id of the station.
+     * @return array An array (station id, token).
+     * @since 3.9.0
+     */
+    public static function split_wflw_service_id($service_id) {
+        $parts = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, (string)$service_id, 2);
+        return array($parts[0], (count($parts) > 1 ? $parts[1] : ''));
+    }
 
     /**
      * Verify if a station is accessible.
      *
      * @param string $id The station ID.
+     * @param string $token The personal access token of the station owner.
      * @return string The error message, empty string otherwise.
      * @since 3.3.0
      */
-    public function test_station($id) {
+    public function test_station($id, $token='') {
         $result = 'unknown station ID';
+        if ($token === '') {
+            return 'a personal access token is required';
+        }
         try {
             $wflw = new WFLWApiClient();
             Quota::verify(self::$service, 'GET');
-            $raw_data = $wflw->getRawPublicStationData($id, self::$dev_key);
+            $raw_data = $wflw->getRawPublicStationData($id, $token);
             $weather = json_decode($raw_data, true);
             if (is_array($weather)) {
                 if (array_key_exists('status', $weather)) {
@@ -48,15 +66,15 @@ trait PublicClient {
                         if ($weather['status']['status_code'] == 0) {
                             $result = '';
                             if (array_key_exists('public_name', $weather)) {
-                                $this->detected_station_name = $weather['public_name'];
+                                $this->detected_station_name = live_weather_station_clean_text($weather['public_name']);
                             }
                             elseif (array_key_exists('station_name', $weather)) {
-                                $this->detected_station_name = $weather['station_name'];
+                                $this->detected_station_name = live_weather_station_clean_text($weather['station_name']);
                             }
                         }
                         else {
                             if (array_key_exists('status_message', $weather['status'])) {
-                                $result = $weather['status']['status_message'];
+                                $result = live_weather_station_clean_text($weather['status']['status_message'], 200);
                             }
                         }
                     }
@@ -69,7 +87,7 @@ trait PublicClient {
                 $result = 'internal WeatherFlow error';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact WeatherFlow servers';
         }
@@ -80,16 +98,20 @@ trait PublicClient {
      * Get the devices attached to a station.
      *
      * @param string $id The station ID.
+     * @param string $token The personal access token of the station owner.
      * @return array The devices.
      * @since 3.7.0
      */
-    public function get_devices($id) {
+    public function get_devices($id, $token='') {
         $result = array();
+        if ($token === '') {
+            return $result;
+        }
         try {
             $wflw = new WFLWApiClient();
             $this->devices = array();
             Quota::verify(self::$service, 'GET');
-            $raw_data = $wflw->getRawPublicStationMeta($id, self::$dev_key);
+            $raw_data = $wflw->getRawPublicStationMeta($id, $token);
             $data = json_decode($raw_data, true);
             if (is_array($data)) {
                 if (array_key_exists('status', $data)) {
@@ -125,7 +147,7 @@ trait PublicClient {
                 }
             }
         }
-        catch(\Exception $ex) {
+        catch (\Throwable $ex) {
             $result = array();
         }
         return $result;
@@ -146,7 +168,7 @@ trait PublicClient {
                 if (array_key_exists('status_code', $weather['status'])) {
                     if ($weather['status']['status_code'] != 0) {
                         if (array_key_exists('status_message', $weather['status'])) {
-                            throw new \Exception($weather['status']['status_message'], $weather['status']['status_code']);
+                            throw new \Exception(live_weather_station_clean_text($weather['status']['status_message'], 200), (int)$weather['status']['status_code']); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- message from the remote service cleaned by live_weather_station_clean_text() (plain text, 200 characters max), the exception is only caught and logged by the caller
                         }
                         else {
                             throw new \Exception('WeatherFlow unknown exception', 0);
@@ -159,12 +181,12 @@ trait PublicClient {
             }
         }
         else {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- remote payload cleaned by live_weather_station_clean_text() (plain text, 200 characters max), the exception is only caught and logged by the caller
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, Logger::dump($weather));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             if (array_key_exists('timezone', $weather)) {
-                $timezone = $weather['timezone'];
+                $timezone = live_weather_station_clean_text($weather['timezone'], 64);
             }
             else {
                 $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
@@ -175,30 +197,30 @@ trait PublicClient {
                     $observation = array();
                 }
                 if (array_key_exists('public_name', $weather)) {
-                    $station['station_name'] = $weather['public_name'];
+                    $station['station_name'] = live_weather_station_clean_text($weather['public_name']);
                 } elseif (array_key_exists('station_name', $weather)) {
-                    $station['station_name'] = $weather['station_name'];
+                    $station['station_name'] = live_weather_station_clean_text($weather['station_name']);
                 }
                 if ($station['station_name'] == '') {
                     $station['station_name'] = '< NO NAME >';
                 }
-                if (array_key_exists('timestamp', $observation)) {
+                if (array_key_exists('timestamp', $observation) && is_numeric($observation['timestamp'])) {
                     try {
-                        $timestamp = date('Y-m-d H:i:s', $observation['timestamp']);
-                    } catch (Exception $e) {
-                        $timestamp = date('Y-m-d H:i:s');
+                        $timestamp = gmdate('Y-m-d H:i:s', (int)$observation['timestamp']);
+                    } catch (\Throwable $e) {
+                        $timestamp = gmdate('Y-m-d H:i:s');
                     }
                 } else {
-                    $timestamp = date('Y-m-d H:i:s');
+                    $timestamp = gmdate('Y-m-d H:i:s');
                 }
-                if (array_key_exists('lightning_strike_last_epoch', $observation)) {
+                if (array_key_exists('lightning_strike_last_epoch', $observation) && is_numeric($observation['lightning_strike_last_epoch'])) {
                     try {
-                        $strikestamp = date('Y-m-d H:i:s', $observation['lightning_strike_last_epoch']);
-                    } catch (Exception $e) {
-                        $strikestamp = date('Y-m-d H:i:s');
+                        $strikestamp = gmdate('Y-m-d H:i:s', (int)$observation['lightning_strike_last_epoch']);
+                    } catch (\Throwable $e) {
+                        $strikestamp = gmdate('Y-m-d H:i:s');
                     }
                 } else {
-                    $strikestamp = date('Y-m-d H:i:s');
+                    $strikestamp = gmdate('Y-m-d H:i:s');
                 }
                 $pressure_ref = null;
                 $temperature_ref = null;
@@ -211,9 +233,9 @@ trait PublicClient {
                 $updates['module_id'] = $station['station_id'];
                 $updates['module_type'] = $type;
                 $updates['module_name'] = $this->get_fake_module_name($type);
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                 $updates['measure_type'] = 'last_refresh';
-                $updates['measure_value'] = date('Y-m-d H:i:s');
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                 $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'last_seen';
                 $updates['measure_value'] = $timestamp;
@@ -227,25 +249,25 @@ trait PublicClient {
                 $updates['measure_value'] = $station['loc_country_code'];
                 $this->update_data_table($updates, $timezone);
                 if (array_key_exists('timezone', $weather)) {
-                    $station['loc_timezone'] = $weather['timezone'];
+                    $station['loc_timezone'] = live_weather_station_clean_text($weather['timezone'], 64);
                     $updates['measure_type'] = 'loc_timezone';
                     $updates['measure_value'] = $station['loc_timezone'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('latitude', $weather)) {
-                    $station['loc_latitude'] = $weather['latitude'];
+                    $station['loc_latitude'] = live_weather_station_clean_number($weather['latitude']);
                     $updates['measure_type'] = 'loc_latitude';
                     $updates['measure_value'] = $station['loc_latitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('longitude', $weather)) {
-                    $station['loc_longitude'] = $weather['longitude'];
+                    $station['loc_longitude'] = live_weather_station_clean_number($weather['longitude']);
                     $updates['measure_type'] = 'loc_longitude';
                     $updates['measure_value'] = $station['loc_longitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('elevation', $weather)) {
-                    $station['loc_altitude'] = $weather['elevation'];
+                    $station['loc_altitude'] = live_weather_station_clean_number($weather['elevation']);
                     $updates['measure_type'] = 'loc_altitude';
                     $updates['measure_value'] = $station['loc_altitude'];
                     $this->update_data_table($updates, $timezone);
@@ -272,7 +294,7 @@ trait PublicClient {
                     $updates['measure_value'] = $observation['sea_level_pressure'];
                     $this->update_data_table($updates, $timezone);
                 }
-                $station['last_refresh'] = date('Y-m-d H:i:s');
+                $station['last_refresh'] = gmdate('Y-m-d H:i:s');
                 $station['last_seen'] = $timestamp;
                 $this->update_table(self::live_weather_station_stations_table(), $station);
                 Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
@@ -286,9 +308,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -325,9 +347,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -369,9 +391,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -409,9 +431,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 4);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -446,9 +468,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -481,9 +503,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 7);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -524,10 +546,15 @@ trait PublicClient {
         foreach ($stations as $st => $station) {
             $device_id = $station['station_id'];
             $device_name = $station['station_name'];
+            $credentials = self::split_wflw_service_id($station['service_id']);
+            if ($credentials[1] === '') {
+                Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 401, 'No personal access token for this station: WeatherFlow no longer allows reading the stations of other people, edit the station to add the token of its owner.');
+                continue;
+            }
             try {
                 $wflw = new WFLWApiClient();
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $raw_data = $wflw->getRawPublicStationData($station['service_id'], self::$dev_key);
+                    $raw_data = $wflw->getRawPublicStationData($credentials[0], $credentials[1]);
                     $this->format_and_store($raw_data, $station);
                     Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
                 }
@@ -535,14 +562,14 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'WeatherFlow servers has returned empty response. Retry will be done shortly.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact WeatherFlow servers. Retry will be done shortly.');
-                    return array();
+                    continue;
                 }
             }
         }
@@ -562,14 +589,14 @@ trait PublicClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_WFLW_SID);
+            $weather->compute(LIVE_WEATHER_STATION_WFLW_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_WFLW_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_WFLW_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

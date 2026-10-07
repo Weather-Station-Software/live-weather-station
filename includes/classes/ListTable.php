@@ -2,6 +2,9 @@
 
 namespace WeatherStation\UI\ListTable;
 
+// phpcs:disable WordPress.WP.I18n.MissingArgDomain -- This class is a copy of WP_List_Table: its few UI strings (List View, Apply, First page...) are deliberately translated with the WordPress core text domain.
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only list table parameters (sorting, paging, filters). Row and bulk actions are not performed here, they are nonce-protected where they are processed.
+
 /**
  * Base class for displaying a list of items in an ajaxified HTML table.
  *
@@ -9,7 +12,7 @@ namespace WeatherStation\UI\ListTable;
  *
  * @package Includes\Classes
  * @author WordPress
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */
@@ -50,11 +53,6 @@ class Base {
 
         $this->_args = $args;
 
-        if ( $args['ajax'] ) {
-             wp_enqueue_script( 'list-table' );
-            add_action( 'admin_footer', array( $this, '_js_vars' ) );
-        }
-
         if ( empty( $this->modes ) ) {
             $this->modes = array(
                 'list'    => __( 'List View' ),
@@ -90,9 +88,6 @@ class Base {
         }
         return false;
     }
-    public function ajax_user_can() {
-        die( 'function WP_List_Table::ajax_user_can() must be over-ridden in a sub-class.' );
-    }
     public function prepare_items() {
         die( 'function WP_List_Table::prepare_items() must be over-ridden in a sub-class.' );
     }
@@ -108,7 +103,7 @@ class Base {
 
         // Redirect if page number is invalid and headers are not already sent.
         if ( ! headers_sent() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && $args['total_pages'] > 0 && $this->get_pagenum() > $args['total_pages'] ) {
-            wp_redirect( add_query_arg( 'paged', $args['total_pages'] ) );
+            wp_safe_redirect( add_query_arg( 'paged', $args['total_pages'] ) );
             exit;
         }
 
@@ -125,7 +120,7 @@ class Base {
         return !empty( $this->items );
     }
     public function no_items() {
-        _e( 'No items found.' );
+        echo esc_html__( 'No items found.' );
     }
     public function search_box( $text, $input_id ) {
         if ( empty( $_REQUEST['s'] ) && !$this->has_items() )
@@ -134,17 +129,17 @@ class Base {
         $input_id = $input_id . '-search-input';
 
         if ( ! empty( $_REQUEST['orderby'] ) )
-            echo '<input type="hidden" name="orderby" value="' . esc_attr( $_REQUEST['orderby'] ) . '" />';
+            echo '<input type="hidden" name="orderby" value="' . esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['orderby'] ) ) ) . '" />';
         if ( ! empty( $_REQUEST['order'] ) )
-            echo '<input type="hidden" name="order" value="' . esc_attr( $_REQUEST['order'] ) . '" />';
+            echo '<input type="hidden" name="order" value="' . esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['order'] ) ) ) . '" />';
         if ( ! empty( $_REQUEST['post_mime_type'] ) )
-            echo '<input type="hidden" name="post_mime_type" value="' . esc_attr( $_REQUEST['post_mime_type'] ) . '" />';
+            echo '<input type="hidden" name="post_mime_type" value="' . esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['post_mime_type'] ) ) ) . '" />';
         if ( ! empty( $_REQUEST['detached'] ) )
-            echo '<input type="hidden" name="detached" value="' . esc_attr( $_REQUEST['detached'] ) . '" />';
+            echo '<input type="hidden" name="detached" value="' . esc_attr( sanitize_text_field( wp_unslash( $_REQUEST['detached'] ) ) ) . '" />';
         ?>
         <p class="search-box">
-            <label class="screen-reader-text" for="<?php echo $input_id ?>"><?php echo $text; ?>:</label>
-            <input type="search" id="<?php echo $input_id ?>" name="s" value="<?php _admin_search_query(); ?>" />
+            <label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $text ); ?>:</label>
+            <input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
             <?php submit_button( $text, 'button', '', false, array('id' => 'search-submit') ); ?>
         </p>
         <?php
@@ -154,6 +149,7 @@ class Base {
     }
     public function views() {
         $views = $this->get_views();
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Same hook name as the core WP_List_Table, kept so that code written for core list tables keeps working.
         $views = apply_filters( "views_{$this->screen->id}", $views );
 
         if ( empty( $views ) )
@@ -161,8 +157,9 @@ class Base {
 
         echo "<ul class='subsubsub'>\n";
         foreach ( $views as $class => $view ) {
-            $views[ $class ] = "\t<li class='$class'>$view";
+            $views[ $class ] = "\t<li class='" . esc_attr( $class ) . "'>$view";
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each view is an HTML link built by get_views() of ListTableLog or ListTableFile, which escape their own parts (esc_url, esc_html, number_format_i18n); the class attribute is escaped just above.
         echo implode( " |</li>\n", $views ) . "</li>\n";
         echo "</ul>";
     }
@@ -172,6 +169,7 @@ class Base {
     protected function bulk_actions( $which = '' ) {
         if ( is_null( $this->_actions ) ) {
             $no_new_actions = $this->_actions = $this->get_bulk_actions();
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Same hook name as the core WP_List_Table, kept so that code written for core list tables keeps working.
             $this->_actions = apply_filters( "bulk_actions-{$this->screen->id}", $this->_actions );
             $this->_actions = array_intersect_assoc( $this->_actions, $no_new_actions );
             $two = '';
@@ -182,14 +180,15 @@ class Base {
         if ( empty( $this->_actions ) )
             return;
 
-        echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . __( 'Select bulk action' ) . "</label>";
-        echo "<select name='subaction$two' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
-        echo "<option value='-1' selected='selected'>" . __( 'Bulk Actions' ) . "</option>\n";
+        echo "<label for='bulk-action-selector-" . esc_attr( $which ) . "' class='screen-reader-text'>" . esc_html__( 'Select bulk action' ) . "</label>";
+        echo "<select name='subaction" . esc_attr( $two ) . "' id='bulk-action-selector-" . esc_attr( $which ) . "'>\n";
+        echo "<option value='-1' selected='selected'>" . esc_html__( 'Bulk Actions' ) . "</option>\n";
 
         foreach ( $this->_actions as $name => $title ) {
             $class = 'edit' == $name ? ' class="hide-if-no-js"' : '';
 
-            echo "\t<option value='$name'$class>$title</option>\n";
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $class is one of two literal strings defined on the line above; name and title are escaped.
+            echo "\t<option value='" . esc_attr( $name ) . "'$class>" . esc_html( $title ) . "</option>\n";
         }
 
         echo "</select>\n";
@@ -202,10 +201,10 @@ class Base {
             return false;
 
         if ( isset( $_REQUEST['subaction'] ) && -1 != $_REQUEST['subaction'] )
-            return $_REQUEST['subaction'];
+            return sanitize_text_field( wp_unslash( $_REQUEST['subaction'] ) );
 
         if ( isset( $_REQUEST['subaction2'] ) && -1 != $_REQUEST['subaction2'] )
-            return $_REQUEST['subaction2'];
+            return sanitize_text_field( wp_unslash( $_REQUEST['subaction2'] ) );
 
         return false;
     }
@@ -239,10 +238,10 @@ class Base {
                 if ( $current_mode == $mode )
                     $classes[] = 'current';
                 printf(
-                    "<a href='%s' class='%s' id='view-switch-$mode'><span class='screen-reader-text'>%s</span></a>\n",
+                    "<a href='%s' class='%s' id='view-switch-" . esc_attr( $mode ) . "'><span class='screen-reader-text'>%s</span></a>\n",
                     esc_url( add_query_arg( 'mode', $mode ) ),
-                    implode( ' ', $classes ),
-                    $title
+                    esc_attr( implode( ' ', $classes ) ),
+                    esc_html( $title )
                 );
             }
             ?>
@@ -262,6 +261,7 @@ class Base {
         if ( empty( $per_page ) || $per_page < 1 )
             $per_page = $default;
 
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Same as core WP_List_Table::get_items_per_page(): the hook name is the per page option name given by the caller.
         return (int) apply_filters( $option, $per_page );
     }
     protected function pagination( $which ) {
@@ -276,11 +276,11 @@ class Base {
             $infinite_scroll = $this->_pagination_args['infinite_scroll'];
         }
 
-        $output = '<span class="displaying-num">' . sprintf( _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ) . '</span>';
+        $output = '<span class="displaying-num">' . sprintf( /* translators: %s: Number of items. */ _n( '%s item', '%s items', $total_items ), number_format_i18n( $total_items ) ) . '</span>';
 
         $current = $this->get_pagenum();
 
-        $current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+        $current_url = set_url_scheme( 'http://' . ( isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' ) . ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ) );
 
         $current_url = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
 
@@ -337,7 +337,7 @@ class Base {
             );
         }
         $html_total_pages = sprintf( "<span class='total-pages'>%s</span>", number_format_i18n( $total_pages ) );
-        $page_links[] = $total_pages_before . sprintf( _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . $total_pages_after;
+        $page_links[] = $total_pages_before . sprintf( /* translators: 1: Current page number, 2: Total number of pages. */ _x( '%1$s of %2$s', 'paging' ), $html_current_page, $html_total_pages ) . $total_pages_after;
 
         if ( $disable_next ) {
             $page_links[] = '<span class="tablenav-pages-navspan button disabled" aria-hidden="true">&rsaquo;</span>';
@@ -372,6 +372,7 @@ class Base {
         }
         $this->_pagination = "<div class='tablenav-pages{$page_class}'>$output</div>";
 
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built just above from literal markup, esc_url() links, number_format_i18n() numbers and integers.
         echo $this->_pagination;
     }
     public function get_columns() {
@@ -407,6 +408,7 @@ class Base {
             $default = Live_Weather_Station_List_Table::get_default_primary_column_name();
         }
 
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Same hook name as the core WP_List_Table, kept so that code written for core list tables keeps working.
         $column  = apply_filters( 'list_table_primary_column', $default, $this->screen->id );
 
         if ( empty( $column ) || ! isset( $columns[ $column ] ) ) {
@@ -432,6 +434,7 @@ class Base {
         $hidden = get_hidden_columns( $this->screen );
 
         $sortable_columns = $this->get_sortable_columns();
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Same hook name as the core WP_List_Table, kept so that code written for core list tables keeps working.
         $_sortable = apply_filters( "manage_{$this->screen->id}_sortable_columns", $sortable_columns );
 
         $sortable = array();
@@ -459,11 +462,11 @@ class Base {
     public function print_column_headers( $with_id = true ) {
         list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
 
-        $current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
+        $current_url = set_url_scheme( 'http://' . ( isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '' ) . ( isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '' ) );
         $current_url = remove_query_arg( 'paged', $current_url );
 
         if ( isset( $_GET['orderby'] ) )
-            $current_orderby = $_GET['orderby'];
+            $current_orderby = sanitize_text_field( wp_unslash( $_GET['orderby'] ) );
         else
             $current_orderby = '';
 
@@ -518,6 +521,7 @@ class Base {
             if ( !empty( $class ) )
                 $class = "class='" . join( ' ', $class ) . "'";
 
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $tag, $scope are literals, $id and $class are built above from the column keys declared by get_columns(); the display names are the plugin's own translated column titles (and the sorting link, escaped with esc_url).
             echo "<$tag $scope $id $class>$column_display_name</$tag>";
         }
     }
@@ -526,7 +530,7 @@ class Base {
 
         $this->display_tablenav( 'top' );
         ?>
-        <table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+        <table class="wp-list-table <?php echo esc_attr( implode( ' ', $this->get_table_classes() ) ); ?>">
             <thead>
             <tr>
                 <?php $this->print_column_headers(); ?>
@@ -535,7 +539,7 @@ class Base {
 
             <tbody id="the-list"<?php
             if ( $singular ) {
-                echo " data-wp-lists='list:$singular'";
+                echo " data-wp-lists='list:" . esc_attr( $singular ) . "'";
             } ?>>
             <?php $this->display_rows_or_placeholder(); ?>
             </tbody>
@@ -577,7 +581,7 @@ class Base {
         if ( $this->has_items() ) {
             $this->display_rows();
         } else {
-            echo '<tr class="no-items"><td class="colspanchange" colspan="' . $this->get_column_count() . '">';
+            echo '<tr class="no-items"><td class="colspanchange" colspan="' . absint( $this->get_column_count() ) . '">';
             $this->no_items();
             echo '</td></tr>';
         }
@@ -610,15 +614,17 @@ class Base {
 
             // Comments column uses HTML in the display name with screen reader text.
             // Instead of using esc_attr(), we strip tags to get closer to a user-friendly string.
-            $data = 'data-colname="' . wp_strip_all_tags( $column_display_name ) . '"';
+            $data = 'data-colname="' . esc_attr( wp_strip_all_tags( $column_display_name ) ) . '"';
 
-            $attributes = "class='$classes' $data";
+            $attributes = "class='" . esc_attr( $classes ) . "' $data";
 
             if ( 'cb' == $column_name ) {
                 echo '<th scope="row" class="check-column">';
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- column_cb() is overridden by the plugin list tables, which return a checkbox input they build themselves with esc_attr().
                 echo $this->column_cb( $item );
                 echo '</th>';
             } elseif ( method_exists( $this, '_column_' . $column_name ) ) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Custom _column_* callbacks of the plugin list tables return a complete table cell they build themselves.
                 echo call_user_func(
                     array( $this, '_column_' . $column_name ),
                     $item,
@@ -627,6 +633,7 @@ class Base {
                     $primary
                 );
             } elseif ( method_exists( $this, 'column_' . $column_name ) ) {
+                // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- $attributes is escaped above; column_* methods of the plugin list tables return HTML cells content built with esc_html()/esc_url()/esc_attr(); handle_row_actions() returns a fixed button.
                 echo "<td $attributes>";
                 echo call_user_func( array( $this, 'column_' . $column_name ), $item );
                 echo $this->handle_row_actions( $item, $column_name, $primary );
@@ -636,48 +643,11 @@ class Base {
                 echo $this->column_default( $item, $column_name );
                 echo $this->handle_row_actions( $item, $column_name, $primary );
                 echo "</td>";
+                // phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
             }
         }
     }
     protected function handle_row_actions( $item, $column_name, $primary ) {
         return $column_name == $primary ? '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>' : '';
-    }
-    public function ajax_response() {
-        $this->prepare_items();
-
-        ob_start();
-        if ( ! empty( $_REQUEST['no_placeholder'] ) ) {
-            $this->display_rows();
-        } else {
-            $this->display_rows_or_placeholder();
-        }
-
-        $rows = ob_get_clean();
-
-        $response = array( 'rows' => $rows );
-
-        if ( isset( $this->_pagination_args['total_items'] ) ) {
-            $response['total_items_i18n'] = sprintf(
-                _n( '%s item', '%s items', $this->_pagination_args['total_items'] ),
-                number_format_i18n( $this->_pagination_args['total_items'] )
-            );
-        }
-        if ( isset( $this->_pagination_args['total_pages'] ) ) {
-            $response['total_pages'] = $this->_pagination_args['total_pages'];
-            $response['total_pages_i18n'] = number_format_i18n( $this->_pagination_args['total_pages'] );
-        }
-
-        die( wp_json_encode( $response ) );
-    }
-    public function _js_vars() {
-        $args = array(
-            'class'  => get_class( $this ),
-            'screen' => array(
-                'id'   => $this->screen->id,
-                'base' => $this->screen->base,
-            )
-        );
-
-        printf( "<script type='text/javascript'>list_args = %s;</script>\n", wp_json_encode( $args ) );
     }
 }

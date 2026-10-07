@@ -10,7 +10,7 @@ use WeatherStation\System\Logs\Logger;
  * Class to push data to Weather Underground.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.6.0
  */
@@ -69,7 +69,7 @@ class Pusher extends Abstract_Pusher {
         if (array_key_exists('dew_point', $data)) {
             $result['dewptf'] = $this->get_temperature($data['dew_point'], 1);
         }
-        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        $result['dateutc'] = gmdate('Y-m-d H:i:s', time()-60);
         /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
         }*/
@@ -88,7 +88,7 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['ID'] = $station['wug_user'];
         $result['PASSWORD'] = ($station['wug_password']);
-        $result['softwaretype'] = (LWS_PLUGIN_SIGNATURE);
+        $result['softwaretype'] = (LIVE_WEATHER_STATION_PLUGIN_SIGNATURE);
         $result['action'] = 'updateraw';
         return $result;
     }
@@ -136,7 +136,8 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $body = $content['body'];
         if (strpos(strtolower($body), 'success') === false) {
-            throw new \Exception($body);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is stripped of tags by wp_strip_all_tags() and is only logged, never printed as HTML.
+            throw new \Exception(substr(wp_strip_all_tags($body), 0, 255));
         }
     }
 

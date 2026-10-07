@@ -9,7 +9,7 @@ use WeatherStation\Data\Arrays\Generator;
  * Class to generate parameter timelapse form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -38,7 +38,7 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'timelapse';
         $this->module_name = __('Timelapse viewer', 'live-weather-station');
         $this->module_hint = __('Display a recorded timelapse.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-stopwatch':' fa-stopwatch') . ' fa-fw';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-stopwatch':' fa-stopwatch') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }
@@ -127,7 +127,7 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_preview() {
         $content = '<div id="lws-graph-preview"></div>';
-        $content .= '<div id="' . $this->fingerprint . '" style="padding:0px;"></div>';
+        $content .= '<div id="' . esc_attr($this->fingerprint) . '" style="padding:0px;"></div>';
         $special_footer  = '<span id="yearly-timelapse-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';
         $special_footer .= __('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );

@@ -10,7 +10,7 @@ use WeatherStation\System\Logs\Logger;
  * This class add notification capacity to the plugin.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -73,11 +73,11 @@ class Notifier {
      */
     private static function _notify($level = 'error', $name='', $url='', $description='', $shift=false) {
         $values = array();
-        $values['timestamp'] = date('Y-m-d H:i:s', ($shift?time()+1:time()));
+        $values['timestamp'] = gmdate('Y-m-d H:i:s', ($shift?time()+1:time()));
         $values['level'] = $level;
-        $values['name'] = substr($name, 0, 99);
-        $values['description'] = substr($description, 0, 1999);
-        $values['url'] = substr($url, 0, 199);
+        $values['name'] = mb_substr(sanitize_text_field($name), 0, 99);
+        $values['description'] = wp_kses_post(mb_substr($description, 0, 1999));
+        $values['url'] = mb_substr(esc_url_raw($url), 0, 199);
         self::insert_table(self::live_weather_station_notifications_table(), $values);
         Cache::invalidate_backend(self::$cacheid);
     }

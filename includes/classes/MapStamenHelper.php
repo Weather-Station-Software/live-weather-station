@@ -5,12 +5,13 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Stamen maps.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -31,6 +32,32 @@ class StamenHandling extends BaseHandling {
     protected $type = 2;
     public $service = 'Stamen';
     protected $maxzoom = 16;
+
+    /**
+     * The overlays (Stadia Maps styles) that can still be served.
+     *
+     * The old "terrain-classic" and "toner-hybrid" styles have no raster version anymore.
+     *
+     * @since 3.9.0
+     */
+    private static $overlays = array('terrain', 'terrain-background', 'toner', 'toner-background', 'toner-lite', 'watercolor');
+
+    /**
+     * Verify if the map can not use the Stadia Maps tiles and must fall back to OpenStreetMap.
+     *
+     * It is the case when no Stadia Maps API key is set, or when the saved overlay does not exist anymore
+     * (removed style, or a map which was previously a retired Navionics map).
+     *
+     * @return boolean True if the OpenStreetMap fallback must be used, false otherwise.
+     * @since 3.9.0
+     */
+    private function use_fallback() {
+        if ((string)get_option('live_weather_station_stadia_apikey') === '') {
+            return true;
+        }
+        $overlay = (isset($this->map_params['specific']['options']['overlay']) && is_string($this->map_params['specific']['options']['overlay'])) ? $this->map_params['specific']['options']['overlay'] : '';
+        return !in_array($overlay, self::$overlays, true);
+    }
 
     /**
      * Initialize the map and set its specific properties.
@@ -55,14 +82,18 @@ class StamenHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself called by MapHelper::edit_map() after wp_verify_nonce() and the capability check.
         if (array_key_exists('controls-zoom', $_POST)) {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('terrain', 'terrain-background', 'terrain-classic', 'toner', 'toner-background', 'toner-lite', 'watercolor'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+            // The caller (MapHelper::edit_map) has already checked the capability and the nonce.
+            $overlay = is_string($_POST['options-overlay']) ? sanitize_text_field(wp_unslash($_POST['options-overlay'])) : '';
+            if (in_array($overlay, self::$overlays, true)) {
+                $result['options']['overlay'] = $overlay;
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 
@@ -74,7 +105,15 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_resources(){
         $result = '';
-        wp_enqueue_script('lws-stamen-boot');
+        if ($this->use_fallback()) {
+            // The notice is only for the administrators, in the admin screens (never for the visitors of the site).
+            if (is_admin() && current_user_can(live_weather_station_manage_capability())) {
+                $result .= '<p class="notice notice-warning inline" style="padding:8px 12px;">' . esc_html__('This map uses OpenStreetMap: Stamen maps now need a Stadia Maps API key (and an existing style). Please enter your Stadia Maps API key in the Services settings.', 'live-weather-station') . '</p>';
+            }
+        }
+        else {
+            wp_enqueue_script('lws-stamen-boot');
+        }
         return $result;
     }
 
@@ -111,15 +150,23 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_script(){
         $result = '';
-        $result .= "var layer = new L.StamenTileLayer('" . $this->map_params['specific']['options']['overlay'] . "');" . PHP_EOL;
+        if ($this->use_fallback()) {
+            $result .= "var layer = new L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {" . PHP_EOL;
+            $result .= '  attribution: "Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
+            $result .= '  maxZoom: 19' . PHP_EOL;
+            $result .= '});' . PHP_EOL;
+        }
+        else {
+            $result .= "var layer = new L.StamenTileLayer(" . Guard::js($this->map_params['specific']['options']['overlay']) . ", {apiKey: " . Guard::js(get_option('live_weather_station_stadia_apikey')) . "});" . PHP_EOL;
+        }
         $result .= "var map = new L.Map('stamen-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;

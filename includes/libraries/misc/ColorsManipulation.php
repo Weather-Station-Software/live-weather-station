@@ -7,7 +7,7 @@ namespace WeatherStation\Utilities;
  *
  * @package Includes\Libraries
  * @author Originally written by Arlo Carreon <http://arlocarreon.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 1.0.0
  * @license MIT
  */
@@ -187,6 +187,9 @@ class ColorsManipulation {
         } else if( strlen($color) != 6 ) {
             throw new \Exception("HEX color needs to be 6 or 3 digits long");
         }
+        if (!ctype_xdigit($color)) {
+            throw new \Exception("HEX color needs to contain only hexadecimal digits");
+        }
 
         $this->_hsl = self::hexToHsl( $color );
         $this->_hex = $color;
@@ -308,9 +311,10 @@ class ColorsManipulation {
         }
 
         // Convert to hex
-        $r = dechex($r);
-        $g = dechex($g);
-        $b = dechex($b);
+        // PHP 8.1 compat: explicit truncation (implicit float to int conversion is deprecated).
+        $r = dechex((int)$r);
+        $g = dechex((int)$g);
+        $b = dechex((int)$b);
 
         // Make sure we get 2 digits for decimals
         $r = (strlen("".$r)===1) ? "0".$r:$r;
@@ -370,9 +374,9 @@ class ColorsManipulation {
         }
 
         // Convert RGB to HEX
-        $hex[0] = dechex( $rgb['R'] );
-        $hex[1] = dechex( $rgb['G'] );
-        $hex[2] = dechex( $rgb['B'] );
+        $hex[0] = dechex((int)$rgb['R']);
+        $hex[1] = dechex((int)$rgb['G']);
+        $hex[2] = dechex((int)$rgb['B']);
 
         if (strlen($hex[0]) == 0) {
             $hex[0] = '00';
@@ -465,7 +469,7 @@ class ColorsManipulation {
      */
     public function makeSteppedGradient( $step, $amount = self::DEFAULT_ADJUST ) {
         $result = array();
-        $amount = (integer)(round($amount/($step-1), 0));
+        $amount = (int)(round($amount/($step-1), 0));
         if ($this->isDark()) {
             $this->_hsl = $this->_lighten($this->_hsl, 50);
         }
@@ -479,6 +483,8 @@ class ColorsManipulation {
 
     public static function colorGradient($from_color, $to_color, $graduations = 10) {
         $graduations--;
+        $from_color = preg_replace('/[^#0-9a-fA-F]/', '', (string)$from_color);
+        $to_color = preg_replace('/[^#0-9a-fA-F]/', '', (string)$to_color);
         $startcol = str_replace("#", "", $from_color);
         $endcol = str_replace("#", "", $to_color);
         $RedOrigin = hexdec(substr($startcol, 0, 2));
@@ -489,9 +495,9 @@ class ColorsManipulation {
             $GradientSizeGrn = (hexdec(substr($endcol, 2, 2)) - $GrnOrigin) / $graduations;
             $GradientSizeBlu = (hexdec(substr($endcol, 4, 2)) - $BluOrigin) / $graduations;
             for ($i = 0; $i <= $graduations; $i++) {
-                $RetVal[$i] = strtoupper("#" . str_pad(dechex($RedOrigin + ($GradientSizeRed * $i)), 2, '0', STR_PAD_LEFT) .
-                    str_pad(dechex($GrnOrigin + ($GradientSizeGrn * $i)), 2, '0', STR_PAD_LEFT) .
-                    str_pad(dechex($BluOrigin + ($GradientSizeBlu * $i)), 2, '0', STR_PAD_LEFT));
+                $RetVal[$i] = strtoupper("#" . str_pad(dechex((int)($RedOrigin + ($GradientSizeRed * $i))), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex((int)($GrnOrigin + ($GradientSizeGrn * $i))), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex((int)($BluOrigin + ($GradientSizeBlu * $i))), 2, '0', STR_PAD_LEFT));
             }
         } elseif ($graduations == 1) { // exactly 2 colors
             $RetVal[] = $from_color;
@@ -746,6 +752,9 @@ class ColorsManipulation {
             $color = $color[0].$color[0].$color[1].$color[1].$color[2].$color[2];
         } else if( strlen($color) != 6 ) {
             throw new \Exception("HEX color needs to be 6 or 3 digits long");
+        }
+        if (!ctype_xdigit($color)) {
+            throw new \Exception("HEX color needs to contain only hexadecimal digits");
         }
 
         return $color;

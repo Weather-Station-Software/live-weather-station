@@ -1,21 +1,26 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
 
 use WeatherStation\System\I18N\Handling as Intl;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+$rss = null;
 try {
     $rss = fetch_feed($url);
 } catch (\Exception $ex) {
-    //$rss = null;
+    $rss = null;
 }
 $maxitems = 0;
-if (!is_wp_error($rss)) {
-    setlocale(LC_ALL, lws_get_display_locale());
+if (isset($rss) && !is_wp_error($rss)) {
+    setlocale(LC_ALL, live_weather_station_get_display_locale());
     $maxitems = $rss->get_item_quantity(4);
     if (isset($maxitems)) {
         if ($maxitems > 0) {
@@ -38,15 +43,15 @@ if (!is_wp_error($rss)) {
 <div class="rss-widget">
     <ul>
     <?php if ($maxitems == 0) { ?>
-        <li><?php _e( 'No available news', 'live-weather-station'); ?></li>
+        <li><?php esc_html_e( 'No available news', 'live-weather-station'); ?></li>
     <?php } else { ?>
         <?php foreach ($rss_items as $item) { ?>
             <li>
                 <?php if ($item->get_id() == $id) { ?>
-                <a class="rsswidget" href="<?php echo $item->get_permalink(); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" ' : ''); ?>><?php echo $item->get_title(); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
-                <span class="rss-date"><?php echo date_i18n(get_option('date_format'), strtotime($item->get_date())); ?></span>
+                <a class="rsswidget" href="<?php echo esc_url($item->get_permalink()); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : ''); ?>><?php echo esc_html($item->get_title()); ?></a><?php echo Intl::get_language_markup(array('en')) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed <span> built by I18nHelper::get_language_markup() from a literal language code ?>
+                <span class="rss-date"><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($item->get_date()))); ?></span>
                 <div class="rssSummary">
-                    <?php echo $description; ?>
+                    <?php echo esc_html($description); ?>
                 </div>
                 <?php } ?>
             </li>
@@ -60,8 +65,8 @@ if (!is_wp_error($rss)) {
             <?php foreach ($rss_items as $item) { ?>
                 <?php if ($item->get_id() != $id) { ?>
                 <li>
-                    <a class="rsswidget" href="<?php echo $item->get_permalink(); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" ' : ''); ?>><?php echo $item->get_title(); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
-                    <span class="rss-date"><?php echo date_i18n(get_option('date_format'), strtotime($item->get_date())); ?></span>
+                    <a class="rsswidget" href="<?php echo esc_url($item->get_permalink()); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : ''); ?>><?php echo esc_html($item->get_title()); ?></a><?php echo Intl::get_language_markup(array('en')) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed <span> built by I18nHelper::get_language_markup() from a literal language code ?>
+                    <span class="rss-date"><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($item->get_date()))); ?></span>
                 </li>
                 <?php } ?>
             <?php } ?>

@@ -15,7 +15,7 @@ use WeatherStation\System\Data\Data;
  * The class to perform background process.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -28,6 +28,8 @@ class ProcessManager {
     private $facility = 'Background Process';
     private static $namespace = 'WeatherStation\Process\\';
     private $max_time = 0;
+    private static $lock_name = 'live_weather_station_background_process_lock';
+    private static $lock_ttl = 600;
     private $start = 0;
     private $chrono = 0;
 
@@ -45,6 +47,25 @@ class ProcessManager {
     }
 
     /**
+     * Check that a process class name is an existing process of this plugin.
+     *
+     * The name is stored in database: only a bare class name matching a file of the process directory is accepted.
+     *
+     * @param mixed $name The class name (without namespace).
+     * @return boolean True if the name can be instantiated as a process.
+     * @since 3.9.0
+     */
+    private static function is_known_process($name) {
+        if (!is_string($name) || !preg_match('/^[A-Za-z0-9_]{1,80}$/', $name) || $name === 'Process') {
+            return false;
+        }
+        if (!file_exists(LIVE_WEATHER_STATION_INCLUDES_DIR . 'process/' . $name . '.php')) {
+            return false;
+        }
+        return is_subclass_of(self::$namespace . $name, self::$namespace . 'Process');
+    }
+
+    /**
      * Initialize the class and set its properties.
      *
      * @param string $class_name The class name process.
@@ -52,12 +73,16 @@ class ProcessManager {
      * @since 3.6.0
      */
     public static function register($class_name, $args=array()) {
+        if (!self::is_known_process($class_name)) {
+            Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to register background process: unknown class.');
+            return;
+        }
         $class_name = self::$namespace . $class_name;
         try {
             $process = new $class_name;
             $process->register($args);
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
         }
     }
@@ -76,14 +101,24 @@ class ProcessManager {
             return false;
         }
         foreach ($processes as $process) {
+            if (!isset($process['class']) || !self::is_known_process($process['class'])) {
+                // Log once per process row and per hour, not on every cron run.
+                $flag = 'lws_bgp_unknown_' . md5(isset($process['uuid']) ? (string)$process['uuid'] : serialize($process));
+                if (!get_transient($flag)) {
+                    set_transient($flag, 1, HOUR_IN_SECONDS);
+                    Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process: unknown class.');
+                }
+                continue;
+            }
             $class_name = self::$namespace . $process['class'];
             try {
                 $p = new $class_name;
                 $p->run(!$only_paused, $process['uuid']);
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
             }
+            live_weather_station_renew_lock(self::$lock_name, self::$lock_ttl);
             if ($this->chrono > $this->max_time) {
                 break;
             }
@@ -98,6 +133,26 @@ class ProcessManager {
      * @since 3.6.0
      */
     public function run(){
+        // Atomic run lock (see live_weather_station_acquire_lock()); it is renewed after each process, so a long job keeps it.
+        $lock = self::$lock_name;
+        if (!live_weather_station_acquire_lock($lock, self::$lock_ttl)) {
+            Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: another run is in progress, skipping.');
+            return;
+        }
+        try {
+            $this->do_run();
+        }
+        finally {
+            delete_option($lock);
+        }
+    }
+
+    /**
+     * Do the main job (the lock is held by the caller).
+     *
+     * @since 3.9.0
+     */
+    private function do_run() {
         $cron_id = Watchdog::init_chrono(Watchdog::$background_process_name);
         Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: starting main job.');
         if (ini_get('max_execution_time') < 180) {

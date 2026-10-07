@@ -1,12 +1,15 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
 
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <?php if (isset($constraint_range) && $constraint_range) { ?>
@@ -17,14 +20,14 @@
                     <th class="lws-login" width="23%" align="left" scope="row"><?php esc_html_e('From', 'live-weather-station' );?>&hellip;</th>
                     <td width="2%"/>
                     <td align="left">
-                        <span class="login"><input class="regular-text" id="lws-date-start" name="lws-date-start" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo htmlspecialchars($station['oldest_data']) ?>" min="<?php echo htmlspecialchars($station['oldest_data']) ?>" max="<?php echo htmlspecialchars($station['newest_data']) ?>" /></span>
+                        <span class="login"><input class="regular-text" id="lws-date-start" name="lws-date-start" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo esc_attr($station['oldest_data']) ?>" min="<?php echo esc_attr($station['oldest_data']) ?>" max="<?php echo esc_attr($station['newest_data']) ?>" /></span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="23%" align="left" scope="row"><?php esc_html_e('To', 'live-weather-station' );?>&hellip;</th>
                     <td width="2%"/>
                     <td align="left">
-                        <span class="login"><input class="regular-text" id="lws-date-end" name="lws-date-end" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo htmlspecialchars($station['newest_data']) ?>" min="<?php echo htmlspecialchars($station['oldest_data']) ?>" max="<?php echo htmlspecialchars($station['newest_data']) ?>" /></span>
+                        <span class="login"><input class="regular-text" id="lws-date-end" name="lws-date-end" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo esc_attr($station['newest_data']) ?>" min="<?php echo esc_attr($station['oldest_data']) ?>" max="<?php echo esc_attr($station['newest_data']) ?>" /></span>
                     </td>
                 </tr>
             </table>
@@ -41,14 +44,14 @@
                     <th class="lws-login" width="38%" align="left" scope="row"><?php esc_html_e('From', 'live-weather-station' );?>&hellip;</th>
                     <td width="2%"/>
                     <td align="left">
-                        <span class="login"><input class="regular-text" id="lws-date-start" name="lws-date-start" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo htmlspecialchars($station['newest_data']) ?>" /></span>
+                        <span class="login"><input class="regular-text" id="lws-date-start" name="lws-date-start" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo esc_attr($station['newest_data']) ?>" /></span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="38%" align="left" scope="row"><?php esc_html_e('To', 'live-weather-station' );?>&hellip;</th>
                     <td width="2%"/>
                     <td align="left">
-                        <span class="login"><input class="regular-text" id="lws-date-end" name="lws-date-end" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo htmlspecialchars($station['newest_data']) ?>" /></span>
+                        <span class="login"><input class="regular-text" id="lws-date-end" name="lws-date-end" type="date" required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" value="<?php echo esc_attr($station['newest_data']) ?>" /></span>
                     </td>
                 </tr>
             </table>

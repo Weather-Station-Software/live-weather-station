@@ -8,12 +8,13 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Handling as Schedules;
 use WeatherStation\System\Data\Data;
+use WeatherStation\System\Output\Guard;
 
 /**
  * The class to compute and maintain consistency of performance statistics.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
@@ -58,7 +59,7 @@ class Performance {
      * @since 3.2.0
      */
     public static function store() {
-        if (is_lws_active()) {
+        if (live_weather_station_is_active()) {
             Cache::write_stats();
             Watchdog::write_stats();
             Quota::write_stats();
@@ -106,6 +107,7 @@ class Performance {
             }
         }
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $subresult = array();
@@ -181,14 +183,14 @@ class Performance {
                     $jsoned[$field . '_' . $aggregate] = json_encode($jsonable[$field . '_' . $aggregate]);
                     $jsoned[$field . '_' . $aggregate] = str_replace('"', '', $jsoned[$field . '_' . $aggregate]);
                     $name = $field_names[$field];
-                    $data_r[$aggregate][] = '{"key":"' . $name . '", "values":' . $jsoned[$field . '_' . $aggregate] . '}';
+                    $data_r[$aggregate][] = '{"key":' . Guard::js($name) . ', "values":' . $jsoned[$field . '_' . $aggregate] . '}';
                 }
                 foreach ($dimensions as $dimension) {
                     foreach ($metrics as $metric) {
                         $jsoned[$field.'_'.$dimension.'_'.$metric] = json_encode($jsonable[$field.'_'.$dimension.'_'.$metric]);
                         $jsoned[$field.'_'.$dimension.'_'.$metric] = str_replace('"', '', $jsoned[$field.'_'.$dimension.'_'.$metric]);
                         $name = $field_names[$field] . ' / ' . $dimension_names[$dimension];
-                        $data_r[$metric][] = '{"key":"' . $name . '", "values":'.$jsoned[$field.'_'.$dimension.'_'.$metric].'}';
+                        $data_r[$metric][] = '{"key":' . Guard::js($name) . ', "values":'.$jsoned[$field.'_'.$dimension.'_'.$metric].'}';
                     }
                 }
             }
@@ -300,6 +302,7 @@ class Performance {
         $jsonable = array();
         $jsoned = array();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -353,7 +356,7 @@ class Performance {
             foreach ($fields as $field) {
                 if (count($sum24) > 0) {
                     if (array_key_exists($field, $sum24)) {
-                        $sum24[$field]['avr_time'] = round ($sum24[$field]['time'] / $sum24[$field]['count'], 0);
+                        $sum24[$field]['avr_time'] = ($sum24[$field]['count'] > 0 ? round ($sum24[$field]['time'] / $sum24[$field]['count'], 0) : 0);
                     } else {
                         $sum24[$field]['time'] = 0;
                         $sum24[$field]['count'] = 0;
@@ -368,7 +371,7 @@ class Performance {
                 $sum24[$field]['name'] = self::get_pool_name($field);
                 if (count($sum30) > 0) {
                     if (array_key_exists($field, $sum30)) {
-                        $sum30[$field]['avr_time'] = round ($sum30[$field]['time'] / $sum30[$field]['count'], 0);
+                        $sum30[$field]['avr_time'] = ($sum30[$field]['count'] > 0 ? round ($sum30[$field]['time'] / $sum30[$field]['count'], 0) : 0);
                     } else {
                         $sum30[$field]['time'] = 0;
                         $sum30[$field]['count'] = 0;
@@ -410,22 +413,22 @@ class Performance {
             $data = array();
             $data_r = array();
             foreach ($fields as $field) {
-                $jsoned['by_pool'][$field . '_count'] = json_encode($jsonable['by_pool'][$field . '_count']);
+                $jsoned['by_pool'][$field . '_count'] = json_encode(isset($jsonable['by_pool'][$field . '_count']) ? $jsonable['by_pool'][$field . '_count'] : array());
                 $jsoned['by_pool'][$field . '_count'] = str_replace('"', '', $jsoned['by_pool'][$field . '_count']);
-                $data_r['by_pool']['count'][] = '{"key":"' . ucfirst(self::get_pool_name($field)) . '", "values":' . $jsoned['by_pool'][$field . '_count'] . '}';
-                $jsoned['by_pool'][$field . '_time'] = json_encode($jsonable['by_pool'][$field . '_time']);
+                $data_r['by_pool']['count'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_count'] . '}';
+                $jsoned['by_pool'][$field . '_time'] = json_encode(isset($jsonable['by_pool'][$field . '_time']) ? $jsonable['by_pool'][$field . '_time'] : array());
                 $jsoned['by_pool'][$field . '_time'] = str_replace('"', '', $jsoned['by_pool'][$field . '_time']);
-                $data_r['by_pool']['time'][] = '{"key":"' . ucfirst(self::get_pool_name($field)) . '", "values":' . $jsoned['by_pool'][$field . '_time'] . '}';
+                $data_r['by_pool']['time'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_time'] . '}';
             }
-            foreach ($jsonable['by_cron'] as $key=>$cron) {
+            foreach ((isset($jsonable['by_cron']) ? $jsonable['by_cron'] : array()) as $key=>$cron) {
                 $jsoned['by_cron'][$key] = json_encode($cron);
                 $jsoned['by_cron'][$key] = str_replace('"', '', $jsoned['by_cron'][$key]);
-                $data_r['by_cron'][self::get_cron_pool($key)][] = '{"key":"' . ucfirst(self::get_cron_name($key)) . '", "values":' . $jsoned['by_cron'][$key] . '}';
+                $data_r['by_cron'][self::get_cron_pool($key)][] = '{"key":' . Guard::js(ucfirst(self::get_cron_name($key))) . ', "values":' . $jsoned['by_cron'][$key] . '}';
             }
             $data['count_by_pool'] = '[' . implode(',', $data_r['by_pool']['count']) . ']';
             $data['time_by_pool'] = '[' . implode(',', $data_r['by_pool']['time']) . ']';
             foreach ($fields as $field) {
-                if (array_key_exists($field, $data_r['by_cron'])) {
+                if (isset($data_r['by_cron']) && array_key_exists($field, $data_r['by_cron'])) {
                     $data['time_for_'.$field] = '[' . implode(',', $data_r['by_cron'][$field]) . ']';
                 }
                 else {
@@ -471,8 +474,9 @@ class Performance {
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $values = array();
         $jsoned = array();
-        $database = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
+        $database = new Data(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $tablenames = array();
@@ -506,7 +510,7 @@ class Performance {
                     }
                 }
                 foreach ($jsoned[$type] as $t=>$v) {
-                    $data_r[$type][] = '{"key":"' . $t . '", "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
+                    $data_r[$type][] = '{"key":' . Guard::js($t) . ', "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
                 }
                 $data[$type] = '[' . implode(',', $data_r[$type]) . ']';
             }
@@ -524,6 +528,17 @@ class Performance {
     }
 
     /**
+     * Clean a label that will be embedded in hand-built JSON (chars used as delimiters or able to break JS are removed).
+     *
+     * @param mixed $label The label.
+     * @return string The cleaned label.
+     * @since 3.8.15
+     */
+    private static function clean_label($label) {
+        return preg_replace('/[\$"\\\\<>\'&\x00-\x1f]/', '', (string)$label);
+    }
+
+    /**
      * Get all stats values for events.
      *
      * @since 3.2.0
@@ -537,8 +552,8 @@ class Performance {
         $counts = array(24, 30);
         $values = array();
         $cutoff = array();
-        $cutoff[24] = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
-        $cutoff[30] = date('Y-m-d H:i:s',time() - (30*DAY_IN_SECONDS));
+        $cutoff[24] = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff[30] = gmdate('Y-m-d H:i:s',time() - (30*DAY_IN_SECONDS));
         $sum = array();
         $sum[24] = array();
         $sum[30] = array();
@@ -552,6 +567,7 @@ class Performance {
         foreach ($counts as $count) {
             $sql = "SELECT `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " WHERE timestamp > '" . $cutoff[$count] . "'GROUP BY `level` ORDER BY `timestamp` ASC;";
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
@@ -566,6 +582,7 @@ class Performance {
             $field_list = array();
             $sql = "SELECT `" . $field . "`, `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " GROUP BY `" . $field . "`, `level` ORDER BY `" . $field . "`, `level` DESC";
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
@@ -591,6 +608,7 @@ class Performance {
         $density_max = 0;
         $density_datemin = time();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -615,6 +633,7 @@ class Performance {
         $tmp_date = 0;
         $tmp_criticality = 0;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -659,14 +678,14 @@ class Performance {
         foreach ($pre_jsonable as $key=>$field) {
             foreach ($field as $level=>$series) {
                 foreach ($series as $element => $cpt) {
-                    $jsonable[$key][$level][] = array('x' => '$' . $element . '$', 'y' => $pre_jsonable[$key][$level][$element]);
+                    $jsonable[$key][$level][] = array('x' => '$' . self::clean_label($element) . '$', 'y' => $pre_jsonable[$key][$level][$element]);
                 }
             }
             foreach (Logger::$ordered_severity as $severity) {
                 $s = json_encode($jsonable[$key][$severity]);
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
-                $data_r[$key][] = '{"key":"' . ucfirst(Logger::get_name($severity)) . '", "color":"' . Logger::get_color($severity) . '", "values":' . $s . '}';
+                $data_r[$key][] = '{"key":' . Guard::js(ucfirst(Logger::get_name($severity))) . ', "color":"' . Logger::get_color($severity) . '", "values":' . $s . '}';
             }
             $data[$key] = '[' . implode(',', $data_r[$key]) . ']';
         }
@@ -700,6 +719,7 @@ class Performance {
         $service24 = array();
         $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -715,6 +735,7 @@ class Performance {
         $service30 = array();
         $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -736,11 +757,12 @@ class Performance {
             }
         }
         $select = "service, " . implode(', ', $fields);
-        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -785,12 +807,13 @@ class Performance {
             $fields[] = '(if (`' . $verb . '_rate_q`=0,0,1)) as max_' . $verb . '_rate_has_quota' ;
         }
         $select = "service, " . implode(', ', $fields);
-        $cutoff = date('Y-m-d',time() - (31*DAY_IN_SECONDS)) . ' 00:00:00';
-        $today = date('Y-m-d') . ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time() - (31*DAY_IN_SECONDS)) . ' 00:00:00';
+        $today = gmdate('Y-m-d') . ' 00:00:00';
         $where = "timestamp>='" . $cutoff . "' AND timestamp<'" . $today . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -815,10 +838,11 @@ class Performance {
         // 24H verbs breakdown
         $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
-            $query_t = (array)$query_a[0];
-            $cpt = ($query_t['cpt']-1)/144;
+            $query_t = (array)(isset($query_a[0]) ? $query_a[0] : array());
+            $cpt = isset($query_t['cpt']) ? ($query_t['cpt']-1)/144 : 1;
         } catch (\Exception $ex) {
             $cpt = 1;
         }
@@ -836,6 +860,7 @@ class Performance {
         $select = "service, " . implode(', ', $fields);
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -851,22 +876,23 @@ class Performance {
         foreach ($verbs as $verb) {
             $jsonable = array();
             foreach ($service24 as $service) {
-                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = json_encode(array('x' => '$' . self::clean_label($service) . '$', 'y' => round($values[$verb][$service], 0)));
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
                 $jsonable[] = $s;
             }
             $s = '[' . implode(',', $jsonable) . ']';
-            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
         }
         $data['count']['service_short'] = '[' . implode(',', $data_r) . ']';
         
         // 24H CALLS & RATES
         $values = array();
-        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -888,6 +914,7 @@ class Performance {
         }
         $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -897,7 +924,7 @@ class Performance {
                 foreach ($verbs as $verb) {
                     $values['call'][$detail['service']][$verb][$time] = $detail[$verb];
                     $values['call'][$detail['service']][$verb.'_q'][$time] = Quota::get_count_quota($detail['service'], $verb);
-                    $rate = (integer)($detail[$verb] / 10);
+                    $rate = (int)($detail[$verb] / 10);
                     if ($detail[$verb] % 10 > 0) {
                         $rate += 1;
                     }
@@ -919,7 +946,7 @@ class Performance {
                     $jsonable[] = $s;
                 }
                 $s = '[' . implode(',', $jsonable) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
             }
             $data['call_short'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -933,17 +960,18 @@ class Performance {
                     $jsonable[] = $s;
                 }
                 $s = '[' . implode(',', $jsonable) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
             }
             $data['rate_short'][$service] = '[' . implode(',', $data_r) . ']';
         }
 
         // 30H CALLS & RATES
         $values = array();
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -963,10 +991,11 @@ class Performance {
         catch (\Exception $ex) {
             //
         }
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -1021,9 +1050,9 @@ class Performance {
                     $class_quota = ', "classed":"hidden-line"';
                 }
                 $s = '[' . implode(',', $jsonable['values']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . $class_value . ', "values":' . $s . '}';
                 $s = '[' . implode(',', $jsonable['quotas']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb) . ' - quotas') . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
             }
             $data['call_long'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -1065,9 +1094,9 @@ class Performance {
                     $class_quota = ', "classed":"hidden-line"';
                 }
                 $s = '[' . implode(',', $jsonable['values']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . $class_value . ', "values":' . $s . '}';
                 $s = '[' . implode(',', $jsonable['quotas']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb) . ' - quotas') . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
             }
             $data['rate_long'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -1076,10 +1105,11 @@ class Performance {
         // 30D verbs breakdown
         $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table();
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
-            $query_t = (array)$query_a[0];
-            $cpt = $query_t['cpt'];
+            $query_t = (array)(isset($query_a[0]) ? $query_a[0] : array());
+            $cpt = isset($query_t['cpt']) ? $query_t['cpt'] : 1;
         } catch (\Exception $ex) {
             $cpt = 1;
         }
@@ -1094,11 +1124,12 @@ class Performance {
                 $values[$verb][$service] = 0;
             }
         }
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $select = "service, " . implode(', ', $fields);
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin statistics table (prefix + Cache::*_table() / self::*_table()): $sql holds only plugin table names, literal column lists and gmdate() timestamps, no request value; statistics are read live
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -1114,13 +1145,13 @@ class Performance {
         foreach ($verbs as $verb) {
             $jsonable = array();
             foreach ($service30 as $service) {
-                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = json_encode(array('x' => '$' . self::clean_label($service) . '$', 'y' => round($values[$verb][$service], 0)));
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
                 $jsonable[] = $s;
             }
             $s = '[' . implode(',', $jsonable) . ']';
-            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
         }
         $data['count']['service_long'] = '[' . implode(',', $data_r) . ']';
 

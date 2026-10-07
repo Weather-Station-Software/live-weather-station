@@ -10,7 +10,7 @@ use WeatherStation\System\Device\Manager as DeviceManager;
  * The class to manage data integrity.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.1
  */
@@ -34,7 +34,6 @@ class Data {
     public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
-        $this->ws_tables_construct();
     }
 
     /**
@@ -44,6 +43,7 @@ class Data {
      */
     public function get_table_name($table){
         $result = __('Unknown table', 'live-weather-station');
+        $this->ws_tables_lazy();
         if (array_key_exists($table, $this->ws_tables)) {
             $result = $this->ws_tables[$table]['name'];
         }
@@ -57,10 +57,22 @@ class Data {
      */
     public function get_table_item($table){
         $result = _n('item', 'items', 20, 'live-weather-station');
+        $this->ws_tables_lazy();
         if (array_key_exists($table, $this->ws_tables)) {
             $result = $this->ws_tables[$table]['item'];
         }
         return $result;
+    }
+
+    /**
+     * Build the tables definitions on first use (translations must not be loaded before the init action).
+     *
+     * @since 3.9.0
+     */
+    private function ws_tables_lazy(){
+        if (empty($this->ws_tables)) {
+            $this->ws_tables_construct();
+        }
     }
 
     /**
@@ -123,6 +135,7 @@ class Data {
     private function delete_orphaned_stations() {
         global $wpdb;
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE device_id=''";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix), static DELETE without external value; write operation so no caching applies
         $wpdb->query($sql);
     }
 
@@ -134,6 +147,7 @@ class Data {
     private function delete_orphaned_modules() {
         global $wpdb;
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE module_id=''";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix), static DELETE without external value; write operation so no caching applies
         $wpdb->query($sql);
     }
 
@@ -143,6 +157,7 @@ class Data {
      * @since 3.5.0
      */
     private function database_statistics() {
+        $this->ws_tables_lazy();
         foreach ($this->ws_tables as $table => $detail) {
             $value = $this->stats_table($table);
             $datetime = new \DateTime();

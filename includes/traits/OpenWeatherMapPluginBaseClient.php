@@ -11,7 +11,7 @@ use WeatherStation\System\Quota\Quota;
  * OpenWeatherMap base client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.7.0
  */
@@ -33,6 +33,7 @@ trait BaseClient {
      * @since 2.8.0
      */
     public function authentication($key, $plan) {
+        $key = sanitize_text_field((string)$key);
         $this->last_owm_error = '';
         try {
             Quota::verify($this->service_name, 'GET');
@@ -40,11 +41,11 @@ trait BaseClient {
             $raw_data = $owm->getRawWeatherData(6455259, 'metric', 'en', $key, 'json');
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {
-                throw new \Exception('JSON / '.(string)$raw_data);
+                throw new \Exception('JSON / '.live_weather_station_clean_text($raw_data, 200));
             }
             if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
                 if (array_key_exists('message', $weather)) {
-                    throw new \Exception($weather['message']);
+                    throw new \Exception(live_weather_station_clean_text($weather['message'], 200));
                 }
                 else {
                     throw new \Exception('OpenWeatherMap unknown exception');
@@ -54,7 +55,7 @@ trait BaseClient {
             update_option('live_weather_station_owm_plan', $plan);
             return true;
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                 $this->last_owm_error = __('Wrong OpenWeatherMap API key.', 'live-weather-station');
@@ -81,7 +82,7 @@ trait BaseClient {
                 $device_id = self::get_unique_owm_id($station['guid']);
                 $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
-                $s['last_refresh'] = date('Y-m-d H:i:s');
+                $s['last_refresh'] = gmdate('Y-m-d H:i:s');
                 $this->update_stations_table($s);
                 $updates = array() ;
                 $updates['device_id'] = $device_id;
@@ -89,7 +90,7 @@ trait BaseClient {
                 $updates['module_id'] = $device_id;
                 $updates['module_type'] = 'NAMain';
                 $updates['module_name'] = $station['station_name'];
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                 $updates['measure_type'] = 'loc_altitude';
                 $updates['measure_value'] = $station['loc_altitude'];
                 $this->update_data_table($updates, null);
@@ -109,32 +110,11 @@ trait BaseClient {
                 $updates['measure_value'] = $station['loc_city'];
                 $this->update_data_table($updates, null);
                 $updates['measure_type'] = 'last_refresh';
-                $updates['measure_value'] = date('Y-m-d H:i:s');
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                 $this->update_data_table($updates, null);
                 $list[] = $device_id;
             }
             $this->clean_owm_from_table($list);
-        }
-    }
-
-    /**
-     * Synchronize main table with station table.
-     *
-     * @since 3.0.0
-     */
-    protected function synchronize_owm_true_station() {
-        $list = array();
-        $stations = $this->get_all_owm_id_stations();
-        if (count($stations) > 0) {
-            foreach ($stations as $station) {
-                $device_id = self::get_unique_owm_true_id($station['guid']);
-                $s = $this->get_station_information_by_guid($station['guid']);
-                $s['station_id'] = $device_id;
-                $s['last_refresh'] = date('Y-m-d H:i:s');
-                $this->update_stations_table($s);
-                $list[] = $device_id;
-            }
-            $this->clean_owm_true_from_table($list);
         }
     }
 

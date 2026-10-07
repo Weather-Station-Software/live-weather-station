@@ -16,7 +16,7 @@ use WeatherStation\SDK\OpenWeatherMap\WeatherHistory;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 2.0.0
  * @license MIT
  */
@@ -150,15 +150,16 @@ class OWMApiClient
         $answer = $this->getRawWeatherData($query, $units, $lang, $appid, 'xml');
 
         try {
-            $xml = new \SimpleXMLElement($answer);
+            $xml = new \SimpleXMLElement($answer, LIBXML_NONET);
         } catch (\Exception $e) {
             // Invalid xml format. This happens in case OpenWeatherMap returns an error.
             // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
             $error = json_decode($answer, true);
             if (isset($error['message'])) {
-                throw new OWMException($error['message'], $error['cod']);
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
+                throw new OWMException(substr(sanitize_text_field((string)$error['message']), 0, 200), isset($error['cod']) ? (int)$error['cod'] : 0);
             } else {
-                throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
+                throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
             }
         }
 
@@ -220,15 +221,16 @@ class OWMApiClient
         }
 
         try {
-            $xml = new \SimpleXMLElement($answer);
+            $xml = new \SimpleXMLElement($answer, LIBXML_NONET);
         } catch (\Exception $e) {
             // Invalid xml format. This happens in case OpenWeatherMap returns an error.
             // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
             $error = json_decode($answer, true);
             if (isset($error['message'])) {
-                throw new OWMException($error['message'], $error['cod']);
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
+                throw new OWMException(substr(sanitize_text_field((string)$error['message']), 0, 200), isset($error['cod']) ? (int)$error['cod'] : 0);
             } else {
-                throw new OWMException('Unknown fatal error: OpenWeatherMap returned the following json object: ' . $answer);
+                throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
             }
         }
 
@@ -285,8 +287,12 @@ class OWMApiClient
 
         $xml = json_decode($this->getRawWeatherHistory($query, $start, $endOrCount, $type, $units, $lang, $appid), true);
 
+        if (!is_array($xml) || !isset($xml['cod'])) {
+            throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
+        }
         if ($xml['cod'] != 200) {
-            throw new OWMException($xml['message'], $xml['cod']);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
+            throw new OWMException(isset($xml['message']) ? substr(sanitize_text_field((string)$xml['message']), 0, 200) : 'Unknown error', (int)$xml['cod']);
         }
 
         return new WeatherHistory($xml, $query);
@@ -365,9 +371,9 @@ class OWMApiClient
     {
         //$url = $this->buildUrl($query, $units, $lang, $appid, $mode, $this->stationUrl);
 
-        $url = $this->stationUrl . 'ID=' . $query;
+        $url = $this->stationUrl . 'ID=' . rawurlencode((string)$query);
         if (!empty($appid)) {
-            $url .= "&APPID=$appid";
+            $url .= '&APPID=' . rawurlencode((string)$appid);
         }
 
         return $this->cacheOrFetchResult($url);
@@ -465,7 +471,7 @@ class OWMApiClient
         if ($cnt > 16) {
             throw new \InvalidArgumentException('$cnt must be 16 or below!');
         }
-        $url = $this->buildUrl($query, $units, $lang, $appid, $mode, $this->weatherDailyForecastUrl) . "&cnt=$cnt";
+        $url = $this->buildUrl($query, $units, $lang, $appid, $mode, $this->weatherDailyForecastUrl) . "&cnt=" . (int)$cnt;
 
         return $this->cacheOrFetchResult($url);
     }
@@ -531,10 +537,10 @@ class OWMApiClient
         } else {
             throw new \InvalidArgumentException('$endOrCount must be either a \DateTime or a positive integer.');
         }
-        $queryUrl .= "&type=$type&units=$units&lang=$lang";
+        $queryUrl .= '&type=' . rawurlencode($type) . '&units=' . rawurlencode((string)$units) . '&lang=' . rawurlencode((string)$lang);
 
         if (!empty($appid)) {
-            $queryUrl .= "&APPID=$appid";
+            $queryUrl .= '&APPID=' . rawurlencode((string)$appid);
         }
 
         return $this->cacheOrFetchResult($queryUrl);
@@ -585,9 +591,9 @@ class OWMApiClient
     {
         $queryUrl = $this->buildQueryUrlParameter($query);
 
-        $url = $url . "$queryUrl&units=$units&lang=$lang&mode=$mode";
+        $url = $url . $queryUrl . '&units=' . rawurlencode((string)$units) . '&lang=' . rawurlencode((string)$lang) . '&mode=' . rawurlencode((string)$mode);
         if (!empty($appid)) {
-            $url .= "&APPID=$appid";
+            $url .= '&APPID=' . rawurlencode((string)$appid);
         }
 
         return $url;

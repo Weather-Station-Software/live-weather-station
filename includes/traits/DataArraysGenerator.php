@@ -8,14 +8,14 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector
 use WeatherStation\Data\History\Builder as History;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Environment\Manager as EnvManager;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\Data\DateTime\Handling as TimeHandling;
 
 /**
  * Arrays generator for javascript conversion.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -342,7 +342,7 @@ trait Generator {
         $t = array();
         $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
         foreach ($measure[2] as $line) {
-            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
         }
         $measure[2] = $t;
         return $measure;
@@ -369,7 +369,7 @@ trait Generator {
             $t = array();
             $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
             foreach ($measure[2] as $line) {
-                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
             }
             $measure[2] = $t;
             $result = $measure;
@@ -1163,7 +1163,7 @@ trait Generator {
         }
         if ($daily || $historical) {
             $temp = array();
-            $h = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+            $h = new History(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($result as $item) {
             	if ( isset( $item ) ) {
 		            if ($h->is_allowed_measurement($item[1]) || $item[1] == 'none') {
@@ -1214,7 +1214,7 @@ trait Generator {
         $data = $this->get_all_formatted_measurements($guid, false, true);
         $result = array();
         $modules = array();
-        if (count($data) > 0) {
+        if (is_array($data) && count($data) > 0 && isset($data['station']) && is_array($data['station']) && isset($data['station']['station_id'], $data['station']['station_name'])) {
             $result[] = $data['station']['station_name'];
             $result[] = $data['station']['station_id'];
             $netatmo = OWM_Base_Collector::is_netatmo_station($data['station']['station_id']);
@@ -1228,7 +1228,7 @@ trait Generator {
             $ambt = OWM_Base_Collector::is_ambt_station($data['station']['station_id']);
             $wlink = OWM_Base_Collector::is_wlink_station($data['station']['station_id']);
             $mainbase = array();
-            if (count($data['module']) > 0) {
+            if (isset($data['module']) && is_array($data['module']) && count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
                     if (strtolower($module['module_type']) == 'namain') {
                         $mainbase = $module;
@@ -2028,7 +2028,7 @@ trait Generator {
         // Sliding day
         $period = array();
         for ($i=1; $i<=14; $i++) {
-            $period[] = array( 'timelapse-'.$i, sprintf(_n('%s day back', '%s days back', $i, 'live-weather-station'), $i));
+            $period[] = array( 'timelapse-'.$i, sprintf(/* translators: %s: number of days */ _n('%s day back', '%s days back', $i, 'live-weather-station'), $i));
         }
         $result[] = array('sliding-timelapse',  $period);
 
@@ -2059,7 +2059,7 @@ trait Generator {
         foreach ($this->get_comparable_dimensions() as $dimension) {
             $result[] = array($dimension, $this->get_dimension_name($dimension, true));
         }
-        usort($result, 'lws_array_compare_1');
+        usort($result, 'live_weather_station_array_compare_1');
         return $result;
     }
 
@@ -2333,7 +2333,7 @@ trait Generator {
         $result = array();
         $time = array (5, 10, 15, 20, 25, 30);
         foreach ($time as $t) {
-            $result[] = array('res-'.$t,  sprintf(__('%s minutes', 'live-weather-station'), $t));
+            $result[] = array('res-'.$t,  sprintf(/* translators: %s: number of minutes */ __('%s minutes', 'live-weather-station'), $t));
         }
         return $result;
     }
@@ -2408,7 +2408,7 @@ trait Generator {
         for ($i = 0; $i < 5; $i++) {
             if ($level > $i) {
                 $n = pow(2, $i + 2) ;
-                $result[] = array($n . 's',  sprintf(_n('%s sector', '%s sectors', $n,  'live-weather-station'), $n));
+                $result[] = array($n . 's',  sprintf(/* translators: %s: number of sectors */ _n('%s sector', '%s sectors', $n,  'live-weather-station'), $n));
             }
         }
         return $result;
@@ -2592,7 +2592,7 @@ trait Generator {
     protected function get_color_threshold_js_array() {
         $result = array();
         for ($i=3; $i<9; $i++) {
-            $result[] = array('color-step-' . $i,  sprintf(_n('%s step', '%s steps', $i, 'live-weather-station'), $i));
+            $result[] = array('color-step-' . $i,  sprintf(/* translators: %s: number of color steps */ _n('%s step', '%s steps', $i, 'live-weather-station'), $i));
         }
         return $result;
     }
@@ -2746,14 +2746,14 @@ trait Generator {
         $country_codes = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'YU', 'ZR', 'ZZ');
-        $locale = lws_get_display_locale();
+        $locale = live_weather_station_get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];
                 if (in_array($s, $continue)) {
                     continue;
                 }
-                $t = lws_get_region_name('-'.$s, $locale);
+                $t = live_weather_station_get_region_name('-'.$s, $locale);
                 if ($s != $t || !EnvManager::is_locale_operational()) {
                     $country_codes[] = $s;
                 }
@@ -2842,12 +2842,12 @@ trait Generator {
     protected function get_fa_mode_js_array() {
         $theme = wp_get_theme();
         $result = array();
-        $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 4));
-        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'CSS'));
-        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'JS+SVG'));
-        $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
-        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
-        $result[] = array(5, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
+        $result[] = array(0, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number */ __('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 4));
+        $result[] = array(1, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number, 3: output technology (CSS) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'CSS'));
+        $result[] = array(2, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number, 3: output technology (JS+SVG) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'JS+SVG'));
+        $result[] = array(3, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number */ __('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
+        $result[] = array(4, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number, 3: output technology (CSS) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
+        $result[] = array(5, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number, 3: output technology (JS+SVG) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
         return $result;
     }
 
@@ -2906,29 +2906,6 @@ trait Generator {
         $result[] = array(2, 'Developer');
         $result[] = array(3, 'Professional');
         $result[] = array(4, 'Enterprise');
-        return $result;
-    }
-
-    /**
-     * Get plans for WeatherUnderground API access.
-     *
-     * @return array An array containing the available plans for API access.
-     * @since 3.0.0
-     */
-    public function get_wug_plan_array() {
-        $result = array();
-        $result[] = array(0, 'Stratus - Developer (free)');
-        $result[] = array(1, 'Stratus - Drizzle');
-        $result[] = array(2, 'Stratus - Shower');
-        $result[] = array(3, 'Stratus - Downpour');
-        $result[] = array(4, 'Cumulus - Developer (free)');
-        $result[] = array(5, 'Cumulus - Drizzle');
-        $result[] = array(6, 'Cumulus - Shower');
-        $result[] = array(7, 'Cumulus - Downpour');
-        $result[] = array(8, 'Anvil - Developer (free)');
-        $result[] = array(9, 'Anvil - Drizzle');
-        $result[] = array(10, 'Anvil - Shower');
-        $result[] = array(11, 'Anvil - Downpour');
         return $result;
     }
 
@@ -3178,7 +3155,7 @@ trait Generator {
         $result['csv'] = array('name' => 'CSV', 'description' => __('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
         $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => __('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
         $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => __('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(/* translators: %s: plugin name */ __('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         $result['tsv'] = array('name' => 'TSV', 'description' => __('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
         return $result;
     }
@@ -3202,7 +3179,7 @@ trait Generator {
      */
     public static function _get_import_formats_array($service = 'none') {
         $result = array();
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('Import from a file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(/* translators: %s: plugin name */ __('Import from a file previously exported by %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
             $result['netatmo'] = array('name' => __('Netatmo cloud services', 'live-weather-station'), 'description' => __('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
         }
@@ -3416,7 +3393,6 @@ trait Generator {
         $result = array();
         $result[] = array('terrain',  __('Terrain', 'live-weather-station'));
         $result[] = array('terrain-background',  __('Terrain (background)', 'live-weather-station'));
-        $result[] = array('terrain-classic',  __('Terrain (classical)', 'live-weather-station'));
         $result[] = array('toner',  __('Toner', 'live-weather-station'));
         $result[] = array('toner-background',  __('Toner (background)', 'live-weather-station'));
         $result[] = array('toner-lite',  __('Toner (lite)', 'live-weather-station'));
@@ -3514,36 +3490,6 @@ trait Generator {
     }
 
     /**
-     * Get map overlay array for Navionics.
-     *
-     * @return array An array containing map overlay for OpenWeatherMap ready to convert to a JS array.
-     * @since 3.8.0
-     */
-    protected function get_navionicsmap_overlay_js_array() {
-        $result = array();
-        $result[] = array('JNC.NAVIONICS_CHARTS.NAUTICAL',  __('Nautical map', 'live-weather-station'));
-        $result[] = array('JNC.NAVIONICS_CHARTS.SONARCHART',  __('Sonar map', 'live-weather-station'));
-        $result[] = array('JNC.NAVIONICS_CHARTS.SKI',  __('Ski map', 'live-weather-station'));
-        return $result;
-    }
-
-    /**
-     * Get map safety depth array for Navionics.
-     *
-     * @return array An array containing map safety depth for OpenWeatherMap ready to convert to a JS array.
-     * @since 3.8.0
-     */
-    protected function get_navionicsmap_depth_js_array() {
-        $result = array();
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL0',  __('20 meters, 60 feet, 10 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL1',  __('10 meters, 30 feet, 5 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL2',  __('5 meters, 18 feet, 2 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL3',  __('2 meters, 6 feet, 1 fathom', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL4',  __('None', 'live-weather-station'));
-        return $result;
-    }
-
-    /**
      * Get the basemaps.
      *
      * @return array An array containing basemaps ready to convert to a JS array.
@@ -3569,8 +3515,11 @@ trait Generator {
      */
     protected function get_zoom_js_array($min, $max) {
         $result = array();
+        // Zoom levels are small integers: the range is bounded whatever the caller passes.
+        $min = max(0, (int)$min);
+        $max = min($min + 30, (int)$max);
         for ($i=$min; $i<=$max; $i++) {
-            $result[] = array($i,  sprintf(__('Level %s', 'live-weather-station'), $i));
+            $result[] = array($i,  sprintf(/* translators: %s: level number */ __('Level %s', 'live-weather-station'), $i));
         }
         return $result;
     }

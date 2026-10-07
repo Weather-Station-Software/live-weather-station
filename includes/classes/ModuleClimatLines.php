@@ -3,12 +3,13 @@
 namespace WeatherStation\Engine\Module\Climat;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 
 /**
  * Class to generate parameter climat lines form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
@@ -82,7 +83,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('climat-lines-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
             $group .= $this->get_key_value_option_select('climat-lines-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
             $group .= $this->get_key_value_option_select('climat-lines-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-            $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement %s', 'live-weather-station'), $i));
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: sequence number of the measurement */ __('Measurement %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('climat-lines-measurements-measure-group-', $a_group);
         $content .= '</tbody></table>';
@@ -125,7 +126,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  var js_array_' . $js_name . '_measurement_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '  $("#' . $name . '-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '  $(js_array_' . $js_name . '_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    $("#' . $name . '-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '    $("#' . $name . '-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '  $("#' . $name . '-measurements-measurement-' . $this->station_guid . '").change();';
         $content .= '});';
         $content .= '$("#' . $name . '-measurements-measurement-' . $this->station_guid . '").change(function() {';
@@ -133,28 +134,13 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
             $content .= '  var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $this->station_guid . '").val()][2][$(this).val()][4];';
             $content .= '  $("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").html("");';
             $content .= '  $(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
-            $content .= '    $("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '    $("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]));});';
             $content .= '  $("#' . $name . '-measurements-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
         }
         $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '" ).change();';
 
 
 
-        $content .= '$("#' . $name . '-measurements-period-type-' . $this->station_guid . '").change(function() {';
-        $content .= '  var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
-        $content .= '  $(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]};});';
-        for ($i=1; $i<=$this->series_number; $i++) {
-            $content .= '  $("#' . $name . '-measurements-period-value-' . $i . '-' . $this->station_guid . '").html("");';
-            $content .= '  $(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '    $("#' . $name . '-measurements-period-value-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
-        }
-        $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '" ).change();';
-        $content .= '});';
-
-
-
-
         $content .= '});';
 
         $content .= '$("#' . $name . '-measurements-period-type-' . $this->station_guid . '").change(function() {';
@@ -164,7 +150,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= '  $("#' . $name . '-measurements-period-value-' . $i . '-' . $this->station_guid . '").html("");';
             $content .= '  $(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '    $("#' . $name . '-measurements-period-value-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '    $("#' . $name . '-measurements-period-value-' . $i . '-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]));});';
         }
         $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '" ).change();';
         $content .= '});';
@@ -201,7 +187,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '").change(function() {';
         $content .= '  if (typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $this->station_guid . '").val()] !== "undefined" && typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $this->station_guid . '").val()][2][$("#' . $name . '-measurements-measurement-' . $this->station_guid . '").val()] !== "undefined") {';
-        $content .= '    var sc_device = "' . $this->station_id . '";';
+        $content .= '    var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= '    var sc_module = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $this->station_guid . '").val()][1];';
         $content .= '    var sc_measurement = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-measurements-module-' . $this->station_guid . '").val()][2][$("#' . $name . '-measurements-measurement-' . $this->station_guid . '").val()][1];';
         $content .= '    var sc_period_type = $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val();';
@@ -232,8 +218,8 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_ltgraph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, module_id:sc_module, measurement:sc_measurement, template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, ';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
+        $content .= '$.post( "' . LIVE_WEATHER_STATION_AJAX_URL . '", {action: "lws_query_ltgraph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, module_id:sc_module, measurement:sc_measurement, template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, ';
         $t = array();
         for ($i=1; $i<=$this->series_number; $i++) {
             $u = array();

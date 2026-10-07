@@ -1,0 +1,113 @@
+name: CI
+
+# Syntax lint on every supported PHP version, and PHPCompatibility checks.
+# See .claude/rules/php-support.md for the support policy.
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: php -l (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.1 is the `Requires PHP` floor, 8.2 to 8.5 are the tested versions.
+        php: ['7.1', '8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Lint every PHP file
+        run: |
+          # Deprecations are reported by `php -l` on 8.x (for example implicit nullable parameters on 8.4): they must fail too.
+          find . -name '*.php' -not -path './.git/*' -not -path './.claude/*' -print0 \
+            | xargs -0 -n1 -P4 php -d error_reporting=-1 -d display_errors=1 -l \
+            | { grep -v '^No syntax errors detected' || true; } | tee lint.log
+          test ! -s lint.log
+      - name: No file searches for wp-load.php
+        run: |
+          # The feeds are served by WordPress itself (template_redirect): no plugin file may load WordPress on its own.
+          if grep -rn --include='*.php' 'wp-load\.php' . --exclude-dir=.git --exclude-dir=.github --exclude-dir=.claude --exclude-dir=docs; then
+            echo 'A PHP file of the plugin refers to wp-load.php.'
+            exit 1
+          fi
+      - name: Every plugin class, trait and interface loads
+        run: |
+          # `php -l` checks one file at a time: two traits defining the same method only fail when the class using both is
+          # declared. Each name known to the plugin autoloader is loaded in its own process, outside WordPress.
+          php -r '
+            preg_match_all("/case \x27(WeatherStation\\\\[^\x27]+)\x27:/", file_get_contents("autoload.php"), $m);
+            $bad = 0;
+            foreach (array_unique($m[1]) as $name) {
+              $name = str_replace("\\\\", "\\", $name);
+              exec("php .github/scripts/check-classes-load.php . " . escapeshellarg($name) . " 2>&1", $out, $rc);
+              if ($rc !== 0) { $bad++; echo "FAIL $name: " . substr(implode(" ", $out), 0, 300) . PHP_EOL; }
+              $out = [];
+            }
+            echo count(array_unique($m[1])) . " names, $bad failures" . PHP_EOL;
+            exit($bad ? 1 : 0);
+          '
+      - name: No reference to a removed global name
+        run: |
+          # The global constants and functions were renamed from lws_/LWS_ to live_weather_station_/LIVE_WEATHER_STATION_ in 3.9.0.
+          # The vendored libraries are PHP files too: a leftover old name is a fatal error at run time, which `php -l` cannot see.
+          if grep -rnE --include='*.php' '\bLWS_[A-Z0-9_]+\b' . --exclude-dir=.git --exclude-dir=.claude | grep -v '{/LWS_SEP/}'; then
+            echo 'An old LWS_ constant name is still referenced.'
+            exit 1
+          fi
+          if grep -rnE --include='*.php' '(^|[^>:$A-Za-z0-9_\\])lws_[a-z0-9_]+\(' . --exclude-dir=.git --exclude-dir=.claude | grep -v 'function lws_' | grep -vE ':[0-9]+:[[:space:]]*(//|\*|#|/\*)' | grep -v 'phpcs:ignore'; then
+            echo 'A call to an old lws_ function name remains.'
+            exit 1
+          fi
+
+  whats-new:
+    name: What's new link
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: The "See what's new" link is the article of the current version (a warning, the release workflow makes it an error)
+        run: .github/scripts/check-whatsnew.sh warn
+
+  compat:
+    name: PHPCompatibility ${{ matrix.range }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        # The upper bound is the newest tested PHP: a bare `8.2-` also reports PHP 8.6 changes (trim() default characters).
+        range: ['7.1-8.5', '8.2-8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+      - name: Install PHP_CodeSniffer and PHPCompatibility (outside the repository)
+        run: |
+          mkdir "$RUNNER_TEMP/phpcs"
+          cd "$RUNNER_TEMP/phpcs"
+          echo "{}" > composer.json
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          # The 10.0 development branch knows PHP 8.x; pinned to a commit for reproducible runs.
+          composer require --dev --no-interaction --no-progress \
+            dealerdirect/phpcodesniffer-composer-installer:^1.0 \
+            "phpcompatibility/php-compatibility:dev-develop#4b1ac835da9b71a6ac3bc70ff903638187f33674"
+      - name: Check PHP ${{ matrix.range }}
+        run: '"$RUNNER_TEMP/phpcs/vendor/bin/phpcs" --standard=.github/phpcompat.xml --runtime-set testVersion ${{ matrix.range }} -s --report=full .'

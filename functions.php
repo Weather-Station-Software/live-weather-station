@@ -3,7 +3,7 @@
  * Utilities functions.
  *
  * @package Bootstrap
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -18,7 +18,10 @@
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
-function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+function live_weather_station_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
         $args['tab'] = $tab;
@@ -41,21 +44,46 @@ function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, 
 }
 
 /**
+ * Get the public address of a station feed, working with the permalink setting of the site.
+ *
+ * With pretty permalinks the address is /get-weather/[station]/[format]/ (or the file form: YoWindow.xml, clientraw.txt, realtime.txt),
+ * with plain permalinks it is the query string address /?live_weather_station_station=[station]&live_weather_station_type=[format].
+ *
+ * @param string $station_id The station id (MAC address).
+ * @param string $format The format: stickertags, yowindow, clientraw, realtime, or the file form YoWindow.xml, clientraw.txt, realtime.txt.
+ * @return string The full url of the feed.
+ * @since 3.9.0
+ */
+function live_weather_station_get_feed_url($station_id, $format) {
+    global $wp_rewrite;
+    $station_id = strtolower((string)$station_id);
+    $format = (string)$format;
+    $files = array('YoWindow.xml' => 'yowindow', 'clientraw.txt' => 'clientraw', 'realtime.txt' => 'realtime');
+    $type = strtolower(isset($files[$format]) ? $files[$format] : $format);
+    if ((bool)get_option('permalink_structure')) {
+        $root = (is_object($wp_rewrite) && $wp_rewrite->using_index_permalinks()) ? 'index.php/' : '';
+        $path = array_key_exists($format, $files) ? $format : $type . '/';
+        return home_url($root . 'get-weather/' . $station_id . '/' . $path);
+    }
+    return add_query_arg(array('live_weather_station_station' => $station_id, 'live_weather_station_type' => $type), home_url('/'));
+}
+
+/**
  * Get and admin page url based on the current one.
  *
  * @param array $params The params to override.
  * @return string The full url of the admin page.
  * @since 3.4.0
  */
-function lws_re_get_admin_page_url($params) {
+function live_weather_station_re_get_admin_page_url($params) {
     $set = array('page', 'tab', 'action', 'service', 'id');
     $args = array();
     foreach ($set as $arg) {
-        if (isset($_POST[$arg])) {
-            $args[$arg] = $_POST[$arg];
+        if (isset($_POST[$arg]) && is_scalar($_POST[$arg])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- only builds a navigation URL (page, tab, action, service, id) from sanitized values, nothing is modified
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_POST[$arg])) : sanitize_key(wp_unslash($_POST[$arg]))); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- navigation URL only, values are sanitized and nothing is modified
         }
-        if (isset($_GET[$arg])) {
-            $args[$arg] = $_GET[$arg];
+        if (isset($_GET[$arg]) && is_scalar($_GET[$arg])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only builds a navigation URL (page, tab, action, service, id) from sanitized values, nothing is modified
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_GET[$arg])) : sanitize_key(wp_unslash($_GET[$arg]))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation URL only, values are sanitized and nothing is modified
         }
         if (array_key_exists($arg, $params)) {
             $args[$arg] = $params[$arg];
@@ -72,7 +100,7 @@ function lws_re_get_admin_page_url($params) {
  * @return string The locale of the user.
  * @since 3.0.8
  */
-function lws_get_display_locale($user_id = 0) {
+function live_weather_station_get_display_locale($user_id = 0) {
     global $current_user;
     if (!empty($current_user) && $user_id === 0) {
         if ($current_user instanceof WP_User) {
@@ -99,8 +127,8 @@ function lws_get_display_locale($user_id = 0) {
  * @return string the resulting string.
  * @since 3.7.5
  */
-function lws_lcfirst($str) {
-    if (strpos(strtolower(lws_get_display_locale()), 'de') === 0) {
+function live_weather_station_lcfirst($str) {
+    if (strpos(strtolower(live_weather_station_get_display_locale()), 'de') === 0) {
         return ucfirst($str);
     }
     else {
@@ -115,11 +143,11 @@ function lws_lcfirst($str) {
  * @return array The converted array.
  * @since 3.4.0
  */
-function lws_object_to_array($obj) {
+function live_weather_station_object_to_array($obj) {
     $arr = array();
     $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
     foreach ($_arr as $key => $val) {
-        $val = (is_array($val) || is_object($val)) ? lws_object_to_array($val) : $val;
+        $val = (is_array($val) || is_object($val)) ? live_weather_station_object_to_array($val) : $val;
         $arr[$key] = $val;
     }
     return $arr;
@@ -131,7 +159,7 @@ function lws_object_to_array($obj) {
  * @return array The sorted array.
  * @since 3.4.0
  */
-function lws_array_orderby(){
+function live_weather_station_array_orderby(){
     $args = func_get_args();
     $data = array_shift($args);
     foreach ($args as $n => $field) {
@@ -153,7 +181,7 @@ function lws_array_orderby(){
  * @return boolean Result of the comparison.
  * @since 3.4.0
  */
-function lws_array_compare_1($a, $b){
+function live_weather_station_array_compare_1($a, $b){
     $a = (array)$a;
     $b = (array)$b;
     return strcasecmp($a[1], $b[1]);
@@ -167,7 +195,7 @@ function lws_array_compare_1($a, $b){
  * @return array The uniquified array.
  * @since 3.4.0
  */
-function lws_array_super_unique($array, $key){
+function live_weather_station_array_super_unique($array, $key){
     $temp_array = array();
     foreach ($array as &$v) {
         if (!isset($temp_array[$v[$key]]))
@@ -178,47 +206,37 @@ function lws_array_super_unique($array, $key){
 }
 
 /**
- * Registers (but don't enqueues) a style asset of the plugin.
+ * Capability required to manage the plugin, filterable by the site.
+ * The former filter name (lws_manage_options_capability) is still honoured so existing customizations keep working.
  *
- * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
- *
- * @since 3.5.0
+ * @since 3.9.0
+ * @return string The capability.
  */
-function lws_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
-    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LWS_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
-        }
-        else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
-        }
-        wp_register_style($handle, $file, $deps, null);
-    }
-    else {
-        wp_register_style($handle, $source . $file, $deps, LWS_VERSION);
-    }
+function live_weather_station_manage_capability() {
+    $capability = apply_filters('lws_manage_options_capability', 'manage_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- legacy filter name of release 3.8.13 kept so existing customizations keep working, the prefixed filter is applied right after
+    return apply_filters('live_weather_station_manage_options_capability', $capability);
 }
 
 /**
- * Registers (but don't enqueues) a script asset of the plugin.
+ * Registers (but don't enqueues) a style asset of the plugin, always served from the plugin directory.
  *
- * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
+ * The fifth parameter is kept for the existing callers: the public CDN option was removed in 3.9.0.
  *
  * @since 3.5.0
  */
-function lws_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
-    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
-        if ($source == LWS_ADMIN_URL) {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
-        }
-        else {
-            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
-        }
-        wp_register_script($handle, $file, $deps, null, (bool)get_option('live_weather_station_footer_scripts', false));
-    }
-    else {
-        wp_register_script($handle, $source . $file, $deps, LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
-    }
+function live_weather_station_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
+    wp_register_style($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION);
+}
+
+/**
+ * Registers (but don't enqueues) a script asset of the plugin, always served from the plugin directory.
+ *
+ * The fifth parameter is kept for the existing callers: the public CDN option was removed in 3.9.0.
+ *
+ * @since 3.5.0
+ */
+function live_weather_station_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
+    wp_register_script($handle, $source . $file, $deps, LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
 }
 
 
@@ -227,7 +245,7 @@ function lws_register_script($handle, $source, $file, $deps = array(), $cdn_avai
  *
  * @since 3.5.3
  */
-function lws_font_awesome($all=false) {
+function live_weather_station_font_awesome($all=false) {
     $mode = get_option('live_weather_station_fa_mode');
     if (is_admin()) {
         $mode = 1;
@@ -235,38 +253,38 @@ function lws_font_awesome($all=false) {
     switch ($mode) {
         case 0:                                             // Font Awesome 4 outputted by Weather Station
             wp_enqueue_style('lws-font-awesome-4');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'fa');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fa');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fa');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', false);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', false);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 1:                                             // Font Awesome 5 outputted by Weather Station as CSS
             wp_enqueue_style('lws-font-awesome-5');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 2:                                             // Font Awesome 5 outputted by Weather Station as JS+SVG
@@ -277,20 +295,20 @@ function lws_font_awesome($all=false) {
                 wp_enqueue_script('lws-fa-regular');
                 wp_enqueue_script('lws-fa-solid');
             }
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
         case 3:                                             // Font Awesome 4 outputted by theme or other plugin
@@ -300,20 +318,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'fa');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fa');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fa');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fa');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', false);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', false);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 4:                                             // Font Awesome 5 outputted by theme or other plugin as CSS
@@ -323,20 +341,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', false);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', false);
             }
             break;
         case 5:                                             // Font Awesome 5 outputted by theme or other plugin as JS+SVG
@@ -346,20 +364,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
         case 6:                                             // Font Awesome official plugin
@@ -369,20 +387,20 @@ function lws_font_awesome($all=false) {
             wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'far');
+            if (!defined('LIVE_WEATHER_STATION_FAR')) {
+                define('LIVE_WEATHER_STATION_FAR', 'far');
             }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fab');
+            if (!defined('LIVE_WEATHER_STATION_FAB')) {
+                define('LIVE_WEATHER_STATION_FAB', 'fab');
             }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fas');
+            if (!defined('LIVE_WEATHER_STATION_FAS')) {
+                define('LIVE_WEATHER_STATION_FAS', 'fas');
             }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', true);
+            if (!defined('LIVE_WEATHER_STATION_FA5')) {
+                define('LIVE_WEATHER_STATION_FA5', true);
             }
-            if (!defined('LWS_FA_SVG')) {
-                define('LWS_FA_SVG', true);
+            if (!defined('LIVE_WEATHER_STATION_FA_SVG')) {
+                define('LIVE_WEATHER_STATION_FA_SVG', true);
             }
             break;
     }
@@ -401,8 +419,8 @@ function lws_font_awesome($all=false) {
  * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
  */
 
-function is_lws_active() {
-    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ) ) || is_lws_active_for_network();
+function live_weather_station_is_active() {
+    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ), true ) || live_weather_station_is_active_for_network();
 }
 
 /**
@@ -417,7 +435,7 @@ function is_lws_active() {
  *
  * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
  */
-function is_lws_active_for_network() {
+function live_weather_station_is_active_for_network() {
     if ( !is_multisite() )
         return false;
 
@@ -437,9 +455,9 @@ function is_lws_active_for_network() {
  * @param string $in_locale Optional. Format locale.
  * @return string Display name of the locale in the format appropriate for $in_locale.
  */
-function lws_get_locale_name($locale, $in_locale = null) {
+function live_weather_station_get_locale_name($locale, $in_locale = null) {
     $result = $locale;
-    if (LWS_I18N_LOADED) {
+    if (LIVE_WEATHER_STATION_I18N_LOADED) {
         $result = \Locale::getDisplayName($locale, $in_locale);
     }
     return $result;
@@ -454,9 +472,9 @@ function lws_get_locale_name($locale, $in_locale = null) {
  * @param string $in_locale Optional. Format locale.
  * @return string Display name of the region for the $locale in the format appropriate for $in_locale.
  */
-function lws_get_region_name($locale, $in_locale = null) {
+function live_weather_station_get_region_name($locale, $in_locale = null) {
     $result = $locale;
-    if (LWS_I18N_LOADED) {
+    if (LIVE_WEATHER_STATION_I18N_LOADED) {
         $result = \Locale::getDisplayRegion($locale, $in_locale);
     }
     return $result;
@@ -467,12 +485,60 @@ function lws_get_region_name($locale, $in_locale = null) {
  *
  * @since 3.7.0
  */
-function lws_send_alert_message() {
-    if (defined('LWS_WUG_ALERT_TO') && defined('LWS_WUG_ALERT_SUBJECT') && defined('LWS_WUG_ALERT_MESSAGE')) {
+function live_weather_station_send_alert_message() {
+    if (defined('LIVE_WEATHER_STATION_WUG_ALERT_TO') && defined('LIVE_WEATHER_STATION_WUG_ALERT_SUBJECT') && defined('LIVE_WEATHER_STATION_WUG_ALERT_MESSAGE')) {
         if (function_exists('wp_mail')) {
-            wp_mail(LWS_WUG_ALERT_TO, LWS_WUG_ALERT_SUBJECT, LWS_WUG_ALERT_MESSAGE);
+            wp_mail(LIVE_WEATHER_STATION_WUG_ALERT_TO, LIVE_WEATHER_STATION_WUG_ALERT_SUBJECT, LIVE_WEATHER_STATION_WUG_ALERT_MESSAGE);
         }
     }
+}
+
+/**
+ * Sanitize a free-text value coming from a remote source (vendor API, feed) before storing or displaying it.
+ *
+ * @param mixed $value The raw value.
+ * @param int $max_length Optional. The max length in characters.
+ * @return string The sanitized value.
+ * @since 3.8.15
+ */
+function live_weather_station_clean_text($value, $max_length=100) {
+    if (!is_scalar($value)) {
+        return '';
+    }
+    return mb_substr(sanitize_text_field((string)$value), 0, $max_length);
+}
+
+/**
+ * Sanitize a numeric value coming from a remote source (vendor API, feed) before storing it.
+ *
+ * @param mixed $value The raw value.
+ * @param int|float|null $default Optional. The value returned if the raw value is not numeric (null and '' are returned unchanged).
+ * @return int|float|string|null The numeric value.
+ * @since 3.8.15
+ */
+function live_weather_station_clean_number($value, $default=null) {
+    if ($value === null || $value === '') {
+        return $value;
+    }
+    if (!is_numeric($value)) {
+        return $default;
+    }
+    $number = $value + 0;
+    return is_finite((float)$number) ? $number : $default;
+}
+
+/**
+ * Sanitize an URL coming from a remote source (vendor API, feed) before storing it.
+ *
+ * @param mixed $value The raw value.
+ * @return string The sanitized URL, empty string if not acceptable.
+ * @since 3.8.15
+ */
+function live_weather_station_clean_url($value) {
+    if (!is_scalar($value)) {
+        return '';
+    }
+    return esc_url_raw((string)$value, array('http', 'https'));
 }
 
 /**
@@ -482,7 +548,8 @@ function lws_send_alert_message() {
  * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_begin_script($jsInitId='') {
+function live_weather_station_print_begin_script($jsInitId='') {
+    $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '<script language="javascript" type="text/javascript">';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         if ($jsInitId == '') {
@@ -503,7 +570,8 @@ function lws_print_begin_script($jsInitId='') {
  * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_end_script($jsInitId='') {
+function live_weather_station_print_end_script($jsInitId='') {
+    $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         if ($jsInitId == '') {
@@ -525,7 +593,7 @@ function lws_print_end_script($jsInitId='') {
  * @return string The sanitized size.
  * @since 3.7.0
  */
-function lws_sanitize_width_height_field($s, $u=array('px')) {
+function live_weather_station_sanitize_width_height_field($s, $u=array('px')) {
     $s = trim(strtolower(sanitize_text_field($s)));
     switch ($s) {
         case 'auto':
@@ -535,7 +603,7 @@ function lws_sanitize_width_height_field($s, $u=array('px')) {
             break;
         default:
             $i = (int)$s;
-            if ($i != 0 && $i < 2000) {
+            if ($i > 0 && $i < 2000) {
                 $t = trim(strtolower(substr($s, strpos($s, (string)$i) + strlen((string)$i))));
                 if (!in_array($t, $u)) {
                     $t = 'px';
@@ -557,8 +625,8 @@ function lws_sanitize_width_height_field($s, $u=array('px')) {
  * @return string The sanitized width.
  * @since 3.7.0
  */
-function lws_sanitize_width_field($w) {
-    return lws_sanitize_width_height_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
+function live_weather_station_sanitize_width_field($w) {
+    return live_weather_station_sanitize_width_height_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
 }
 
 /**
@@ -568,21 +636,10 @@ function lws_sanitize_width_field($w) {
  * @return string The sanitized width.
  * @since 3.7.0
  */
-function lws_sanitize_height_field($h) {
-    return lws_sanitize_width_height_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
+function live_weather_station_sanitize_height_field($h) {
+    return live_weather_station_sanitize_width_height_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
 }
 
-
-/**
- * Adapt phpinfo line.
- *
- * @param string $i The line.
- * @return string The adapted line.
- * @since 3.7.5
- */
-function lws_phpinfo_line($i) {
-    return ".phpinfodisplay " . preg_replace( '/,/', ',.phpinfodisplay ', $i);
-}
 
 /**
  * Simulate iconv function but without iconv support.
@@ -591,11 +648,83 @@ function lws_phpinfo_line($i) {
  * @return string The converted string.
  * @since 3.7.5
  */
-function lws_iconv($string) {
+function live_weather_station_iconv($string) {
     $string = remove_accents($string);
     $string = str_replace('₂', '2', $string);
     $string = str_replace('₃', '3', $string);
     return $string;
+}
+
+/**
+ * Compute a sunrise or sunset timestamp without the date_sunrise() / date_sunset() functions (deprecated in PHP 8.1).
+ *
+ * This is a port of the algorithm used by PHP (timelib, astro.c: Paul Schlyter's "sunriset", upper limb
+ * correction, altitude = 90 - zenith, result truncated to the second). It returns exactly the same
+ * timestamp as date_sunrise/date_sunset(..., SUNFUNCS_RET_TIMESTAMP, ...) and false when the sun never
+ * rises or never sets on that day (polar day or night). The day is the one of $time in the default timezone.
+ *
+ * @param int $time The timestamp of any moment of the day.
+ * @param float $lat Latitude in degrees (north positive).
+ * @param float $lon Longitude in degrees (east positive).
+ * @param float $zenith Zenith in degrees (for ex. 90 + 50/60 for sunrise/sunset, 96 civil, 102 nautical, 108 astronomical).
+ * @param boolean $sunset Optional. True to get the sunset, false (default) to get the sunrise.
+ * @return int|boolean The timestamp, or false.
+ * @since 3.9.0
+ */
+function live_weather_station_sun_timestamp($time, $lat, $lon, $zenith, $sunset = false) {
+    $lat = (float)$lat;
+    $lon = (float)$lon;
+    $altit = 90 - (float)$zenith;
+    if (is_nan($lat) || is_infinite($lat) || is_nan($lon) || is_infinite($lon)) {
+        return false;
+    }
+    $rad = M_PI / 180.0;
+    $deg = 180.0 / M_PI;
+    $rev = function ($x) {
+        return $x - 360.0 * floor($x * (1.0 / 360.0));
+    };
+    $rev180 = function ($x) {
+        return $x - 360.0 * floor($x * (1.0 / 360.0) + 0.5);
+    };
+    // 00:00 UTC of the current (local, default timezone) day.
+    $utc = gmmktime(0, 0, 0, (int)gmdate('n', (int)$time), (int)gmdate('j', (int)$time), (int)gmdate('Y', (int)$time));
+    // Days since 2000 Jan 0.0 at 12h local mean solar time.
+    $d = ($utc / 86400.0 + 2440587.5) - 2451545 + 2 - $lon / 360.0;
+    // Sun position.
+    $m = $rev(356.0470 + 0.9856002585 * $d);
+    $w = 282.9404 + 4.70935E-5 * $d;
+    $e = 0.016709 - 1.151E-9 * $d;
+    $ea = $m + $e * $deg * sin($m * $rad) * (1.0 + $e * cos($m * $rad));
+    $x = cos($ea * $rad) - $e;
+    $y = sqrt(1.0 - $e * $e) * sin($ea * $rad);
+    $r = sqrt($x * $x + $y * $y);
+    $v = $deg * atan2($y, $x);
+    $slon = $v + $w;
+    if ($slon >= 360.0) {
+        $slon -= 360.0;
+    }
+    $x = $r * cos($slon * $rad);
+    $y = $r * sin($slon * $rad);
+    $obl = 23.4393 - 3.563E-7 * $d;
+    $z = $y * sin($obl * $rad);
+    $y = $y * cos($obl * $rad);
+    $ra = $deg * atan2($y, $x);
+    $dec = $deg * atan2($z, sqrt($x * $x + $y * $y));
+    // Local sidereal time, and time when the sun is at south (hours UT).
+    $sid = $rev($rev((180.0 + 356.0470 + 282.9404) + (0.9856002585 + 4.70935E-5) * $d) + 180.0 + $lon);
+    $tsouth = 12.0 - $rev180($sid - $ra) / 15.0;
+    // Upper limb correction.
+    $altit -= 0.2666 / $r;
+    $den = cos($lat * $rad) * cos($dec * $rad);
+    if ($den == 0) {
+        return false;
+    }
+    $cost = (sin($altit * $rad) - sin($lat * $rad) * sin($dec * $rad)) / $den;
+    if ($cost >= 1.0 || $cost <= -1.0) {
+        return false; // Polar night or polar day.
+    }
+    $t = $deg * acos($cost) / 15.0;
+    return (int)((($sunset ? $tsouth + $t : $tsouth - $t) * 3600) + $utc);
 }
 
 
@@ -608,7 +737,7 @@ function lws_iconv($string) {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function lws__($text, $domain='default') {
+function live_weather_station__($text, $domain='default') {
     return $text;
 }
 
@@ -623,8 +752,8 @@ function lws__($text, $domain='default') {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function lws_n($single, $plural, $number, $domain = 'default' ) {
-    return _n($single, $plural, $number, $domain);
+function live_weather_station_n($single, $plural, $number, $domain = 'default' ) {
+    return _n($single, $plural, $number, $domain); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle, WordPress.WP.I18n.NonSingularStringLiteralPlural, WordPress.WP.I18n.NonSingularStringLiteralDomain -- thin debugging wrapper: callers pass literal strings and the text domain themselves
 }
 
 /**
@@ -636,8 +765,8 @@ function lws_n($single, $plural, $number, $domain = 'default' ) {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function esc_html_lws__($text, $domain='default') {
-    return $text;
+function live_weather_station_esc_html__($text, $domain='default') {
+    return esc_html($text);
 }
 
 /**
@@ -649,8 +778,8 @@ function esc_html_lws__($text, $domain='default') {
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
  * @return string Translated text.
  */
-function esc_html_e_lws__($text, $domain='default') {
-    echo $text;
+function live_weather_station_esc_html_e__($text, $domain='default') {
+    echo esc_html($text);
 }
 
 /**
@@ -662,81 +791,20 @@ function esc_html_e_lws__($text, $domain='default') {
  * @return bool False if value was not set and true if value was set.
  * @since 3.8.0
  */
-function lws_meta_cache($name, $value, $expiration=0) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            if (!file_exists($cache_dir)) {
-                try {
-                    mkdir($cache_dir, 0755, true);
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            if (is_dir($cache_dir) && wp_is_writable($cache_dir)) {
-                $blog_id = get_current_blog_id();
-                $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-                try {
-                    file_put_contents($cache_file, serialize($value));
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return set_transient($name, $value, $expiration);
-        }
-    }
-    else {
-        return set_transient($name, $value, $expiration);
-    }
+function live_weather_station_meta_cache($name, $value, $expiration=0) {
+    return set_transient($name, $value, $expiration);
 }
 
 /**
  * Read the value of a cache item.
  *
  * @param string $name  Cache name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
- * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+ * @param int $expiration Optional. Unused (kept for the existing callers).
  * @return bool|mixed False if value was not set and value if it was set.
  * @since 3.8.0
  */
-function lws_meta_uncache($name, $expiration=0) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-            if (file_exists($cache_file)) {
-                try {
-                    $t = filemtime($cache_file);
-                    if (time() - $t > $expiration) {
-                        unlink($cache_file);
-                        return false;
-                    }
-                    else {
-                        return unserialize(file_get_contents($cache_file));
-                    }
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return get_transient($name);
-        }
-    }
-    else {
-        return get_transient($name);
-    }
+function live_weather_station_meta_uncache($name, $expiration=0) {
+    return get_transient($name);
 }
 
 /**
@@ -746,51 +814,192 @@ function lws_meta_uncache($name, $expiration=0) {
  * @return bool True if it was removed, false otherwise.
  * @since 3.8.0
  */
-function lws_meta_rmcache($name) {
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
-            if (file_exists($cache_file)) {
-                try {
-                    unlink($cache_file);
-                }
-                catch (\Exception $ex) {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return delete_transient($name);
-        }
-    }
-    else {
-        return delete_transient($name);
-    }
+function live_weather_station_meta_rmcache($name) {
+    return delete_transient($name);
 }
 
 /**
- * Flush the cache.
+ * Take an exclusive lock, stored as an option which holds its expiry timestamp.
  *
- * @param string $pref Prefix name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
- * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
- * @return int Count of removed items.
- * @since 3.8.0
+ * add_option() fails if the row exists, so two concurrent requests cannot both get the lock. An expired lock is taken
+ * over: it is deleted only if it still holds the expired value that was read (a concurrent request may already have
+ * replaced it), then added again, so that only one concurrent request wins.
+ *
+ * @param string $lock The name of the lock option.
+ * @param integer $ttl The duration of the lock, in seconds.
+ * @return boolean True if the caller holds the lock.
+ * @since 3.9.0
  */
-function lws_meta_flcache($pref, $expiration=0) {
-    $result = 0;
-    if (defined('LWS_FILE_CACHE')) {
-        if (LWS_FILE_CACHE) {
-            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
-            $blog_id = get_current_blog_id();
-            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $pref . '*');
+function live_weather_station_acquire_lock($lock, $ttl) {
+    if (add_option($lock, time() + $ttl, '', 'no')) {
+        return true;
+    }
+    $expiry = (int)get_option($lock);
+    if ($expiry > time()) {
+        return false;
+    }
+    global $wpdb;
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- compare-and-delete of this plugin's own lock row: it must hit the database, not a cache.
+    if (!$wpdb->delete($wpdb->options, array('option_name' => $lock, 'option_value' => (string)$expiry))) {
+        return false;
+    }
+    wp_cache_delete($lock, 'options');
+    wp_cache_delete('notoptions', 'options');
+    return (bool)add_option($lock, time() + $ttl, '', 'no');
+}
 
-            // TODO : implement flush
+/**
+ * Push back the expiry of a lock held by the caller, so that a long job does not lose it.
+ *
+ * @param string $lock The name of the lock option.
+ * @param integer $ttl The new duration of the lock, in seconds.
+ * @since 3.9.0
+ */
+function live_weather_station_renew_lock($lock, $ttl) {
+    update_option($lock, time() + $ttl, 'no');
+}
+
+/**
+ * Is the station readable by the visitors of the site?
+ *
+ * A station is public when its box "Public" is ticked (Publishing tab of the station). An unknown station is reported
+ * as public: it has no data, so nothing is revealed (an unknown and a private station give the same, empty, result).
+ *
+ * @param string $station_id The id of the station (the device_id of its measurements).
+ * @return bool True if the visitors may read it.
+ * @since 3.9.0
+ */
+function live_weather_station_station_is_public($station_id) {
+    static $cache = array();
+    if (!is_string($station_id) || $station_id === '') {
+        return true;
+    }
+    if (!isset($cache[$station_id])) {
+        global $wpdb;
+        $table = $wpdb->prefix . 'live_weather_station_stations';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, the name comes from the plugin itself; cached for the request just above.
+        $value = $wpdb->get_var($wpdb->prepare("SELECT public_access FROM " . $table . " WHERE station_id=%s LIMIT 1", $station_id));
+        $cache[$station_id] = ($value === null) ? true : ((int)$value === 1);
+    }
+    return $cache[$station_id];
+}
+
+/**
+ * May the current user see the stations and the modules which a shortcode, a widget or an AJAX request refers to?
+ *
+ * An administrator (who can manage the plugin), WP-Cron and WP-CLI see everything: the previews and the background jobs keep
+ * working. A visitor sees nothing of a station which is not public, nor of a module which is marked as hidden.
+ *
+ * @param mixed $attributes The attributes of the request: device_id, device_id_1 to device_id_8, module_id, module_id_1 to module_id_8.
+ * @return bool True if everything it refers to may be shown.
+ * @since 3.9.0
+ */
+function live_weather_station_visitor_may_see($attributes) {
+    if (!is_array($attributes)) {
+        return true;
+    }
+    if ((function_exists('wp_doing_cron') && wp_doing_cron()) || (defined('WP_CLI') && WP_CLI) || current_user_can(live_weather_station_manage_capability())) {
+        return true;
+    }
+    $devices = array();
+    $modules = array();
+    foreach ($attributes as $key => $value) {
+        if (!is_string($key) || !is_scalar($value)) {
+            continue;
+        }
+        if (preg_match('/^device_id(_[1-8])?$/', $key)) {
+            $devices[] = (string)$value;
+        }
+        elseif (preg_match('/^module_id(_[1-8])?$/', $key)) {
+            $modules[] = (string)$value;
         }
     }
-    return $result;
+    foreach ($devices as $device) {
+        if (!live_weather_station_station_is_public($device)) {
+            return false;
+        }
+    }
+    foreach ($modules as $module) {
+        if ($module === '' || $module === 'aggregated') {
+            continue;
+        }
+        global $wpdb;
+        $table = $wpdb->prefix . 'live_weather_station_module_detail';
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, the name comes from the plugin itself.
+        $row = $wpdb->get_row($wpdb->prepare("SELECT device_id, hidden FROM " . $table . " WHERE module_id=%s LIMIT 1", $module), ARRAY_A);
+        if (is_array($row) && ((int)$row['hidden'] === 1 || !live_weather_station_station_is_public((string)$row['device_id']))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * Cheap per-IP rate limit for public AJAX endpoints. Sends an HTTP 429 JSON response and stops when exceeded.
+ *
+ * Defaults: 120 requests per 60 seconds, per client IP and per endpoint. A page with many live controls makes
+ * roughly 20-30 calls per endpoint, so this is comfortable for one visitor.
+ * Exempt: logged-in users able to manage options or edit posts (administrators, editors, authors, contributors).
+ *
+ * IMPORTANT for sites behind a reverse proxy / CDN / load balancer: REMOTE_ADDR is then the proxy address, so all
+ * visitors share the same counter. Supply the real client IP with the 'live_weather_station_public_rate_limit_ip' filter
+ * (e.g. return $_SERVER['HTTP_CF_CONNECTING_IP'] when you trust that header), or raise/disable the limit.
+ *
+ * Filters:
+ * - 'live_weather_station_public_rate_limit' (int $limit, string $action): max requests per window; 0 disables the limit.
+ * - 'live_weather_station_public_rate_window' (int $seconds, string $action): window length, default 60.
+ * - 'live_weather_station_public_rate_limit_ip' (string $ip, string $action): client IP used as the key; default REMOTE_ADDR
+ *   (forwarded headers are never trusted by default since they can be forged).
+ *
+ * Storage: object cache (atomic increment) when a persistent one is in use; otherwise a transient which is only
+ * written every few hits (coarse steps), so the options table is not hit on every request.
+ *
+ * @param string $action The endpoint identifier.
+ * @since 3.8.15
+ */
+function live_weather_station_public_rate_limit($action) {
+    if (current_user_can(live_weather_station_manage_capability()) || current_user_can('edit_posts')) {
+        return;
+    }
+    // The limits are set in the system options (0 means no limit): the live controls and charts, and the /get-weather/ feeds.
+    $limit = ($action === 'feed') ? (int)get_option('live_weather_station_rate_limit_feed', 0) : (int)get_option('live_weather_station_rate_limit_public', 120);
+    $limit = (int)apply_filters('live_weather_station_public_rate_limit', $limit, $action);
+    if ($limit <= 0) {
+        return;
+    }
+    $window = max(1, (int)apply_filters('live_weather_station_public_rate_window', 60, $action));
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+    $ip = (string)apply_filters('live_weather_station_public_rate_limit_ip', $ip, $action);
+    // IPv6: one counter per /64, since a single subscriber controls a whole /64 and can change address at will.
+    if (strpos($ip, ':') !== false && function_exists('inet_pton')) {
+        $packed = @inet_pton($ip);
+        if (is_string($packed) && strlen($packed) === 16) {
+            $ip = bin2hex(substr($packed, 0, 8));
+        }
+    }
+    $key = 'lws_rl_' . md5($ip . '|' . $action . '|' . (int)floor(time() / $window));
+    if (function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache()) {
+        wp_cache_add($key, 0, 'lws_rl', $window * 2);
+        $count = wp_cache_incr($key, 1, 'lws_rl');
+        $count = ($count === false) ? 1 : (int)$count;
+    }
+    else {
+        // Transient fallback: probabilistic coarse counter. One read per hit, and a write (of count + $step) on
+        // average every $step hits, so the options table is not written on every request. Precision ~ +/- $step.
+        $step = max(1, (int)floor($limit / 10));
+        $count = (int)get_transient($key);
+        if ($count === 0 || wp_rand(1, $step) === 1) {
+            set_transient($key, $count + ($count === 0 ? 1 : $step), $window * 2);
+        }
+    }
+    if ($count > $limit) {
+        status_header(429);
+        header('Retry-After: ' . $window);
+        if ($action === 'feed') {
+            header('Content-Type: text/plain; charset=utf-8');
+            exit ('Too Many Requests');
+        }
+        header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+        exit (wp_json_encode(array('error' => 'too_many_requests')));
+    }
 }

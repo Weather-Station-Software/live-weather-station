@@ -1,13 +1,17 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
 
 use WeatherStation\System\Help\InlineHelp;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $message = __('Adding this station, please wait', 'live-weather-station');
 if ($error_message == '') {
@@ -21,7 +25,7 @@ else {
 $id = array();
 $exp = array();
 if (isset($station) && is_array($station) && array_key_exists('service_id', $station) && $station['service_id'] !== '') {
-    $exp = explode(LWS_SERVICE_SEPARATOR, $station['service_id']);
+    $exp = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $station['service_id']);
 }
 if (count($exp) !== 3) {
     $id['service_did'] = '';
@@ -44,9 +48,9 @@ else {
     <?php if ($station['guid'] != 0) { ?>
         <h1><?php esc_html_e('Edit a station connected to WeatherLink', 'live-weather-station');?></h1>
     <?php } ?>
-    <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
-        <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
-        <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
+    <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(live_weather_station_get_admin_page_url($url)); ?>">
+        <input name="station_id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
+        <input name="guid" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
         <input name="service" type="hidden" value="WeatherLink" />
         <input name="tab" type="hidden" value="add-edit" />
         <input name="action" type="hidden" value="do" />
@@ -60,45 +64,45 @@ else {
                 <td>
                     <select name="loc_country_code" id="loc_country_code" style="width:25em;">
                         <?php foreach ($countries as $key => $val) { ?>
-                            <option value="<?php echo $key ?>"<?php if ($station['loc_country_code']==$key) {?> selected="selected"<?php } ?>><?php echo $val ?></option>;
+                            <option value="<?php echo esc_attr($key) ?>"<?php if ($station['loc_country_code']==$key) {?> selected="selected"<?php } ?>><?php echo esc_html($val); ?></option>;
                         <?php } ?>
                     </select>
                 </td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_did"><?php esc_html_e('Device ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_did" aria-required="true" type="text" id="service_did" value="<?php echo htmlspecialchars($id['service_did']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required name="service_did" aria-required="true" type="text" id="service_did" value="<?php echo esc_attr($id['service_did']) ?>" maxlength="40" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_apitoken"><?php esc_html_e('API Token', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_apitoken" aria-required="true" type="text" id="service_apitoken" value="<?php echo htmlspecialchars($id['service_apitoken']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input <?php echo ($station['guid'] == 0 ? 'required aria-required="true"' : ''); ?> name="service_apitoken" type="password" autocomplete="new-password" id="service_apitoken" value="" placeholder="<?php echo esc_attr($station['guid'] == 0 ? '' : __('Unchanged', 'live-weather-station')); ?>" maxlength="64" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_ownerpass"><?php esc_html_e('Password', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_ownerpass" aria-required="true" type="text" id="service_ownerpass" value="<?php echo htmlspecialchars($id['service_ownerpass']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input <?php echo ($station['guid'] == 0 ? 'required aria-required="true"' : ''); ?> name="service_ownerpass" type="password" autocomplete="new-password" id="service_ownerpass" value="" placeholder="<?php echo esc_attr($station['guid'] == 0 ? '' : __('Unchanged', 'live-weather-station')); ?>" maxlength="120" style="width:25em;" /></td>
             </tr>
 
         </table>
         <?php if ($error != 0) { ?>
-            <p style="color:red;"><?php echo $errmsg;?></p>
+            <p style="color:red;"><?php echo esc_html($errmsg);?></p>
         <?php } ?>
         <?php if ($station['guid'] == 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-wlink" id="add-edit-wlink" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html($message);?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-wlink" id="add-edit-wlink" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         <?php } ?>
     </form>
 </div>

@@ -1,17 +1,77 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
 
-$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '');
-$warning = sprintf(__('All stations associated to this service will be removed from %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+use WeatherStation\System\Output\Guard;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
+$warning = sprintf(/* translators: %s: name of this plugin */ __('All stations associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 
 ?>
 
-<form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST" style="margin:0px;padding:0px;">
+<?php if (get_option('live_weather_station_netatmo_connected') == 0) {
+    $own_id = (string)get_option('live_weather_station_netatmo_client_id');
+    $own_secret_saved = ((string)get_option('live_weather_station_netatmo_client_secret') !== '');
+    $redirect_uri = \WeatherStation\SDK\Netatmo\Plugin\Collector::netatmo_redirect_uri();
+?>
+<form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST" style="margin:0px;padding:0px;">
+    <input type="hidden" name="service" value="Netatmo" />
+    <?php wp_nonce_field('Netatmo', '_wpnonce', false); ?>
+    <?php // Default button of the form (Enter in a field): the connection through Netatmo, not the connection with a token. ?>
+    <button type="submit" name="action" value="live_weather_station_netatmo_start" style="display:none" tabindex="-1" aria-hidden="true"></button>
+    <div class="inside" style="padding: 11px;">
+        <p><?php
+            /* translators: 1: name of the service, 2: link to the page of the Netatmo applications */
+            $intro = __('Netatmo no longer accepts a login with a password from a plugin. To connect %1$s, create your own application on %2$s, then fill in its keys below.', 'live-weather-station');
+            echo wp_kses(sprintf($intro, esc_html('Netatmo'), '<a href="' . esc_url('https://dev.netatmo.com/apps') . '" target="_blank" rel="noopener noreferrer">dev.netatmo.com/apps</a>'), array('a' => array('href' => array(), 'target' => array(), 'rel' => array())));
+        ?></p>
+        <table cellspacing="0" class="lws-settings">
+            <tbody>
+                <tr>
+                    <th class="lws-login" width="35%" align="left" scope="row"><label for="netatmo-client-id"><?php esc_html_e('Client id', 'live-weather-station');?></label></th>
+                    <td width="2%"/>
+                    <td align="left"><input id="netatmo-client-id" name="client_id" type="text" size="30" value="<?php echo esc_attr($own_id); ?>" class="regular-text" autocomplete="off" spellcheck="false"></td>
+                </tr>
+                <tr>
+                    <th class="lws-password" width="35%" align="left" scope="row"><label for="netatmo-client-secret"><?php esc_html_e('Client secret', 'live-weather-station');?></label></th>
+                    <td width="2%"/>
+                    <td align="left"><input id="netatmo-client-secret" name="client_secret" type="password" size="30" value="" class="regular-text" autocomplete="off" spellcheck="false"<?php echo ($own_secret_saved ? ' placeholder="' . esc_attr__('Saved: leave empty to keep it', 'live-weather-station') . '"' : ''); ?>></td>
+                </tr>
+                <tr>
+                    <th class="lws-login" width="35%" align="left" scope="row"><label for="netatmo-redirect-uri"><?php esc_html_e('Redirect URI to register in your Netatmo application', 'live-weather-station');?></label></th>
+                    <td width="2%"/>
+                    <td align="left"><input id="netatmo-redirect-uri" type="text" size="30" value="<?php echo esc_attr($redirect_uri); ?>" class="regular-text" readonly onfocus="this.select()"></td>
+                </tr>
+            </tbody>
+        </table>
+        <details style="margin-top: 14px;">
+            <summary><?php esc_html_e('Connect with a refresh token instead', 'live-weather-station');?></summary>
+            <p><?php esc_html_e('If you generated a refresh token for your Netatmo application, paste it here and use the second button: no redirection to Netatmo is needed.', 'live-weather-station');?></p>
+            <p><label for="netatmo-refresh-token"><?php esc_html_e('Refresh token', 'live-weather-station');?></label><br/>
+            <input id="netatmo-refresh-token" name="refresh_token" type="password" size="40" value="" class="regular-text" autocomplete="off" spellcheck="false"></p>
+            <p><button type="submit" name="action" value="live_weather_station_netatmo_token" id="netatmo-connect-token" class="button"><?php esc_html_e('Connect with this token', 'live-weather-station');?></button></p>
+        </details>
+    </div>
+    <div id="major-publishing-actions">
+        <div id="publishing-action">
+            <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
+                <span id="netatmo-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Connecting...', 'live-weather-station');?></strong></span>
+            </div>
+            <button type="submit" name="action" value="live_weather_station_netatmo_start" id="netatmo-connect" class="button button-primary"><?php esc_html_e('Connect with Netatmo', 'live-weather-station');?></button>
+        </div>
+        <div class="clear"></div>
+    </div>
+</form>
+<?php } else { ?>
+<form action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="action" value="manage-connection" />
     <input type="hidden" name="service" value="Netatmo" />
     <input type="hidden" name="option_page" value="services" />
@@ -19,53 +79,36 @@ $warning = sprintf(__('All stations associated to this service will be removed f
     <div class="inside" style="padding: 11px;">
         <table cellspacing="0" class="lws-settings">
             <tbody>
-            <?php if (get_option('live_weather_station_netatmo_connected') == 0) { ?>
-                <tr>
-                    <th class="lws-login" width="35%" align="left" scope="row"><?php esc_html_e('Login', 'live-weather-station');?></th>
-                    <td width="2%"/>
-                    <td align="left">
-                        <span class="login"><input id="login" name="login" type="text" size="20" value="" class="regular-text"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <th class="lws-password" width="35%" align="left" scope="row"><?php esc_html_e('Password', 'live-weather-station');?></th>
-                    <td width="2%"/>
-                    <td align="left">
-                        <span class="password"><input id="password" name="password" type="password" size="20" value="" class="regular-text"></span>
-                    </td>
-                </tr>
-            <?php } else {?>
                 <tr>
                     <th class="lws-login" width="35%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Netatmo')); ?>"<?php echo $target; ?>><?php echo lws_lcfirst(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Netatmo')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is set at the top of this file from two fixed attribute literals ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
-            <?php } ?>
+            <?php if (!(bool)get_option('live_weather_station_netatmo_own_keys')) { ?>
+                <tr>
+                    <td colspan="3">
+                        <p class="description"><?php
+                        /* translators: %s: link to the page of the Netatmo applications */
+                        $demo = __('This connection uses the keys shipped with the plugin, a shared demo: it is limited by rate limits shared with every site using it and nothing promises that it keeps working. To rely on it, change the connection and use your own application, created on %s.', 'live-weather-station');
+                        echo wp_kses(sprintf($demo, '<a href="' . esc_url('https://dev.netatmo.com/apps') . '" target="_blank" rel="noopener noreferrer">dev.netatmo.com/apps</a>'), array('a' => array('href' => array(), 'target' => array(), 'rel' => array())));
+                        ?></p>
+                    </td>
+                </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>
-<?php if (get_option('live_weather_station_netatmo_connected') == 0) { ?>
-    <div id="major-publishing-actions">
-        <div id="publishing-action">
-            <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                <span id="netatmo-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
-            </div>
-            <input type="submit" name="connect" id="netatmo-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
-        </div>
-        <div class="clear"></div>
-    </div>
-<?php } else {?>
     <div id="major-publishing-actions">
         <div id="publishing-action">
             <input type="submit" name="reconnect" id="netatmo-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
             <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                <span id="netatmo-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="netatmo-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
             </div>
-            <input type="submit" name="disconnect" id="netatmo-disconnect" class="button button-primary" onclick="lws_netatmo_confirmation = confirm('<?php echo $warning; ?>'); return lws_netatmo_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+            <input type="submit" name="disconnect" id="netatmo-disconnect" class="button button-primary" onclick="lws_netatmo_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes the value with wp_json_encode() and the JSON_HEX_TAG/AMP/APOS/QUOT flags, so it is safe in an inline script and in an HTML attribute ?>); return lws_netatmo_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
         </div>
         <div class="clear"></div>
     </div>
-<?php } ?>
 </form>
+<?php } ?>

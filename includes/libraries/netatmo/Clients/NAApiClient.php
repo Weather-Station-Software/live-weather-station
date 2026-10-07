@@ -12,10 +12,14 @@ use WeatherStation\SDK\Netatmo\Exceptions\NANotLoggedErrorType;
 use WeatherStation\SDK\Netatmo\Common\NARestErrorCode;
 use WeatherStation\System\Logs\Logger;
 
-define('BACKEND_BASE_URI', "https://api.netatmo.com/");
-define('BACKEND_SERVICES_URI', "https://api.netatmo.com/api");
-define('BACKEND_ACCESS_TOKEN_URI', "https://api.netatmo.com/oauth2/token");
-define('BACKEND_AUTHORIZE_URI', "https://api.netatmo.com/oauth2/authorize");
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// Plugin Check: constants prefixed with LIVE_WEATHER_STATION_NETATMO_ (global constant prefix rule)
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_BASE_URI', "https://api.netatmo.com/");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_SERVICES_URI', "https://api.netatmo.com/api");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_ACCESS_TOKEN_URI', "https://api.netatmo.com/oauth2/token");
+define('LIVE_WEATHER_STATION_NETATMO_BACKEND_AUTHORIZE_URI', "https://api.netatmo.com/oauth2/authorize");
 
 
 /**
@@ -23,7 +27,7 @@ define('BACKEND_AUTHORIZE_URI', "https://api.netatmo.com/oauth2/authorize");
  *
  * @package Includes\Libraries
  * @author Originally written by Thomas Rosenblatt <thomas.rosenblatt@netatmo.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAApiClient
@@ -150,7 +154,7 @@ class NAApiClient
             $this->refresh_token = $config["refresh_token"];
         }
         // We must set uri first.
-        $uri = array("base_uri" => BACKEND_BASE_URI, "services_uri" => BACKEND_SERVICES_URI, "access_token_uri" => BACKEND_ACCESS_TOKEN_URI, "authorize_uri" => BACKEND_AUTHORIZE_URI);
+        $uri = array("base_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_BASE_URI, "services_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_SERVICES_URI, "access_token_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_ACCESS_TOKEN_URI, "authorize_uri" => LIVE_WEATHER_STATION_NETATMO_BACKEND_AUTHORIZE_URI);
         foreach($uri as $key => $val)
         {
             if(isset($config[$key]))
@@ -182,10 +186,10 @@ class NAApiClient
             $this->setVariable($name, $value);
         }
 
-        if($this->getVariable("code") == null && isset($_GET["code"]))
-        {
-            $this->setVariable("code", $_GET["code"]);
-        }
+        // The authorization code is never read from $_GET here: the plugin only uses the password / refresh token
+        // grants, and taking an unverified code from any request would allow the grant type to be forced.
+        // A caller implementing the authorization code flow must pass 'code' in $config, after having checked
+        // the 'state' with verifyState().
   }
 
 
@@ -201,9 +205,10 @@ class NAApiClient
     public function makeRequest($path, $method = 'GET', $params = array()) {
         $response = null;
         $args = array(
-            'user-agent' => LWS_PLUGIN_AGENT,
-            'timeout' => get_option('live_weather_station_collection_http_timeout'),
+            'user-agent' => LIVE_WEATHER_STATION_PLUGIN_AGENT,
+            'timeout' => ((int)get_option('live_weather_station_collection_http_timeout') > 0 ? max(5, min(120, (int)get_option('live_weather_station_collection_http_timeout'))) : 10),
             'blocking'    => true,
+            'redirection' => 0,
         );
         if ($params) {
             if (isset($params['access_token'])) {
@@ -232,6 +237,10 @@ class NAApiClient
                     break;
             }
         }
+        if (is_wp_error($response)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
+            throw new  NAApiErrorType(490, 'No HTTP access.', LIVE_WEATHER_STATION_NETATMO_WP_ERROR_TYPE);
+        }
         if (isset($response)) {
             $http_code = wp_remote_retrieve_response_code($response);
             $body = wp_remote_retrieve_body($response);
@@ -240,9 +249,11 @@ class NAApiClient
                 return $decode;
             }
             elseif (isset($http_code)){
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new  NAApiErrorType($http_code, 'HTTP error.', $decode);
             }
             else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new  NAApiErrorType(490, 'No HTTP access.', $decode);
             }
         }
@@ -294,11 +305,32 @@ class NAApiClient
         $redirect_uri = $this->getRedirectUri();
         if($state == null)
         {
-            $state = rand();
+            $state = bin2hex(random_bytes(16));
         }
+        // The state is remembered for 10 minutes, see verifyState().
+        set_transient('lws_netatmo_oauth_state_' . hash('sha256', (string)$state), 1, 600);
         $scope = $this->getVariable('scope');
-        $params = array("scope" => $scope, "state" => $state, "client_id" => $this->getVariable("client_id"), "client_secret" => $this->getVariable("client_secret"), "response_type" => "code", "redirect_uri" => $redirect_uri);
+        $params = array("scope" => $scope, "state" => $state, "client_id" => $this->getVariable("client_id"), "response_type" => "code", "redirect_uri" => $redirect_uri);
         return $this->getUri($this->getVariable("authorize_uri"), $params);
+    }
+
+    /**
+    * Verify (and consume) a state previously generated by getAuthorizeUrl().
+    *
+    * @param string $state The state returned in the redirect.
+    * @return boolean True if the state is valid.
+    */
+    public function verifyState($state)
+    {
+        if (!is_string($state) || $state === '') {
+            return false;
+        }
+        $key = 'lws_netatmo_oauth_state_' . hash('sha256', $state);
+        if (get_transient($key)) {
+            delete_transient($key);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -461,6 +493,7 @@ class NAApiClient
         }
         catch(NAApiErrorType $ex)
         {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new NANotLoggedErrorType($ex->getCode(), $ex->getMessage());
         }
         $params["access_token"] = $res["access_token"];
@@ -608,17 +641,20 @@ class NAApiClient
     function getRequestUri()
     {
         if (isset($_SERVER['REQUEST_URI'])) {
-            $uri = $_SERVER['REQUEST_URI'];
+            // Plugin Check: the server value is now sanitized.
+            $uri = esc_url_raw(wp_unslash($_SERVER['REQUEST_URI']));
         }
         else {
-            if (isset($_SERVER['argv'])) {
-                $uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['argv'][0];
+            // Plugin Check: every server value is now unslashed and sanitized, and checked with isset().
+            $script_name = isset($_SERVER['SCRIPT_NAME']) ? sanitize_text_field(wp_unslash($_SERVER['SCRIPT_NAME'])) : '';
+            if (isset($_SERVER['argv'][0])) {
+                $uri = $script_name . '?' . sanitize_text_field(wp_unslash($_SERVER['argv'][0]));
             }
             elseif (isset($_SERVER['QUERY_STRING'])) {
-                $uri = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING'];
+                $uri = $script_name . '?' . sanitize_text_field(wp_unslash($_SERVER['QUERY_STRING']));
             }
             else {
-                $uri = $_SERVER['SCRIPT_NAME'];
+                $uri = $script_name;
             }
         }
         // Prevent multiple slashes to avoid cross site requests via the Form API.
@@ -635,11 +671,15 @@ class NAApiClient
    */
     protected function getCurrentUri()
     {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on'
-          ? 'https://'
-          : 'http://';
-        $current_uri = $protocol . $_SERVER['HTTP_HOST'] . $this->getRequestUri();
-        $parts = parse_url($current_uri);
+        // The host comes from the site configuration, never from the (spoofable) Host header.
+        $home = wp_parse_url(home_url());
+        $protocol = (isset($home['scheme']) && $home['scheme'] === 'https') ? 'https://' : 'http://';
+        $host = isset($home['host']) ? $home['host'] : '';
+        if (isset($home['port'])) {
+            $host .= ':' . $home['port'];
+        }
+        $current_uri = $protocol . $host . $this->getRequestUri();
+        $parts = wp_parse_url($current_uri); // Plugin Check: wp_parse_url() instead of parse_url().
 
         $query = '';
         if (!empty($parts['query'])) {
@@ -652,7 +692,7 @@ class NAApiClient
         }
 
         // Use port if non default.
-        $port = isset($parts['port']) &&
+        $port = isset($parts['port']) && !isset($home['port']) &&
           (($protocol === 'http://' && $parts['port'] !== 80) || ($protocol === 'https://' && $parts['port'] !== 443))
           ? ':' . $parts['port'] : '';
 
@@ -693,9 +733,13 @@ class NAApiClient
         }
         if(!empty($path))
             if (substr($path, 0, 4) == "http")
+            {
+                // An absolute url is only accepted on the Netatmo backend: the bearer token must not go elsewhere.
+                $host = wp_parse_url($path, PHP_URL_HOST);
+                if (!is_string($host) || ($host !== 'api.netatmo.com' && substr($host, -12) !== '.netatmo.com') || substr($path, 0, 8) !== 'https://')
+                    throw new NAInternalErrorType('Invalid endpoint');
                 $url = $path;
-            else if(substr($path, 0, 5) == "https")
-                $url = $path;
+            }
             else
                 $url = rtrim($url, '/') . '/' . ltrim($path, '/');
 
@@ -736,7 +780,7 @@ class NAApiClient
  *
  * @package Includes\Libraries
  * @author Originally written by Fred Potter <fred.potter@netatmo.com>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAApiHelper

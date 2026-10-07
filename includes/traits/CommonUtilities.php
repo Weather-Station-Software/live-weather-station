@@ -6,7 +6,7 @@ namespace WeatherStation\SDK\Generic\Plugin\Common;
  * Common utilities for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
@@ -36,12 +36,17 @@ trait Utilities {
         $pressure_min = $pressure_min / 100;
         $pressure_max = $pressure_max / 100;
         $p = $p / 100;
-        while ($w < 0) {
-            $w = $w + 360;
+        // Normalize the wind direction to [0, 360) without looping (a huge or infinite value must not hang the computation).
+        $w = is_numeric($w) ? fmod((float)$w, 360.0) : 0.0;
+        if (is_nan($w) || is_infinite($w)) {
+            $w = 0.0;
+        }
+        if ($w < 0) {
+            $w += 360.0;
         }
         $dir = array('N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N');
         $w = $dir[(int)round((($w % 360) / 22.5) + 0.4)];
-        $month = date('n');
+        $month = gmdate('n');
         $summer = (($month >= 4) && ($month <= 9));
         $range = ($pressure_max - $pressure_min);
         $constant = round(($range / 22), 3);
@@ -209,6 +214,9 @@ trait Utilities {
      */
     protected function compute_saturation_vapor_pressure($t) {
         if ($t < 0) {
+            if ((272.7 + $t) == 0) {
+                return 0;
+            }
             $result = pow(10, 2.7877 + ((9.756 * $t) / (272.7 + $t)));
         }
         else {
@@ -228,6 +236,9 @@ trait Utilities {
      */
     protected function compute_partial_absolute_humidity($t, $p, $h) {
         $pvap = $this->compute_partial_vapor_pressure($t, $h);
+        if ($p - $pvap == 0) {
+            return 0;
+        }
         return round(0.622 * $pvap / ($p - $pvap), 5);
     }
 
@@ -241,6 +252,9 @@ trait Utilities {
      */
     protected function compute_saturation_absolute_humidity($t, $p) {
         $pvap = $this->compute_saturation_vapor_pressure($t);
+        if ($p - $pvap == 0) {
+            return 0;
+        }
         return round(0.622 * $pvap / ($p - $pvap), 5);
     }
 
@@ -272,7 +286,14 @@ trait Utilities {
             return 0;
         }
         $Ps = $this->compute_saturation_vapor_pressure($t) / $p;
-        $Rh = 287.06 / (1 - (($h / 100 ) * $Ps * (1 - (287.06 / 461))));
+        $den = 1 - (($h / 100 ) * $Ps * (1 - (287.06 / 461)));
+        if ($den == 0) {
+            return 0;
+        }
+        $Rh = 287.06 / $den;
+        if ($Rh * ($t+273.15) == 0) {
+            return 0;
+        }
         return round($p / ($Rh * ($t+273.15)), 5);
     }
 
@@ -295,6 +316,9 @@ trait Utilities {
         $b = 1 - $a;
         $c = ($k1 * $k * $h) + (2 * $k1 * $k2 * pow($k2, 2) * pow($h, 2));
         $d = 1 + ($k1 * $k * $h) + ($k1 * $k2 * pow($k2, 2) * pow($h, 2));
+        if ($W == 0 || $b == 0 || $d == 0) {
+            return 0;
+        }
         return round((1800 / $W) * (($a / $b) + ($c / $d)), 1);
     }
 
@@ -331,6 +355,9 @@ trait Utilities {
      * @since 3.3.0
      */
     protected function compute_potential_temperature($t, $p) {
+        if ($p == 0) {
+            return 0;
+        }
         return round( $t * pow((100000 / $p), 0.286), 1);
     }
 
@@ -377,9 +404,19 @@ trait Utilities {
     protected function compute_density_altitude($t, $p, $h) {
         $k = 145366.45 * 0.3048;
         $d = $this->compute_dew_point($t, $h);
+        if ($p == 0 || (237.7 + $d) == 0) {
+            return 0;
+        }
         $e = 6.11 * pow(10, (7.5 * $d) / (237.7 + $d));
-        $tv = ($t + 273.15) / (1 - ((1 - 0.622) * ($e * 100 / $p)));
+        $den = 1 - ((1 - 0.622) * ($e * 100 / $p));
+        if ($den == 0) {
+            return 0;
+        }
+        $tv = ($t + 273.15) / $den;
         $tv = ((9 / 5) * ($tv - 273.15) + 32) + 459.69;
+        if ($tv == 0) {
+            return 0;
+        }
         $pres = ($p / 3386.39);
         return round( $k * (1 - pow((17.326 * $pres / $tv), 0.235)), 0);
     }
@@ -431,7 +468,14 @@ trait Utilities {
     protected function compute_frost_point($t, $dew) {
         $t = $t + 273.15;
         $dew = $dew + 273.15;
-        $result = $dew - $t + (2671.02/((2954.61/$t)+(2.193665*log($t))-13.3448));
+        if ($t <= 0) {
+            return 0;
+        }
+        $den = (2954.61/$t)+(2.193665*log($t))-13.3448;
+        if ($den == 0) {
+            return 0;
+        }
+        $result = $dew - $t + (2671.02/$den);
         return round($result - 273.15, 1);
     }
 

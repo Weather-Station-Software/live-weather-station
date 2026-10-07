@@ -6,7 +6,7 @@ namespace WeatherStation\Engine\Module\Daily;
  * Class to generate parameter daily astream form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */
@@ -23,7 +23,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'astream';
         $this->module_name = ucfirst(__('angular stream', 'live-weather-station'));
         $this->module_hint = __('Display daily data as an angular stream chart. Particularly suitable for wind data, this graph allows to view a data according to an angle.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-hourglass':' fa-hourglass') . ' fa-fw fa-rotate-90';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-hourglass':' fa-hourglass') . ' fa-fw fa-rotate-90';
         $this->layout = '12-3-4';
         $this->series_number = 2;
         parent::__construct($station_information);
@@ -77,7 +77,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('daily-astream-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('daily-astream-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
             if ($i == 1) {
-                $a_group[] = array('content' => $group, 'name' => sprintf(__('Angle', 'live-weather-station'), $i));
+                $a_group[] = array('content' => $group, 'name' => __('Angle', 'live-weather-station'));
             }
             else {
                 $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement', 'live-weather-station'), $i));

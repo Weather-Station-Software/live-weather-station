@@ -9,7 +9,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
  * Functionalities for options handling.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -30,9 +30,9 @@ trait Handling {
 
     private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_only_valid_files = true;
+    private static $live_weather_station_logger_mask_sensitive = true;
     private static $live_weather_station_upload_allowed = false;
 
-    private static $live_weather_station_use_cdn = false;
     private static $live_weather_station_footer_scripts = true;
     private static $live_weather_station_wait_for_dom = false;
     private static $live_weather_station_fa_mode = 0;
@@ -55,13 +55,17 @@ trait Handling {
     private static $live_weather_station_show_technical = false;
     private static $live_weather_station_show_analytics = false;
     private static $live_weather_station_show_tasks = false;
-    private static $live_weather_station_auto_update = true;
     private static $live_weather_station_cron_speed = 0;
     private static $live_weather_station_show_update = true;
     private static $live_weather_station_plugin_stat = false;
     private static $live_weather_station_keep_tables = true;
     private static $live_weather_station_ajax_widget = false;
     private static $live_weather_station_collection_http_timeout = 45;
+    private static $live_weather_station_rate_limit_public = 120;
+    private static $live_weather_station_rate_limit_feed = 0;
+    private static $live_weather_station_late_collection_minutes = 60;
+    private static $live_weather_station_cache_budget = 6000;
+    private static $live_weather_station_cache_budget_text = 300;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;
     private static $live_weather_station_picture_retention = 31;
@@ -73,9 +77,16 @@ trait Handling {
     private static $live_weather_station_netatmo_refresh_token = '';
     private static $live_weather_station_netatmo_access_token = '';
     private static $live_weather_station_netatmo_connected = false;
+    private static $live_weather_station_netatmo_client_id = '';
+    private static $live_weather_station_netatmo_client_secret = '';
+    private static $live_weather_station_netatmo_own_keys = false;
+    private static $live_weather_station_ambient_application_key = '';
     private static $live_weather_station_netatmohc_refresh_token = '';
     private static $live_weather_station_netatmohc_access_token = '';
     private static $live_weather_station_netatmohc_connected = false;
+    private static $live_weather_station_netatmohc_client_id = '';
+    private static $live_weather_station_netatmohc_client_secret = '';
+    private static $live_weather_station_netatmohc_own_keys = false;
     private static $live_weather_station_bloomsky_key = '';
     private static $live_weather_station_bloomsky_connected = false;
     private static $live_weather_station_ambient_key = '';
@@ -91,7 +102,7 @@ trait Handling {
     private static $live_weather_station_mapbox_apikey = '';
     private static $live_weather_station_mapbox_plan = 0;
     private static $live_weather_station_maptiler_apikey = '';
-    private static $live_weather_station_navionics_apikey = '';
+    private static $live_weather_station_stadia_apikey = '';
     private static $live_weather_station_maptiler_plan = 0;
     private static $live_weather_station_unit_temperature = 0;  
     private static $live_weather_station_unit_pressure = 0;     
@@ -135,6 +146,157 @@ trait Handling {
 
     private static $do_not_export_import = array('live_weather_station_version', 'live_weather_station_logger_installed', 'live_weather_station_misc_stat', 'live_weather_station_version');
 
+    /**
+     * Options that can be exported and imported, with the type of their value.
+     * Types: bool, int, float, token (short identifier), color (#rrggbb), secret (credential, string), flag (connection state).
+     * Any option which is not listed here is never written by an import (whatever its name).
+     */
+    private static $exportable_options = array(
+        'live_weather_station_logger_level' => 'int', 'live_weather_station_logger_rotate' => 'int', 'live_weather_station_logger_retention' => 'int',
+        'live_weather_station_analytics_cutoff' => 'int', 'live_weather_station_quota_mode' => 'int', 'live_weather_station_force_frontend_styling' => 'bool',
+        'live_weather_station_mutation_observer' => 'bool', 'live_weather_station_logger_mask_sensitive' => 'bool', 'live_weather_station_file_retention' => 'int', 'live_weather_station_only_valid_files' => 'bool',
+        'live_weather_station_upload_allowed' => 'bool', 'live_weather_station_footer_scripts' => 'bool',
+        'live_weather_station_wait_for_dom' => 'bool', 'live_weather_station_fa_mode' => 'int', 'live_weather_station_advanced_mode' => 'bool',
+        'live_weather_station_txt_cache_bypass' => 'bool', 'live_weather_station_backend_cache' => 'bool', 'live_weather_station_query_cache' => 'bool',
+        'live_weather_station_frontend_cache' => 'bool', 'live_weather_station_widget_cache' => 'bool', 'live_weather_station_dgraph_cache' => 'bool',
+        'live_weather_station_ygraph_cache' => 'bool', 'live_weather_station_cgraph_cache' => 'bool', 'live_weather_station_purge_cache' => 'bool',
+        'live_weather_station_redirect_internal_links' => 'bool', 'live_weather_station_redirect_external_links' => 'bool',
+        'live_weather_station_time_shift_threshold' => 'int', 'live_weather_station_auto_manage_netatmo' => 'bool', 'live_weather_station_auto_manage_bloomsky' => 'bool',
+        'live_weather_station_auto_manage_ambient' => 'bool', 'live_weather_station_overload_hc' => 'bool', 'live_weather_station_show_technical' => 'bool',
+        'live_weather_station_show_analytics' => 'bool', 'live_weather_station_show_tasks' => 'bool', 
+        'live_weather_station_cron_speed' => 'int', 'live_weather_station_show_update' => 'bool', 'live_weather_station_plugin_stat' => 'bool',
+        'live_weather_station_keep_tables' => 'bool', 'live_weather_station_ajax_widget' => 'bool', 'live_weather_station_collection_http_timeout' => 'int', 'live_weather_station_rate_limit_public' => 'int', 'live_weather_station_rate_limit_feed' => 'int', 'live_weather_station_cache_budget' => 'int', 'live_weather_station_cache_budget_text' => 'int', 'live_weather_station_late_collection_minutes' => 'int',
+        'live_weather_station_sharing_http_timeout' => 'int', 'live_weather_station_system_http_timeout' => 'int', 'live_weather_station_picture_retention' => 'int',
+        'live_weather_station_video_retention' => 'int', 'live_weather_station_retention_notifications' => 'int', 'live_weather_station_partial_translation' => 'bool',
+        'live_weather_station_map_zoom' => 'int', 'live_weather_station_map_layer' => 'token',
+        'live_weather_station_netatmo_refresh_token' => 'secret', 'live_weather_station_ambient_application_key' => 'secret', 'live_weather_station_netatmo_access_token' => 'secret', 'live_weather_station_netatmo_connected' => 'flag', 'live_weather_station_netatmo_client_id' => 'secret', 'live_weather_station_netatmo_client_secret' => 'secret', 'live_weather_station_netatmo_own_keys' => 'flag',
+        'live_weather_station_netatmohc_refresh_token' => 'secret', 'live_weather_station_netatmohc_access_token' => 'secret', 'live_weather_station_netatmohc_connected' => 'flag', 'live_weather_station_netatmohc_client_id' => 'secret', 'live_weather_station_netatmohc_client_secret' => 'secret', 'live_weather_station_netatmohc_own_keys' => 'flag',
+        'live_weather_station_bloomsky_key' => 'secret', 'live_weather_station_bloomsky_connected' => 'flag',
+        'live_weather_station_ambient_key' => 'secret', 'live_weather_station_ambient_connected' => 'flag',
+        'live_weather_station_owm_apikey' => 'secret', 'live_weather_station_owm_plan' => 'int',
+        'live_weather_station_wug_apikey' => 'secret', 'live_weather_station_wug_plan' => 'int',
+        'live_weather_station_windy_apikey' => 'secret', 'live_weather_station_windy_plan' => 'int',
+        'live_weather_station_thunderforest_apikey' => 'secret', 'live_weather_station_thunderforest_plan' => 'int',
+        'live_weather_station_mapbox_apikey' => 'secret', 'live_weather_station_mapbox_plan' => 'int',
+        'live_weather_station_maptiler_apikey' => 'secret', 'live_weather_station_maptiler_plan' => 'int',
+        'live_weather_station_stadia_apikey' => 'secret',
+        'live_weather_station_unit_temperature' => 'int', 'live_weather_station_unit_pressure' => 'int', 'live_weather_station_unit_wind_strength' => 'int',
+        'live_weather_station_unit_altitude' => 'int', 'live_weather_station_unit_distance' => 'int', 'live_weather_station_unit_psychrometry' => 'int',
+        'live_weather_station_unit_rain_snow' => 'int', 'live_weather_station_unit_gas' => 'int', 'live_weather_station_unit_co' => 'int',
+        'live_weather_station_measure_only' => 'int', 'live_weather_station_obsolescence' => 'int', 'live_weather_station_min_max_mode' => 'int',
+        'live_weather_station_wind_semantics' => 'int', 'live_weather_station_angle_semantics' => 'int', 'live_weather_station_moon_icons' => 'int',
+        'live_weather_station_collect_history' => 'bool', 'live_weather_station_build_history' => 'bool', 'live_weather_station_full_history' => 'bool',
+        'live_weather_station_retention_history' => 'int',
+        'live_weather_station_w_text_shadow_position' => 'token', 'live_weather_station_w_text_shadow_length' => 'token', 'live_weather_station_w_text_shadow_diffusion' => 'token',
+        'live_weather_station_w_text_shadow_obscurity' => 'token', 'live_weather_station_w_text_shadow_color' => 'color',
+        'live_weather_station_w_box_shadow_position' => 'token', 'live_weather_station_w_box_shadow_length' => 'token', 'live_weather_station_w_box_shadow_diffusion' => 'token',
+        'live_weather_station_w_box_shadow_obscurity' => 'token', 'live_weather_station_w_box_shadow_color' => 'color', 'live_weather_station_w_box_radius' => 'token',
+    );
+
+    /**
+     * Get the type of an exportable/importable option.
+     *
+     * @param string $name The name of the option.
+     * @return string|boolean The type of the option (see $exportable_options), 'float' for thresholds, 'cschemes' for the color schemes option or false if the option can't be exported/imported.
+     * @since 3.8.0
+     */
+    private static function get_exportable_option_type($name) {
+        if (!is_string($name) || in_array($name, self::$do_not_export_import, true)) {
+            return false;
+        }
+        if (array_key_exists($name, self::$exportable_options)) {
+            return self::$exportable_options[$name];
+        }
+        if ($name === self::$live_weather_station_styles_chart_cscheme_key) {
+            return 'cschemes';
+        }
+        if (array_key_exists($name, self::get_thresholds_options())) {
+            return 'float';
+        }
+        return false;
+    }
+
+    /**
+     * Check that an imported integer is in a sane range: never negative, and an HTTP timeout never above 600 seconds.
+     *
+     * @param string $name The name of the option.
+     * @param int $value The imported (already validated) integer.
+     * @return boolean True if the value can be written.
+     * @since 3.9.0
+     */
+    private static function is_imported_int_in_bounds($name, $value) {
+        if ($value < 0) {
+            return false;
+        }
+        if (substr($name, -13) === '_http_timeout' && $value > 600) {
+            return false;
+        }
+        if ($name === 'live_weather_station_late_collection_minutes' && $value > 10080) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Normalize and validate an imported option value.
+     *
+     * @param string $type The type of the option.
+     * @param mixed $value The imported value.
+     * @return mixed The clean value, or null if the value is not acceptable.
+     * @since 3.8.0
+     */
+    private static function sanitize_imported_option($type, $value) {
+        if ($type === 'cschemes') {
+            if (!is_array($value)) {
+                return null;
+            }
+            $result = array();
+            foreach ($value as $id => $cscheme) {
+                if (!is_string($id) || !preg_match('/^[a-z0-9_-]{1,20}$/', $id) || !is_array($cscheme) || !isset($cscheme['name']) || !is_scalar($cscheme['name']) || !isset($cscheme['colors']) || !is_array($cscheme['colors'])) {
+                    continue;
+                }
+                $colors = array();
+                foreach ($cscheme['colors'] as $color) {
+                    if (!is_string($color) || !preg_match('/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $color)) {
+                        continue 2;
+                    }
+                    $colors[] = ltrim($color, '#');
+                }
+                $result[$id] = array('name' => sanitize_text_field((string)$cscheme['name']), 'colors' => $colors);
+            }
+            return (count($result) > 0 ? $result : null);
+        }
+        // All other options are scalars (and never PHP serialized data).
+        if (!is_scalar($value) && $value !== null) {
+            return null;
+        }
+        if (is_string($value) && is_serialized($value)) {
+            return null;
+        }
+        switch ($type) {
+            case 'bool':
+            case 'flag':
+                if ($value === true || $value === 1 || $value === '1') {
+                    return 1;
+                }
+                if ($value === false || $value === null || $value === 0 || $value === '0' || $value === '') {
+                    return 0;
+                }
+                return null;
+            case 'int':
+                return (is_int($value) || (is_string($value) && preg_match('/^-?[0-9]{1,12}$/', $value) === 1)) ? (int)$value : null;
+            case 'float':
+                return (is_int($value) || is_float($value) || (is_string($value) && is_numeric($value))) ? $value + 0 : null;
+            case 'token':
+                return (is_string($value) && preg_match('/^[A-Za-z0-9_.-]{1,64}$/', $value) === 1) ? $value : null;
+            case 'color':
+                return (is_string($value) && preg_match('/^#[0-9a-fA-F]{6}$/', $value) === 1) ? $value : null;
+            case 'secret':
+                return (is_string($value) && strlen($value) <= 512 && preg_match('/^[\x21-\x7e]*$/', $value) === 1) ? $value : null;
+        }
+        return null;
+    }
+
     private static $must_be_unserialized_as_array = array('live_weather_station_styles_chart_cschemes', 'live_weather_station_translation_stat');
 
     /**
@@ -163,7 +325,24 @@ trait Handling {
      * @since 3.6.0
      */
     public static function get_cschemes() {
-        return get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+        $result = get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+        // Stored values can be overwritten (import): sanitize names and colors, shape is unchanged.
+        if (is_array($result)) {
+            foreach ($result as $key => $cscheme) {
+                if (!is_array($cscheme)) {
+                    continue;
+                }
+                if (isset($cscheme['name']) && is_scalar($cscheme['name'])) {
+                    $result[$key]['name'] = sanitize_text_field((string)$cscheme['name']);
+                }
+                if (isset($cscheme['colors']) && is_array($cscheme['colors'])) {
+                    foreach ($cscheme['colors'] as $i => $color) {
+                        $result[$key]['colors'][$i] = preg_replace('/[^#0-9a-zA-Z]/', '', (string)$color);
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     /**
@@ -206,8 +385,9 @@ trait Handling {
      */
     public static function update_cscheme($id, $value) {
         $cschemes = self::get_cschemes();
-        if (array_key_exists(strtolower($id), $cschemes)) {
-            $cschemes[$id] = $value;
+        $id = strtolower((string)$id);
+        if (array_key_exists($id, $cschemes) && self::sanitize_imported_option('cschemes', array($id => $value)) !== null) {
+            $cschemes[$id] = self::sanitize_imported_option('cschemes', array($id => $value))[$id];
             update_option(self::$live_weather_station_styles_chart_cscheme_key, $cschemes);
         }
     }
@@ -623,6 +803,7 @@ trait Handling {
     protected static function delete_options() {
         delete_option('live_weather_station_use_cdn');
         delete_option('live_weather_station_only_valid_files');
+        delete_option('live_weather_station_logger_mask_sensitive');
         delete_option('live_weather_station_upload_allowed');
         delete_option('live_weather_station_footer_scripts');
         delete_option('live_weather_station_wait_for_dom');
@@ -636,9 +817,16 @@ trait Handling {
         delete_option('live_weather_station_netatmo_refresh_token');
         delete_option('live_weather_station_netatmo_access_token');
         delete_option('live_weather_station_netatmo_connected');
+        delete_option('live_weather_station_netatmo_client_id');
+        delete_option('live_weather_station_netatmo_client_secret');
+        delete_option('live_weather_station_netatmo_own_keys');
+        delete_option('live_weather_station_ambient_application_key');
         delete_option('live_weather_station_netatmohc_refresh_token');
         delete_option('live_weather_station_netatmohc_access_token');
         delete_option('live_weather_station_netatmohc_connected');
+        delete_option('live_weather_station_netatmohc_client_id');
+        delete_option('live_weather_station_netatmohc_client_secret');
+        delete_option('live_weather_station_netatmohc_own_keys');
         delete_option('live_weather_station_bloomsky_connected');
         delete_option('live_weather_station_bloomsky_key');
         delete_option('live_weather_station_ambient_connected');
@@ -655,7 +843,8 @@ trait Handling {
         delete_option('live_weather_station_mapbox_plan');
         delete_option('live_weather_station_maptiler_apikey');
         delete_option('live_weather_station_maptiler_plan');
-        delete_option('live_weather_station_navionics_apikey');
+        delete_option('live_weather_station_stadia_apikey');
+        delete_option('live_weather_station_navionics_apikey'); // Retired in 3.9.0, still removed on uninstall.
         delete_option('live_weather_station_unit_temperature');
         delete_option('live_weather_station_unit_pressure');
         delete_option('live_weather_station_unit_wind_strength');
@@ -697,10 +886,16 @@ trait Handling {
         delete_option('live_weather_station_force_frontend_styling');
         delete_option('live_weather_station_cron_speed');
         delete_option('live_weather_station_show_update');
+        delete_option('live_weather_station_wow_be_notice');
         delete_option('live_weather_station_plugin_stat');
         delete_option('live_weather_station_keep_tables');
         delete_option('live_weather_station_ajax_widget');
         delete_option('live_weather_station_collection_http_timeout');
+        delete_option('live_weather_station_rate_limit_public');
+        delete_option('live_weather_station_rate_limit_feed');
+        delete_option('live_weather_station_late_collection_minutes');
+        delete_option('live_weather_station_cache_budget');
+        delete_option('live_weather_station_cache_budget_text');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
         delete_option('live_weather_station_picture_retention');
@@ -736,6 +931,7 @@ trait Handling {
         update_option('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
         update_option('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
         update_option('live_weather_station_netatmo_connected', (self::$live_weather_station_netatmo_connected ? 1 : 0));
+        update_option('live_weather_station_netatmo_own_keys', (self::$live_weather_station_netatmo_own_keys ? 1 : 0));
     }
 
 
@@ -769,6 +965,7 @@ trait Handling {
         update_option('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
         update_option('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
         update_option('live_weather_station_netatmohc_connected', (self::$live_weather_station_netatmohc_connected ? 1 : 0));
+        update_option('live_weather_station_netatmohc_own_keys', (self::$live_weather_station_netatmohc_own_keys ? 1 : 0));
     }
 
     /**
@@ -832,12 +1029,12 @@ trait Handling {
     }
 
     /**
-     * Init the Navionics options of the plugin.
+     * Init the Stadia Maps options of the plugin.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    protected static function init_navionics_options() {
-        update_option('live_weather_station_navionics_apikey', self::$live_weather_station_navionics_apikey);
+    protected static function init_stadia_options() {
+        update_option('live_weather_station_stadia_apikey', self::$live_weather_station_stadia_apikey);
     }
 
     /**
@@ -846,8 +1043,8 @@ trait Handling {
      * @since 3.0.0
      */
     protected static function init_system_options() {
-        update_option('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         update_option('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        update_option('live_weather_station_logger_mask_sensitive', self::$live_weather_station_logger_mask_sensitive);
         update_option('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         update_option('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         update_option('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);
@@ -878,11 +1075,15 @@ trait Handling {
         update_option('live_weather_station_keep_tables', self::$live_weather_station_keep_tables);
         update_option('live_weather_station_ajax_widget', self::$live_weather_station_ajax_widget);
         update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
-        update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         update_option('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         update_option('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
         update_option('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
+        update_option('live_weather_station_rate_limit_public', self::$live_weather_station_rate_limit_public);
+        update_option('live_weather_station_rate_limit_feed', self::$live_weather_station_rate_limit_feed);
+        update_option('live_weather_station_late_collection_minutes', self::$live_weather_station_late_collection_minutes);
+        update_option('live_weather_station_cache_budget', self::$live_weather_station_cache_budget);
+        update_option('live_weather_station_cache_budget_text', self::$live_weather_station_cache_budget_text);
         update_option('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         update_option('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         update_option('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
@@ -963,7 +1164,7 @@ trait Handling {
         self::init_thunderforest_options();
         self::init_mapbox_options();
         self::init_maptiler_options();
-        self::init_navionics_options();
+        self::init_stadia_options();
         self::init_bloomsky_options();
         self::init_ambient_options();
         self::init_system_options();
@@ -1042,7 +1243,8 @@ trait Handling {
         $count = count($val);
         $new_option = array();
         for ($i=0; $i<$count; $i++) {
-            $new_option[$i] = get_option($option_name)[$i];
+            $current = get_option($option_name);
+            $new_option[$i] = (is_array($current) && array_key_exists($i, $current)) ? $current[$i] : false;
             if (false === $new_option[$i]) {
                 $new_option[$i] = $val[$i];
             }
@@ -1126,8 +1328,8 @@ trait Handling {
         self::verify_option_integer('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
         self::verify_option_integer('live_weather_station_file_retention', self::$live_weather_station_file_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
-        self::verify_option_boolean('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         self::verify_option_boolean('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        self::verify_option_boolean('live_weather_station_logger_mask_sensitive', self::$live_weather_station_logger_mask_sensitive);
         self::verify_option_boolean('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         self::verify_option_boolean('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);
@@ -1145,6 +1347,11 @@ trait Handling {
         self::verify_option_integer('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
         self::verify_option_integer('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
         self::verify_option_integer('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
+        self::verify_option_integer('live_weather_station_rate_limit_public', self::$live_weather_station_rate_limit_public);
+        self::verify_option_integer('live_weather_station_rate_limit_feed', self::$live_weather_station_rate_limit_feed);
+        self::verify_option_integer('live_weather_station_late_collection_minutes', self::$live_weather_station_late_collection_minutes);
+        self::verify_option_integer('live_weather_station_cache_budget', self::$live_weather_station_cache_budget);
+        self::verify_option_integer('live_weather_station_cache_budget_text', self::$live_weather_station_cache_budget_text);
         self::verify_option_integer('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         self::verify_option_integer('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         self::verify_option_integer('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
@@ -1160,8 +1367,6 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
         self::verify_option_boolean('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
         self::verify_option_integer('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
-        self::$live_weather_station_auto_update = EnvManager::is_updatable();
-        self::verify_option_boolean('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
         self::verify_option_boolean('live_weather_station_show_update', self::$live_weather_station_show_update);
@@ -1173,6 +1378,10 @@ trait Handling {
         self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
         self::verify_option_string('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
         self::verify_option_boolean('live_weather_station_netatmo_connected', self::$live_weather_station_netatmo_connected);
+        self::verify_option_string('live_weather_station_netatmo_client_id', self::$live_weather_station_netatmo_client_id);
+        self::verify_option_string('live_weather_station_netatmo_client_secret', self::$live_weather_station_netatmo_client_secret);
+        self::verify_option_boolean('live_weather_station_netatmo_own_keys', self::$live_weather_station_netatmo_own_keys);
+        self::verify_option_string('live_weather_station_ambient_application_key', self::$live_weather_station_ambient_application_key);
         self::verify_option_string('live_weather_station_bloomsky_key', self::$live_weather_station_bloomsky_key);
         self::verify_option_boolean('live_weather_station_bloomsky_connected', self::$live_weather_station_bloomsky_connected);
         self::verify_option_string('live_weather_station_ambient_key', self::$live_weather_station_ambient_key);
@@ -1180,6 +1389,9 @@ trait Handling {
         self::verify_option_string('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
         self::verify_option_string('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
         self::verify_option_boolean('live_weather_station_netatmohc_connected', self::$live_weather_station_netatmohc_connected);
+        self::verify_option_string('live_weather_station_netatmohc_client_id', self::$live_weather_station_netatmohc_client_id);
+        self::verify_option_string('live_weather_station_netatmohc_client_secret', self::$live_weather_station_netatmohc_client_secret);
+        self::verify_option_boolean('live_weather_station_netatmohc_own_keys', self::$live_weather_station_netatmohc_own_keys);
         self::verify_option_string('live_weather_station_owm_apikey', self::$live_weather_station_owm_apikey);
         self::verify_option_integer('live_weather_station_owm_plan', self::$live_weather_station_owm_plan);
         self::verify_option_string('live_weather_station_wug_apikey', self::$live_weather_station_wug_apikey);
@@ -1192,7 +1404,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_mapbox_plan', self::$live_weather_station_mapbox_plan);
         self::verify_option_string('live_weather_station_maptiler_apikey', self::$live_weather_station_maptiler_apikey);
         self::verify_option_integer('live_weather_station_maptiler_plan', self::$live_weather_station_maptiler_plan);
-        self::verify_option_string('live_weather_station_navionics_apikey', self::$live_weather_station_navionics_apikey);
+        self::verify_option_string('live_weather_station_stadia_apikey', self::$live_weather_station_stadia_apikey);
         self::verify_option_integer('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
         self::verify_option_integer('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
         self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
@@ -1239,40 +1451,68 @@ trait Handling {
 
     /**
      * Get all options of the plugin - for backup purpose.
+     * Only the options known by the plugin are exported. Credentials (API keys, tokens) and connection states are excluded by default.
      *
+     * @param boolean $include_credentials Optional. Include the credentials in the result.
      * @return array An array containing all the options (key/value).
      * @since 3.8.0
      */
-    public static function get_all_options() {
+    public static function get_all_options($include_credentials=false) {
         $result = array();
         global $wpdb;
-        foreach ($wpdb->get_results("SELECT option_name, option_value FROM " . $wpdb->options . " WHERE option_name like 'live_weather_station%'", ARRAY_A) as $option) {
-            if (!in_array($option['option_name'], self::$do_not_export_import)) {
-                if (in_array($option['option_name'], self::$must_be_unserialized_as_array)) {
-                    $result[$option['option_name']] = get_option($option['option_name']);
-                }
-                else {
-                    $result[$option['option_name']] = $option['option_value'];
-                }
+        foreach ($wpdb->get_col("SELECT option_name FROM " . $wpdb->options . " WHERE option_name LIKE 'live\_weather\_station%'") as $name) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query on the core options table to list the plugin's own options (export/reset), it must reflect the live state
+            $type = self::get_exportable_option_type($name);
+            if ($type === false) {
+                continue;
+            }
+            if (($type === 'secret' || $type === 'flag') && !$include_credentials) {
+                continue;
+            }
+            $value = get_option($name);
+            if ($type === 'cschemes') {
+                $result[$name] = $value;
+            }
+            elseif (is_scalar($value) || $value === null) {
+                $result[$name] = (string)$value;
             }
         }
-        Logger::notice('Core', null, null, null, null, null, 600, 'Settings successfully exported.');
+        Logger::notice('Core', null, null, null, null, null, 600, 'Settings successfully exported' . ($include_credentials ? ' (with credentials).' : '.'));
         return $result;
     }
 
     /**
      * Set all options of the plugin - for restore purpose.
+     * Only options known by the plugin are written, and each value is validated according to the type of its option. Empty credentials never overwrite existing ones.
      *
-     * @@param $options array An array containing all the options (key/value).
+     * @param $options array An array containing all the options (key/value).
      * @since 3.8.0
      */
     public static function set_all_options($options) {
+        if (!is_array($options)) {
+            return;
+        }
+        $rejected = 0;
         foreach ($options as $key => $option) {
-            if (!in_array($key, self::$do_not_export_import)) {
-                update_option($key, $option);
+            $type = self::get_exportable_option_type($key);
+            if ($type === false || strpos($key, 'live_weather_station_') !== 0) {
+                $rejected++;
+                continue;
             }
+            $value = self::sanitize_imported_option($type, $option);
+            if ($value === null || ($type === 'int' && !self::is_imported_int_in_bounds($key, $value))) {
+                $rejected++;
+                continue;
+            }
+            if (($type === 'secret' || $type === 'flag') && ($value === '' || $value === 0) && get_option($key)) {
+                // Never wipe an existing credential with an empty value.
+                continue;
+            }
+            update_option($key, $value);
         }
         self::verify_options();
+        if ($rejected > 0) {
+            Logger::warning('Core', null, null, null, null, null, 601, sprintf('%s unknown or invalid setting(s) ignored during import.', $rejected));
+        }
         Logger::notice('Core', null, null, null, null, null, 601, 'Settings successfully imported and verified.');
     }
 

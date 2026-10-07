@@ -13,7 +13,7 @@ use WeatherStation\Data\Type\Description;
  * This class is responsible for device & modules management.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -42,6 +42,7 @@ class Manager
             global $wpdb;
             $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
             $sql = "SELECT device_id, module_id, module_name, module_type FROM `" . $table_name . "` WHERE module_id in (SELECT DISTINCT module_id FROM `" . $table_name . "`) GROUP BY device_id, module_id;" ;
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_measurements: $sql holds only the table name from self::live_weather_station_measurements_table(), no value; modules are read live to synchronize them
             $devices = $wpdb->get_results($sql, ARRAY_A);
             foreach ($devices as $device) {
                 self::insert_update_table(self::live_weather_station_module_detail_table(), $device);
@@ -68,7 +69,7 @@ class Manager
         $list = self::get_modules_details($device_id);
         foreach ($list as $module) {
             if ($module['module_id'] == $module_id) {
-                $result = !(boolean)$module['hidden'];
+                $result = !(bool)$module['hidden'];
                 break;
             }
         }
@@ -111,7 +112,9 @@ class Manager
         if ($result === 'unknown') {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-            $sql = "SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id='" . $device_id . "' AND module_id='" . $module_id . "';";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+            $sql = $wpdb->prepare("SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id=%s AND module_id=%s;", $device_id, $module_id);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (count($query) > 0) {
                 $m = array();
@@ -146,7 +149,9 @@ class Manager
             try {
                 global $wpdb;
                 $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-                $sql = "SELECT * FROM `" . $table_name . "` WHERE device_id = '" . $device_id . "';";
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+                $sql = $wpdb->prepare("SELECT * FROM `" . $table_name . "` WHERE device_id = %s;", $device_id);
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
                 $result = $wpdb->get_results($sql, ARRAY_A);
                 Cache::set_query($cache_id, $result);
             } catch (\Exception $ex) {
@@ -190,10 +195,7 @@ class Manager
         $result = true;
         try {
             foreach ($modules as $module) {
-                if (array_key_exists('screen_name', $module)) {
-                    $module['screen_name'] = esc_sql($module['screen_name']);
-                }
-                else {
+                if (!array_key_exists('screen_name', $module)) {
                     $module['screen_name'] = '';
                 }
                 self::insert_update_table(self::live_weather_station_module_detail_table(), $module);
@@ -219,7 +221,9 @@ class Manager
         try {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-            $sql = "DELETE FROM ".$table_name." WHERE device_id='" . $device_id . "'";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+            $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id=%s", $device_id);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
             $wpdb->query($sql);
             Cache::invalidate_query($cache_id);
             self::synchronize_modules();
@@ -254,7 +258,7 @@ class Manager
 
         if (count($this->stations) > 0) {
             $cron_id = Watchdog::init_chrono(Watchdog::$history_build_name);
-            $hb = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
+            $hb = new HistoryBuilder(LIVE_WEATHER_STATION_PLUGIN_NAME, LIVE_WEATHER_STATION_VERSION);
             foreach ($this->stations as $device_id) {
                 $hb->build_for($this->get_station_information_by_station_id($device_id));
             }
@@ -300,7 +304,7 @@ class Manager
                     if (!in_array($station['station_id'], $this->stations)) {
                         $this->stations[] = $station['station_id'];
                     }
-                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', lws_lcfirst($this->get_module_type($module))));
+                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', live_weather_station_lcfirst($this->get_module_type($module))));
                 }
             }
         }
@@ -320,8 +324,10 @@ class Manager
         $rows = array();
         global $wpdb;
         $table_name = $wpdb->prefix . $table;
-        $sql = "SELECT module_id, MAX(`timestamp`) as val FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_type`='" . $module . "' GROUP BY module_id;";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+        $sql = $wpdb->prepare("SELECT module_id, MAX(`timestamp`) as val FROM " . $table_name . " WHERE `device_id`=%s AND `module_type`=%s GROUP BY module_id;", $device_id, $module);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -366,8 +372,10 @@ class Manager
         $rows = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT DISTINCT module_id, measure_value FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_type`='" . $module . "' AND `measure_type`='last_seen';";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+        $sql = $wpdb->prepare("SELECT DISTINCT module_id, measure_value FROM " . $table_name . " WHERE `device_id`=%s AND `module_type`=%s AND `measure_type`='last_seen';", $device_id, $module);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -410,7 +418,9 @@ class Manager
     private function delete_duplicate_data($device_id, $old) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_id`='" . $old . "';";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+        $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `device_id`=%s AND `module_id`=%s;", $device_id, $old);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
         return $wpdb->query($sql);
     }
 
@@ -427,7 +437,9 @@ class Manager
     private function rename_duplicate_data($device_id, $new, $old, $table) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table;
-        $sql = "UPDATE " . $table_name . " SET `module_id`='" . $new . "' WHERE `device_id`='" . $device_id . "' AND `module_id`='" . $old . "';";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- every value goes through the %s placeholders of $wpdb->prepare(); the table name is $wpdb->prefix plus a plugin table helper (self::live_weather_station_*_table()), not a request value
+        $sql = $wpdb->prepare("UPDATE " . $table_name . " SET `module_id`=%s WHERE `device_id`=%s AND `module_id`=%s;", $new, $device_id, $old);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table, name from a plugin table helper; $sql was built by $wpdb->prepare() on the line above (values bound by %s placeholders); data is read or modified live (measurements, modules, history export), caching would return stale rows
         return $wpdb->query($sql);
     }
 

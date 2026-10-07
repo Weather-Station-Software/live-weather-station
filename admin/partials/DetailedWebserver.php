@@ -1,32 +1,39 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
 
 use WeatherStation\System\Environment\Manager as Env;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// This template shows the server host, IP, document root and database user: administrators only.
+if ( ! current_user_can( live_weather_station_manage_capability() ) ) {
+	return;
+}
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="referrers" class="postbox ">
-        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-        <h3 class="hndle"><span><?php echo __('Webserver', 'live-weather-station' );?></span></h3>
+        <div class="handlediv" title="<?php esc_attr_e('Click to toggle', 'live-weather-station'); ?>"><br></div>
+        <h3 class="hndle"><span><?php esc_html_e('Webserver', 'live-weather-station');?></span></h3>
         <div class="inside">
             <table cellspacing="10" width="99%">
                 <tbody>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-window-maximize"></i></td>
-                    <td><?php echo Env::webserver_software_name().' '.__('with', 'live-weather-station').' '.Env::webserver_api(); ?></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-window-maximize"></i></td>
+                    <td><?php echo esc_html(Env::webserver_software_name().' '.__('with', 'live-weather-station').' '.Env::webserver_api()); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-bolt"></i></td>
-                    <td><?php echo Env::webserver_protocol().' '.__('on port', 'live-weather-station').' '.Env::webserver_port(); ?></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-bolt"></i></td>
+                    <td><?php echo esc_html(Env::webserver_protocol().' '.__('on port', 'live-weather-station').' '.Env::webserver_port()); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-<?php echo LWS_FA5?'hdd':'hdd-o';?>"></i></td>
-                    <td><?php echo __('Document root', 'live-weather-station').' <code>'.Env::webserver_document_root().'</code>'; ?></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-<?php echo esc_attr(LIVE_WEATHER_STATION_FA5 ? 'hdd' : 'hdd-o');?>"></i></td>
+                    <td><?php echo esc_html__('Document root', 'live-weather-station').' <code>'.esc_html(Env::webserver_document_root()).'</code>'; ?></td>
                 </tr>
                 </tbody>
             </table>

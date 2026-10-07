@@ -15,7 +15,7 @@ use WeatherStation\System\Quota\Quota;
  * Pioupiou station client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */
@@ -44,7 +44,7 @@ trait PublicClient {
                 if (array_key_exists('data', $weather)) {
                     if (array_key_exists('meta', $weather['data'])) {
                         if (array_key_exists('name', $weather['data']['meta'])) {
-                            $this->detected_station_name = $weather['data']['meta']['name'];
+                            $this->detected_station_name = live_weather_station_clean_text($weather['data']['meta']['name']);
                         }
                         else {
                             $this->detected_station_name = '< NO NAME >';
@@ -55,7 +55,7 @@ trait PublicClient {
                 else {
                     $result = 'Pioupiou servers have returned unknown response';
                     if (array_key_exists('error_message', $weather)) {
-                        $result = $weather['error_message'];
+                        $result = live_weather_station_clean_text($weather['error_message'], 200);
                         $result = str_replace('{station_id}', 'Station ID', $result);
                     }
                 }
@@ -64,7 +64,7 @@ trait PublicClient {
                 $result = 'internal Pioupiou error';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact Pioupiou servers';
         }
@@ -85,7 +85,7 @@ trait PublicClient {
             if (array_key_exists('data', $weather)) {
                 if (array_key_exists('meta', $weather['data'])) {
                     if (array_key_exists('name', $weather['data']['meta'])) {
-                        $this->detected_station_name = $weather['data']['meta']['name'];
+                        $this->detected_station_name = live_weather_station_clean_text($weather['data']['meta']['name']);
                     }
                     else {
                         $this->detected_station_name = '< NO NAME >';
@@ -94,7 +94,8 @@ trait PublicClient {
             }
             else {
                 if (array_key_exists('error_message', $weather)) {
-                    throw new \Exception($weather['error_message']);
+                    // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly. The remote text is first cleaned by live_weather_station_clean_text().
+                    throw new \Exception(live_weather_station_clean_text($weather['error_message'], 200));
                 }
                 else {
                     throw new \Exception('Pioupiou unknown exception');
@@ -102,9 +103,10 @@ trait PublicClient {
             }
         }
         else {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly. The remote text is first cleaned by live_weather_station_clean_text().
+            throw new \Exception('JSON / '.live_weather_station_clean_text($json_weather, 200));
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, Logger::dump($weather));
         if (!empty($weather)) {
             $meta = null;
             $location = null;
@@ -139,9 +141,9 @@ trait PublicClient {
                     $updates['module_id'] = $station['station_id'];
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'signal';
                     $updates['measure_value'] = 0;
@@ -159,9 +161,9 @@ trait PublicClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type);
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'signal';
                     $updates['measure_value'] = 0;
@@ -176,17 +178,17 @@ trait PublicClient {
                     if (array_key_exists('date', $status)) {
                         if ($status['date']) {
                             $away = false;
-                            $timestamp = date('Y-m-d H:i:s', strtotime($status['date']));
+                            $timestamp = gmdate('Y-m-d H:i:s', strtotime($status['date']));
                             $locstamp = $timestamp;
                             $windstamp = $timestamp;
                             if (array_key_exists('date', $location)) {
                                 if ($location['date']) {
-                                    $locstamp = date('Y-m-d H:i:s', strtotime($location['date']));
+                                    $locstamp = gmdate('Y-m-d H:i:s', strtotime($location['date']));
                                 }
                             }
                             if (array_key_exists('date', $measurements)) {
                                 if ($measurements['date']) {
-                                    $windstamp = date('Y-m-d H:i:s', strtotime($measurements['date']));
+                                    $windstamp = gmdate('Y-m-d H:i:s', strtotime($measurements['date']));
                                 }
                             }
 
@@ -197,9 +199,9 @@ trait PublicClient {
                             $updates['module_id'] = $station['station_id'];
                             $updates['module_type'] = $type;
                             $updates['module_name'] = $this->get_fake_module_name($type);
-                            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                             $updates['measure_type'] = 'last_refresh';
-                            $updates['measure_value'] = date('Y-m-d H:i:s');
+                            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                             $this->update_data_table($updates, $timezone);
                             $updates['measure_type'] = 'last_seen';
                             $updates['measure_value'] = $timestamp;
@@ -227,14 +229,14 @@ trait PublicClient {
                                 $this->update_data_table($updates, $timezone);
                             }
                             if (array_key_exists('latitude', $location)) {
-                                $station['loc_latitude'] = $location['latitude'];
+                                $station['loc_latitude'] = live_weather_station_clean_number($location['latitude']);
                                 $updates['measure_timestamp'] = $locstamp;
                                 $updates['measure_type'] = 'loc_latitude';
                                 $updates['measure_value'] = $station['loc_latitude'];
                                 $this->update_data_table($updates, $timezone);
                             }
                             if (array_key_exists('longitude', $location)) {
-                                $station['loc_longitude'] = $location['longitude'];
+                                $station['loc_longitude'] = live_weather_station_clean_number($location['longitude']);
                                 $updates['measure_timestamp'] = $locstamp;
                                 $updates['measure_type'] = 'loc_longitude';
                                 $updates['measure_value'] = $station['loc_longitude'];
@@ -242,7 +244,7 @@ trait PublicClient {
                             }
 
 
-                            $station['last_refresh'] = date('Y-m-d H:i:s');
+                            $station['last_refresh'] = gmdate('Y-m-d H:i:s');
                             $station['last_seen'] = $timestamp;
                             $this->update_table(self::live_weather_station_stations_table(), $station);
                             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
@@ -255,9 +257,9 @@ trait PublicClient {
                                 $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
                                 $updates['module_type'] = $type;
                                 $updates['module_name'] = $this->get_fake_module_name($type);
-                                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                                 $updates['measure_type'] = 'last_refresh';
-                                $updates['measure_value'] = date('Y-m-d H:i:s');
+                                $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                                 $this->update_data_table($updates, $timezone);
                                 $updates['measure_type'] = 'last_seen';
                                 $updates['measure_value'] = $timestamp;
@@ -331,14 +333,14 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Pioupiou servers has returned empty response. Retry will be done shortly.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact Pioupiou servers. Retry will be done shortly.');
-                    return array();
+                    continue;
                 }
             }
         }
@@ -358,14 +360,14 @@ trait PublicClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_PIOU_SID);
+            $weather->compute(LIVE_WEATHER_STATION_PIOU_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_PIOU_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_PIOU_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

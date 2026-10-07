@@ -15,7 +15,7 @@ use WeatherStation\System\Logs\Logger;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Modified by Jason Rouet <https://jasonrouet.com/>.
  * @since 3.8.0
  * @license MIT
  */
@@ -27,6 +27,61 @@ class WLINKApiClient
      */
     private $mainnUrl = "https://api.weatherlink.com/v1/{command}.json?user={service_did}&pass={service_ownerpass}&apiToken={service_apitoken}";
     
+    /**
+     * @var int Maximum length of the device ID. The three values joined by the separator must fit in the 250 characters of the service_id column.
+     * @since 3.9.0
+     */
+    const MAX_DID_LENGTH = 40;
+
+    /**
+     * @var int Maximum length of the API token (v1 tokens have 32 or 33 characters).
+     * @since 3.9.0
+     */
+    const MAX_TOKEN_LENGTH = 64;
+
+    /**
+     * @var int Maximum length of the account password (40 + 64 + 120 + 2 separators of 11 characters = 246 <= 250).
+     * @since 3.9.0
+     */
+    const MAX_PASS_LENGTH = 120;
+
+    /**
+     * Join the three WeatherLink credentials in a service id, after having checked them.
+     *
+     * Nothing is ever truncated: a value that is too long, or that contains the separator, is refused.
+     *
+     * @param string $did The device ID.
+     * @param string $token The API token.
+     * @param string $pass The account password.
+     * @return array An array with 'service_id' (string, empty on error) and 'error' (string, empty on success).
+     * @since 3.9.0
+     */
+    public static function join_credentials($did, $token, $pass) {
+        $did = (string)$did;
+        $token = (string)$token;
+        $pass = (string)$pass;
+        $fields = array(
+            array($did, self::MAX_DID_LENGTH, __('Device ID', 'live-weather-station')),
+            array($token, self::MAX_TOKEN_LENGTH, __('API Token', 'live-weather-station')),
+            array($pass, self::MAX_PASS_LENGTH, __('Password', 'live-weather-station')));
+        foreach ($fields as $field) {
+            if (mb_strlen($field[0], 'UTF-8') > $field[1]) {
+                /* translators: 1: name of a field (Device ID, API Token or Password). 2: maximum number of characters. */
+                return array('service_id' => '', 'error' => sprintf(__('%1$s is too long (%2$d characters maximum).', 'live-weather-station'), $field[2], $field[1]));
+            }
+            if (strpos($field[0], LIVE_WEATHER_STATION_SERVICE_SEPARATOR) !== false) {
+                /* translators: %s: name of a field (Device ID, API Token or Password). */
+                return array('service_id' => '', 'error' => sprintf(__('%s contains a forbidden character sequence.', 'live-weather-station'), $field[2]));
+            }
+        }
+        $joined = $did . LIVE_WEATHER_STATION_SERVICE_SEPARATOR . $token . LIVE_WEATHER_STATION_SERVICE_SEPARATOR . $pass;
+        // A value ending or starting with part of the separator could shift the split: the round trip must be exact.
+        if (explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $joined) !== array($did, $token, $pass)) {
+            return array('service_id' => '', 'error' => __('Unable to save these WeatherLink credentials: they contain a forbidden character sequence.', 'live-weather-station'));
+        }
+        return array('service_id' => $joined, 'error' => '');
+    }
+
     /**
      * @var \WeatherStation\SDK\WeatherLink\AbstractCache|bool $cacheClass The cache class.
      */
@@ -86,11 +141,11 @@ class WLINKApiClient
      */
     private function buildUrl($command, $params = '') {
         $result = $this->mainnUrl;
-        $result = str_replace('{command}', $command, $result);
+        $result = str_replace('{command}', rawurlencode((string)$command), $result);
         $id = array();
         $exp = array();
         if ($params !== '') {
-            $exp = explode(LWS_SERVICE_SEPARATOR, $params);
+            $exp = explode(LIVE_WEATHER_STATION_SERVICE_SEPARATOR, $params);
         }
         if (count($exp) !== 3) {
             $id['service_did'] = '-';
@@ -102,9 +157,9 @@ class WLINKApiClient
             $id['service_apitoken'] = $exp[1];
             $id['service_ownerpass'] = $exp[2];
         }
-        $result = str_replace('{service_did}', $id['service_did'], $result);
-        $result = str_replace('{service_apitoken}', $id['service_apitoken'], $result);
-        $result = str_replace('{service_ownerpass}', $id['service_ownerpass'], $result);
+        $result = str_replace('{service_did}', rawurlencode((string)$id['service_did']), $result);
+        $result = str_replace('{service_apitoken}', rawurlencode((string)$id['service_apitoken']), $result);
+        $result = str_replace('{service_ownerpass}', rawurlencode((string)$id['service_ownerpass']), $result);
         return $result;
     }
 

@@ -3,13 +3,14 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
  * Class to generate parameter icon form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
@@ -38,7 +39,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'icon';
         $this->module_name = ucfirst(__('icon data', 'live-weather-station'));
         $this->module_hint = __('Display current data as icon.', 'live-weather-station');
-        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
+        $this->module_icon = LIVE_WEATHER_STATION_FAS . (LIVE_WEATHER_STATION_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }
@@ -101,7 +102,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_color_picker('current-icon-measurements-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
         $jsInitId = md5(random_bytes(18));
-        $content .= lws_print_begin_script($jsInitId);
+        $content .= live_weather_station_print_begin_script($jsInitId);
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -125,7 +126,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= lws_print_end_script($jsInitId);
+        $content .= live_weather_station_print_end_script($jsInitId);
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -142,19 +143,19 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_icon_measurement_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_icon_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_icon_element_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_element_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_element_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_icon_element_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_icon_format_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_format_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_format_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_icon_format_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-icon-measurements-data-' . $this->station_guid . '" ).change();});';
@@ -171,7 +172,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var output = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-format-' . $this->station_guid . '").val()][2];';
         $content .= 'var sc_sc = "live-weather-station-icon";';
         $content .= 'if ($("#current-icon-measurements-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-liveicon";}';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_animation = $("#current-icon-measurements-animation-' . $this->station_guid . '").val();';
         $content .= 'var sc_speed = $("#current-icon-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = "#000000";';
@@ -183,7 +184,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_format = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-format-' . $this->station_guid . '").val()][1];';
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' element=\'"+sc_element+"\' format=\'"+sc_format+"\' fx=\'"+sc_animation+"\' color=\'"+sc_color+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$("#current-icon-measurements-output-' . $this->station_guid . '").html(output);';
-        $content .= '$("#current-icon-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-icon-measurements-shortcode-' . $this->station_guid . '").val(shortcode);});';
 
         $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
         $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").change();});';

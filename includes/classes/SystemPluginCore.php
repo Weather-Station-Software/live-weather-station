@@ -31,7 +31,7 @@ use WeatherStation\UI\Widget\Ephemeris;
  * version of the plugin.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -53,8 +53,8 @@ class Core {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		$this->Live_Weather_Station = LWS_PLUGIN_ID;
-		$this->version = LWS_VERSION;
+		$this->Live_Weather_Station = LIVE_WEATHER_STATION_PLUGIN_ID;
+		$this->version = LIVE_WEATHER_STATION_VERSION;
         $this->verify_requirements();
 		$this->load_dependencies();
 		$this->set_locale();
@@ -68,23 +68,23 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    $reference = (integer)date('i');
+	    $reference = (int)gmdate('i');
 	    // EMERGENCY
-	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED) {
-            if (!defined('REQUIREMENTS_OK')) {
-                define('REQUIREMENTS_OK', true);
+	    if (LIVE_WEATHER_STATION_PHPVERSION_OK && LIVE_WEATHER_STATION_JSON_LOADED) {
+            if (!defined('LIVE_WEATHER_STATION_REQUIREMENTS_OK')) {
+                define('LIVE_WEATHER_STATION_REQUIREMENTS_OK', true);
             }
         }
         else {
-            if (!defined('REQUIREMENTS_OK')) {
-                define('REQUIREMENTS_OK', false);
+            if (!defined('LIVE_WEATHER_STATION_REQUIREMENTS_OK')) {
+                define('LIVE_WEATHER_STATION_REQUIREMENTS_OK', false);
             }
         }
-        if (!LWS_PHPVERSION_OK) {
-            Logger::emergency('Core', null, null, null, null, null, 666, 'Your PHP version does not comply to plugin requirements. ' . LWS_PLUGIN_NAME . ' can not run!');
+        if (!LIVE_WEATHER_STATION_PHPVERSION_OK) {
+            Logger::emergency('Core', null, null, null, null, null, 666, 'Your PHP version does not comply to plugin requirements. ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' can not run!');
         }
-        if (!LWS_JSON_LOADED) {
-            Logger::emergency('Core', null, null, null, null, null, 666, 'JSON support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
+        if (!LIVE_WEATHER_STATION_JSON_LOADED) {
+            Logger::emergency('Core', null, null, null, null, null, 666, 'JSON support is not installed on your server. ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' can not run!');
         }
 
         // ERROR
@@ -104,8 +104,8 @@ class Core {
         // NOTICE
         if ($reference % 5 == 0) {
             if (get_transient('lws_notice_reference') != $reference) {
-                if (!LWS_I18N_LOADED) {
-                    Logger::notice('Core', null, null, null, null, null, 333, 'Internationalization support is not installed on your server. ' . LWS_PLUGIN_NAME . ' runs in degraded mode...');
+                if (!LIVE_WEATHER_STATION_I18N_LOADED) {
+                    Logger::notice('Core', null, null, null, null, null, 333, 'Internationalization support is not installed on your server. ' . LIVE_WEATHER_STATION_PLUGIN_NAME . ' runs in degraded mode...');
                 }
                 set_transient('lws_notice_reference', $reference);
             }
@@ -133,9 +133,9 @@ class Core {
 	 */
 	private function set_locale() {
 		$plugin_i18n = new I18n();
-		$plugin_i18n->set_domain(LWS_PLUGIN_TEXT_DOMAIN);
-		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
+		$plugin_i18n->set_domain(LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN);
         $this->loader->add_filter('override_load_textdomain', $plugin_i18n, 'load_local_textdomain_mofile', 10, 2 );
+        $this->loader->add_action('init', $plugin_i18n, 'load_shipped_translation', 1);
 	}
 
     /**
@@ -148,7 +148,14 @@ class Core {
         $this->loader->add_action('wp_dashboard_setup', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_dashboard_widget');
         $this->loader->add_action('dashboard_glance_items', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_glance_items');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
+        $this->loader->add_filter('debug_information', '\WeatherStation\System\Plugin\SiteHealth', 'add_section');
+        $this->loader->add_filter('site_status_tests', '\WeatherStation\System\Plugin\SiteHealth', 'add_test');
+        $this->loader->add_action('admin_post_live_weather_station_netatmo_start', $plugin_admin, 'netatmo_oauth_start');
+        $this->loader->add_action('admin_post_live_weather_station_netatmo_callback', $plugin_admin, 'netatmo_oauth_callback');
+        $this->loader->add_action('admin_post_live_weather_station_netatmo_token', $plugin_admin, 'netatmo_token_connect');
+        $this->loader->add_action('admin_notices', $plugin_admin, 'netatmo_result_notice');
         $this->loader->add_action('admin_init', $plugin_admin, 'force_resync_if_needed' );
+        $this->loader->add_action('admin_init', $plugin_admin, 'add_privacy_policy_content' );
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_scripts', 1);
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_styles', 1);
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
@@ -159,14 +166,14 @@ class Core {
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Psychrometry', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Ephemeris', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Indoor', 'widget_registering' );
-        //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Thunderstorm', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Solar', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
         $this->loader->add_action('wp_ajax_delete_notification', 'WeatherStation\UI\Dashboard\Handling', 'delete_notification_callback' );
         $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
-        $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );
+        $this->loader->add_action('admin_notices', $plugin_admin, 'admin_notice_dead_services');
+        $this->loader->add_action('wp_ajax_hide_lws_wow_be_notice', $plugin_admin, 'hide_lws_wow_be_notice_callback');
         if (((bool)get_option('live_weather_station_show_update', 1))) {
             $this->loader->add_action('admin_notices', $plugin_admin, 'admin_notice_update_done');
             $this->loader->add_action('wp_ajax_hide_lws_whatsnew', $plugin_admin, 'hide_lws_whatsnew_callback' );
@@ -197,8 +204,7 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_measurements', $plugin_public, 'lws_query_steelmeter_measurements_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_measurements', $plugin_public, 'lws_query_steelmeter_measurements_callback');
-        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_measurements', $plugin_public, 'lws_clientraw_test_callback');
-        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_measurements', $plugin_public, 'lws_clientraw_test_callback');
+        $this->loader->add_action( 'wp_ajax_lws_clientraw_test', $plugin_public, 'lws_clientraw_test_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_measurements', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_measurements', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
@@ -249,13 +255,13 @@ class Core {
     private function define_conditional_filters($instance) {
         if ((bool)get_option('live_weather_station_purge_cache')) {
             $cache = new Cache($this->get_Live_Weather_Station(), $this->get_version());
-            if (LWS_IC_WPROCKET) {
+            if (LIVE_WEATHER_STATION_IC_WPROCKET) {
                 $this->loader->add_action('after_rocket_clean_domain', $cache, 'flush');
             }
-            if (LWS_IC_WPSC) {
+            if (LIVE_WEATHER_STATION_IC_WPSC) {
                 $this->loader->add_action('wp_cache_gc', $cache, 'flush');
             }
-            if (LWS_IC_W3TC) {
+            if (LIVE_WEATHER_STATION_IC_W3TC) {
                 $this->loader->add_action('w3tc_flush_after_fragmentcache', $cache, 'flush');
                 $this->loader->add_action('w3tc_flush_after_fragmentcache_group', $cache, 'flush');
                 $this->loader->add_action('w3tc_flush_after_minify', $cache, 'flush');
@@ -266,10 +272,10 @@ class Core {
                 $this->loader->add_action('w3tc_flush_all', $cache, 'flush');
                 $this->loader->add_action('w3tc_flush_url', $cache, 'flush');
             }
-            if (LWS_IC_AUTOPTIMIZE) {
+            if (LIVE_WEATHER_STATION_IC_AUTOPTIMIZE) {
                 $this->loader->add_action('autoptimize_action_cachepurged', $cache, 'flush');
             }
-            if (LWS_IC_HC) {
+            if (LIVE_WEATHER_STATION_IC_HC) {
                 $this->loader->add_action('hyper_cache_flush', $cache, 'flush');
             }
         }
@@ -293,10 +299,21 @@ class Core {
         else {
             self::verify_options();
         }
-        if ($old_version != LWS_VERSION && $old_version != '-') {
-            Updater::update(get_option('live_weather_station_version'), $option_overwrite);
+        if ($old_version != LIVE_WEATHER_STATION_VERSION && $old_version != '-') {
+            // Lock so that two concurrent requests do not run the migration twice (an expired lock is taken over).
+            if (live_weather_station_acquire_lock('live_weather_station_update_lock', 600)) {
+                try {
+                    Updater::update(get_option('live_weather_station_version'), $option_overwrite);
+                }
+                finally {
+                    delete_option('live_weather_station_update_lock');
+                }
+            }
+            else {
+                return;
+            }
         }
-		update_option('live_weather_station_version', LWS_VERSION);
+		update_option('live_weather_station_version', LIVE_WEATHER_STATION_VERSION);
     }
 
     /**

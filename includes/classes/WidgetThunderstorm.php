@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\Data\ID\Handling as ID;
@@ -10,7 +11,7 @@ use WeatherStation\Data\ID\Handling as ID;
  * Thunderstorm weather widget class for Weather Station plugin
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.0
  */
@@ -33,12 +34,11 @@ class Thunderstorm extends Base {
      * @since 3.3.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         $icon =
         parent::__construct(
             'Live_Weather_Station_Widget_Thunderstorm',
             '<>⚡ ' . __( 'Thunderstorm' , 'live-weather-station'),
-            array( 'description' => sprintf(__('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
+            array( 'description' => sprintf(/* translators: %s: plugin name */ __('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -123,7 +123,7 @@ class Thunderstorm extends Base {
         $dawn_url = $instance['dawn_url'];
         $dusk_url = $instance['dusk_url'];
         $stations = $this->get_operational_thunderstorm_stations_list();
-        include(LWS_ADMIN_DIR.'partials/WidgetThunderstormSettings.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/WidgetThunderstormSettings.php');
     }
 
     /**
@@ -137,24 +137,25 @@ class Thunderstorm extends Base {
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 3.3.0
      */
-    public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment) {
-        lws_font_awesome();
+    public function css($instance, $uid, $flat_design, $dawndusk, $background, $attachment) {
+        live_weather_station_font_awesome();
         try
         {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
         }
         catch(\Exception $ex)
         {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -169,7 +170,7 @@ class Thunderstorm extends Base {
         else {
             $color = $c;
         }
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -227,14 +228,14 @@ class Thunderstorm extends Base {
         $text_shadows = WidgetHelper::text_shadow();
         $box_shadows = WidgetHelper::box_shadow();
         $box_radius = WidgetHelper::box_radius();
-        if (LWS_FA_SVG) {
+        if (LIVE_WEATHER_STATION_FA_SVG) {
             $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
         }
         else {
             $svg = '';
         }
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
         return ob_get_clean();
     }
 
@@ -249,13 +250,13 @@ class Thunderstorm extends Base {
     public function update($new_instance, $old_instance) {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
-        $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['station'] = $new_instance['station'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['title'] = wp_strip_all_tags($new_instance['title']);
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['station'] = Guard::token($new_instance['station'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
         $instance['hide_obsolete'] = !empty($new_instance['hide_obsolete']) ? 1 : 0;
@@ -266,10 +267,10 @@ class Thunderstorm extends Base {
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_light'] = !empty($new_instance['follow_light']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['day_url'] = $new_instance['day_url'];
-        $instance['night_url'] = $new_instance['night_url'];
-        $instance['dawn_url'] = $new_instance['dawn_url'];
-        $instance['dusk_url'] = $new_instance['dusk_url'];
+        $instance['day_url'] = self::sanitize_url($new_instance['day_url']);
+        $instance['night_url'] = self::sanitize_url($new_instance['night_url']);
+        $instance['dawn_url'] = self::sanitize_url($new_instance['dawn_url']);
+        $instance['dusk_url'] = self::sanitize_url($new_instance['dusk_url']);
         return $instance;
     }
 
@@ -302,10 +303,10 @@ class Thunderstorm extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $day_url = $this->get_picture_url($instance['station'], $instance['day_url']);
-        $night_url = $this->get_picture_url($instance['station'], $instance['night_url']);
-        $dawn_url = $this->get_picture_url($instance['station'], $instance['dawn_url']);
-        $dusk_url = $this->get_picture_url($instance['station'], $instance['dusk_url']);
+        $day_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['day_url']));
+        $night_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['night_url']));
+        $dawn_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['dawn_url']));
+        $dusk_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['dusk_url']));
         $bg_url = '';
         $sunrise_a = 0;
         $sunrise = 0;
@@ -371,7 +372,7 @@ class Thunderstorm extends Base {
                         if (array_key_exists('strike_bearing', $module['measurements'])) {
                             $NAModule7 = true;
                             $measurements['strikebearing'] = array();
-                            $measurements['strikebearing']['value'] = $module['measurements']['strike_count']['value'];
+                            $measurements['strikebearing']['value'] = $module['measurements']['strike_bearing']['value'];
                             $measurements['strikebearing']['unit'] = $this->get_angle_text($module['measurements']['strike_bearing']['raw_value']);
                             $measurements['strikebearing']['icon'] = $this->output_iconic_value($module['measurements']['strike_bearing']['raw_value'], 'strike_bearing', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
@@ -431,7 +432,7 @@ class Thunderstorm extends Base {
         $result = $args['before_widget'];
         $result .= $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetThunderstormDisplay.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetThunderstormDisplay.php';
         $result .= ob_get_clean();
         $result .= $args['after_widget'];
         return $result;

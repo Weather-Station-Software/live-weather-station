@@ -5,7 +5,9 @@
  * @author Bojan Djuricic (@Toorshia)
  */
 
-JustGage = function(config) {
+(function(window) {
+
+var JustGage = function(config) {
 
   var obj = this;
 
@@ -71,12 +73,12 @@ JustGage = function(config) {
 
     // titleFontColor : string
     // color of gauge title
-    titleFontColor: kvLookup('titleFontColor', config, dataset, "#999999"),
+    titleFontColor: safeColor(kvLookup('titleFontColor', config, dataset, "#999999"), "#999999"),
 
 
     // valueFontColor : string
     // color of label showing current value
-    valueFontColor: kvLookup('valueFontColor', config, dataset, "#010101"),
+    valueFontColor: safeColor(kvLookup('valueFontColor', config, dataset, "#010101"), "#010101"),
 
     // symbol : string
     // special symbol to show next to value
@@ -109,7 +111,7 @@ JustGage = function(config) {
 
     // gaugeColor : string
     // background color of gauge element
-    gaugeColor: kvLookup('gaugeColor', config, dataset, "#edebeb"),
+    gaugeColor: safeColor(kvLookup('gaugeColor', config, dataset, "#edebeb"), "#edebeb"),
 
     // label : string
     // text to show below value
@@ -117,7 +119,7 @@ JustGage = function(config) {
 
     // labelFontColor : string
     // color of label showing label under value
-    labelFontColor: kvLookup('labelFontColor', config, dataset, "#b3b3b3"),
+    labelFontColor: safeColor(kvLookup('labelFontColor', config, dataset, "#b3b3b3"), "#b3b3b3"),
 
     // shadowOpacity : int
     // 0 ~ 1
@@ -427,8 +429,6 @@ JustGage = function(config) {
     maxY: maxY
   };
 
-  // var clear
-  canvasW, canvasH, widgetW, widgetH, aspect, dx, dy, titleFontSize, titleX, titleY, valueFontSize, valueX, valueY, labelFontSize, labelX, labelY, minFontSize, minX, minY, maxFontSize, maxX, maxY = null;
 
   // pki - custom attribute for generating gauge paths
   obj.canvas.customAttributes.pki = function(value, min, max, w, h, dx, dy, gws, donut, reverse) {
@@ -490,8 +490,6 @@ JustGage = function(config) {
       };
     }
 
-    // var clear
-    alpha, Ro, Ri, Cx, Cy, Xo, Yo, Xi, Yi, path = null;
   };
 
   // ndl - custom attribute for generating needle path
@@ -573,8 +571,6 @@ JustGage = function(config) {
       };
     }
 
-    // var clear
-    alpha, Ro, Ri, Cx, Cy, Xo, Yo, Xi, Yi, Xc, Yc, Xz, Yz, Xa, Ya, Xb, Yb, path = null;
   };
 
   // gauge
@@ -619,10 +615,10 @@ JustGage = function(config) {
   if (obj.config.pointer) {
     // needle
     obj.needle = obj.canvas.path().attr({
-      "stroke": (obj.config.pointerOptions.stroke !== null && obj.config.pointerOptions.stroke !== undefined) ? obj.config.pointerOptions.stroke : "none",
+      "stroke": (obj.config.pointerOptions.stroke !== null && obj.config.pointerOptions.stroke !== undefined) ? safeColor(obj.config.pointerOptions.stroke, "none") : "none",
       "stroke-width": (obj.config.pointerOptions.stroke_width !== null && obj.config.pointerOptions.stroke_width !== undefined) ? obj.config.pointerOptions.stroke_width : 0,
       "stroke-linecap": (obj.config.pointerOptions.stroke_linecap !== null && obj.config.pointerOptions.stroke_linecap !== undefined) ? obj.config.pointerOptions.stroke_linecap : "square",
-      "fill": (obj.config.pointerOptions.color !== null && obj.config.pointerOptions.color !== undefined) ? obj.config.pointerOptions.color : "#000000",
+      "fill": (obj.config.pointerOptions.color !== null && obj.config.pointerOptions.color !== undefined) ? safeColor(obj.config.pointerOptions.color, "#000000") : "#000000",
       ndl: [
         obj.config.min,
         obj.config.min,
@@ -721,9 +717,9 @@ JustGage = function(config) {
   var defs = obj.canvas.canvas.childNodes[1];
   var svg = "http://www.w3.org/2000/svg";
 
-  if (ie !== 'undefined' && ie < 9) {
+  if (typeof ie !== 'undefined' && ie < 9) {
     // VML mode - no SVG & SVG filter support
-  } else if (ie !== 'undefined') {
+  } else if (typeof ie !== 'undefined') {
     onCreateElementNsReady(function() {
       obj.generateShadow(svg, defs);
     });
@@ -731,8 +727,6 @@ JustGage = function(config) {
     obj.generateShadow(svg, defs);
   }
 
-  // var clear
-  defs, svg = null;
 
   // set value to display
   if (obj.config.textRenderer) {
@@ -919,15 +913,13 @@ JustGage.prototype.refresh = function(val, max) {
     }, obj.config.refreshAnimationTime, obj.config.refreshAnimationType);
   }
 
-  // var clear
-  obj, displayVal, color, max = null;
 };
 
 /** Generate shadow */
 JustGage.prototype.generateShadow = function(svg, defs) {
 
   var obj = this;
-  var sid = "inner-shadow-" + obj.config.id;
+  var sid = "inner-shadow-" + String(obj.config.id).replace(/[^\w-]/g, "");
   var gaussFilter, feOffset, feGaussianBlur, feComposite1, feFlood, feComposite2, feComposite3;
 
   // FILTER
@@ -983,8 +975,6 @@ JustGage.prototype.generateShadow = function(svg, defs) {
     obj.canvas.canvas.childNodes[3].setAttribute("filter", "url(#" + sid + ")");
   }
 
-  // var clear
-  gaussFilter, feOffset, feGaussianBlur, feComposite1, feFlood, feComposite2, feComposite3 = null;
 };
 
 //
@@ -1038,11 +1028,12 @@ function getColor(val, pct, col, noGradient, custSec) {
   if (custSec.length > 0) {
     for (var i = 0; i < custSec.length; i++) {
       if (val > custSec[i].lo && val <= custSec[i].hi) {
-        return custSec[i].color;
+        return safeColor(custSec[i].color, col[col.length - 1]);
       }
     }
   }
 
+  if (!col || !col.length) return;
   no = col.length;
   if (no === 1) return col[0];
   inc = (noGradient) ? (1 / no) : (1 / (no - 1));
@@ -1072,6 +1063,9 @@ function getColor(val, pct, col, noGradient, custSec) {
         return 'rgb(' + [colors[j].color.r, colors[j].color.g, colors[j].color.b].join(',') + ')';
       } else {
         lower = colors[j - 1];
+        if (!lower) {
+          return 'rgb(' + [colors[j].color.r, colors[j].color.g, colors[j].color.b].join(',') + ')';
+        }
         upper = colors[j];
         range = upper.pct - lower.pct;
         rangePct = (pct - lower.pct) / range;
@@ -1087,6 +1081,17 @@ function getColor(val, pct, col, noGradient, custSec) {
     }
   }
 
+  // value above the last level (or not a number): use the last color
+  return 'rgb(' + [colors[no - 1].color.r, colors[no - 1].color.g, colors[no - 1].color.b].join(',') + ')';
+
+}
+
+/** Accept only plain color values (hex, named, rgb/hsl functions); no url() or other paint servers */
+function safeColor(c, fallback) {
+  if (typeof c !== 'string') {
+    return fallback;
+  }
+  return /^(#[0-9a-f]{3,8}|[a-z]+|(rgb|hsl|hsb)a?\([0-9a-z.,%\s\/-]+\))$/i.test(c) ? c : fallback;
 }
 
 /** Fix Raphael display:none tspan dy attribute bug */
@@ -1103,6 +1108,7 @@ function getRandomInt(min, max) {
 
 /**  Cut hex  */
 function cutHex(str) {
+  str = String(str);
   return (str.charAt(0) == "#") ? str.substring(1, 7) : str;
 }
 
@@ -1144,12 +1150,13 @@ function getStyle(oElm, strCssRule) {
 }
 
 /**  Create Element NS Ready  */
-function onCreateElementNsReady(func) {
+function onCreateElementNsReady(func, tries) {
+  tries = tries || 0;
   if (document.createElementNS !== undefined) {
     func();
-  } else {
+  } else if (tries < 50) {
     setTimeout(function() {
-      onCreateElementNsReady(func);
+      onCreateElementNsReady(func, tries + 1);
     }, 100);
   }
 }
@@ -1194,6 +1201,8 @@ function extend(out) {
       continue;
 
     for (var key in arguments[i]) {
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype')
+        continue;
       if (arguments[i].hasOwnProperty(key))
         out[key] = arguments[i][key];
     }
@@ -1201,3 +1210,7 @@ function extend(out) {
 
   return out;
 };
+
+window.JustGage = JustGage;
+
+})(window);

@@ -10,7 +10,7 @@ use WeatherStation\System\Logs\Logger;
  * Class to push data to PWS Weather.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.5.0
  */
@@ -35,7 +35,7 @@ class Pusher extends Abstract_Pusher {
      */
     protected function process_data($data) {
         $result = array();
-        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        $result['dateutc'] = gmdate('Y-m-d H:i:s', time()-60);
         /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
         }*/
@@ -81,7 +81,7 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['ID'] = $station['pws_user'];
         $result['PASSWORD'] = $station['pws_password'];
-        $result['softwaretype'] = LWS_PLUGIN_SIGNATURE;
+        $result['softwaretype'] = LIVE_WEATHER_STATION_PLUGIN_SIGNATURE;
         $result['action'] = 'updateraw';
         return $result;
     }
@@ -104,7 +104,7 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        return 'http://www.pwsweather.com/pwsupdate/pwsupdate.php';
+        return 'https://www.pwsweather.com/pwsupdate/pwsupdate.php';
     }
 
     /**
@@ -129,7 +129,7 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $body = $content['body'];
         if (strpos(strtolower($body), 'error:') > 0) {
-            throw new \Exception(substr(trim(substr($body, 6 + strpos(strtolower($body), '<body>'), 255)), 7, 255));
+            throw new \Exception(substr(trim(substr($body, 6 + strpos(strtolower($body), '<body>'), 255)), 7, 255)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- text of the remote response, length-capped; the exception is caught in WeatherCurrentAbstractPusher::push_data() and passed through sanitize_remote_message() before being logged or returned
         }
     }
 

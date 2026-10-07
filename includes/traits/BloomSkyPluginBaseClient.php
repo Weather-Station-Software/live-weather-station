@@ -15,7 +15,7 @@ use WeatherStation\Data\Type\Description as Description;
  * Netatmo client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -61,26 +61,26 @@ trait BaseClient {
                 // Main base
                 $module_type = 'NAMain';
                 $types = array('pressure', 'pressure_sl');
-                $module_id = ID::get_fake_modulex_id($guid, 0);
+                $module_id = self::get_fake_modulex_id($guid, 0);
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 // Outdoor module
                 $module_type = 'NAModule1';
                 $types = array('temperature', 'humidity');
-                $module_id = ID::get_fake_modulex_id($guid, 1);
+                $module_id = self::get_fake_modulex_id($guid, 1);
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 // Wind gauge
                 if (array_key_exists('windangle', $device)) {
                     $module_type = 'NAModule2';
                     $types = array('windangle', 'gustangle', 'winddirection', 'gustdirection', 'windstrength', 'guststrength');
-                    $module_id = ID::get_fake_modulex_id($guid, 2);
+                    $module_id = self::get_fake_modulex_id($guid, 2);
                     $module_name = $this->get_fake_module_name($module_type);
-                    $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                     Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
                 }
 
@@ -88,34 +88,34 @@ trait BaseClient {
                 if (array_key_exists('rain', $device)) {
                     $module_type = 'NAModule3';
                     $types = array('rain', 'rain_day_aggregated');
-                    $module_id = ID::get_fake_modulex_id($guid, 3);
+                    $module_id = self::get_fake_modulex_id($guid, 3);
                     $module_name = $this->get_fake_module_name($module_type);
-                    $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                     Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
                 }
 
                 // Solar
                 $module_type = 'NAModule5';
                 $types = array('illuminance', 'uv_index');
-                $module_id = ID::get_fake_modulex_id($guid, 5);
+                $module_id = self::get_fake_modulex_id($guid, 5);
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 // Picture
                 $module_type = 'NAModuleP';
                 $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'p');
+                $module_id = self::get_fake_modulex_id($guid, 'p');
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 // Video
                 $module_type = 'NAModuleV';
                 $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'v');
+                $module_id = self::get_fake_modulex_id($guid, 'v');
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LIVE_WEATHER_STATION_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 $s = $this->get_station_information_by_station_id($device['device_id']);
@@ -143,13 +143,34 @@ trait BaseClient {
                         $s['loc_latitude'] = $place['location'][1];
                     }
                 }
-                $s['last_refresh'] = date('Y-m-d H:i:s');
+                $s['last_refresh'] = gmdate('Y-m-d H:i:s');
                 if (array_key_exists('time_utc', $device)) {
-                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
+                    $s['last_seen'] = gmdate('Y-m-d H:i:s', $device['time_utc']);
                 }
                 $this->update_stations_table($s);
             }
         }
+    }
+
+    /**
+     * Keep only numeric values (cast to numbers) in a block of measures, except the keys allowed to stay as text.
+     *
+     * @param array $data The raw block coming from the BloomSky API.
+     * @param array $text_keys Optional. The keys that are not measures.
+     * @return array The cleaned block.
+     * @since 3.9.0
+     */
+    private function clean_bloomsky_numbers($data, $text_keys=array()) {
+        $result = array();
+        foreach ($data as $key => $value) {
+            if (in_array($key, $text_keys, true)) {
+                $result[$key] = $value;
+            }
+            elseif (is_numeric($value)) {
+                $result[$key] = $value + 0;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -159,7 +180,7 @@ trait BaseClient {
      */
     private function normalize_bloomsky_measurements() {
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_measurements, true));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, Logger::dump($this->bloomsky_measurements));
         foreach($this->bloomsky_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;
@@ -167,13 +188,13 @@ trait BaseClient {
                 $dat = array();
                 $device_model = '';
                 if (array_key_exists('DeviceName', $station)) {
-                    $dat['device_name'] = $station['DeviceName'];
+                    $dat['device_name'] = live_weather_station_clean_text($station['DeviceName'], 60);
                 }
                 else {
                     $dat['device_name'] = '< NO NAME >';
                 }
                 if (array_key_exists('DeviceID', $station)) {
-                    $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
+                    $dat['device_id'] = self::compute_unique_bsky_id(preg_replace('/[^0-9A-Za-z]/', '', (string)$station['DeviceID']));
                     $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];
@@ -184,27 +205,27 @@ trait BaseClient {
                 }
                 if (array_key_exists('VideoList', $station)) {
                     $videos = $station['VideoList'];
-                    if (count($videos) > 0) {
+                    if (is_array($videos) && count($videos) > 0) {
                         $dat['video_imperial'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_imperial'][] = $video;
+                        foreach ((array)$videos as $video) {
+                            $dat['video_imperial'][] = live_weather_station_clean_url($video);
                         }
 
                     }
                 }
                 if (array_key_exists('VideoList_C', $station)) {
                     $videos = $station['VideoList_C'];
-                    if (count($videos) > 0) {
+                    if (is_array($videos) && count($videos) > 0) {
                         $dat['video_metric'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_metric'][] = $video;
+                        foreach ((array)$videos as $video) {
+                            $dat['video_metric'][] = live_weather_station_clean_url($video);
                         }
 
                     }
                 }
 
-                if (array_key_exists('Data', $station)) {
-                    $data = $station['Data'];
+                if (array_key_exists('Data', $station) && is_array($station['Data'])) {
+                    $data = $this->clean_bloomsky_numbers($station['Data'], array('DeviceType', 'ImageURL'));
                     if (array_key_exists('TS', $data)) {
                         $dat['time_utc'] = $data['TS'];
                     }
@@ -228,7 +249,7 @@ trait BaseClient {
                         $dat['TS_image'] = $data['ImageTS'];
                     }
                     if (array_key_exists('DeviceType', $data)) {
-                        $device_model = 'BloomSky - ' . ucfirst($data['DeviceType']);
+                        $device_model = 'BloomSky - ' . ucfirst(live_weather_station_clean_text($data['DeviceType'], 30));
                     }
                     if (array_key_exists('Voltage', $data)) {
                         $dat['battery'] = $data['Voltage'];
@@ -237,11 +258,11 @@ trait BaseClient {
                         $dat['time_pct'] = $data['ImageTS'];
                     }
                     if (array_key_exists('ImageURL', $data)) {
-                        $dat['url_pct'] = $data['ImageURL'];
+                        $dat['url_pct'] = live_weather_station_clean_url($data['ImageURL']);
                     }
                 }
-                if (array_key_exists('Storm', $station)) {
-                    $data = $station['Storm'];
+                if (array_key_exists('Storm', $station) && is_array($station['Storm'])) {
+                    $data = $this->clean_bloomsky_numbers($station['Storm']);
                     if ($device_model == '') {
                         $device_model = 'BloomSky - Storm';
                     }
@@ -287,25 +308,25 @@ trait BaseClient {
                     $dat['device_model'] = $device_model;
                 }
                 if (array_key_exists('FullAddress', $station)) {
-                    if (strlen($station['FullAddress']) > 1) {
-                        $dat['place']['country'] = strtoupper(substr($station['FullAddress'], -2));
+                    if (is_string($station['FullAddress']) && strlen($station['FullAddress']) > 1) {
+                        $dat['place']['country'] = strtoupper(live_weather_station_clean_text(substr($station['FullAddress'], -2), 2));
                     }
                 }
                 if (array_key_exists('CityName', $station)) {
-                    $dat['place']['city'] = $station['CityName'];
+                    $dat['place']['city'] = live_weather_station_clean_text($station['CityName'], 60);
                 }
                 if (array_key_exists('ALT', $station)) {
-                    $dat['place']['altitude'] = round($station['ALT']);
+                    $dat['place']['altitude'] = round((float)live_weather_station_clean_number($station['ALT'], 0));
                 }
                 if (array_key_exists('LON', $station)) {
-                    $dat['place']['location'][0] = round($station['LON'], 4);
+                    $dat['place']['location'][0] = round((float)live_weather_station_clean_number($station['LON'], 0), 4);
                 }
                 if (array_key_exists('LAT', $station)) {
-                    $dat['place']['location'][1] = round($station['LAT'], 4);
+                    $dat['place']['location'][1] = round((float)live_weather_station_clean_number($station['LAT'], 0), 4);
                 }
                 if (array_key_exists('place', $dat)) {
                     if (array_key_exists('UTC', $station) && array_key_exists('country', $dat['place'])) {
-                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (integer)$station['UTC']);
+                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (int)$station['UTC']);
                     }
                     else {
                         $dat['place']['timezone'] = 'UTC';

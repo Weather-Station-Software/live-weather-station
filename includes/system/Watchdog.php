@@ -10,7 +10,7 @@ use WeatherStation\DB\Storage;
  * The class to monitor and operate cron jobs.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.7.0
  */
@@ -117,10 +117,11 @@ class Watchdog {
      */
     public static function rotate() {
         global $wpdb;
-        $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
+        $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_performance_cron, a write-only statistics table (cleanup or upsert), nothing to cache; the table name is the prefix plus performance_cron table name from an internal method, the only variable parts are the %s, %d and %f placeholders of the SQL string and all values are passed to prepare()
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 
     /**
@@ -167,25 +168,20 @@ class Watchdog {
      * @since 3.2.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H') . ':00:00';
+        $now = gmdate('Y-m-d H') . ':00:00';
         global $wpdb;
         $err_bup = $wpdb->show_errors(false);
         $field_insert = array('timestamp', 'cron', 'count', 'time');
         foreach (self::$stats as $key => $values) {
-            $value_insert = array();
-            $value_update = array();
-            $value_insert[] = "'".$now."'";
-            $value_insert[] = "'".$key."'";
-            $value_insert[] = $values['count'];
-            $value_insert[] = $values['time'];
-            $value_update[] = 'count=count+' . $values['count'];
-            $value_update[] = 'time=time+' . $values['time'];
+            $value_insert = array('%s', '%s', '%d', '%f');
+            $value_update = array('count=count+%d', 'time=time+%f');
             $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             try {
-                $wpdb->query($sql);
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_performance_cron, a write-only statistics table (cleanup or upsert), nothing to cache; the table name is the prefix plus performance_cron table name from an internal method, the only variable parts are the %s, %d and %f placeholders of the SQL string and all values are passed to prepare()
+                $wpdb->query($wpdb->prepare($sql, $now, $key, $values['count'], $values['time'], $values['count'], $values['time']));
             }
             catch (\Exception $ex) {
                 Logger::warning('Watchdog',null,null,null,null,null,null,'Table "' . $wpdb->prefix.self::live_weather_station_performance_cron_table() . '" not ready. This is likely a temporary defect.');

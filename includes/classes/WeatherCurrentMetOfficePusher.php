@@ -7,10 +7,10 @@ use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
 
 /**
- * Class to push data to WOW Met Office.
+ * Class to push data to WOW (WOW-BE, formerly the Met Office WOW).
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.5.0
  */
@@ -35,7 +35,7 @@ class Pusher extends Abstract_Pusher {
      */
     protected function process_data($data) {
         $result = array();
-        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        $result['dateutc'] = gmdate('Y-m-d H:i:s', time()-60);
         /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
         }*/
@@ -84,7 +84,7 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['siteid'] = $station['wow_user'];
         $result['siteAuthenticationKey'] = $station['wow_password'];
-        $result['softwaretype'] = LWS_PLUGIN_SIGNATURE;
+        $result['softwaretype'] = LIVE_WEATHER_STATION_PLUGIN_SIGNATURE;
         return $result;
     }
 
@@ -106,7 +106,14 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        return 'http://wow.metoffice.gov.uk/automaticreading';
+        // WOW Met Office is discontinued at the end of 2026: WOW is now run by RMI Belgium (WOW-BE).
+        // Same parameter names as the former protocol (siteid accepts the station ID, siteAuthenticationKey the authentication key).
+        $default = 'https://wow.meteo.be/api/v2/send';
+        $url = apply_filters('live_weather_station_wow_endpoint', $default);
+        if (!is_string($url) || strpos($url, 'https://') !== 0 || !wp_http_validate_url($url)) {
+            return $default;
+        }
+        return $url;
     }
 
     /**
@@ -131,7 +138,8 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $response = $content['response'];
         if ($response['code'] != 200) {
-            throw new \Exception($response['message'], $response['code']);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message is cleaned by sanitize_remote_message() (sanitize_text_field, 200 characters) and the exception is caught in WeatherCurrentAbstractPusher::push_data(), which logs it or returns the sanitized text
+            throw new \Exception($this->sanitize_remote_message($response['message']), $response['code']);
         }
     }
 

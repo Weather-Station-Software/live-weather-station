@@ -350,7 +350,7 @@ function RadarChart() {
 
                 update_radarArea.enter()
                     .append("path")
-                    .attr("class", function(d) { return options.classed + "RadarArea " + d.key.replace(/\s+/g, '') })
+                    .attr("class", function(d) { return options.classed + "RadarArea " + String(d.key).replace(/\s+/g, '') })
                     .attr("d", function(d, i) { return radarLine(d.values); })
                     .style("fill", function(d, i, j) { return setColor(d); })
                     .style("fill-opacity", 0)
@@ -391,7 +391,7 @@ function RadarChart() {
                         return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 1;
                     });
 
-                update_radarCircle = update_blobWrapper.selectAll('.' + options.classed + 'RadarCircle')
+                var update_radarCircle = update_blobWrapper.selectAll('.' + options.classed + 'RadarCircle')
                     .data(function(d, i) { return add_index(d._i, d.key, d.values) });
 
                 update_radarCircle.enter()
@@ -432,7 +432,7 @@ function RadarChart() {
                     .style('opacity', 0)
                     .remove()
 
-                update_radarInvisibleCircle = update_blobCircleWrapper.selectAll("." + options.classed + "RadarInvisibleCircle")
+                var update_radarInvisibleCircle = update_blobCircleWrapper.selectAll("." + options.classed + "RadarInvisibleCircle")
                     .data(function(d, i) { return add_index(d._i, d.key, d.values); });
 
                 update_radarInvisibleCircle.enter()
@@ -471,7 +471,8 @@ function RadarChart() {
         _data = JSON.parse(JSON.stringify(data));
 
         var axes = getAxisLabels(_data);
-        var ranges = {};
+        // no prototype: an axis named __proto__ is then an ordinary key
+        var ranges = Object.create(null);
 
         // determine min/max range for each axis
         _data.forEach( function(e) { e.values.forEach (function(d, i) {
@@ -755,7 +756,7 @@ function RadarChart() {
         return chart;
     }
 
-    chart.margins = function(value) {
+    chart.margins = function(values) {
         if (!arguments.length) return options.margins;
         var vKeys = Object.keys(values);
         var mKeys = Object.keys(options.margins);
@@ -910,7 +911,7 @@ function RadarChart() {
     function tooltip_show(d, i, self) {
         //if (legend_toggles[d._i]) return;
         if (options.width > 200) {
-            var val = d.key.replace(/ - /gi, '<br/>');
+            var val = String(d.key).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/ - /gi, '<br/>');
             tooltip
                 .html(val)
                 .style('opacity', '1');
@@ -942,7 +943,7 @@ function RadarChart() {
     function wrap(text, width) {
         text.each(function(d, i, j) {
             var text = d3.select(this);
-            var words = d.axis.split(/\s+/).reverse();
+            var words = String(d.axis).split(/\s+/).reverse();
             var word;
             var line = [];
             var lineNumber = 0;
@@ -965,10 +966,20 @@ function RadarChart() {
         });
     }
 
-    window.addEventListener( 'resize', scaleChart, false );
+    function onWindowResize() {
+        // the chart was removed from the page: stop listening
+        if (dom_parent && !document.documentElement.contains(dom_parent.node())) {
+            window.removeEventListener( 'resize', onWindowResize, false );
+            return;
+        }
+        scaleChart();
+    }
+
+    window.addEventListener( 'resize', onWindowResize, false );
 
     function scaleChart() {
         if (!options.resize || !dom_parent) return;
+
         var width_offset = dom_parent.node().getBoundingClientRect().left;
         var height_offset = dom_parent.node().getBoundingClientRect().top;
         var width = Math.min(options.widthMax, document.documentElement.clientWidth - width_offset);

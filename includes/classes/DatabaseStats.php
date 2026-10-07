@@ -10,7 +10,7 @@ use WeatherStation\System\Logs\Logger;
  * This class add features for dashboard building.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -31,6 +31,7 @@ class Stats
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_measurements: the query has no user value, the table name is the prefix plus a constant; the result of the whole statistic is cached by the plugin Cache class (Cache::$db_stat_operational).
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             return (count($query_a));
@@ -51,6 +52,7 @@ class Stats
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT module_id FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_measurements: the query has no user value, the table name is the prefix plus a constant; the result of the whole statistic is cached by the plugin Cache class (Cache::$db_stat_operational).
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             return (count($query_a));
@@ -72,6 +74,7 @@ class Stats
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT COUNT(*) FROM ".$table_name . ";";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_measurements: the query has no user value, the table name is the prefix plus a constant; the result of the whole statistic is cached by the plugin Cache class (Cache::$db_stat_operational).
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             foreach ($query_a as $val) {
@@ -124,8 +127,10 @@ class Stats
     private function count_log_errors($interval = 24) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency','alert','critical','error') AND (timestamp >= NOW() - INTERVAL " . $interval . " HOUR);";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- the table name is the prefix plus a constant (live_weather_station_log), the interval is bound with %d.
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency','alert','critical','error') AND (timestamp >= NOW() - INTERVAL %d HOUR);", (int)$interval);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_log: $sql was prepared above (interval bound with %d), the table name is the prefix plus a constant; the result is cached by the plugin Cache class (Cache::$db_stat_log).
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = (array)$query_a[0];
@@ -147,8 +152,10 @@ class Stats
     private function count_log_emergency($interval = 72) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency') AND (timestamp >= NOW() - INTERVAL " . $interval . " HOUR);";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- the table name is the prefix plus a constant (live_weather_station_log), the interval is bound with %d.
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency') AND (timestamp >= NOW() - INTERVAL %d HOUR);", (int)$interval);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_log: $sql was prepared above (interval bound with %d), the table name is the prefix plus a constant; the result is cached by the plugin Cache class (Cache::$db_stat_log).
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = (array)$query_a[0];

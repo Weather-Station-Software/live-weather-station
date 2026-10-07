@@ -4,6 +4,9 @@
  * Dummy class autoloader for Pioupiou SDK
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once(__DIR__ . '/PIOUApiClient.php');
 require_once(__DIR__. '/Exception.php');
 require_once(__DIR__. '/Fetcher/FetcherInterface.php');

@@ -1,10 +1,25 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+if (!is_array($subject) || !isset($subject['id']) || !isset($subject['detail']['name']) || !isset($subject['detail']['colors']) || !is_array($subject['detail']['colors'])) {
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Modify a custom palette', 'live-weather-station');?></h1>
+        <div class="notice notice-error"><p><?php esc_html_e('This palette does not exist.', 'live-weather-station');?></p></div>
+        <p><a class="button button-primary" href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', null, 'styles')); ?>"><?php esc_html_e('Back to the settings', 'live-weather-station');?></a></p>
+    </div>
+    <?php
+    return;
+}
 
 wp_enqueue_style( 'wp-color-picker' );
 
@@ -12,21 +27,21 @@ wp_enqueue_style( 'wp-color-picker' );
 
 <div class="wrap">
     <h2><?php esc_html_e('Modify a custom palette', 'live-weather-station');?></h2>
-    <form method="post" name="edit-palette" id="edit-palette" action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'do', 'styles', 'palette')); ?>">
+    <form method="post" name="edit-palette" id="edit-palette" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-settings', 'do', 'styles', 'palette')); ?>">
         <input name="service" type="hidden" value="palette" />
         <input name="tab" type="hidden" value="edit" />
         <input name="action" type="hidden" value="do" />
-        <input name="id" type="hidden" value="<?php echo $subject['id'] ?>" />
+        <input name="id" type="hidden" value="<?php echo esc_attr($subject['id']) ?>" />
         <?php wp_nonce_field('edit-palette'); ?>
         <table class="form-table">
             <tr class="form-field">
                 <th scope="row"><label for="palette_name"><?php esc_html_e( 'Name', 'live-weather-station' );?></label></th>
-                <td align="left"><input required name="palette_name" aria-required="true" type="text" id="palette_name" value="<?php echo htmlspecialchars($subject['detail']['name']) ?>" maxlength="60" style="width:25em;" /></td>
+                <td align="left"><input required name="palette_name" aria-required="true" type="text" id="palette_name" value="<?php echo esc_attr($subject['detail']['name']) ?>" maxlength="60" style="width:25em;" /></td>
             </tr>
             <?php for ($i=0 ; $i<8 ; $i++) {?>
                 <tr class="form-field">
-                    <th scope="row"><label for="color_<?php echo $i ?>"><?php echo sprintf(__('Color %s','live-weather-station'), $i+1);?></label></th>
-                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo $i ?>" name="color_<?php echo $i ?>" type="text" value="#<?php echo htmlspecialchars($subject['detail']['colors'][$i]) ?>" /></span></td>
+                    <th scope="row"><label for="color_<?php echo (int)$i; ?>"><?php echo esc_html(sprintf(/* translators: %s: Number of the color in the palette. */ __('Color %s','live-weather-station'), $i+1));?></label></th>
+                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo (int)$i; ?>" name="color_<?php echo (int)$i; ?>" type="text" value="#<?php echo esc_attr($subject['detail']['colors'][$i]) ?>" /></span></td>
                 </tr>
             <?php }?>
         </table>

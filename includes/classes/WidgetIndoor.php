@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\Data\ID\Handling as ID;
@@ -10,7 +11,7 @@ use WeatherStation\Data\ID\Handling as ID;
  * Indoor weather widget class for Weather Station plugin
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
@@ -33,11 +34,10 @@ class Indoor extends Base {
      * @since 3.1.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Indoor',
             '<>🛏 ' . __( 'Indoor comfort' , 'live-weather-station'),
-            array('description' => sprintf(__('Display indoor comfort for a module of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
+            array('description' => sprintf(/* translators: %s: name of the plugin */ __('Display indoor comfort for a module of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -126,7 +126,7 @@ class Indoor extends Base {
         $medium_url = $instance['medium_url'];
         $bad_url = $instance['bad_url'];
         $modules = $this->get_operational_indoor_stations_list();
-        include(LWS_ADMIN_DIR.'partials/WidgetIndoorSettings.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/WidgetIndoorSettings.php');
     }
 
     /**
@@ -140,13 +140,13 @@ class Indoor extends Base {
     public function update($new_instance, $old_instance) {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
-        $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['module'] = $new_instance['module'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['title'] = wp_strip_all_tags($new_instance['title']);
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['module'] = Guard::token($new_instance['module'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_status'] = !empty($new_instance['show_status']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
@@ -159,9 +159,9 @@ class Indoor extends Base {
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_quality'] = !empty($new_instance['follow_quality']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['good_url'] = $new_instance['good_url'];
-        $instance['medium_url'] = $new_instance['medium_url'];
-        $instance['bad_url'] = $new_instance['bad_url'];
+        $instance['good_url'] = self::sanitize_url($new_instance['good_url']);
+        $instance['medium_url'] = self::sanitize_url($new_instance['medium_url']);
+        $instance['bad_url'] = self::sanitize_url($new_instance['bad_url']);
         return $instance;
     }
 
@@ -177,21 +177,22 @@ class Indoor extends Base {
      * @since 3.1.0
      */
     public function css($instance, $uid, $flat_design, $health_idx, $background='', $attachment='local') {
-        lws_font_awesome();
+        live_weather_station_font_awesome();
         try {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
         }
         catch(\Exception $ex) {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -207,7 +208,7 @@ class Indoor extends Base {
             $hsl['L'] = $l-0.05;
             $color = new Color(Color::hslToHex($hsl));
         }
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -265,14 +266,14 @@ class Indoor extends Base {
         $text_shadows = WidgetHelper::text_shadow();
         $box_shadows = WidgetHelper::box_shadow();
         $box_radius = WidgetHelper::box_radius();
-        if (LWS_FA_SVG) {
+        if (LIVE_WEATHER_STATION_FA_SVG) {
             $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
         }
         else {
             $svg = '';
         }
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
         return ob_get_clean();
     }
 
@@ -311,9 +312,9 @@ class Indoor extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $good_url = $this->get_picture_url_by_module($instance['module'], $instance['good_url']);
-        $medium_url = $this->get_picture_url_by_module($instance['module'], $instance['medium_url']);
-        $bad_url = $this->get_picture_url_by_module($instance['module'], $instance['bad_url']);
+        $good_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['good_url']));
+        $medium_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['medium_url']));
+        $bad_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['bad_url']));
         $bg_url = '';
         $health_idx = 100;
         $temp_multipart = false;
@@ -451,7 +452,7 @@ class Indoor extends Base {
         $result = $args['before_widget'];
         $result .= $this->css($instance, $id, $flat_design, $health_idx, $bg_url, $background_attachment);
         ob_start();
-        include LWS_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php';
+        include LIVE_WEATHER_STATION_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php';
         $result .= ob_get_clean();
         $result .= $args['after_widget'];
         return $result;

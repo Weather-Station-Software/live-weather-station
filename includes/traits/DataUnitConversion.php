@@ -6,7 +6,7 @@ namespace WeatherStation\Data\Unit;
  * Units conversions functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
@@ -35,6 +35,9 @@ trait Conversion {
         }
         $H = 0.0065 * $altitude;
         $T = 273.15 + $temperature;
+        if (($T + $H) == 0) {
+            return 0;
+        }
         $result = $baro * pow(1 - ($H / ($T + $H)), -5.257);
         return sprintf('%.1F', round($result, 1));
     }
@@ -54,6 +57,9 @@ trait Conversion {
         }
         $H = 0.0065 * $altitude;
         $T = 273.15 + $temperature;
+        if (($T + $H) == 0) {
+            return 0;
+        }
         $result = $mslp * pow(1 - ($H / ($T + $H)), 5.257);
         return sprintf('%.1F', round($result, 1));
     }
@@ -95,6 +101,9 @@ trait Conversion {
      */
     protected function convert_from_vmr_to_mmr($vmr, $density)
     {
+        if (!is_numeric($vmr) || !is_numeric($density) || $density == 0) {
+            return 0;
+        }
         $result = $vmr / $density;
         return $result;
     }
@@ -124,6 +133,9 @@ trait Conversion {
      */
     protected function convert_from_vmr_to_mass_concentration($vmr, $molecular_mass, $molar_volume=24.45 )
     {
+        if (!is_numeric($vmr) || !is_numeric($molecular_mass) || !is_numeric($molar_volume) || $molar_volume == 0) {
+            return 0;
+        }
         $result = ($vmr * $molecular_mass) / $molar_volume;
         return $result;
     }
@@ -139,6 +151,9 @@ trait Conversion {
      */
     protected function convert_from_mass_concentration_to_vmr($mc, $molecular_mass, $molar_volume=24.45 )
     {
+        if (!is_numeric($mc) || !is_numeric($molar_volume) || !is_numeric($molecular_mass) || $molecular_mass == 0) {
+            return 0;
+        }
         $result = ($mc * $molar_volume) / $molecular_mass ;
         return $result;
     }
@@ -167,6 +182,9 @@ trait Conversion {
      */
     protected function convert_from_partial_pressure_to_vmr($p, $pressure=100000.0)
     {
+        if (!is_numeric($p) || !is_numeric($pressure) || $pressure == 0) {
+            return 0;
+        }
         $result = $p * 1000000 / $pressure;
         return $result;
     }
@@ -711,7 +729,7 @@ trait Conversion {
     */
     protected function get_wind_angle($windAngle)
     {
-        if (is_numeric()) {
+        if (is_numeric($windAngle)) {
             return sprintf('%d', round($windAngle, 0));
         } else {
             return 'Invalid input';
@@ -1049,6 +1067,9 @@ trait Conversion {
      */
     protected function get_wind_speed($value, $id = 0)
     {
+        if ($value !== null && !is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         $format = '%d';
         $prec = 0;
@@ -1167,14 +1188,16 @@ trait Conversion {
                 $result = $result * 3.6;
                 break;
             case 3:  // see https://en.wikipedia.org/wiki/Beaufort_scale
-                if ($value == 12) {
+                // The Beaufort scale is an integer from 0 to 12: anything else is clamped (or 0 if not numeric).
+                $bft = is_numeric($value) ? max(0, min(12, (int)round((float)$value))) : 0;
+                if ($bft == 12) {
                     $result = 130 ;
                 }
-                elseif ($value == 0) {
+                elseif ($bft == 0) {
                     $result = 0;
                 }
                 else {
-                    $result = ($this->beaufort_thresholds[$value]+$this->beaufort_thresholds[$value-1]) / 2;
+                    $result = ($this->beaufort_thresholds[$bft]+$this->beaufort_thresholds[$bft-1]) / 2;
                 }
                 break;
             case 4:  // V(km/h) = V(kn) * 1.852
@@ -1350,6 +1373,9 @@ trait Conversion {
      */
     protected function get_cloud_ceiling($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if ($result < 100) {
             $result = 5 * round($result/5, 0);
@@ -1381,6 +1407,9 @@ trait Conversion {
      * @since 3.8.0
      */
     protected function get_alt_pressure_density($value, $id = 0) {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if (abs($result) < 100) {
             $result = 5 * round($result/5, 0);
@@ -1413,6 +1442,9 @@ trait Conversion {
      */
     protected function get_visibility($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if ($result < 100) {
             $result = 5 * round($result/5, 0);
@@ -1446,6 +1478,9 @@ trait Conversion {
      */
     protected function get_altitude($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(ft) = D(m) / 0.3048
@@ -1465,6 +1500,9 @@ trait Conversion {
      */
     protected function get_reverse_altitude($value, $id)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(m) = D(ft) * 0.3048
@@ -1485,6 +1523,9 @@ trait Conversion {
      */
     protected function get_distance_from_kilometers($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609
@@ -1504,6 +1545,9 @@ trait Conversion {
      */
     protected function get_distance_from_meters($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value / 1000;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609
@@ -1528,6 +1572,9 @@ trait Conversion {
      */
     protected function get_reverse_distance_from_meters($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value * 1000;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609
@@ -1725,6 +1772,14 @@ trait Conversion {
                 $result = $this->get_reverse_illuminance($value);
                 break;
             case 'strike_distance':
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_distance');
+                }
+                $result = $this->get_reverse_distance_from_meters($value, $ref);
+                break;
             case 'visibility':
             if ($force_ref != 9999) {
                 $ref = $force_ref;

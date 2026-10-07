@@ -11,7 +11,7 @@ use WeatherStation\System\Quota\Quota;
  * Abstract class to push data to weather services.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.5.0
  */
@@ -84,6 +84,21 @@ abstract class Pusher {
     abstract protected function process_data($data);
 
     /**
+     * Sanitize a message coming from a remote service before it is thrown, logged or displayed.
+     *
+     * @param   mixed   $message      The remote message.
+     * @return  string  A plain text, length-capped message.
+     * @since   3.8.9
+     */
+    protected function sanitize_remote_message($message) {
+        if (!is_scalar($message)) {
+            return 'Unknown error';
+        }
+        $message = substr(sanitize_text_field((string)$message), 0, 200);
+        return ($message === '' ? 'Unknown error' : $message);
+    }
+
+    /**
      * Process the result of the post.
      *
      * @param   array   $content      Result of the post.
@@ -95,13 +110,13 @@ abstract class Pusher {
         $error = false;
         $code = 0;
         $message = 'Unknown error';
-        $response = $content['response'];
+        $response = (isset($content['response']) && is_array($content['response'])) ? $content['response'] : array();
         if (array_key_exists('code', $response)) {
             $code = $response['code'];
             if ($code != '200') {
                 $error = true;
                 if (array_key_exists('message', $response)) {
-                    $message = $response['message'];
+                    $message = $this->sanitize_remote_message($response['message']);
                 }
             }
         }
@@ -109,7 +124,8 @@ abstract class Pusher {
             $error = true;
         }
         if ($error) {
-            throw new \Exception($message, $code);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly (the caller applies sanitize_remote_message() again). The remote message is sanitized by sanitize_remote_message() above.
+            throw new \Exception($message, (int)$code);
         }
         else {
             $this->process_result($content, $station);
@@ -145,12 +161,14 @@ abstract class Pusher {
                     $args['headers'] = array ('Authorization' => 'Basic ' . base64_encode($auth));
                 }
                 $args['body'] = $values;
-                $args['timeout'] = get_option('live_weather_station_sharing_http_timeout');
-                $args['user-agent'] = LWS_PLUGIN_AGENT;
+                $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_sharing_http_timeout')));
+                // The services never redirect an upload: a redirection would forward the credentials and the data to another host.
+                $args['redirection'] = 0;
+                $args['user-agent'] = LIVE_WEATHER_STATION_PLUGIN_AGENT;
                 if (Quota::verify($this->get_service_name(), 'POST')) {
                     $content = wp_remote_post($this->get_post_url(), $args);
                     if (is_wp_error($content)) {
-                        throw new \Exception($content->get_error_message());
+                        throw new \Exception($this->sanitize_remote_message($content->get_error_message()));
                     }
                     $this->_process_result($content, $station);
                     if ($test) {
@@ -158,8 +176,8 @@ abstract class Pusher {
                         return '';
                     }
                     else {
+                        // Every station which shares its data is pushed, not only the first one.
                         Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Outdoor data pushed.');
-                        return '';
                     }
                 }
                 else {
@@ -168,12 +186,14 @@ abstract class Pusher {
 
             }
             catch (\Exception $ex) {
+                // Remote messages are untrusted: plain text and length-capped, never the request itself.
+                $msg = $this->sanitize_remote_message($ex->getMessage());
                 if ($test) {
-                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), 'Service connectivity test: KO / ' . $ex->getMessage());
-                    return $ex->getMessage();
+                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), 'Service connectivity test: KO / ' . $msg);
+                    return $msg;
                 }
                 else {
-                    Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $ex->getMessage());
+                    Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $msg);
                 }
             }
         }

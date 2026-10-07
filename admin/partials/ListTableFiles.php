@@ -1,29 +1,33 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
 
 use WeatherStation\UI\ListTable\File;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $fileListTable = new File();
 $fileListTable->prepare_items();
 
 ?>
 <div class="wrap">
     <?php if ((bool)get_option('live_weather_station_upload_allowed')) { ?>
-        <h2><?php echo __('Export/Import files', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php echo __('Add', 'live-weather-station'); ?></a></h2>
+        <h2><?php esc_html_e('Export/Import files', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php esc_html_e('Add', 'live-weather-station'); ?></a></h2>
     <?php } else { ?>
-        <h2><?php echo __('Export/Import files', 'live-weather-station');?> </h2>
+        <h2><?php esc_html_e('Export/Import files', 'live-weather-station');?> </h2>
     <?php } ?>
     <?php settings_errors(); ?>
     <?php if ((bool)get_option('live_weather_station_upload_allowed')) { ?>
         <div class="add-text" style="display:none;">
             <div id="wpcom-stats-meta-box-container" class="metabox-holder">
                 <div class="postbox-container" style="width: 100%;margin-right: 10px;">
-                    <?php include(LWS_ADMIN_DIR.'partials/ChooseFileToAdd.php'); ?>
+                    <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/ChooseFileToAdd.php'); ?>
                 </div>
             </div>
         </div>

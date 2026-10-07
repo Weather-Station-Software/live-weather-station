@@ -13,7 +13,7 @@ use WeatherStation\Data\DateTime\Conversion;
  * This class is responsible of history cleaning.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -83,19 +83,25 @@ class Cleaner
      */
     private function delete_old_medias() {
         $result = false;
-        if (get_option('live_weather_station_picture_retention') !== 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_picture_retention')));
+        if ((int)get_option('live_weather_station_picture_retention') > 0) {
+            $max = gmdate('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_picture_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `module_type`='NAModuleP';";
-            $result = $result || $wpdb->query($sql);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+            $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleP';", $max);
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+            $deleted = $wpdb->query($sql);
+            $result = $result || ($deleted !== false && $deleted > 0);
         }
-        if (get_option('live_weather_station_video_retention') !== 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_video_retention')));
+        if ((int)get_option('live_weather_station_video_retention') > 0) {
+            $max = gmdate('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_video_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `module_type`='NAModuleV';";
-            $result = $result || $wpdb->query($sql);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+            $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleV';", $max);
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+            $deleted = $wpdb->query($sql);
+            $result = $result || ($deleted !== false && $deleted > 0);
         }
         return $result;
     }
@@ -107,10 +113,12 @@ class Cleaner
      * @since 3.4.0
      */
     private function delete_old_daily_values() {
-        $max = date('Y-m-d', self::get_local_n_days_ago_midnight(3, 'UTC'));
+        $max = gmdate('Y-m-d', self::get_local_n_days_ago_midnight(3, 'UTC'));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "';";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+        $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s;", $max);
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
         return $wpdb->query($sql);
     }
 
@@ -124,10 +132,12 @@ class Cleaner
      */
     private function delete_old_yearly_values($device_id, $tz) {
         if (get_option('live_weather_station_retention_history') > 0) {
-            $max = date('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
+            $max = gmdate('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
+            $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `device_id`=%s;", $max, $device_id);
+            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table (live_weather_station_medias, _measurements_day, _measurements_year): the table name is $wpdb->prefix plus a live_weather_station_*_table() method and every value is bound with %s in prepare(), a purge must act on the live table
             return $wpdb->query($sql);
         }
         else {

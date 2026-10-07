@@ -3,13 +3,14 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
  * Class to generate parameter meter form.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
@@ -125,7 +126,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_steelmeter_measurement_' . $this->station_guid . ' = js_array_current_steelmeter_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-steelmeter-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_steelmeter_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-steelmeter-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_steelmeter_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-steelmeter-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_steelmeter_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$( "#current-steelmeter-measurements-measurement-' . $this->station_guid . '" ).change();});';
         
         $content .= '$("#current-steelmeter-measurements-measurement-' . $this->station_guid . '").change(function() {';
@@ -164,7 +165,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#current-steelmeter-measurements-size-' . $this->station_guid . '" ).change();});';
 
         $content .= '$("#current-steelmeter-measurements-size-' . $this->station_guid . '").change(function() {';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_module = js_array_current_steelmeter_' . $this->station_guid . '[$("#current-steelmeter-measurements-module-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_measurement = js_array_current_steelmeter_' . $this->station_guid . '[$("#current-steelmeter-measurements-module-' . $this->station_guid . '").val()][2][$("#current-steelmeter-measurements-measurement-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_design = $("#current-steelmeter-measurements-design-' . $this->station_guid . '").val();';
@@ -185,7 +186,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_glass = $("#current-steelmeter-measurements-glass-' . $this->station_guid . '").val();';
         $content .= 'var sc_size = $("#current-steelmeter-measurements-size-' . $this->station_guid . '").val();';
         $content .= 'var shortcode = "[live-weather-station-steelmeter device_id=\'"+sc_device+ "\' module_id=\'"+sc_module+ "\' measure_type=\'"+sc_measurement+ "\' design=\'"+sc_design.toLowerCase()+ "\' frame=\'"+sc_frame.toLowerCase()+ "\' background=\'"+sc_background.toLowerCase()+ "\' orientation=\'"+sc_orientation.toLowerCase()+ "\' main_pointer_type=\'"+sc_main_pointer_type.toLowerCase()+ "\' main_pointer_color=\'"+sc_main_pointer_color.toLowerCase()+ "\' aux_pointer_type=\'"+sc_aux_pointer_type.toLowerCase()+ "\' aux_pointer_color=\'"+sc_aux_pointer_color.toLowerCase()+ "\' knob=\'"+sc_knob.toLowerCase()+ "\' lcd=\'"+sc_lcd.toLowerCase()+ "\' alarm=\'"+sc_alarm.toLowerCase()+ "\' trend=\'"+sc_trend.toLowerCase()+ "\' minmax=\'"+sc_minmax.toLowerCase()+ "\' index_style=\'"+sc_index_style.toLowerCase()+ "\' index_color=\'"+sc_index_color.toLowerCase()+ "\' glass=\'"+sc_glass.toLowerCase()+ "\' size=\'"+sc_size.toLowerCase()+"\']";';
-        $content .= '$("#current-steelmeter-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
+        $content .= '$("#current-steelmeter-measurements-shortcode-' . $this->station_guid . '").val(shortcode);';
         $content .= 'if (sc_design.indexOf("meter") > -1 || sc_design.indexOf("windcompass") > -1) {';
         $content .= '$("#current-steelmeter-measurements-orientation-' . $this->station_guid . '").val("auto");';
         $content .= '$("#current-steelmeter-measurements-orientation-' . $this->station_guid . '").prop("disabled", true);}';
@@ -248,42 +249,43 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var http = new XMLHttpRequest();';
         $content .= 'var params = "action=lws_query_steelmeter_config";';
         $content .= 'params = params+"&id=' . $this->fingerprint . '";';
-        $content .= 'params = params+"&device_id="+sc_device;';
-        $content .= 'params = params+"&module_id="+sc_module;';
-        $content .= 'params = params+"&measure_type="+sc_measurement;';
-        $content .= 'params = params+"&design="+sc_design;';
-        $content .= 'params = params+"&frame="+sc_frame;';
-        $content .= 'params = params+"&background="+sc_background;';
-        $content .= 'params = params+"&orientation="+sc_orientation;';
-        $content .= 'params = params+"&main_pointer_type="+sc_main_pointer_type;';
-        $content .= 'params = params+"&main_pointer_color="+sc_main_pointer_color;';
-        $content .= 'params = params+"&aux_pointer_type="+sc_aux_pointer_type;';
-        $content .= 'params = params+"&aux_pointer_color="+sc_aux_pointer_color;';
-        $content .= 'params = params+"&knob="+sc_knob;';
-        $content .= 'params = params+"&lcd="+sc_lcd;';
-        $content .= 'params = params+"&alarm="+sc_alarm;';
-        $content .= 'params = params+"&trend="+sc_trend;';
-        $content .= 'params = params+"&minmax="+sc_minmax;';
-        $content .= 'params = params+"&index_style="+sc_index_style;';
-        $content .= 'params = params+"&index_color="+sc_index_color;';
-        $content .= 'params = params+"&glass="+sc_glass;';
-        $content .= 'params = params+"&size="+sc_size;';
-        $content .= 'http.open("POST", "' . LWS_AJAX_URL . '", true);';
+        $content .= 'params = params+"&device_id="+encodeURIComponent(sc_device);';
+        $content .= 'params = params+"&module_id="+encodeURIComponent(sc_module);';
+        $content .= 'params = params+"&measure_type="+encodeURIComponent(sc_measurement);';
+        $content .= 'params = params+"&design="+encodeURIComponent(sc_design);';
+        $content .= 'params = params+"&frame="+encodeURIComponent(sc_frame);';
+        $content .= 'params = params+"&background="+encodeURIComponent(sc_background);';
+        $content .= 'params = params+"&orientation="+encodeURIComponent(sc_orientation);';
+        $content .= 'params = params+"&main_pointer_type="+encodeURIComponent(sc_main_pointer_type);';
+        $content .= 'params = params+"&main_pointer_color="+encodeURIComponent(sc_main_pointer_color);';
+        $content .= 'params = params+"&aux_pointer_type="+encodeURIComponent(sc_aux_pointer_type);';
+        $content .= 'params = params+"&aux_pointer_color="+encodeURIComponent(sc_aux_pointer_color);';
+        $content .= 'params = params+"&knob="+encodeURIComponent(sc_knob);';
+        $content .= 'params = params+"&lcd="+encodeURIComponent(sc_lcd);';
+        $content .= 'params = params+"&alarm="+encodeURIComponent(sc_alarm);';
+        $content .= 'params = params+"&trend="+encodeURIComponent(sc_trend);';
+        $content .= 'params = params+"&minmax="+encodeURIComponent(sc_minmax);';
+        $content .= 'params = params+"&index_style="+encodeURIComponent(sc_index_style);';
+        $content .= 'params = params+"&index_color="+encodeURIComponent(sc_index_color);';
+        $content .= 'params = params+"&glass="+encodeURIComponent(sc_glass);';
+        $content .= 'params = params+"&size="+encodeURIComponent(sc_size);';
+        $content .= 'http.open("POST", "' . LIVE_WEATHER_STATION_AJAX_URL . '", true);';
         $content .= 'http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http.onreadystatechange = function () {';
         $content .= 'if (http.readyState == 4 && http.status == 200) {';
-        $content .= 'if (sc_design.indexOf("analog-") > -1) {var g' . $this->fingerprint . ' = new steelseries.Radial("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return eval(v);}));}';
-        $content .= 'if (sc_design.indexOf("digital-") > -1) {var g' . $this->fingerprint . ' = new steelseries.RadialBargraph("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return eval(v);}));}';
-        $content .= 'if (sc_design.indexOf("meter-") > -1) {var g' . $this->fingerprint . ' = new steelseries.RadialVertical("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return eval(v);}));}';
-        $content .= 'if (sc_design.indexOf("windcompass-") > -1) {var g' . $this->fingerprint . ' = new steelseries.WindDirection("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return eval(v);}));}';
-        $content .= 'if (sc_design.indexOf("altimeter-") > -1) {var g' . $this->fingerprint . ' = new steelseries.Altimeter("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return eval(v);}));}';
+        $content .= 'function lwsx(v){if(typeof v!=="string"){return v;}var p=0,s=v,m;function ws(){while(p<s.length&&/\\s/.test(s.charAt(p))){p++;}}function path(){m=/^steelseries(\\.[A-Za-z_][A-Za-z0-9_]*)+/.exec(s.substr(p));if(!m){throw 0;}p+=m[0].length;var a=m[0].split("."),o=window,q=null,i;for(i=0;i<a.length;i++){if(o===null||typeof o!=="object"&&typeof o!=="function"||!Object.prototype.hasOwnProperty.call(o,a[i])){throw 0;}q=o;o=o[a[i]];}return [o,q];}function val(){ws();var c=s.charAt(p),a,n=false,f,r;if(c==="["){p++;a=[];ws();if(s.charAt(p)==="]"){p++;return a;}for(;;){a.push(val());ws();c=s.charAt(p++);if(c==="]"){return a;}if(c!==","){throw 0;}}}if(c==="\\""){m=/^"(?:[^"\\\\]|\\\\.)*"/.exec(s.substr(p));if(!m){throw 0;}p+=m[0].length;try{return JSON.parse(m[0]);}catch(e){return m[0].slice(1,-1);}}m=/^-?\\d+(\\.\\d+)?([eE][-+]?\\d+)?/.exec(s.substr(p));if(m){p+=m[0].length;return parseFloat(m[0]);}if(s.substr(p,4)==="new "){n=true;p+=4;ws();}r=path();f=r[0];ws();if(s.charAt(p)==="("){p++;a=[];ws();if(s.charAt(p)===")"){p++;}else{for(;;){a.push(val());ws();c=s.charAt(p++);if(c===")"){break;}if(c!==","){throw 0;}}}if(typeof f!=="function"){throw 0;}if(n){return new (Function.prototype.bind.apply(f,[null].concat(a)))();}return f.apply(r[1],a);}if(n){throw 0;}return f;}try{var res=val();ws();if(p!==s.length){throw 0;}return res;}catch(e){return v;}}';
+        $content .= 'if (sc_design.indexOf("analog-") > -1) {var g' . $this->fingerprint . ' = new steelseries.Radial("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return lwsx(v);}));}';
+        $content .= 'if (sc_design.indexOf("digital-") > -1) {var g' . $this->fingerprint . ' = new steelseries.RadialBargraph("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return lwsx(v);}));}';
+        $content .= 'if (sc_design.indexOf("meter-") > -1) {var g' . $this->fingerprint . ' = new steelseries.RadialVertical("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return lwsx(v);}));}';
+        $content .= 'if (sc_design.indexOf("windcompass-") > -1) {var g' . $this->fingerprint . ' = new steelseries.WindDirection("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return lwsx(v);}));}';
+        $content .= 'if (sc_design.indexOf("altimeter-") > -1) {var g' . $this->fingerprint . ' = new steelseries.Altimeter("' . $this->fingerprint . '", JSON.parse(http.responseText, function (k, v) {return lwsx(v);}));}';
         $content .= 'var http2 = new XMLHttpRequest();';
         $content .= 'var params2 = "action=lws_query_steelmeter_measurements";';
         $content .= 'params2 = params2+"&id=' . $this->fingerprint . '";';
-        $content .= 'params2 = params2+"&device_id="+sc_device;';
-        $content .= 'params2 = params2+"&module_id="+sc_module;';
-        $content .= 'params2 = params2+"&measure_type="+sc_measurement;';
-        $content .= 'http2.open("POST", "' . LWS_AJAX_URL . '", true);';
+        $content .= 'params2 = params2+"&device_id="+encodeURIComponent(sc_device);';
+        $content .= 'params2 = params2+"&module_id="+encodeURIComponent(sc_module);';
+        $content .= 'params2 = params2+"&measure_type="+encodeURIComponent(sc_measurement);';
+        $content .= 'http2.open("POST", "' . LIVE_WEATHER_STATION_AJAX_URL . '", true);';
         $content .= 'http2.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http2.onreadystatechange = function () {';
         $content .= 'if (http2.readyState == 4 && http2.status == 200) {';
@@ -330,7 +332,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_preview() {
         $content = '<div>&nbsp;</div>';
         $content .= '<div id="current-steelmeter-bg-' . $this->station_guid . '" style="max-width:350px;border-radius: 5px;margin:0;width: 100%;float: inherit;display:inline-flex;justify-content: center;background-position-x:center;background-position-y:center;">';
-        $content .= '<canvas id="' . $this->fingerprint . '"></canvas>';
+        $content .= '<canvas id="' . esc_attr($this->fingerprint) . '"></canvas>';
         $content .= '</div>';
         $special_footer  = '<span id="current-steelmeter-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';

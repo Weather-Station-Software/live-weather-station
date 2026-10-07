@@ -13,7 +13,7 @@ use WeatherStation\System\Quota\Quota;
  * Netatmo HC client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
@@ -22,49 +22,16 @@ trait HCClient {
     use BaseClient;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
+    // These are the keys of the Netatmo application registered for this plugin: do not reuse them in another application.
+    // A site can use its own Netatmo application instead of these shared keys (see issue #132 of the repository).
     // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
     private $client_id = '58b353safe8edge160268b8900';
     private $client_secret = 'zgl1vdqZc9wvf78x2YgiWj74su92lV7ff';
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected $netatmo_scope = 'read_homecoach';
-    protected $netatmo_type = LWS_NETATMOHC_SID;
+    protected $netatmo_type = LIVE_WEATHER_STATION_NETATMOHC_SID;
 
-
-    /**
-     * Connects to the Netatmo account.
-     *
-     * @since 3.1.0
-     */
-    public function authentication($login, $password) {
-        $config = array();
-        $this->last_netatmo_error = '';
-        $config['client_id'] = $this->client_id;
-        $config['client_secret'] = $this->client_secret;
-        $config['scope'] = $this->netatmo_scope;
-        $this->netatmo_client = new NAWSApiClient($config);
-        $this->netatmo_client->setVariable('username', $login);
-        $this->netatmo_client->setVariable('password', $password);
-        try
-        {
-            Quota::verify($this->service_name, 'GET');
-            $tokens = $this->netatmo_client->getAccessToken();
-            update_option('live_weather_station_netatmohc_refresh_token', $tokens['refresh_token']);
-            update_option('live_weather_station_netatmohc_access_token', $tokens['access_token']);
-            update_option('live_weather_station_netatmohc_connected', 1);
-
-        }
-        catch (\Exception $ex) {
-            $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
-            update_option('live_weather_station_netatmohc_refresh_token', '');
-            update_option('live_weather_station_netatmohc_access_token', '');
-            update_option('live_weather_station_netatmohc_connected', 0);
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Get station's measurements.
@@ -82,8 +49,9 @@ trait HCClient {
         if ($refresh_token != '' && $access_token != '') {
             if (!isset($this->netatmo_client)) {
                 $config = array();
-                $config['client_id'] = $this->client_id;
-                $config['client_secret'] = $this->client_secret;
+                $keys = $this->netatmo_app_keys('netatmohc', $this->client_id, $this->client_secret);
+                $config['client_id'] = $keys[0];
+                $config['client_secret'] = $keys[1];
                 $config['scope'] = $this->netatmo_scope;
                 $config['refresh_token'] = $refresh_token;
                 $config['access_token'] = $access_token;
@@ -92,7 +60,7 @@ trait HCClient {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_measurements = $this->netatmo_client->getHCData();
-                    $this->normalize_netatmo_measurements(LWS_NETATMOHC_SID);
+                    $this->normalize_netatmo_measurements(LIVE_WEATHER_STATION_NETATMOHC_SID);
                     if ($store) {
                         $this->store_netatmo_measurements($this->get_all_netatmo_hc_stations(), true);
                     }
@@ -118,7 +86,7 @@ trait HCClient {
                     return array ();
                 }
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 switch ($ex->getCode()) {
                     case 2:
                     case 23:
@@ -139,7 +107,7 @@ trait HCClient {
                         $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
                         Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 return array();
             }
         }
@@ -160,11 +128,11 @@ trait HCClient {
             $this->get_measurements(false);
             $measurements = $this->netatmo_measurements ;
             foreach($measurements['devices'] as $device){
-                $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
+                $result[] = array('device_id' => $device['_id'], 'station_name' => live_weather_station_clean_text($device['station_name'], 60), 'installed' => false);
             }
             if ($store) {
                 foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_NETATMOHC_SID)) {
+                    if ($this->insert_ignore_stations_table($station['device_id'], LIVE_WEATHER_STATION_NETATMOHC_SID)) {
                         $station['installed'] = true;
                         Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
                     }
@@ -184,8 +152,8 @@ trait HCClient {
             }
             Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
         }
-        catch (\Exception $ex) {
-            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
             return array();
         }
         return $result;
@@ -205,14 +173,14 @@ trait HCClient {
             $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_NETATMOHC_SID);
+            $weather->compute(LIVE_WEATHER_STATION_NETATMOHC_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_NETATMOHC_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_NETATMOHC_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

@@ -1,13 +1,16 @@
 <?php
 /**
  * @package Admin\Partials
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="wrap">
-    <h2><?php echo __('Server Configuration', 'live-weather-station');?></h2>
+    <h2><?php echo esc_html__('Server Configuration', 'live-weather-station');?></h2>
     <div>
         <div id="wpcom-stats-meta-box-container" class="metabox-holder">
             <?php
@@ -22,11 +25,10 @@
                 });
             </script>
             <div class="postbox-container" style="width: 100%;margin-right: 10px;">
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedServer.php'); ?>
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedWebserver.php'); ?>
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedDB.php'); ?>
-                <?php include(LWS_ADMIN_DIR.'partials/DetailedWordPress.php'); ?>
-                <?php include(LWS_ADMIN_DIR.'partials/PhpInfo.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedServer.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedWebserver.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedDB.php'); ?>
+                <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/DetailedWordPress.php'); ?>
             </div>
         </div>
     </div>

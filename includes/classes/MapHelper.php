@@ -7,6 +7,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\Data\ID\Handling as IDHandling;
 use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\System\Output\Guard;
 
 
 
@@ -14,7 +15,7 @@ use WeatherStation\System\Help\InlineHelp;
  * This class builds elements of the map view.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -57,8 +58,12 @@ class Handling {
      * @since 3.7.0
      */
     public function __construct($Live_Weather_Station, $version, $maps) {
-        $page = filter_input(INPUT_GET, 'page');
+        $page = (string)filter_input(INPUT_GET, 'page');
         if (strpos($page, 'lws-') === false) {
+            return;
+        }
+        // This object is built for every admin user: nothing must be read or done without the capability.
+        if (!current_user_can(live_weather_station_manage_capability())) {
             return;
         }
         $this->Live_Weather_Station = $Live_Weather_Station;
@@ -92,14 +97,24 @@ class Handling {
                 break;
             case 'navionics':
                 $this->map_type = 7;
-                $this->aux_handler = new NavionicsHandling();
+                $this->aux_handler = new StamenHandling(); // Retired Navionics maps are handled with the Stamen map (OpenStreetMap fallback).
                 break;
             default:
                 $this->map_type = 0;
                 break;
         }
 
-        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0) {
+        // A map is created only with a valid nonce (bound to the map service) and never on a plain navigation.
+        $creation_nonce = '';
+        if (isset($_POST['_wpnonce']) && is_string($_POST['_wpnonce'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This reads the nonce itself, it is verified by wp_verify_nonce() a few lines below.
+            $creation_nonce = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
+        }
+        elseif (isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This reads the nonce itself, it is verified by wp_verify_nonce() a few lines below.
+            $creation_nonce = sanitize_text_field(wp_unslash($_GET['_wpnonce']));
+        }
+        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0 && isset($this->aux_handler) && wp_verify_nonce($creation_nonce, 'lws-new-map-' . $this->arg_service)) {
             $barycenter = self::get_all_stations_barycenter();
             $this->init_common['loc_latitude'] = $barycenter['latitude'];
             $this->init_common['loc_longitude'] = $barycenter['longitude'];
@@ -111,7 +126,7 @@ class Handling {
             if (count($this->map_information) > 0) {
                 $this->map_name = $this->map_information['name'];
                 $this->map_type = $this->map_information['type'];
-                $this->map_params = unserialize($this->map_information['params']);
+                $this->map_params = unserialize($this->map_information['params'], array('allowed_classes' => false));
                 if (isset($this->aux_handler)) {
                     $this->aux_handler->set_map($this->map_information, '400px');
                 }
@@ -131,24 +146,28 @@ class Handling {
      * @since 3.7.0
      */
     private function get_args() {
-        if (!($mid = filter_input(INPUT_GET, 'mid'))) {
-            if (!($mid = filter_input(INPUT_POST, 'mid'))) {
-                $mid = 0;
-            }
+        // phpcs:disable WordPress.Security.NonceVerification -- read-only: the map id only selects what is displayed, edit_map() verifies its own nonce before saving.
+        $mid = 0;
+        if (isset($_GET['mid'])) {
+            $mid = absint(wp_unslash($_GET['mid']));
+        }
+        if (!$mid && isset($_POST['mid'])) {
+            $mid = absint(wp_unslash($_POST['mid']));
         }
         $this->map_id = $mid;
+        // phpcs:enable WordPress.Security.NonceVerification
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
-            $this->arg_tab = filter_input(INPUT_GET, 'tab');
+            $tab = filter_input(INPUT_GET, 'tab');
         }
         if (!($action = filter_input(INPUT_POST, 'action'))) {
-            $this->arg_action = filter_input(INPUT_GET, 'action');
+            $action = filter_input(INPUT_GET, 'action');
         }
         if (!($service = filter_input(INPUT_POST, 'service'))) {
-            $this->arg_service = filter_input(INPUT_GET, 'service');
+            $service = filter_input(INPUT_GET, 'service');
         }
-        $this->arg_tab = strtolower($this->arg_tab);
-        $this->arg_action = strtolower($this->arg_action);
-        $this->arg_service = strtolower($this->arg_service);
+        $this->arg_tab = strtolower((string)$tab);
+        $this->arg_action = strtolower((string)$action);
+        $this->arg_service = strtolower((string)$service);
     }
 
     /**
@@ -157,12 +176,17 @@ class Handling {
      * @since 3.7.0
      */
     public function edit_map() {
+       if (!current_user_can(live_weather_station_manage_capability())) {
+           return;
+       }
        if ($this->arg_service != 'map' && $this->arg_tab == 'add-edit' && $this->arg_action == 'form') {
             if (array_key_exists('lws-map-' . $this->map_id . '-nonce', $_POST)) {
-                if (wp_verify_nonce($_POST['lws-map-' . $this->map_id . '-nonce'], 'lws-map-' . $this->map_id)) {
+                if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['lws-map-' . $this->map_id . '-nonce'])), 'lws-map-' . $this->map_id)) {
                     if (array_key_exists('save-map', $_POST)) {
-                        if (isset($this->aux_handler)) {
-                            $this->aux_handler->set_map($this->get_map_detail($this->map_id), 'auto');
+                        // The handler is chosen by the service of the URL: it must match the stored type of the map.
+                        $detail = $this->get_map_detail($this->map_id);
+                        if (isset($this->aux_handler) && is_array($detail) && count($detail) > 0 && isset($detail['type']) && (int)$detail['type'] === (int)$this->map_type) {
+                            $this->aux_handler->set_map($detail, 'auto');
                             $this->aux_handler->save_map();
                             $message = __('This map has been correctly updated.', 'live-weather-station');
                             add_settings_error('lws_nonce_success', 200, $message, 'updated');
@@ -202,17 +226,18 @@ class Handling {
     public function map_add_footer() {
         $result = '';
         $jsInitId = md5(random_bytes(18));
-        $result .= lws_print_begin_script($jsInitId);
+        $result .= live_weather_station_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
-        $result .= "            postboxes.add_postbox_toggles('" . $this->screen_id . "');";
+        $result .= "            postboxes.add_postbox_toggles(" . Guard::js($this->screen_id) . ");";
         $result .= "        $('#common-station-selector').change(function() {";
         $result .= "            $('#stations-selector').prop('disabled', $('#common-station-selector').val() == 'all');";
         $result .= "        });";
         $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result is only made of the fixed script fragments written above, wrapped by live_weather_station_print_begin_script()/end_script(); the screen id is passed through Guard::js().
         echo $result;
     }
 
@@ -254,9 +279,9 @@ class Handling {
                         }
                     }
                     $box_id = $box['id'];
-                    $result .= '<label for="' . $box_id . '-hide">';
-                    $result .= '<input class="hide-postbox-tog" name="' . $box_id . '-hide" type="checkbox" id="' . $box_id . '-hide" value="' . $box_id . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
-                    $result .= $box['title'] . '</label>';
+                    $result .= '<label for="' . esc_attr($box_id) . '-hide">';
+                    $result .= '<input class="hide-postbox-tog" name="' . esc_attr($box_id) . '-hide" type="checkbox" id="' . esc_attr($box_id) . '-hide" value="' . esc_attr($box_id) . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
+                    $result .= wp_kses_post($box['title']) . '</label>';
                 }
             }
         }
@@ -277,9 +302,9 @@ class Handling {
     protected function get_box($id, $title, $content, $footer='', $special_footer='') {
         $result = '';
         $result .= '<div class="meta-box-sortables" style="width:100%;">';
-        $result .= '<div class="postbox" id="' . $id . '" style="min-width:300px;">';
-        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . __('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
-        $result .= '<h3 class="hndle" style="cursor:default"><span>' . $title . '</span><span class="' . $id . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
+        $result .= '<div class="postbox" id="' . esc_attr($id) . '" style="min-width:300px;">';
+        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . esc_html__('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
+        $result .= '<h3 class="hndle" style="cursor:default"><span>' . wp_kses_post($title) . '</span><span class="' . esc_attr($id) . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
         $result .= '<div class="inside" style="text-align:center;">';
         $result .= $content;
         $result .= '</div>';
@@ -309,14 +334,14 @@ class Handling {
         wp_enqueue_script('lws-clipboard');
         $id = 'lws-map-sc-' . $this->map_id;
         $jsInitId = md5(random_bytes(18));
-        $result = lws_print_begin_script($jsInitId);
+        $result = live_weather_station_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
-        $result .= '  new Clipboard(".copy-sc-map-button");';
+        $result .= '  new ClipboardJS(".copy-sc-map-button");';
         $result .= '});';
-        $result .= lws_print_end_script($jsInitId);
+        $result .= live_weather_station_print_end_script($jsInitId);
         $title = __('Shortcode', 'live-weather-station');
-        $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '">[live-weather-station-map id="' . $this->map_id . '"]</textarea>';
-        $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary copy-sc-map-button">' . __('Copy', 'live-weather-station'). '</button>';
+        $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . esc_attr($id) . '">[live-weather-station-map id="' . esc_textarea($this->map_id) . '"]</textarea>';
+        $footer = '<button data-clipboard-target="#' . esc_attr($id) . '" class="button button-primary copy-sc-map-button">' . esc_html__('Copy', 'live-weather-station'). '</button>';
         return $result . $this->get_box('lws-shortcode-id', $title, $content, $footer);
     }
 
@@ -326,8 +351,17 @@ class Handling {
      * @since 3.7.0
      **/
     public function get() {
+        if (!is_array($this->map_information) || count($this->map_information) === 0 || !isset($this->aux_handler)) {
+            // Unknown map id, invalid creation nonce or unknown service: nothing to edit or to preview.
+            echo '<div class="wrap">';
+            echo '<h1>' . esc_html__('Map', 'live-weather-station') . '</h1>';
+            echo '<div class="notice notice-error"><p>' . esc_html__('This map does not exist.', 'live-weather-station') . '</p></div>';
+            echo '<p><a class="button button-primary" href="' . esc_url(live_weather_station_get_admin_page_url('lws-maps')) . '">' . esc_html__('Back to the maps list', 'live-weather-station') . '</a></p>';
+            echo '</div>';
+            return;
+        }
         echo '<div class="wrap">';
-        echo '<h1>' . $this->map_name . '</h1>';
+        echo '<h1>' . esc_html($this->map_name) . '</h1>';
         if ($this->arg_tab === 'add-edit') {
             settings_errors();
             echo '<form name="lws-map" id="lws-map" method="post">';
@@ -335,7 +369,7 @@ class Handling {
             wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
             wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
             wp_nonce_field('lws-map-' . $this->map_id, 'lws-map-' . $this->map_id . '-nonce', false);
-            echo '<input name="mid" type="hidden" value="' . $this->map_id . '" />';
+            echo '<input name="mid" type="hidden" value="' . esc_attr($this->map_id) . '" />';
             echo '    <div id="dashboard-widgets" class="metabox-holder">';
             echo '        <div id="postbox-container-1" class="postbox-container">';
             do_meta_boxes($this->screen_id, 'advanced', null);
@@ -358,11 +392,13 @@ class Handling {
         echo '<div class="main-boxes-container">';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-preview">';
-        echo $this->get_box('map-preview', __('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts. The title is escaped here.
+        echo $this->get_box('map-preview', esc_html__('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
         echo '</div>';
         echo '</div>';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-shortcode">';
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_shortcode_box() builds a script block plus a textarea and a button, using esc_attr(), esc_textarea() and esc_html__() for every dynamic or translated part; kses would strip the script.
         echo $this->get_shortcode_box();
         echo '</div>';
         echo '</div>';
@@ -378,7 +414,7 @@ class Handling {
      * @since 3.7.0
      */
     public function add_metaboxes() {
-        if (isset($this->aux_handler)) {
+        if (isset($this->aux_handler) && is_array($this->map_information) && count($this->map_information) > 0) {
             // Left column
             add_meta_box('lws-maps', __('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             add_meta_box('lws-misc', __('Misc', 'live-weather-station' ), array($this, 'detail_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
@@ -402,16 +438,16 @@ class Handling {
      */
     public function summary_widget($n, $args) {
         if (array_key_exists('map', $args['args']) && array_key_exists('params', $args['args'])) {
-            $map_name = $args['args']['map']['name'];
+            $map_name = esc_html($args['args']['map']['name']);
             $map_location = $this->output_coordinate($args['args']['params']['common']['loc_latitude'], 'loc_latitude', 5, true);
             $map_location .= ' ⁛ ' . $this->output_coordinate($args['args']['params']['common']['loc_longitude'], 'loc_longitude', 5, true);
             $map_location = str_replace(' ', '&nbsp;', $map_location);
-            $map_zoom = $args['args']['params']['common']['loc_zoom'];
+            $map_zoom = (int)$args['args']['params']['common']['loc_zoom'];
             $map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
             $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
             $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
         }
-        include(LWS_ADMIN_DIR.'partials/MapSummary.php');
+        include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/MapSummary.php');
     }
 
     /**
@@ -420,7 +456,7 @@ class Handling {
      * @since 3.7.0
      */
     public function action_widget($n, $args) {
-        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . __('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
+        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . esc_attr__('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
     }
 
     /**
@@ -429,6 +465,7 @@ class Handling {
      * @since 3.7.0
      */
     public function detail_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_detail();
     }
 
@@ -438,6 +475,7 @@ class Handling {
      * @since 3.7.0
      */
     public function station_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_stations();
     }
 
@@ -447,6 +485,7 @@ class Handling {
      * @since 3.7.0
      */
     public function feature_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_feature();
     }
 
@@ -456,6 +495,7 @@ class Handling {
      * @since 3.7.0
      */
     public function control_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_control();
     }
 }

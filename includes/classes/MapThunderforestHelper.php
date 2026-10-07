@@ -5,12 +5,13 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Thunderforest maps.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -54,14 +55,17 @@ class ThunderforestHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce 'lws-map-<id>' is verified with wp_verify_nonce() in MapHelper::edit_map() before MapBaseHelper::save_map() calls this method.
         if (array_key_exists('controls-zoom', $_POST)) {
-            $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
+            $result['controls']['zoom'] = (sanitize_text_field(wp_unslash($_POST['controls-zoom'])) == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('cycle', 'transport', 'landscape', 'outdoors', 'transport-dark', 'spinal-map', 'pioneer', 'mobile-atlas', 'neighbourhood'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+            $overlay = sanitize_text_field(wp_unslash($_POST['options-overlay']));
+            if (in_array($overlay, array('cycle', 'transport', 'landscape', 'outdoors', 'transport-dark', 'spinal-map', 'pioneer', 'mobile-atlas', 'neighbourhood'), true)) {
+                $result['options']['overlay'] = $overlay;
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 
@@ -109,17 +113,17 @@ class ThunderforestHandling extends BaseHandling {
      */
     protected function specific_script(){
         $result = '';
-        $result .= "var layer = new L.tileLayer('https://{s}.tile.thunderforest.com/" . $this->map_params['specific']['options']['overlay'] . "/{z}/{x}/{y}.png?apikey=" . get_option('live_weather_station_thunderforest_apikey') . "', {" . PHP_EOL;
+        $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.tile.thunderforest.com/' . rawurlencode($this->map_params['specific']['options']['overlay']) . '/{z}/{x}/{y}.png?apikey=' . rawurlencode(get_option('live_weather_station_thunderforest_apikey'))) . ", {" . PHP_EOL;
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.thunderforest.com\">Thunderforest</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . '' . PHP_EOL;
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('thunderforest-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;

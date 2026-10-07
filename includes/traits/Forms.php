@@ -3,12 +3,13 @@
 namespace WeatherStation\UI\Forms;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 
 /**
  * Forms & fields management.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -30,14 +31,14 @@ trait Handling {
     protected function field_select($list, $value, $id, $description=null, $unit=null) {
         $html = '';
         foreach ($list as $val) {
-            $html .= '<option value="' . $val[0] . '"' . ( $val[0] == $value ? ' selected="selected"' : '') . '>' . $val[1] . '</option>';
+            $html .= '<option value="' . esc_attr($val[0]) . '"' . ( $val[0] == $value ? ' selected="selected"' : '') . '>' . esc_html($val[1]) . '</option>';
         }
-        $html = '<select name="' . $id . '" id="' . $id . '">' . $html . '</select>';
+        $html = '<select name="' . esc_attr($id) . '" id="' . esc_attr($id) . '">' . $html . '</select>';
         if (isset($unit)) {
-            $html .= '&nbsp;<label for="' . $id . '">' . $unit . '</label>';
+            $html .= '&nbsp;<label for="' . esc_attr($id) . '">' . wp_kses_post($unit) . '</label>';
         }
         if (isset($description)) {
-            $html .= '<p class="description">' . $description . '</p>';
+            $html .= '<p class="description">' . wp_kses_post($description) . '</p>';
         }
         return $html;
     }
@@ -57,11 +58,11 @@ trait Handling {
             }
             $thtml = '';
             foreach ($arg['list'] as $val) {
-                $thtml .= '<option value="' . $val[0] . '"' . ( $val[0] == $arg['value'] ? ' selected="selected"' : '') . '>' . $val[1] . '</option>';
+                $thtml .= '<option value="' . esc_attr($val[0]) . '"' . ( $val[0] == $arg['value'] ? ' selected="selected"' : '') . '>' . esc_html($val[1]) . '</option>';
             }
-            $html .= '<select name="' . $arg['id'] . '" id="' . $arg['id'] . '">' . $thtml . '</select>';
+            $html .= '<select name="' . esc_attr($arg['id']) . '" id="' . esc_attr($arg['id']) . '">' . $thtml . '</select>';
             if ($arg['description'] != '') {
-                $html .= '<p class="description">' . $arg['description'] . '</p>';
+                $html .= '<p class="description">' . wp_kses_post($arg['description']) . '</p>';
             }
         }
         return $html;
@@ -80,14 +81,14 @@ trait Handling {
     protected function field_radio($list, $value, $id, $description=null) {
         $html = '';
         foreach ($list as $val) {
-            $html .= '<label><input id="' . $id . '" name="' . $id . '" type="radio" value="' . $val[0] . '"' . ( $val[0] == $value ? ' checked="checked"' : '') . '/>' . $val[1] . '</label>';
+            $html .= '<label><input id="' . esc_attr($id) . '" name="' . esc_attr($id) . '" type="radio" value="' . esc_attr($val[0]) . '"' . ( $val[0] == $value ? ' checked="checked"' : '') . '/>' . wp_kses_post($val[1]) . '</label>';
             if ($val !== end($list)) {
                 $html .= '<br/>';
             }
         }
         $html = '<fieldset>' . $html . '</fieldset>';
         if (isset($description)) {
-            $html .= '<p class="description">' . $description . '</p>';
+            $html .= '<p class="description">' . wp_kses_post($description) . '</p>';
         }
         return $html;
     }
@@ -103,9 +104,9 @@ trait Handling {
      * @since 3.0.0
      */
     protected function field_checkbox($text, $id, $checked=false, $description=null) {
-        $html = '<fieldset><label><input name="' . $id . '" type="checkbox" value="1"' . ($checked ? ' checked="checked"' : '') . '/>' . $text . '</label></fieldset>';
+        $html = '<fieldset><label><input name="' . esc_attr($id) . '" type="checkbox" value="1"' . ($checked ? ' checked="checked"' : '') . '/>' . wp_kses_post($text) . '</label></fieldset>';
         if (isset($description)) {
-            $html .= '<p class="description">' . $description . '</p>';
+            $html .= '<p class="description">' . wp_kses_post($description) . '</p>';
         }
         return $html;
     }
@@ -123,9 +124,9 @@ trait Handling {
             if ($html != '') {
                 $html .= '<br />';
             }
-            $html .= '<fieldset><label><input ' . (isset($arg['more'])?$arg['more'].' ':'') . 'name="' . $arg['id'] . '" type="checkbox" value="1"' . ($arg['checked'] ? ' checked="checked"' : '') . '/>' . $arg['text'] . '</label></fieldset>';
+            $html .= '<fieldset><label><input ' . (isset($arg['more'])?Guard::token($arg['more']).' ':'') . 'name="' . esc_attr($arg['id']) . '" type="checkbox" value="1"' . ($arg['checked'] ? ' checked="checked"' : '') . '/>' . wp_kses_post($arg['text']) . '</label></fieldset>';
             if ($arg['description'] != '') {
-                $html .= '<p class="description">' . $arg['description'] . '</p>';
+                $html .= '<p class="description">' . wp_kses_post($arg['description']) . '</p>';
             }
         }
         return $html;
@@ -145,12 +146,12 @@ trait Handling {
      * @since 3.0.0
      */
     protected function field_input_number($value, $id, $min=0, $max=100, $step=1, $description=null, $unit=null) {
-        $html = '<input name="' . $id . '" type="number" step="' . $step . '" min="' . $min . '" max="' . $max . '"id="' . $id . '" value="' . $value . '" />';
+        $html = '<input name="' . esc_attr($id) . '" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min) . '" max="' . esc_attr($max) . '"id="' . esc_attr($id) . '" value="' . esc_attr($value) . '" />';
         if (isset($unit)) {
-            $html .= '&nbsp;<label for="' . $id . '">' . $unit . '</label>';
+            $html .= '&nbsp;<label for="' . esc_attr($id) . '">' . wp_kses_post($unit) . '</label>';
         }
         if (isset($description)) {
-            $html .= '<p class="description">' . $description . '</p>';
+            $html .= '<p class="description">' . wp_kses_post($description) . '</p>';
         }
         return $html;
     }
@@ -170,20 +171,20 @@ trait Handling {
             $html = '';
             if (array_key_exists('label', $arg)) {
                 if (isset($arg['label'])) {
-                    $html .= '<label for="' . $arg['id'] . '">' . $arg['label'] . '</label>:&nbsp;';
+                    $html .= '<label for="' . esc_attr($arg['id']) . '">' . wp_kses_post($arg['label']) . '</label>:&nbsp;';
                 }
             }
-            $html .= '<input name="' . $arg['id'] . '" type="number" step="' . $arg['step'] . '" min="' . $arg['min'] . '" max="' . $arg['max'] . '"id="' . $arg['id'] . '" value="' . $arg['value'] . '" />';
+            $html .= '<input name="' . esc_attr($arg['id']) . '" type="number" step="' . esc_attr($arg['step']) . '" min="' . esc_attr($arg['min']) . '" max="' . esc_attr($arg['max']) . '"id="' . esc_attr($arg['id']) . '" value="' . esc_attr($arg['value']) . '" />';
             if (array_key_exists('unit', $arg)) {
                 if (isset($arg['unit'])) {
-                    $html .= '&nbsp;<label for="' . $arg['id'] . '">' . $arg['unit'] . '</label>';
+                    $html .= '&nbsp;<label for="' . esc_attr($arg['id']) . '">' . wp_kses_post($arg['unit']) . '</label>';
                 }
             }
             $res[] = $html;
         }
         $html = implode(' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ', $res);
         if (isset($description)) {
-            $html .= '<p class="description">' . $description . '</p>';
+            $html .= '<p class="description">' . wp_kses_post($description) . '</p>';
         }
         return $html;
     }
@@ -197,6 +198,7 @@ trait Handling {
      */
     protected function field_thresholds($type) {
         $html = '';
+        $type = Guard::token($type);
         $id = 'lws_thresholds_' . $type . '_';
         $min_boundary = $this->output_value(get_option('live_weather_station_' . $type . '_min_boundary'), $type);
         $max_boundary = $this->output_value(get_option('live_weather_station_' . $type . '_max_boundary'), $type);
@@ -205,7 +207,9 @@ trait Handling {
             $step = pow(10, 0 - $decimal);
         }
         else {
-            $step = pow(10, floor(log10($max_boundary - $min_boundary)) - 2);
+            // The step is relative to the range of the boundaries (0.01 if the range is empty or not valid).
+            $range = (float)$max_boundary - (float)$min_boundary;
+            $step = ($range > 0 ? pow(10, floor(log10($range)) - 2) : 0.01);
         }
         if ($step > 1) {
             $min_value = $step * round($this->output_value(get_option('live_weather_station_' . $type . '_min_value'), $type)/$step);
@@ -224,28 +228,28 @@ trait Handling {
 
         $unit = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['unit'];
         $unitlong = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['long'];
-        $typetxt = lws_lcfirst($this->get_measurement_type($type, false, ($type == 'rain' ? 'namodule3' : 'NAMain')));
-        $txt_value = sprintf(__('Limits for %s, values expressed in %s.', 'live-weather-station'), lws_lcfirst($typetxt), $unitlong);
-        $txt_alarm = sprintf(__('Alarms for %s, values expressed in %s.', 'live-weather-station'), lws_lcfirst($typetxt), $unitlong);
+        $typetxt = live_weather_station_lcfirst($this->get_measurement_type($type, false, ($type == 'rain' ? 'namodule3' : 'NAMain')));
+        $txt_value = sprintf(/* translators: 1: type of measurement, 2: unit */ __('Limits for %1$s, values expressed in %2$s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+        $txt_alarm = sprintf(/* translators: 1: type of measurement, 2: unit */ __('Alarms for %1$s, values expressed in %2$s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
         if ($type == 'humidex' || $type == 'heat_index' || $type == 'cbi' || $type == 'uv_index'  || $type == 'summer_simmer'  || $type == 'steadman') {
-            $txt_value = sprintf(__('Limits for %s, dimensionless index.', 'live-weather-station'), lws_lcfirst($typetxt), $unitlong);
-            $txt_alarm = sprintf(__('Alarms for %s, dimensionless index.', 'live-weather-station'), lws_lcfirst($typetxt), $unitlong);
+            $txt_value = sprintf(/* translators: %s: type of measurement */ __('Limits for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
+            $txt_alarm = sprintf(/* translators: %s: type of measurement */ __('Alarms for %s, dimensionless index.', 'live-weather-station'), live_weather_station_lcfirst($typetxt), $unitlong);
         }
         if ($type == 'strike_count' || $type == 'strike_instant') {
-            $txt_value = sprintf(__('Limits for %s.', 'live-weather-station'), lws_lcfirst($typetxt));
-            $txt_alarm = sprintf(__('Alarms for %s.', 'live-weather-station'), lws_lcfirst($typetxt));
+            $txt_value = sprintf(/* translators: %s: type of measurement */ __('Limits for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
+            $txt_alarm = sprintf(/* translators: %s: type of measurement */ __('Alarms for %s.', 'live-weather-station'), live_weather_station_lcfirst($typetxt));
         }
-        $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'min_value" value="' . $min_value . '" />';
-        $html .= '&nbsp;<label for="' . $id . 'min_value">' . $unit . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
-        $html .= __('high:', 'live-weather-station') . ' <input name="' . $id . 'max_value" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'max_value" value="' . $max_value . '" />';
-        $html .= '&nbsp;<label for="' . $id . 'max_value">' . $unit . '</label>';
-        $html .= '<p class="description">' . $txt_value . '</p>';
+        $html .= esc_html__('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_value" value="' . esc_attr($min_value) . '" />';
+        $html .= '&nbsp;<label for="' . $id . 'min_value">' . wp_kses_post($unit) . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
+        $html .= esc_html__('high:', 'live-weather-station') . ' <input name="' . $id . 'max_value" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_value" value="' . esc_attr($max_value) . '" />';
+        $html .= '&nbsp;<label for="' . $id . 'max_value">' . wp_kses_post($unit) . '</label>';
+        $html .= '<p class="description">' . wp_kses_post($txt_value) . '</p>';
         $html .= '<p class="description">&nbsp;</p>';
-        $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_alarm" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'min_alarm" value="' . $min_alarm . '" />';
-        $html .= '&nbsp;<label for="' . $id . 'min_alarm">' . $unit . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
-        $html .= __('high:', 'live-weather-station') . ' <input name="' . $id . 'max_alarm" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'max_alarm" value="' . $max_alarm . '" />';
-        $html .= '&nbsp;<label for="' . $id . 'max_alarm">' . $unit . '</label>';
-        $html .= '<p class="description">' . $txt_alarm . '</p>';
+        $html .= esc_html__('low:', 'live-weather-station') . ' <input name="' . $id . 'min_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'min_alarm" value="' . esc_attr($min_alarm) . '" />';
+        $html .= '&nbsp;<label for="' . $id . 'min_alarm">' . wp_kses_post($unit) . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
+        $html .= esc_html__('high:', 'live-weather-station') . ' <input name="' . $id . 'max_alarm" type="number" step="' . esc_attr($step) . '" min="' . esc_attr($min_boundary) . '" max="' . esc_attr($max_boundary) . '" id="' . $id . 'max_alarm" value="' . esc_attr($max_alarm) . '" />';
+        $html .= '&nbsp;<label for="' . $id . 'max_alarm">' . wp_kses_post($unit) . '</label>';
+        $html .= '<p class="description">' . wp_kses_post($txt_alarm) . '</p>';
         return $html;
     }
 }

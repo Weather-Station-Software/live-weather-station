@@ -6,7 +6,7 @@ namespace WeatherStation\Data\Type;
      * Types descriptions functionalities for Weather Station plugin.
      *
      * @package Includes\Traits
-     * @author Jason Rouet <https://www.jasonrouet.com/>.
+     * @author Jason Rouet <https://jasonrouet.com/>.
      * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
      * @since 1.0.0
      */
@@ -938,39 +938,39 @@ trait Description {
         if ($meaning) {
             if ($spec) {
                 if (strpos(strtolower($type),'_max') !== false) {
-                    $result = sprintf(__('%s (max)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (max)', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_min') !== false) {
-                    $result = sprintf(__('%s (min)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (min)', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_trend') !== false) {
-                    $result = sprintf(__('%s (trend)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (trend)', 'live-weather-station'), $result);
                 }
             }
             if ($type == 'max_temp') {
-                $result = sprintf(__('%s (max)', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s (max)', 'live-weather-station'), $result);
             }
             if ($type == 'min_temp') {
-                $result = sprintf(__('%s (min)', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s (min)', 'live-weather-station'), $result);
             }
         }
         else {
             if ($spec && !$abbr) {
                 if (strpos(strtolower($type),'_max') !== false) {
-                    $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, maximum value for today', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_min') !== false) {
-                    $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, minimum value for today', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_trend') !== false) {
-                    $result = sprintf(__('%s, trend', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, trend', 'live-weather-station'), $result);
                 }
             }
             if ($type == 'max_temp') {
-                $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s, maximum value for today', 'live-weather-station'), $result);
             }
             if ($type == 'min_temp') {
-                $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s, minimum value for today', 'live-weather-station'), $result);
             }
         }
         return $result;
@@ -1089,8 +1089,8 @@ trait Description {
         if ($plural) {
             $n = 2;
         }
-        if (strpos($operation, '|') == 0) {
-            switch (strtolower($operation)) {
+        if (strpos((string)$operation, '|') == 0) {
+            switch (strtolower((string)$operation)) {
                 case 'min' : $result = _n('minimum value','minimum values', $n, 'live-weather-station'); break;
                 case 'max' : $result = _n('maximum value', 'maximum values', $n, 'live-weather-station'); break;
                 case 'avg' : $result = _n('average value', 'average values', $n, 'live-weather-station'); break;

@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Cache;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Environment\Manager as Env;
@@ -10,7 +11,7 @@ use WeatherStation\System\Environment\Manager as Env;
  * The class to manage backend and frontend cache.
  *
  * @package Includes\System
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -73,45 +74,20 @@ class Cache {
      */
     private static function _flush($pref='lws_', $expired=true) {
     	$cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
-        if (LWS_FILE_CACHE) {
-            $expiry = 0;
-            if (strpos($pref, self::$widget) !== false) {
-                $expiry = self::$widget_expiry;
-            }
-            if (strpos($pref, self::$dgraph) !== false) {
-                $expiry = self::$dgraph_expiry;
-            }
-            if (strpos($pref, self::$ygraph) !== false) {
-                $expiry = self::$ygraph_expiry;
-            }
-            if (strpos($pref, self::$cgraph) !== false) {
-                $expiry = self::$cgraph_expiry;
-            }
-            if (strpos($pref, self::$frontend) !== false) {
-                $expiry = self::$frontend_expiry;
-            }
-            if (strpos($pref, self::$backend) !== false) {
-                $expiry = self::$backend_expiry;
-            }
-            if (strpos($pref, self::$i18n) !== false) {
-                $expiry = self::$i18n_expiry;
-            }
-            $result = lws_meta_flcache($pref, $expiry);
+        global $wpdb;
+        $result = 0;
+        if ($expired) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
+            $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%', time()));
         }
         else {
-            global $wpdb;
-            $result = 0;
-            if ($expired) {
-                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%' AND option_value < ".time().";");
-            }
-            else {
-                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%';");
-            }
-            foreach($delete as $transient) {
-                $key = str_replace('_transient_timeout_', '', $transient);
-                /*if (delete_transient($key)) {
-                    $result += 1;
-                }*/
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
+            $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%'));
+        }
+        foreach($delete as $transient) {
+            $key = str_replace('_transient_timeout_', '', $transient);
+            if (delete_transient($key)) {
+                $result += 1;
             }
         }
         Watchdog::stop_chrono($cron_id);
@@ -197,7 +173,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$backend.'_'.$cache_id, self::$backend_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$backend.'_'.$cache_id, self::$backend_expiry)) {
                 self::_stop_chrono(self::$backend.'_'.$cache_id);
             }
             return $r;
@@ -222,7 +198,7 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
+            $r = live_weather_station_meta_cache(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
             self::_stop_chrono(self::$backend.'_'.$cache_id, false);
             return $r;
         }
@@ -242,7 +218,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$backend.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$backend.'_'.$cache_id);
         }
     }
 
@@ -288,11 +264,47 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$frontend.'_'.$cache_id, self::$frontend_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$frontend.'_'.$cache_id, self::$frontend_expiry)) {
                 self::_stop_chrono(self::$frontend.'_'.$cache_id);
             }
             return $r;
         }
+    }
+
+    /**
+     * Check that a write to the public caches (frontend, graph, widget) stays bounded.
+     *
+     * The name must fit in a transient name (172 characters), and the number of entries written per hour is capped
+     * (same mechanism as the budget of the lttextual cache in DataOutput). The cap is far above what a site needs
+     * (entries are shared between visitors and live 2 minutes); when it is reached, the value is just not cached.
+     *
+     * @param string $name The full name of the cache item.
+     * @param string $bucket The name of the counter.
+     * @param integer $max Optional. The maximum number of writes per hour (default: the option, 6000; 0 removes the limit).
+     * @return boolean True if the item can be written.
+     * @since 3.9.0
+     */
+    private static function public_write_allowed($name, $bucket, $max=null) {
+        if (strlen($name) > 150) {
+            return false;
+        }
+        if ($max === null) {
+            $max = (int)apply_filters('live_weather_station_cache_budget', (int)get_option('live_weather_station_cache_budget', 6000), $bucket);
+        }
+        if ($max <= 0) {
+            return true;
+        }
+        $state = get_transient($bucket);
+        $now = time();
+        if (!is_array($state) || !isset($state['start'], $state['count']) || ($now - (int)$state['start']) >= HOUR_IN_SECONDS) {
+            $state = array('start' => $now, 'count' => 0);
+        }
+        if ((int)$state['count'] >= $max) {
+            return false;
+        }
+        $state['count'] = (int)$state['count'] + 1;
+        set_transient($bucket, $state, HOUR_IN_SECONDS);
+        return true;
     }
 
     /**
@@ -313,7 +325,10 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
+            if (!self::public_write_allowed(self::$frontend.'_'.$cache_id, 'lws_frontend_cache_budget')) {
+                return false;
+            }
+            $r = live_weather_station_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
             self::_stop_chrono(self::$frontend.'_'.$cache_id, false);
             return $r;
         }
@@ -333,7 +348,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$frontend.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$frontend.'_'.$cache_id);
         }
     }
 
@@ -383,7 +398,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache($id, $expiry)) {
+            if ($r = live_weather_station_meta_uncache($id, $expiry)) {
                 self::_stop_chrono($id);
             }
             return $r;
@@ -424,7 +439,10 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache($id, $value, $expiry);
+            if (!self::public_write_allowed($id, 'lws_graph_cache_budget')) {
+                return false;
+            }
+            $r = live_weather_station_meta_cache($id, $value, $expiry);
             self::_stop_chrono($id, false);
             return $r;
         }
@@ -453,7 +471,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache($id);
+            return live_weather_station_meta_rmcache($id);
         }
     }
 
@@ -487,7 +505,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = lws_meta_uncache(self::$widget.'_'.$cache_id, self::$widget_expiry)) {
+            if ($r = live_weather_station_meta_uncache(self::$widget.'_'.$cache_id, self::$widget_expiry)) {
                 self::_stop_chrono(self::$widget.'_'.$cache_id);
             }
             return $r;
@@ -512,7 +530,10 @@ class Cache {
             return false;
         }
         else {
-            $r = lws_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
+            if (!self::public_write_allowed(self::$widget.'_'.$cache_id, 'lws_widget_cache_budget')) {
+                return false;
+            }
+            $r = live_weather_station_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
             self::_stop_chrono(self::$widget.'_'.$cache_id, false);
             return $r;
         }
@@ -532,7 +553,7 @@ class Cache {
             return false;
         }
         else {
-            return lws_meta_rmcache(self::$widget.'_'.$cache_id);
+            return live_weather_station_meta_rmcache(self::$widget.'_'.$cache_id);
         }
     }
 
@@ -561,7 +582,7 @@ class Cache {
      */
     public static function get_i18n($cache_id) {
         self::_init_chrono(self::$i18n.'_'.$cache_id);
-        if ($r = lws_meta_uncache(self::$i18n.'_'.$cache_id, self::$i18n_expiry)) {
+        if ($r = live_weather_station_meta_uncache(self::$i18n.'_'.$cache_id, self::$i18n_expiry)) {
             self::_stop_chrono(self::$i18n.'_'.$cache_id);
         }
         return $r;
@@ -580,7 +601,7 @@ class Cache {
      *
      */
     public static function set_i18n($cache_id, $value) {
-        $r = lws_meta_cache(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
+        $r = live_weather_station_meta_cache(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
         self::_stop_chrono(self::$i18n.'_'.$cache_id, false);
         return $r;
     }
@@ -594,7 +615,7 @@ class Cache {
      *
      */
     public static function invalidate_i18n($cache_id) {
-        return lws_meta_rmcache(self::$i18n.'_'.$cache_id);
+        return live_weather_station_meta_rmcache(self::$i18n.'_'.$cache_id);
     }
 
     /**
@@ -748,19 +769,28 @@ class Cache {
      * @since 3.1.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H') . ':00:00';
+        $now = gmdate('Y-m-d H') . ':00:00';
         global $wpdb;
         $err_bup = $wpdb->show_errors(false);
         $fields = array ('hit_count', 'hit_time', 'miss_count', 'miss_time');
         $field_insert = array('timestamp');
-        $value_insert = array("'".$now."'");
+        $value_insert = array('%s');
         $value_update = array();
+        $args_insert = array($now);
+        $args_update = array();
         foreach (self::$stats as $key => $values) {
             foreach ($fields as $field) {
                 if (self::$stats[$key][$field] >0) {
-                    $field_insert[] = $key.'_'.$field;
-                    $value_insert[] = self::$stats[$key][$field];
-                    $value_update[] = $key.'_'.$field . '=' . $key.'_'.$field . '+' . self::$stats[$key][$field];
+                    $column = Guard::ident($key.'_'.$field);
+                    if ($column === null) {
+                        continue;
+                    }
+                    $type = (substr($field, -5) === '_time') ? '%f' : '%d';
+                    $field_insert[] = $column;
+                    $value_insert[] = $type;
+                    $args_insert[] = self::$stats[$key][$field];
+                    $value_update[] = $column . '=' . $column . '+' . $type;
+                    $args_update[] = self::$stats[$key][$field];
                 }
             }
         }
@@ -769,7 +799,8 @@ class Cache {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_performance_cache: column names are checked by Guard::ident(), values are bound through the %d/%f placeholders of $wpdb->prepare(); write path, cannot be cached
+            $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
         $wpdb->show_errors($err_bup);
     }
@@ -781,9 +812,10 @@ class Cache {
      */
     public static function rotate() {
         global $wpdb;
-        $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
+        $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_performance_cache: table name from self::live_weather_station_performance_cache_table(), the date is bound by $wpdb->prepare(); write path, cannot be cached
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 }

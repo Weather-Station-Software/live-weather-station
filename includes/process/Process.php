@@ -14,7 +14,7 @@ use WeatherStation\System\Data\Data;
  * The base class of process.
  *
  * @package Includes\Process
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */
@@ -71,7 +71,7 @@ abstract class Process {
      */
     protected function change_state($new_state='init') {
         $this->state = $new_state;
-        $this->timestamp = date('Y-m-d H:i:s');
+        $this->timestamp = gmdate('Y-m-d H:i:s');
         if ($new_state === $this->state_end) {
             $this->set_progress(100);
             Cache::reset();
@@ -95,9 +95,7 @@ abstract class Process {
      * @since 3.7.0
      */
     protected function generate_v4_uuid() {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+        return wp_generate_uuid4();
     }
 
     /**
@@ -175,10 +173,11 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function full_url() {
+        $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
-        return '<a href="' . $this->url() . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
+        return '<a href="' . esc_url($this->url()) . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
     }
 
     /**
@@ -187,6 +186,7 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function init_notification() {
+        /* translators: %s: name of the background process */
         $s = sprintf(__('A background process named <em>%s</em> has been launched.', 'live-weather-station'), $this->name());
         $s .= ' ' . __('This process may take from minutes to days.', 'live-weather-station');
         $s .= ' ' . __('It will not interfere with the operation of your server and you will be notified by email of the end of treatment.', 'live-weather-station');
@@ -199,6 +199,7 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function end_notification() {
+        /* translators: %s: name of the background process */
         $s = sprintf(__('The background process named <em>%s</em> has completed successfully.', 'live-weather-station'), $this->name());
         Notifier::info($this->name(), $this->url(), $s, true);
     }
@@ -209,6 +210,7 @@ abstract class Process {
      * @since 3.7.0
      */
     protected function error_notification() {
+        /* translators: %s: name of the background process */
         $s = sprintf(__('The background process named <em>%s</em> has NOT completed successfully.', 'live-weather-station'), $this->name());
         Notifier::error($this->name(), $this->url(), $s, true);
     }
@@ -254,8 +256,8 @@ abstract class Process {
     private function _get() {
         global $wpdb;
         $table = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table . " WHERE `uuid`='" . $this->meta_uuid() . "';";
-        return $wpdb->get_results($sql, ARRAY_A);
+        $sql = $wpdb->prepare("SELECT * FROM " . $table . " WHERE `uuid`=%s;", $this->meta_uuid()); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus the constant name returned by live_weather_station_background_process_table(), the uuid value is prepared
+        return $wpdb->get_results($sql, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- query prepared above, custom plugin table live_weather_station_background_process: the process state must be read live
     }
 
     /**
@@ -309,7 +311,8 @@ abstract class Process {
         $to = get_bloginfo('admin_email');
         $subject = __('End of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        /* translators: 1: name of this plugin, 2: name of the background process */
+        $message .= sprintf(__('%1$s informs you that the background process named "%2$s" has completed successfully.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }
@@ -344,7 +347,8 @@ abstract class Process {
         $to = get_bloginfo('admin_email');
         $subject = __('Error of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        /* translators: 1: name of this plugin, 2: name of the background process */
+        $message .= sprintf(__('%1$s informs you that the background process named "%2$s" has NOT completed successfully.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }
@@ -398,7 +402,7 @@ abstract class Process {
             $this->class = $row[0]['class'];
             $this->state = $row[0]['state'];
             $this->timestamp = $row[0]['timestamp'];
-            $this->params = unserialize($row[0]['params']);
+            $this->params = unserialize($row[0]['params'], ['allowed_classes' => false]);
             $this->exectime = $row[0]['exec_time'];
             $this->pass = $row[0]['pass'];
             $this->progress = $row[0]['progress'];

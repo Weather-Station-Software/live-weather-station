@@ -7,12 +7,12 @@
 - Contributors: jaz_on
 - Tags: weather, openweathermap, netatmo, weatherflow, weatherstation
 - Requires at least: 4.9
-- Tested up to: 6.3.1
+- Tested up to: 7.1
 - Requires PHP: 7.1
 - Stable tag: 3.8.14
 - License: GPLv2 or later
-- License URI: http://www.gnu.org/licenses/gpl-2.0.html
-- Donate link: https://ko-fi.com/jasonrouet
+- License URI: https://www.gnu.org/licenses/gpl-2.0.html
+- Donate link: https://buymeacoffee.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
@@ -21,6 +21,13 @@ Weather Station is a plugin that allows you to display, on your WordPress site, 
 Whether you own a weather station or not, you can enjoy the power of Weather Station!
 
 You can find many demos and documentation on the [official website](https://weather.station.software/).
+
+## Download without WordPress.org
+The plugin is not available on WordPress.org at the moment. Each release of this repository carries a ready to install zip, with the same files as the WordPress.org package:
+
+[Download the latest version](https://github.com/Weather-Station-Software/live-weather-station/releases/latest/download/live-weather-station.zip)
+
+Use the latest release only: the older versions do not have the security fixes of version 3.9.0. In your dashboard, go to Plugins, Add New Plugin, Upload Plugin, and choose this file. To receive the updates from this repository, install the [Git Updater](https://git-updater.com/) plugin: the headers of the plugin already tell it where to look.
 
 ## Simple and efficient
 The use of Weather Station requires no knowledge of programming and does not require writing code.
@@ -36,7 +43,6 @@ To see all available widgets, controls and viewers, please take a look at the [l
 ## Supported devices & services
 Weather Station supports:
 
-* the BloomSky stations (Sky1, Sky2 & Storm)
 * the Netatmo station (all modules)
 * the Netatmo *Healthy Home Coach*
 * the Pioupiou wind stations (V1 & V2)
@@ -49,8 +55,8 @@ Weather Station supports:
 
 If you want, Weather Station can send outdoor data to the following services:
 
-* [Met Office](http://wow.metoffice.gov.uk/) weather observations website
-* [PWS Weather](http://www.pwsweather.com/)
+* [Met Office](https://wow.metoffice.gov.uk/) weather observations website
+* [PWS Weather](https://www.pwsweather.com/)
 
 ## Instructions
 You can find a more in-depth description and instructions to configure [in the handbook](https://weather.station.software/handbook/).
@@ -81,8 +87,7 @@ Your sponsorship enables me to:
 - (Optionally) Hire external contributors for specialized tasks
 
 ### Ways to Support
-- **[GitHub Sponsors](https://github.com/sponsors/jaz_on)** - Recurring monthly support
-- **[Ko-fi](https://ko-fi.com/jasonrouet)** - One-time donations
+- **[Buy Me a Coffee](https://buymeacoffee.com/jasonrouet)** - One-time or recurring support
 
 ### You can also contribute to the project in other valuable ways:
 - [Reporting bugs](https://github.com/Weather-Station-Software/live-weather-station/issues)
@@ -117,9 +122,11 @@ Your sponsorship enables me to:
 
 You need **WordPress 4.9** and at least **PHP 7.1**. See full [requirements](https://weather.station.software/handbook/requirements/).
 
+PHP 8.2 and later are supported and tested with every release. Older versions of PHP may still work but are not supported: please ask your host to upgrade.
+
 ### Can this plugin work on multisite?
 
-Yes. You can install it via the network admin plugins page but the plugin **must not be "Network Activated"**, instead you must activate it on a site-by-site basis.
+Yes. You can install it via the network admin plugins page, then either network activate it or activate it on a site-by-site basis. When network activated, the plugin is set up on every site, including the ones created afterwards.
 
 ### Where can I get support?
 
@@ -134,7 +141,7 @@ You can find instructions [here](https://weather.station.software/handbook/).
 You can report bugs and suggest ideas [via the Github repository](https://github.com/Weather-Station-Software/live-weather-station/issues).
 
 ### Where do I report security bugs found in this plugin?
-Please report security bugs found in the source code of the Weather Station plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/live-weather-station).
+Please report security bugs found in the source code of the Weather Station plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/wordpress/plugin/live-weather-station).
 The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 Alternatively, you can also [contact me directly by email](mailto:weather@station.network).
 

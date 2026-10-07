@@ -4,6 +4,9 @@
  * Dummy class autoloader for generic file SDK
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once(__DIR__ . '/FileClient.php');
 require_once(__DIR__. '/Exception.php');
 require_once(__DIR__. '/Fetcher/FetcherInterface.php');

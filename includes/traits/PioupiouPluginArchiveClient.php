@@ -13,7 +13,7 @@ use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
  * Pioupiou archive client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
@@ -35,9 +35,8 @@ trait ArchiveClient {
      * @since 3.7.0
      */
     public function get_archive($service_id, $station_id, $station_name, $tz, $start_date, $end_date) {
-        $start = self::sub_days_to_mysql_date(date('Y-m-d',$start_date), 1);
-        $stop = self::add_days_to_mysql_date(date('Y-m-d',$end_date), 1);
-        $date = new \DateTime('now', new \DateTimeZone($tz));
+        $start = self::sub_days_to_mysql_date(gmdate('Y-m-d',$start_date), 1);
+        $stop = self::add_days_to_mysql_date(gmdate('Y-m-d',$end_date), 1);
         $offset = 0;//$date->getOffset();
         $result = array();
         try {
@@ -46,18 +45,22 @@ trait ArchiveClient {
                 $response = $piou->getRawPublicStationArchive($service_id, $start, $stop);
                 $raw_data = json_decode($response, true);
                 if (is_array($raw_data) && !array_key_exists('error_code', $raw_data)) {
-                    if (array_key_exists('data', $raw_data)) {
-                        //$start_date = date('Y-m-d',$start_date);
-                        //$end_date = date('Y-m-d',$end_date);
+                    if (array_key_exists('data', $raw_data) && is_array($raw_data['data'])) {
+                        //$start_date = gmdate('Y-m-d',$start_date);
+                        //$end_date = gmdate('Y-m-d',$end_date);
                         foreach ($raw_data['data'] as $line) {
-                            if (count($line) === 8) {
+                            if (is_array($line) && count($line) === 8) {
                                 try {
-                                    $ts = strtotime($line[0]) + $offset;
+                                    $ts = is_string($line[0]) ? strtotime($line[0]) : false;
+                                    if ($ts === false) {
+                                        continue;
+                                    }
+                                    $ts += $offset;
                                 }
-                                catch(\Exception $ex) {
+                                catch(\Throwable $ex) {
                                     continue;
                                 }
-                                //if (self::mysql_is_ordered($start_date, date('Y-m-d',$ts)) && self::mysql_is_ordered(date('Y-m-d',$ts), $end_date)) {
+                                //if (self::mysql_is_ordered($start_date, gmdate('Y-m-d',$ts)) && self::mysql_is_ordered(gmdate('Y-m-d',$ts), $end_date)) {
                                 if (($start_date <= $ts) && ($ts <= $end_date)){
                                     if (is_numeric($line[4])) {
                                         if (!array_key_exists('windstrength', $result)) {
@@ -95,14 +98,14 @@ trait ArchiveClient {
                     Logger::notice($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 0, 'Data retrieved.');
                 }
                 else {
-                    Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 1, 'Pioupiou servers has returned unrecognized response: ' . $response);
+                    Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 1, 'Pioupiou servers has returned unrecognized response: ' . live_weather_station_clean_text((string)$response, 200));
                 }
             }
             else {
                 Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
             }
         }
-        catch(\Exception $ex)
+        catch(\Throwable $ex)
         {
             if (strpos($ex->getMessage(), 'JSON /') > -1) {
                 Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, $ex->getCode(), 'Pioupiou servers has returned empty response. Retry will be done shortly.');

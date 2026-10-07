@@ -19,7 +19,7 @@ use WeatherStation\System\Schedules\Watchdog;
  * Clientraw station client for Weather Station plugin.
  *
  * @package Includes\Traits
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
@@ -47,9 +47,9 @@ trait StationClient {
             try {
                 $timezone = $station['loc_timezone'];
                 $locat_ts = gmmktime((int)$weather[29], (int)$weather[30], (int)$weather[31], (int)$weather[36], (int)$weather[35], (int)$weather[141]);
-                $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+                $timestamp = gmdate('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
             }
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 throw new \Exception('Bad file format.');
             }
         }
@@ -63,9 +63,9 @@ trait StationClient {
             $updates['module_id'] = $station['station_id'];
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -106,18 +106,18 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'firmware';
             if (strpos($weather[count($weather)-1], '!!') !== false) {
-                $updates['measure_value'] = str_replace('!!', '', $weather[count($weather)-1]);
+                $updates['measure_value'] = live_weather_station_clean_text(str_replace('!!', '', $weather[count($weather)-1]), 60);
             }
             else {
                 $updates['measure_value'] = 0;
             }
             $this->update_data_table($updates, $timezone);
-            $station['last_refresh'] = date('Y-m-d H:i:s');
+            $station['last_refresh'] = gmdate('Y-m-d H:i:s');
             $station['last_seen'] = $timestamp;
             $this->update_table(self::live_weather_station_stations_table(), $station);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -129,9 +129,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -161,7 +161,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -173,9 +173,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -201,7 +201,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -213,9 +213,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -239,7 +239,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -251,9 +251,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 4);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -282,7 +282,7 @@ trait StationClient {
             }
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -294,9 +294,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -322,7 +322,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -334,9 +334,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -371,7 +371,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -383,9 +383,9 @@ trait StationClient {
             $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 7);
             $updates['module_type'] = $type;
             $updates['module_name'] = $this->get_fake_module_name($type);
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
-            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
@@ -429,7 +429,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -457,9 +457,9 @@ trait StationClient {
                     $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 9, $i);
                     $updates['module_type'] = $type;
                     $updates['module_name'] = $this->get_fake_module_name($type) . ' #' . $i;
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
-                    $updates['measure_value'] = date('Y-m-d H:i:s');
+                    $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
@@ -488,7 +488,7 @@ trait StationClient {
                     }
                     Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
-                catch (\Exception $e) {
+                catch (\Throwable $e) {
                     Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
                 }
             }
@@ -506,7 +506,7 @@ trait StationClient {
         $weather = false;
         try {
             $weather = explode(' ', $raw_data);
-            Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+            Logger::debug($this->facility, $this->service, null, null, null, null, null, sanitize_text_field(Logger::dump($weather)));
             if (count($weather) < 167) {
                 Logger::warning($this->facility, $this->service, null, null, null, null, null, '');
                 return false;
@@ -515,9 +515,16 @@ trait StationClient {
                 if ($weather[0] != '12345') {
                     return false;
                 }
+                // Only numeric values are kept (the last field carries the firmware text), a third-party feed must not store free text as a measurement.
+                $last = count($weather) - 1;
+                for ($i = 1; $i < $last; $i++) {
+                    if (!is_numeric($weather[$i])) {
+                        $weather[$i] = null;
+                    }
+                }
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             return false;
         }
@@ -536,7 +543,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = live_weather_station_clean_text($raw_data, 200);
         }
         elseif (strpos($raw_data, '2345 ') != 1) {
             $result = __('The source you specified is not in the correct format or is corrupted.', 'live-weather-station');
@@ -566,9 +573,9 @@ trait StationClient {
             $result = $collector->getRawStationData($resource);
             Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
-            $msg = $ex->getMessage();
+            $msg = substr(sanitize_text_field($ex->getMessage()), 0, 200);
             if ($msg == '') {
                 $msg = 'Unknown error';
             }
@@ -611,8 +618,8 @@ trait StationClient {
                 $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
                 $this->format_and_store($raw_data, $station);
             }
-            catch (\Exception $ex) {
-                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Clientraw file data: ' . $ex->getMessage());
+            catch (\Throwable $ex) {
+                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Clientraw file data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 200));
                 continue;
             }
         }
@@ -632,14 +639,14 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_RAW_SID);
+            $weather->compute(LIVE_WEATHER_STATION_RAW_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_RAW_SID);
+            $ephemeris->compute(LIVE_WEATHER_STATION_RAW_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 200));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

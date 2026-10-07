@@ -1,3 +1,106 @@
+#3.9.0 / xx September 2026
+* Bug fix: WeatherLink (Davis) station forms accept the full length of the API token and of the account password (they were cut at 20 characters).
+* Bug fix: WOW uploads now target WOW-BE (wow.meteo.be), which replaced the Met Office WOW closed on 1 December 2025; X
+* Bug fix: WeatherFlow stations are read with the personal access token of their owner (WeatherFlow no longer lets you read the stations of other people); stations saved without a token show a clear message.
+* Improvement: the personal access token of a WeatherFlow station is kept secret and is excluded from the exports.
+* Bug fix: BloomSky, stopped in 2022, is no longer offered when adding a station; existing BloomSky stations are marked as no longer available, are no longer requested and keep their stored data.
+* Improvement: PHP 8.2 to 8.5 are supported and checked by the continuous integration (syntax check and compatibility scan); the minimum required version is unchanged.
+* Improvement: sunrise and sunset are computed without the PHP functions deprecated since PHP 8.1, with exactly the same times.
+* Bug fix: an unknown station id in an admin URL now shows a clear message with a link back to the stations list instead of hundreds of PHP warnings.
+* Bug fix: PHP 8.2 to 8.5 deprecations are fixed (implicit nullable parameters, float to int conversions, `(integer)` cast) and translations are no longer loaded before WordPress is ready.
+* Bug fix: shortcodes and screens no longer raise PHP warnings on missing values (steel meter, gauge, calendar heat map, Netatmo form).
+* Security: SQL queries are now prepared and identifiers validated; the standalone generator validates its input.
+* Security: outputs are escaped and shortcode/widget attributes validated (JS literals, enums, tokens, colors, sizes).
+* Security: import/export, secrets, network requests and authorization checks are hardened.
+* Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
+* Bug fix: the stations list no longer fails on a station without altitude yet (for instance right after adding a WeatherFlow station).
+* Bug fix: unknown map and palette ids (or an invalid security token) show a clear message with a link back instead of PHP notices and a fatal error.
+* Bug fix: the configuration export no longer raises deprecation notices on PHP 8.3+ (static calls on traits).
+* Bug fix: the plugin header now carries the real version number.
+* Bug fix: wind direction is no longer a fatal error on PHP 8 (the value was not passed to is_numeric()).
+* Bug fix: the automatic update filter no longer raises a notice when WordPress passes an item without slug.
+* Improvement: on a multisite, a network activation now creates the tables and options of every site, and of each site created afterwards. A network deactivation stops the scheduler of every site, uninstalling the plugin cleans every site and deleting a site removes its tables.
+* Security: shortcode periods and graph queries are validated and bounded, and the event logger caps its output per request.
+* Improvement: the history retention setting accepts 0 for unlimited retention.
+* Improvement: the events log keeps every error and marks visibly when messages were skipped during a request.
+* Improvement: the Wunderground unshare action now asks for a confirmation.
+* Bug fix: lightning strike distance thresholds are no longer corrupted when saved in the Thresholds tab.
+* Bug fix: the Events page works with MySQL 8.4 (the `system` column is now quoted in SQL queries).
+* Bug fix: climat textual shortcodes and widgets now output their result when called via AJAX.
+* Bug fix: .ndjson files can be uploaded again in Files, whatever mime type the server detects.
+* Bug fix: deleting an unknown map shows a clear message instead of PHP warnings.
+* Bug fix: PHP 8.1 to 8.4 deprecation notices and warnings are fixed (static trait access, null arguments, explicit casts).
+* Bug fix: the rain import, the LCD refresh action and the delete-station message work as expected, and JavaScript guards prevent errors on maps and radar charts.
+* Improvement: removed the unused code of three disabled features (OpenWeatherMap station client, Weather Underground collection client, Pollution widget); no user-visible change, existing stations of these types are kept and flagged as no longer available.
+* Bug fix: the standalone pages (generator, clientraw, realtime) no longer raise a deprecation notice on recent WordPress and PHP versions.
+* Bug fix: Stamen maps load again: the tiles are now served by Stadia Maps, which needs an API key (new "Stadia Maps (Stamen)" box in the Services settings); the Toner Hybrid and Terrain (classical) styles, which have no raster version anymore, are removed.
+* Improvement: Stamen maps without a Stadia Maps API key, or saved with a removed style, are displayed with OpenStreetMap and show a short notice to administrators.
+* Removed: the Navionics map type and its API key setting, as the Navionics Web API v2 is retired; existing Navionics maps are displayed with OpenStreetMap and the stored key is deleted on update.
+* Bug fix: Windy maps use the current loader URL of the Windy Map Forecast API.
+* Improvement: the Windy settings and help now state that a Windy Professional key is required in production (the free Testing version is not allowed).
+* Improvement: global functions, constants and hooks now carry the unique prefix `live_weather_station_` (wordpress.org naming rules). The filter `lws_manage_options_capability` is renamed `live_weather_station_manage_options_capability`; the old name is still honoured.
+* Security: output escaping, input sanitization, prepared queries and translator comments are reviewed on the whole code base with the wordpress.org Plugin Check tool, and the findings are fixed.
+* Improvement: the public CDN option (jsDelivr) is removed: scripts and styles are always served by the plugin itself.
+* Improvement: the plugin no longer forces its own automatic update. Sites that relied on it (the default) are moved to the automatic update setting of WordPress, visible and changeable on the Plugins screen. On a multisite this setting is the one of the whole network, and the network administrator can change it at any time.
+* Improvement: the PHP configuration screen (phpinfo) and the hoster lookup through ip-api.com (plain HTTP only) are removed.
+* Improvement: the event log of a refused or failed public feed request keeps an anonymized IP address and no browser identification.
+* Improvement: the copy buttons use the clipboard.js shipped with WordPress instead of an own copy.
+* Bug fix: a measurement trend reported a decrease when the value had risen by more than 2 percent.
+* Improvement: translations are loaded by WordPress itself, and the partial translation files downloaded by the plugin are stored in the uploads folder instead of the plugin folder (they survive plugin updates).
+* Bug fix: the automatic download of the partial translation works again when run by WP-Cron.
+* Bug fix: the public feed addresses /get-weather/... work on every web server (they were rewritten to a PHP file, which only Apache handled, and even there the parameters were lost). The standalone generator.php no longer searches for wp-load.php: the feeds are served by WordPress itself, and the plugin shows the address that matches the permalink setting of the site (a query string address when the permalinks are plain).
+* Bug fix: the services libraries (Netatmo, OpenWeatherMap, WeatherFlow, Pioupiou, BloomSky, Ambient, WeatherLink, file feeds) and the climate chart still used the old LWS_ and lws_ names removed by the 3.9.0 rename and stopped with a fatal error; a CI check now forbids any leftover old name.
+* Security: the public gauge and meter AJAX answers are sent as JSON (not HTML) and the gauge identifier is restricted to safe characters; the credentials of the sharing services are read as text only; the uninstall cleanup of screen settings only touches the screens of the plugin.
+* Security: an anonymous visitor can no longer fill the options table by varying the attributes of a public shortcode or chart request: the public cache only keeps known combinations and is capped per hour.
+* Security: the export, import and module forms of a station each have their own security token, and the server information screens, the row actions of the lists and the credential export check the administrator capability before showing or doing anything.
+* Security: the event log, the screen names of the modules and the station names are escaped wherever they are displayed, the log messages are sanitized when written, and the uploaded and exported files are only readable by the web server user.
+* Security: the values received from the service APIs (OpenWeatherMap, Netatmo, WeatherLink, WeatherFlow, Pioupiou, clientraw files) are checked before they are stored: text where a number is expected is discarded, coordinates and names are cleaned, and the URLs sent to the services are encoded.
+* Security: the shortcode box of the admin screens no longer interprets its content as HTML, the YoWindow feed is escaped as XML, and the images and videos of the snapshot and timelapse shortcodes only accept http and https addresses.
+* Security: the station connection tests refuse link-local addresses, and the station and sharing credentials are read as text only.
+* Bug fix: many PHP 8 fatal errors on unexpected data are fixed (non-numeric values from the vendors, missing keys, empty series, corrupted stored options): the page or the cron task now goes on instead of stopping.
+* Bug fix: the history import no longer skips one line out of 1000 nor the last second of each day, the thunderstorm direction reads the right measure, a failed wind rose returns an empty chart, the WeatherLink, WeatherFlow and Pioupiou imports go on after an invalid entry, and the Weather Underground alert is sent once.
+* Bug fix: the list limits of the admin tables are bounded, a rain value is no longer carried over from one station to the next on the maps, and saving a map checks that its type matches the screen.
+* Improvement: the JavaScript of the controls and charts is hardened (tooltips escaped, no implicit global variables, protected object merging, bounded timers) and its minified files are rebuilt from the sources.
+* Improvement: the checks run by GitHub on every change now also load every class of the plugin and reject the old global names, so a name collision or a leftover old name can no longer reach a release.
+* Improvement: the import of a configuration file is refused when a number (position, altitude, station type, sharing switches) is replaced by text, instead of storing it and breaking the calculations of the station later.
+* Improvement: the debug entries of the events log (answers of the services) hide the position, the altitude, the address and the MAC addresses of the stations by default, so that a log can be shared in a support request; a new setting in the system options keeps the raw values when you need them. The text of these entries is no longer built when the debug level is not recorded, which saves work on every data collection.
+* Security: the uploads to Weather Underground, PWS Weather, WOW-BE and OpenWeatherMap no longer follow redirections, so the credentials and the data of a station can never be forwarded to another server.
+* Improvement: the maximum number of new entries written per hour in the caches of your pages (6000 for widgets, controls and charts, 300 for the textual climate shortcode) can be changed, or removed with 0, in the system settings.
+* Security: the data answers of the graphs are sent as plain text, so a browser never displays them as a web page.
+* Bug fix: clearing the cache (cache reset, update of the plugin, deactivation, station removal) really deletes the cached data again, which was no longer the case since the removal of the cache warm-up.
+* Bug fix: a failed login to Netatmo (Netatmo unreachable, request quota reached, login method refused) no longer deletes the tokens of a working connection and no longer reports wrong credentials; the tokens are only deleted when Netatmo refuses the identifiers.
+* New: Netatmo and Netatmo Healthy Home Coach are connected with the Netatmo application of your own site: a button sends you to Netatmo and brings you back, or you paste a refresh token. Netatmo no longer accepts a login with a password, so new connections and reconnections could not succeed before.
+* Improvement: the keys built in the plugin are only used by the Netatmo connections made before this version, which keep working.
+* Bug fix: the lock of the background processes is renewed after each process and lasts 10 minutes, so a long import can no longer be run twice in parallel; the lock of the version migration is taken over atomically when it expires.
+* Security: a logged-in user without the right to download files can no longer fill the log with refused download attempts (one entry per minute at most).
+* Security: the import of a configuration file is limited to 10 MB (a real export is about 20 KB) and a line of a data file larger than 1 MB is skipped (a real line is about 150 bytes), so a crafted file cannot exhaust the memory of the server; both limits can be changed with the live_weather_station_import_max_configuration_size and live_weather_station_import_max_line_length filters.
+* Security: the folder of the exports is also protected on IIS servers (web.config), and the Site Health screen of WordPress checks that its files cannot be read from the web, with the rule to add on nginx servers, which ignore the protection files.
+* Bug fix: an OpenWeatherMap map saved with an unknown background (from an older version) is displayed without background instead of not being displayed at all.
+* Bug fix: the "See what's new" link shown after an update no longer sends to the article of a previous version: when the article of the installed version is not referenced, it goes to the release notes of this version.
+* Improvement: the translation template (languages/live-weather-station.pot) is regenerated from the code of this version (about 2,590 strings, the previous one dated from 2018), for the translators.
+* Improvement: the French translation is completed for the strings added since the last language pack of WordPress.org (176 strings), and shipped with the plugin: it fills the strings which the language pack of WordPress.org does not have yet, without replacing its translations.
+* Bug fix: the suggested privacy policy text no longer mentions the query to ip-api.com, which was removed.
+* Bug fix: when several stations share their data with Weather Underground, PWS Weather, WOW-BE or OpenWeatherMap, each of them is now sent at every run (only the first one was).
+* Security: the number of color steps of a yearly calendar heat map is limited to 20, so a crafted shortcode can no longer exhaust the memory of the server.
+* Improvement: the readme now lists every external service the plugin can contact, what is sent to it and when, with its terms and privacy policy (section "External services").
+* Bug fix: a language which has no translation set on translate.wordpress.org is remembered for 12 hours instead of being asked again at every request.
+* Improvement: the data import screen explains that a file must first be added in the Files screen when none is listed.
+* New: each station has a "Public" setting (Visibility box). A station which is not public shows nothing to the visitors of the site (shortcodes, widgets, charts, controls, maps and feeds); the administrators always see everything. The stations which exist when you update stay public; a station added afterwards is private until the box is ticked.
+* Security: the public feeds (/get-weather/...) answer a station which is not public, a feed which is not enabled and an unknown station in exactly the same way (HTTP 400), so the status no longer tells which stations exist.
+* New: a "Weather Station" section in the Site Health screen of WordPress (Tools, Site Health, Info): version, stations by type, last refreshes, scheduled jobs, level counts of the events log and main settings, without any name, identifier, address or credential. The button "Copy site info to clipboard" of WordPress puts it in a report to paste in a support request; nothing is sent.
+* Bug fix: deactivating then reactivating the plugin no longer resets the settings (history retention, units, advanced mode) nor disconnects the Netatmo account: only the missing options are created.
+* Bug fix: a wind speed or a sunrise or sunset time which is not a number no longer raises a warning (PHP 7) or a fatal error (PHP 8): the value is left empty.
+* Bug fix: about thirty links of the help and of the screens which led to moved or deleted pages are updated (PWS Weather station page, Weather Underground, Windy, Ambient, Mapbox, MapTiler, WOW-BE, CARTO attribution, PHP and WordPress notices), and two links to sites of translators which no longer exist are removed.
+* Bug fix: the flags of the languages shortcode (icon styles) are shipped with the plugin (flag-icon-css, MIT licence) instead of being loaded from weather.station.software, where they no longer existed: they display again and no request leaves your site.
+* New: the limit of requests per minute and per visitor on the public endpoints is now a setting of the system options, for the live controls and charts (120 by default, as before) and for the /get-weather/ feeds (no limit by default); 0 means no limit, and a visitor over the limit receives a 429 answer with a Retry-After header.
+* Bug fix: a gauge, meter or LCD control set on a measure which has no min and max boundaries (for example the altitude of a station) no longer ends with a fatal error on PHP 8.
+* Bug fix: Ambient stations: the extra temperature and humidity sensors (pool, attic...) no longer replace the outdoor temperature; each one is now stored in its own module (Extra #1 to #9).
+* Bug fix: realtime.txt stations: the time of the lowest and of the highest temperature of the day is now the time written in the file, not the time of the last measure.
+* New: the Site Health screen of WordPress now warns when a station has not been refreshed for a while (60 minutes by default, 0 turns it off); the delay is a setting ("Late data warning") and the warning says when WP-Cron is disabled by the configuration.
+* Bug fix: the Site Health report showed 0 as the retention of the history whatever the setting.
+* Improvement: each site can enter the application key of its own Ambient application next to its API key (kept secret, never exported); the connection screens of Netatmo and Ambient now say that the keys shipped with the plugin are a shared demo, limited and without promise, and invite to create your own.
+* Bug fix: the BloomSky connection box (a service stopped in 2022) is no longer shown in the services settings, except to disconnect an account which is still stored; BloomSky is no longer listed as a supported device in the readme.
+
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
 * Rewrite get_wind_angle

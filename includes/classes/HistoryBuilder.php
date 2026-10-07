@@ -13,12 +13,15 @@ use WeatherStation\Data\DateTime\Conversion;
  * This class is responsible of history building.
  *
  * @package Includes\Classes
- * @author Jason Rouet <https://www.jasonrouet.com/>.
+ * @author Jason Rouet <https://jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.2
  */
 
-function lws_array_average($arr, $type) {
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+function live_weather_station_array_average($arr, $type) {
     $result = 0;
     if (count($arr) > 0) {
         if (in_array($type, array('winddirection', 'gustdirection','windangle', 'gustangle'))) {
@@ -43,7 +46,7 @@ function lws_array_average($arr, $type) {
     return $result;
 }
 
-function lws_array_median($arr) {
+function live_weather_station_array_median($arr) {
     if($arr && is_array($arr)){
         $count = count($arr);
         sort($arr);
@@ -53,7 +56,7 @@ function lws_array_median($arr) {
     return 0;
 }
 
-function lws_array_sd($arr, $type) {
+function live_weather_station_array_sd($arr, $type) {
     $n = count($arr);
     if ($n < 2) {
         return 0;
@@ -78,10 +81,10 @@ function lws_array_sd($arr, $type) {
         }
     }
     else {
-        $mean = lws_array_average($arr, $type);
+        $mean = live_weather_station_array_average($arr, $type);
         $carry = 0.0;
         foreach ($arr as $val) {
-            $d = ((double)$val) - $mean;
+            $d = ((float)$val) - $mean;
             $carry += $d * $d;
         }
         $result =  sqrt($carry / $n);
@@ -241,6 +244,16 @@ class Builder
      * @since 3.7.0
      */
     static public function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
+        // Imported data is untrusted: values must fit the columns of the table and have the expected shape.
+        if (!is_string($device_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/D', $device_id) ||
+            !is_string($module_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/D', $module_id) ||
+            !is_string($module_type) || !preg_match('/^[A-Za-z0-9_<>-]{1,12}$/D', $module_type) ||
+            !is_string($measure_type) || !preg_match('/^[a-z0-9_]{1,40}$/D', $measure_type) ||
+            !is_string($measure_set) || !preg_match('/^[a-z]{1,5}$/D', $measure_set) ||
+            !is_numeric($measure_value) || !is_finite((float)$measure_value) ||
+            !is_string($timestamp) || !preg_match('/^\d{4}-\d{2}-\d{2}$/D', $timestamp)) {
+            return;
+        }
         $val = array();
         $val['timestamp'] = $timestamp;
         $val['device_id'] = $device_id;
@@ -271,23 +284,40 @@ class Builder
         $full_mode = (bool)get_option('live_weather_station_full_history');
         $no_value = -123456789;
         $result = array(0, 0);
+        if (!is_array($data) || !isset($data['meta']) || !is_array($data['meta']) ||
+            !isset($data['meta']['device_id']) || !isset($data['meta']['module_id']) || !isset($data['meta']['module_type'])) {
+            return $result;
+        }
         $date_control = $date_start;
+        // Bound the loop: one iteration per day, 20 years at most.
+        $date_end = min($date_end, $date_start + 7305 * 86400);
+        // Index the values by type and by day once, ignoring the ones which are not finite numbers.
+        $buckets = array();
+        if (array_key_exists('values', $data) && is_array($data['values'])) {
+            foreach ($data['values'] as $type => $value) {
+                if (!is_array($value)) {
+                    continue;
+                }
+                foreach ($value as $ts => $m) {
+                    if (!is_numeric($ts) || !is_numeric($m) || !is_finite((float)$m) || $ts < $date_start) {
+                        continue;
+                    }
+                    $buckets[$type][(int)floor(($ts - $date_start) / 86400)][] = $m;
+                }
+            }
+        }
         while ($date_control < $date_end) {
             $start = $date_control;
             $end = $date_control + 86399;
-            $index = date('Y-m-d', $start + (86400/2));
+            $index = gmdate('Y-m-d', $start + (86400/2));
             $count = false;
-            if (array_key_exists('values', $data) && is_array($data['values'])) {
-                foreach ($data['values'] as $type => $value) {
-                    $d = array();
-                    foreach ($value as $ts => $m) {
-                        if ($ts >= $start && $ts < $end) {
-                            $d[] = $m;
-                        }
-                    }
+            if (count($buckets) > 0) {
+                $day_index = (int)(($date_control - $date_start) / 86400);
+                foreach ($buckets as $type => $days) {
+                    $d = isset($days[$day_index]) ? $days[$day_index] : array();
                     if (count($d) > 0) {
                         if ($type === 'sum_rain') {
-                            $sets[] = array('SUM' => 'agg');
+                            $sets = array('SUM' => 'agg');
                             $type = 'rain_day_aggregated';
                         } else {
                             $sets = $this->get_measurements_operations_type($type, '', $full_mode);
@@ -310,13 +340,13 @@ class Builder
                                     $v = min($d);
                                     break;
                                 case 'avg':
-                                    $v = lws_array_average($d, $type);
+                                    $v = live_weather_station_array_average($d, $type);
                                     break;
                                 case 'med':
-                                    $v = lws_array_median($d);
+                                    $v = live_weather_station_array_median($d);
                                     break;
                                 case 'dev':
-                                    $v = lws_array_sd($d, $type);
+                                    $v = live_weather_station_array_sd($d, $type);
                                     break;
                                 default:
                                     $v = $no_value;
@@ -476,13 +506,13 @@ class Builder
      * @since 3.3.2
      */
     private function count_daily_values($device_id, $tz) {
-        $min = date('Y-m-d H:i:s', self::get_local_today_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_today_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_today_end($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
             $query_t = (array)$query_a[0];
             $result = $query_t['COUNT(*)'];
@@ -502,13 +532,13 @@ class Builder
      * @since 3.3.2
      */
     private function get_available_measurements($device_id, $tz) {
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT DISTINCT `module_id`, `module_type`, `measure_type` FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+        $sql = $wpdb->prepare("SELECT DISTINCT `module_id`, `module_type`, `measure_type` FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
             $result = array();
             foreach ($query_a as $val) {
@@ -539,8 +569,8 @@ class Builder
         }
         $sub_result = false;
         $date = self::get_local_date($tz);
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         $selects = array();
         foreach ($operations as $operation=>$name) {
             if (($operation == 'FQC_MIN') || ($operation == 'FQC_MAX')) {
@@ -564,9 +594,9 @@ class Builder
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = $wpdb->prepare("SELECT " . implode(', ', $selects). " FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s", $min, $max, $device_id, $module_id, $measure_type);
+        $sql = $wpdb->prepare("SELECT " . implode(', ', $selects). " FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s", $min, $max, $device_id, $module_id, $measure_type); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
             $values = (array)$query_a[0];
         }
@@ -601,9 +631,9 @@ class Builder
      * @since 3.4.0
      */
     private function perform_frequency_aggregation($device_id, $module_id, $module_type, $measure_type, $tz, $operation, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         $select = '`measure_value` as v_val, COUNT(*) as v_fqc';
         $order = 'DESC';
         if ($operation == 'FQC_MIN') {
@@ -611,11 +641,17 @@ class Builder
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT " . $select . " FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "' GROUP BY `measure_value` ORDER BY v_fqc " . $order ." LIMIT 1;";
+        $sql = $wpdb->prepare("SELECT " . $select . " FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s GROUP BY `measure_value` ORDER BY v_fqc " . $order ." LIMIT 1;", $min, $max, $device_id, $module_id, $measure_type); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return false;
+            }
             $values = (array)$query_a[0];
+            if (!isset($values['v_val'])) {
+                return false;
+            }
         }
         catch(\Exception $ex) {
             return false;
@@ -647,16 +683,22 @@ class Builder
      * @since 3.4.0
      */
     private function perform_max_per_hour($device_id, $module_id, $module_type, $measure_type, $tz, $operation, $factor, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT MAX(`measure_value`) as v_max FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "';";
+        $sql = $wpdb->prepare("SELECT MAX(`measure_value`) as v_max FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $min, $max, $device_id, $module_id, $measure_type); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return false;
+            }
             $values = (array)$query_a[0];
+            if (!isset($values['v_max']) || !is_numeric($values['v_max']) || !$factor) {
+                return false;
+            }
         }
         catch(\Exception $ex) {
             return false;
@@ -686,14 +728,14 @@ class Builder
      * @since 3.4.0
      */
     private function perform_median_computation($device_id, $module_id, $module_type, $measure_type, $tz, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT `measure_value` as v_val FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "' ORDER BY v_val ASC;";
+        $sql = $wpdb->prepare("SELECT `measure_value` as v_val FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s ORDER BY v_val ASC;", $min, $max, $device_id, $module_id, $measure_type); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
         try {
-            $query = (array)$wpdb->get_results($sql);
+            $query = (array)$wpdb->get_results($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
             $query_a = (array)$query;
             $result = array();
             foreach ($query_a as $val) {
@@ -712,7 +754,7 @@ class Builder
                 $med = $result[intval($count / 2)]['v_val'];
             }
             else {
-                $med = ($result[intval($count / 2)]['v_val'] + $result[intval($count / 2) + 1]['v_val']) / 2;
+                $med = ($result[intval($count / 2) - 1]['v_val'] + $result[intval($count / 2)]['v_val']) / 2;
             }
             $val = array();
             $val['timestamp'] = $date;
@@ -741,11 +783,11 @@ class Builder
      * @since 3.4.0
      */
     private function delete_daily_values($device_id, $module_id, $measure_type, $tz) {
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "';";
-        return $wpdb->query($sql);
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $max, $device_id, $module_id, $measure_type); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
+        return $wpdb->query($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
     }
 
     /**
@@ -757,11 +799,11 @@ class Builder
      * @since 3.4.0
      */
     private function delete_remaining_daily_values($device_id, $tz) {
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
-        return $wpdb->query($sql);
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s;", $max, $device_id); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is $wpdb->prefix plus a constant from DBStorage, selected columns and sort order are hard-coded aggregation operations, every value goes through prepare()
+        return $wpdb->query($sql); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- query already prepared above, custom plugin table live_weather_station_measurements_day, aggregation must read live measurements (no cache)
     }
 
 
