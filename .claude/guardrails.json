@@ -1,0 +1,14 @@
+{
+  "banner": {
+    "title": "Weather Station (live-weather-station)",
+    "runtimes": ["php"],
+    "commits": 3
+  },
+  "lint": {
+    "abspath": ["live-weather-station.php", "init.php", "autoload.php", "functions.php", "uninstall.php"],
+    "rules": [
+      { "match": ["*.php"], "run": "vendor/bin/phpcs {file}", "requires": "vendor/bin/phpcs" },
+      { "match": ["*.js", "*.scss", "*.md", "*.json"], "run": "node_modules/.bin/prettier --write {file}", "requires": "node_modules/.bin/prettier", "tail": 5 }
+    ]
+  }
+}

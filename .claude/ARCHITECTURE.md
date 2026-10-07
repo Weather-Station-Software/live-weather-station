@@ -11,7 +11,7 @@ How this repository is laid out and why. For day-to-day commands see
 │   ├── CLAUDE.md                # Session-start context (auto-loaded)
 │   ├── ARCHITECTURE.md          # This file
 │   ├── rules/                   # Auto-loaded every session: security, a11y
-│   ├── hooks/                   # session-banner.sh, lint-edited.sh
+│   ├── guardrails.json          # piloté par `.claude/guardrails.json` (plugin guardrails de jaz-ai)
 │   ├── skills/                  # On-demand skills, add as they're written
 │   └── settings.json            # Permissions allow/deny + hooks wiring
 ├── .github/workflows/           # CI — currently just the wp.org release deploy
